@@ -1,3 +1,3 @@
 # IS26-AM22
 
-Un team amichevole
+Siamo un team amichevole
