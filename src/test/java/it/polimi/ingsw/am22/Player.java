@@ -49,8 +49,4 @@ abstract class TribeCharacter extends Card {
     }
     public CharacterType getCharacterType() { return characterType; }
     public String getSubIcon() { return ""; } // E.g., for specific Inventor icons
-}jiajihuang@Jiajis-MacBook-Air Demo-ese1 % git push --set-upstream origin main
-Username for 'https://github.com': SuperJiaji
-Password for 'https://SuperJiaji@github.com':
-remote: Permission to Fancopo/Codice-Software.git denied to SuperJiaji.
-fatal: unable to access 'https://github.com/Fancopo/Codice-Software.git/': The requested URL returned error: 403
+}
