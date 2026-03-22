@@ -1,99 +1,108 @@
 package il.polimi.ingse.event;
+import il.polimi.ingse.BuildingEffect;
+import il.polimi.ingse.character.CharacterType;
 import il.polimi.ingse.character.Shaman;
 import il.polimi.ingse.character.TribeCharacter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ShamanicRitual extends Event implements EventEffect {
 
+    public ShamanicRitual(Era era, int minPlayers) {
+        super(era, minPlayers, EventType.SHAMANIC_RITUAL);
+    }
 
     @Override
-    public void applyEvent(List<Player> players, char id)
+    public void applyEvent(List<Player> players, char id) {
+        int PPtoAdd = 0;
+        int PPtoLose = 0;
 
-    int CountStars;
-    int currentEra = getEra();
-    int PPtoAdd;
-    int PPtoLose;
-
-    if(currentEra == 1){
-        PPtoAdd = 5;
-        PPtoLose = -3;
-    }
-    if(currentEra == 2){
-        PPtoAdd = 10;
-        PPtoLose = -5;
-    }
-
-    if(currentEra == 3){
-        PPtoAdd = 15;
-        PPtoLose = -7;
-    }
-
-    Map<Player, Integer> playIconsCount = new HashMap<>();
-
-    //se considero anche effetto di building
-    //Map<Player, Boolean> hasDoublePPBuilding = new HashMap<>();
-    //Map<Player, Boolean> hasNoLossBuilding = new HashMap<>();
-    int maxIcons = -1;
-    int minIcons = Integer.MAX_VALUE;
-
-//conto le icone degli Sciamani per ogni giocatore
-    for(Player player : players){
-        int totalIcons = 0;
-        //boolean doublePP = false;
-        //boolean noLoss = false;
-
-        for(TribeCharacter character : player.getTribe().getMembers()){
-            //verifichiamo se il personaggio e uno Sciamano
-            if(character == "Shaman"){
-                totalIcons += ((Shaman)character).getNumStars();
-            }
+        if (this.era == Era.I) {
+            PPtoAdd = 5;
+            PPtoLose = -3;
+        } else if (this.era == Era.II) {
+            PPtoAdd = 10;
+            PPtoLose = -5;
+        } else if (this.era == Era.III) {
+            PPtoAdd = 15;
+            PPtoLose = -7;
         }
 
-       /* for (Building building : player.getTribe().getBuildings()) {
-            String bType = building.getType(); // Ereditato da Card
+        Map<Player, Integer> totalIconsPerPlayer = new HashMap<>();
+        Map<Player, Boolean> preventLoss = new HashMap<>();
+        Map<Player, Boolean> doubleWin = new HashMap<>();
 
-            if (bType.equals("ExtraShamanIcons")) {
-                totalIcons += 3; // L'edificio fornisce 3 icone aggiuntive
-            } else if (bType.equals("DoubleShamanPP")) {
-                doublePP = true; // Raddoppia i PP vinti [cite: 265]
-            } else if (bType.equals("NoShamanLoss")) {
-                noLoss = true;   // Previene la perdita di PP [cite: 247, 250]
+        // 1. CALCOLO ICONE E MODIFICATORI EDIFICI
+        for (Player player : players) {
+            int baseIcons = 0;
+            int extraIcons = 0;
+            boolean noLoss = false;
+            boolean doublePP = false;
+
+            Tribe tribe = player.getTribe();
+            if (tribe != null) {
+                // Conta icone base degli Sciamani
+                for (TribeCharacter character : tribe.getMembers()) {
+                    if (character.getCharacterType() == CharacterType.SHAMAN) {
+                        baseIcons += character.getNumStars();
+                    }
+                }
+
+                // Applica effetti degli Edifici per il Rituale Sciamanico
+                for (Building building : tribe.getBuildings()) {
+                    BuildingEffect effect = building.getEffect();
+                    if (effect instanceof ShamanicModifierEffect) {
+                        ShamanicModifierEffect shamanicEffect = (ShamanicModifierEffect) effect;
+
+                        // Modificatore: 3 icone aggiuntive
+                        extraIcons += shamanicEffect.getExtraIcons();
+
+                        // Modificatore: Non perdete Punti Prestigio
+                        if (shamanicEffect.isPreventPPLoss()) noLoss = true;
+
+                        // Modificatore: Guadagnate il doppio dei Punti Prestigio
+                        if (shamanicEffect.isDoubleWinPP()) doublePP = true;
+                    }
+                }
             }
 
-        */
-    }
-
-           // C'è un edificio di Era II/III che fornisce 3 icone aggiuntive durante questo evento.
-            //Qui andrebbe integrato un controllo su player.getTribe().getBuildings() per applicare quel bonus.
-            //hasDoublePPBuilding.put(player, doublePP);
-            //hasNoLossBuilding.put(player, noLoss);
-
-    playerIconsCount.put(player, totalIcons);
-
-    if (totalIcons > maxIcons) maxIcons = totalIcons;
-    if (totalIcons < minIcons) minIcons = totalIcons;
-
-    for(Player player : players){
-        int icons = playerIconsCount.get(player);
-
-        if(icons == maxIcons){
-
-            player.addPP(ppToWin);
-            //NOTA EDIFICI: C'è un edificio che raddoppia i PP guadagnati se si ha la maggioranza.
-            //int pointsEarned = ppToWin;
-            //
-            //                // Applichiamo l'edificio dei punti doppi se posseduto
-            //                if (hasDoublePPBuilding.get(player)) {
-            //                    pointsEarned *= 2;
-            //                }
-            //                player.addPP(pointsEarned);
+            totalIconsPerPlayer.put(player, baseIcons + extraIcons);
+            preventLoss.put(player, noLoss);
+            doubleWin.put(player, doublePP);
         }
-        if (icons == minIcons){
-            // NOTA EDIFICI: Un altro edificio impedisce di perdere PP in questo evento.
-            player.addPP(-ppToLose);
+
+        if (totalIconsPerPlayer.isEmpty()) return;
+
+        // 2. TROVA IL MASSIMO E IL MINIMO
+        int maxIcons = Collections.max(totalIconsPerPlayer.values());
+        int minIcons = Collections.min(totalIconsPerPlayer.values());
+
+        // 3. ASSEGNAZIONE PREMI E PENALITÀ
+        for (Player player : players) {
+            int icons = totalIconsPerPlayer.get(player);
+
+            // Vittoria: Il giocatore con più icone nella propria tribù, guadagna i Punti Prestigio indicati
+            // In caso di parità, tutti i giocatori in parità ottengono i Punti Prestigio indicati
+            if (icons == maxIcons) {
+                int earnedPP = doubleWin.get(player) ? PPtoAdd * 2 : PPtoAdd;
+                player.addPP(earnedPP);
+                System.out.println(player.getNickname() + " vince il rito e ottiene " + earnedPP + " PP!");
+            }
+
+            // Sconfitta: Il giocatore con meno icone nella propria tribù, perde i Punti Prestigio indicati
+            // Anche in questo caso si applica la regola della parità
+            if (icons == minIcons) {
+                if (preventLoss.get(player)) {
+                    System.out.println(player.getNickname() + " ha meno icone, ma l'Edificio lo protegge dalla perdita di PP!");
+                } else {
+                    // Nota: PPtoLose è già un numero negativo, quindi usiamo addPP o un metodo equivalente
+                    player.addPP(PPtoLose);
+                    System.out.println(player.getNickname() + " perde il rito e subisce " + PPtoLose + " PP.");
+                }
+            }
         }
     }
 

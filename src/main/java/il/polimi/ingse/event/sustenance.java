@@ -1,69 +1,78 @@
 package il.polimi.ingse.event;
+import il.polimi.ingse.BuildingEffect;
+import il.polimi.ingse.Era;
+import il.polimi.ingse.character.CharacterType;
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List;===
 
 
 public class sustenance extends Event implements EventEffect {
 
-    public Event(char id, String type, int era, int minPlayers){
-        super(id, type, era, minPlayers);
+    public Sustenance(Era era, int minPlayers) {
+        super(era, minPlayers, EventType.SUSTENANCE);
     }
 
     @Override
-    public void applyEvent(List<Player> players, char id){
+    public void applyEvent(List<Player> players, char id) {
+        int PPLose = 0;
 
-        int eraCurrent = getEra();
-        int PPlose;
-
-        if(eraCurrent == 1){ PPlose = -1;}
-        if(eraCurrent == 2){ PPlose = -2;}
-        if(eraCurrent == 3){ PPlose = -3;}
-
-        for(Player p : players){
-            int foodRequired = p.getTribe().getMembers().size();//per ogni giocatore vado al suo tribu e conto tutti i personaggi che si trovano nel tribu
-
-            int discount = p.getTribe().countCharacter("Gatherer") * 3; //sconto per ogni raccoglitore
-            int FoodToPay = Math.max(0, foodRequired - discount);
-
-            // 3. Controlliamo se il giocatore ha l'Edificio che sconta il cibo
-            // in base a ruoli specifici (Artisti, Inventori, Raccoglitori)
-            /*for (Building building : tribe.getBuildings()) {
-                if ("RoleFoodDiscount".equals(building.getType())) {
-                    int numArtists = tribe.countCharacter("Artist");
-                    int numInventors = tribe.countCharacter("Inventor");
-
-                    // Sconto di 1 per ogni Artista, Inventore e Raccoglitore
-                    discount += (numArtists + numInventors + numGatherers);
-                    break; // Assumiamo che ci sia solo una copia di questo edificio attiva
-                }
-            }*/
-
-            // 4. Applichiamo lo sconto al costo totale (il costo non può scendere sotto lo zero)
-            /*equiredFood -= discount;
-            if (requiredFood < 0) {
-                requiredFood = 0;
-            }*/
-
-            if(FoodToPay > 0){
-                int currentFood = p.getfood();
-
-                if(currentFood >= FoodToPay){
-                    int negFoodtoPay = -FoodToPay;
-                    p.addFood(negFoodtoPay);
-                } else{ // caso in cui non ha abbastanza cibo
-                    int unpaidFood = FoodToPay - currentFood;
-                    p.setFood(0);
-
-                    int Penalty = unpaidFood * PPlose;
-                    int negPenalty = -Penalty;
-                    p.addPP(negPenalty);
-                }
-            }
+        // Valori di penalità basati sull'Era corrente
+        if (this.era == Era.I) {
+            PPLose = -1;
+        } else if (this.era == Era.II) {
+            PPLose = -2;
+        } else if (this.era == Era.III) {
+            PPLose = -3;
         }
 
+        for (Player player : players) {
+            Tribe tribe = player.getTribe();
+            if (tribe == null) continue;
 
+            // 1. Calcola quanti personaggi ci sono (1 cibo per personaggio)
+            int totalCharacters = tribe.getMembers().size();
 
+            // 2. Calcola lo sconto base dei Raccoglitori (3 cibo per ogni raccoglitore)
+            int collectorsCount = tribe.countCharacters(CharacterType.COLLECTOR);
+            int totalDiscount = collectorsCount * 3;
+
+            // 3. Calcola eventuali sconti forniti dagli Edifici
+            for (Building building : tribe.getBuildings()) {
+                BuildingEffect effect = building.getEffect();
+                if (effect instanceof SustenanceDiscountEffect) {
+                    SustenanceDiscountEffect sustenanceEffect = (SustenanceDiscountEffect) effect;
+                    // L'edificio calcola da solo quanto sconto applicare in base alla tribù
+                    totalDiscount += sustenanceEffect.getSustenanceDiscount(tribe);
+                }
+            }
+
+            // 4. Calcola il costo finale in Cibo (non può essere minore di 0)
+            int foodToPay = Math.max(0, totalCharacters - totalDiscount);
+
+            // 5. Risoluzione del pagamento
+            if (player.getFood() >= foodToPay) {
+                // Ha abbastanza cibo per sfamare tutti
+                player.addFood(-foodToPay); // Sottrae il cibo dal totale del giocatore
+                System.out.println(player.getNickname() + " paga " + foodToPay + " cibo e sfama tutta la tribù.");
+
+            } else {
+                // Non ha abbastanza cibo: deve pagare tutto quello che ha
+                int foodAvailable = player.getFood();
+                int unfedCharacters = foodToPay - foodAvailable;
+
+                // Azzera il cibo del giocatore (paga tutto quello che possiede)
+                player.addFood(-foodAvailable);
+
+                // Calcola e applica la penalità (PPLose è già negativo)
+                int totalPenalty = PPLose * unfedCharacters;
+                player.addPP(totalPenalty);
+
+                System.out.println(player.getNickname() + " ha solo " + foodAvailable +
+                        " cibo. Non riesce a sfamare " + unfedCharacters +
+                        " personaggi e subisce " + totalPenalty + " PP di penalità.");
+            }
+        }
     }
-
 
 }

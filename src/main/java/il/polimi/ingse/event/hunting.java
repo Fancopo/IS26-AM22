@@ -1,50 +1,68 @@
 package il.polimi.ingse.event;
+import il.polimi.ingse.BuildingEffect;
+import il.polimi.ingse.Era;
+import il.polimi.ingse.character.CharacterType;
+
 import java.util.ArrayList;
 import java.util.List;
+
+
 public class hunting extends Event implements EventEffect{
 
-    public Event(char id, String type, int era, int minPlayers){
-        super(id, type, era, minPlayers);
+    public Hunting(Era era, int minPlayers) {
+        super(era, minPlayers, EventType.HUNTING);
     }
 
-
     @Override
-    public void applyEvent(List<Player> players, char id){
+    public void applyEvent(List<Player> players, char id) {
+        int PPperHunter = 0;
 
-        int eraCurrent = getEra();
-        int PPperHunter;
+        // Valori di Punti Prestigio per cacciatore basati sull'Era corrente (dal tuo snippet)
+        if (this.era == Era.I) {
+            PPperHunter = 1;
+        } else if (this.era == Era.II) {
+            PPperHunter = 2;
+        } else if (this.era == Era.III) {
+            PPperHunter = 3;
+        }
 
-        if(eraCurrent == 1){PPperHunter = 1;}
-        if(eraCurrent == 2){PPperHunter = 2;}
-        if(eraCurrent == 3){PPperHunter = 3;}
+        for (Player player : players) {
+            Tribe tribe = player.getTribe();
+            if (tribe == null) continue;
 
+            // 1. Conta quanti Cacciatori ci sono nella tribù
+            int huntersCount = tribe.countCharacters(CharacterType.HUNTER);
 
-        for(Player p : players){
-            int numhunter = p.getTribe().countCharacter("Hunter");
+            if (huntersCount > 0) {
+                // Valori base forniti dall'evento per ogni Cacciatore
+                int foodPerHunter = 1;
+                int extraPPPerHunter = 0;
+                int extraFoodPerHunter = 0;
 
-            if (numHunters == 0) {
-                continue;
-            }
-            if(numhunter > 0){
-                int foodtoAdd = numhunter;
-                p.addFood(foodtoAdd);
-
-                int PPtoAdd = numhunter * PPperHunter;
-                p.addPP(PPtoAdd);
-                // 3. Controlliamo se il giocatore possiede l'Edificio bonus per la Caccia
-                /*boolean hasHuntingBonusBuilding = false;
+                // 2. Controlla gli effetti degli Edifici (es. +1 Cibo e +1 PP per Cacciatore)
                 for (Building building : tribe.getBuildings()) {
-                    if ("HuntingBonus".equals(building.getType())) {
-                        hasHuntingBonusBuilding = true;
-                        break;
+                    BuildingEffect effect = building.getEffect();
+                    if (effect instanceof EventYieldBonusEffect) {
+                        // In base all'UML, questa classe modifica la resa dell'evento
+                        // Nel manuale c'è un edificio esatto che fa questo:
+                        extraFoodPerHunter += 1;
+                        extraPPPerHunter += 1;
                     }
                 }
 
-                // 4. Applichiamo i bonus dell'edificio, se presente
-                if (hasHuntingBonusBuilding) {
-                    foodToGain += (numHunters * 1); // +1 Cibo per cacciatore
-                    ppToGain += (numHunters * 1);   // +1 PP per cacciatore
-                }*/
+                // 3. Calcolo dei totali
+                int totalFoodToAdd = huntersCount * (foodPerHunter + extraFoodPerHunter);
+                int totalPPToAdd = huntersCount * (PPperHunter + extraPPPerHunter);
+
+                // 4. Assegnazione delle risorse al giocatore
+                player.addFood(totalFoodToAdd);
+                player.addPP(totalPPToAdd);
+
+                System.out.println(player.getNickname() + " ha " + huntersCount +
+                        " Cacciatori. Ottiene " + totalFoodToAdd +
+                        " Cibo e " + totalPPToAdd + " PP dalla Caccia!");
+            } else {
+                System.out.println(player.getNickname() + " non ha Cacciatori e non ottiene nulla.");
             }
         }
     }
