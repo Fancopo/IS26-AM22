@@ -4,71 +4,233 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private int currentRound;
+    // --- Attributes ---
     private List<Player> players;
-    private int currentEra;
     private Board board;
     private List<Card> tribeDeck;
+    private int currentRound;
+    private Era currentEra;
+    private GamePhase currentPhase;
+    private Player activePlayer;
 
-    private GameObserver gameObserver;
+    // Observer list for MVC pattern
+    private List<GameObserver> observers;
 
-    public Game(int num_players) {
-        this.players = new ArrayList<>();
-        for(int i=0;i<num_players;i++)
-            this.players.add(new Player(i));
+    public Game(List<Player> players) {
+        players = players;
+        board = new Board(players.size());
+        tribeDeck = new ArrayList<>();
+        observers = new ArrayList<>();
+
+        currentRound = 1;
+        currentEra = Era.I;
+        currentPhase = GamePhase.SETUP;
+
+        if (!players.isEmpty()) {
+            activePlayer = players.get(0);
         }
     }
 
-    public void startMatch() {
-        this.currentRound = 1;
-        this.currentEra = 1;
-        this.board = new Board(players.size());
+    // --- OBSERVER PATTERN METHODS ---
 
-        // inizializza il tribeDeck
-        List<Card> AllCards = CardDeck.createAllCards();
+    /**
+     * Adds an observer (View/Client) to the notification list.
+     * @param observer The observer to add.
+     */
+    public void addObserver(GameObserver observer) {
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
 
-        // Filtriamo usando l'attributo minPlayers e gli Stream di Java
-        this.tribeDeck = AllCards.stream()
-                .filter(carta -> carta.getMinPlayers() <= num_Players)
+    /**
+     * Removes an observer from the notification list.
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(GameObserver observer) {
+        observers.remove(observer);
+    }
+
+    /**
+     * Notifies all registered observers that the game state has changed.
+     */
+    public void notifyObservers() {
+        for (GameObserver observer : observers) {
+            observer.gameStatusChanged(this);
+        }
+    }
+
+    // --- GAME LOGIC METHODS ---
+    private void setupDecks() {
+        // ==========================================
+        // 1. PREPARAZIONE MAZZO TRIBÙ
+        // ==========================================
+
+        List<Card> allTribeCards = CardDeck.createAllTribeCards();
+
+        // Filtro per numero giocatori
+        List<Card> filteredTribe = allTribeCards.stream()
+                .filter(c -> c.getMinPlayers() <= players.size())
                 .collect(Collectors.toList());
 
-        // Mescolo il mazzo pronto per l'uso
-        Collections.shuffle(this.tribeDeck);
+        // Separo le carte in base all'Era (o se sono Eventi Finali) usando gli Stream!
+        List<Card> era1 = filteredTribe.stream().filter(c -> c.getEra() == Era.I).collect(Collectors.toList());
+        List<Card> era2 = filteredTribe.stream().filter(c -> c.getEra() == Era.II).collect(Collectors.toList());
+        List<Card> era3 = filteredTribe.stream().filter(c -> c.getEra() == Era.III).collect(Collectors.toList());
+        List<Card> finalEvents = filteredTribe.stream().filter(c -> c.isFinalEvent()).collect(Collectors.toList());
 
-        //basic food distribution
-        for (int i = 0; i < this.players.size(); i++) {
-            Player p = this.players.get(i);
-            if (i == 0) {
-                p.addFood(2); // Il 1° giocatore riceve 2 Cibo
-            } else if (i == 1 || i == 2) {
-                p.addFood(3); // Il 2° e il 3° giocatore ricevono 3 Cibo
-            } else if (i == 3 || i == 4) {
-                p.addFood(4); // Il 4° e il 5° giocatore ricevono 4 Cibo
-            }
+        // Mescolo i mazzetti separatamente [cite: 143]
+        Collections.shuffle(era1);
+        Collections.shuffle(era2);
+        Collections.shuffle(era3);
+        Collections.shuffle(finalEvents);
+
+        // Impilo il mazzo Tribù partendo dal basso verso l'alto [cite: 144]
+        this.tribeDeck = new ArrayList<>();
+        this.tribeDeck.addAll(finalEvents); // Fondo
+        this.tribeDeck.addAll(era3);        // Sopra agli eventi finali
+        this.tribeDeck.addAll(era2);        // Sopra l'Era III
+        this.tribeDeck.addAll(era1);        // In cima, pronti per essere pescati al primo round!
+
+        // ==========================================
+        // 2. PREPARAZIONE MAZZI EDIFICIO [cite: 150-152, 164-165]
+        // ==========================================
+
+        List<Building> allBuildings = CardDeck.createAllBuildings();
+
+        // Separo gli Edifici per Era usando gli Stream
+        List<Building> buildEra1 = allBuildings.stream().filter(b -> b.getEra() == Era.I).collect(Collectors.toList());
+        List<Building> buildEra2 = allBuildings.stream().filter(b -> b.getEra() == Era.II).collect(Collectors.toList());
+        List<Building> buildEra3 = allBuildings.stream().filter(b -> b.getEra() == Era.III).collect(Collectors.toList());
+
+        // Mescolo i mazzetti separatamente
+        Collections.shuffle(buildEra1);
+        Collections.shuffle(buildEra2);
+        Collections.shuffle(buildEra3);
+
+        // Determino quante carte prendere in base ai giocatori (Tabella del manuale)
+        int countEra1 = 0;
+        int countEra2 = 0;
+        int countEra3 = 0;
+
+        switch (players.size()) {
+            case 2:
+                countEra1 = 1; countEra2 = 2; countEra3 = 3;
+                break;
+            case 3:
+                countEra1 = 2; countEra2 = 2; countEra3 = 4;
+                break;
+            case 4:
+                countEra1 = 2; countEra2 = 3; countEra3 = 4;
+                break;
+            case 5:
+                countEra1 = 2; countEra2 = 3; countEra3 = 5;
+                break;
         }
 
-        this.board.initTrack();
-        this.board.refill(this.tribeDeck);
+        // Prendo solo il numero richiesto di carte (subList) in base allo switch
+        List<Building> selectedEra1 = new ArrayList<>(buildEra1.subList(0, countEra1));
+        List<Building> selectedEra2 = new ArrayList<>(buildEra2.subList(0, countEra2));
+        List<Building> selectedEra3 = new ArrayList<>(buildEra3.subList(0, countEra3));
+
+        // Gli edifici Era II e III vanno nella riserva coperta (BuildingMarket) pronti per le Ere successive [cite: 165]
+        board.getBuildingMarket().addAll(selectedEra2);
+        board.getBuildingMarket().addAll(selectedEra3);
+
+        // Gli edifici Era I partono subito SCOPERTI nella fila superiore[cite: 164]!
+        board.getUpperRow().addAll(selectedEra1);
+    }
+    /**
+     * Starts the match, dealing initial food and setting up the board.
+     */
+    public void startMatch() {
+        board.getTurnOrderTile().setup(players.size());
+
+        setupDecks();
+
+        // Randomize initial turn order by shuffling players
+        Collections.shuffle(players);
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            Slot slot = board.getTurnOrderTile().getSlots().get(i);
+            slot.placeTotem(p.getTotem());
+            p.getTotem().moveToSlot(slot);
+
+            //Distribute initial food based on turn order
+            if (i == 0) p.addFood(2);
+            else if (i == 1 || i == 2) p.addFood(3);
+            else if (i == 3 || i == 4) p.addFood(4);
+        }
+
+        board.initTrack();
+        board.refill(tribeDeck);
 
         //carica carte nel lowerRow nel primo round
-        int cardsToDrawLower = this.players.size() + 1;
+        int cardsToDrawLower = players.size() + 1;
         for (int i = 0; i < cardsToDrawLower; i++) {
-            if (!this.tribeDeck.isEmpty()) {
+            if (!tribeDeck.isEmpty()) {
                 // Rimuove la prima carta dal mazzo (pesca) e la aggiunge alla fila superiore
-                this.board.getLowerRow().add(deck.removeFirst());
+                board.getLowerRow().add(deck.removeFirst());
+            }
+        }
+        currentPhase = GamePhase.TOTEM_PLACEMENT;
+        notifyObservers();
+    }
+    public void resolvePlayerOfferAction(Player player, OfferTile tile) {
+        // 1. se il tile offre cibo
+        if (tile.getFoodReward() > 0) {
+            player.addFood(tile.getFoodReward());
+        }
+
+        // NOTE: Taking cards is usually handled by the Controller since it requires player choice.
+        // The controller will call something like: board.takeUpperCard() and player.getTribe().addCharacter().
+
+        // 2. Move Totem to the first available Turn Order Slot
+        Slot nextSlot = board.getTurnOrderTile().getFirstAvailableSlot();
+        tile.clear();
+        nextSlot.placeTotem(player.getTotem());
+        player.getTotem().moveToSlot(nextSlot);
+
+        // 3. Apply Turn Order Slot bonuses/penalties
+        if (nextSlot.getFoodBonus() > 0) {
+            player.addFood(nextSlot.getFoodBonus());
+        }
+        if (nextSlot.isLastSpace()) {
+            if (player.getFood() >= 1) {
+                player.addFood(-1); // Pay 1 food
+            } else {
+                player.addPP(-2);   // Lose 2 PP if no food
             }
         }
 
-        // Notifico l'interfaccia grafica che il setup è completato (?)
-        if (this.gameObserver != null) {
-            this.gameObserver.gameStatusChanged();
+        notifyObservers();
+    }
+    public void resolveEvents() {
+        currentPhase = GamePhase.EVENTS;
+        notifyObservers();
+
+        List<Event> activeEvents = new ArrayList<>();
+        // aggiungere eventi presenti nel lower row
+        for (Card c : board.getLowerRow()) {
+            if (c instanceof Event) {
+                activeEvents.add((Event) c);
+            }
         }
 
+        // Mantenere sustenance per l'ultimo evento
+        activeEvents.sort((e1, e2) -> {
+            if (e1.getEventType() == EventType.SUSTENANCE) return 1;
+            if (e2.getEventType() == EventType.SUSTENANCE) return -1;
+            return 0; // Otherwise keep current order
+        });
 
-    }
+        // Apply each event to all players
+        for (Event event : activeEvents) {
+            broadcastMessage("Resolving event: " + event.getEventType());
+            event.getEffect().applyEvent(players); // Delegates to the specific EventEffect Strategy
+        }
 
-    public void resolveEvents() {
-
+        notifyObservers();
     }
 
     //nextRound
@@ -77,31 +239,84 @@ public class Game {
         resolveEvents();
 
         // 2. Pulizia e aggiornamento del tabellone (Passaggi 2, 3 e 4)
-        this.board.clearLowerRow(); // Scarta Personaggi/Eventi dalla riga in basso
-        this.board.upToLow();       // Sposta le carte dalla riga in alto a quella in basso
-        this.board.refill(this.tribeDeck); // Pesca nuove carte per la riga in alto
+        board.clearLowerRow(); // Scarta Personaggi/Eventi dalla riga in basso
+        board.shiftUpToLow();       // Sposta le carte dalla riga in alto a quella in basso
+        Era eraAfterRefill = board.refillUpperRow(tribeDeck); // Pesca nuove carte per la riga in alto
 
         // 3. Controllo cambio Era
-        // Se la prima carta del mazzo (o le nuove carte rivelate) sono della nuova Era,
-        // aggiorniamo l'Era e modifichiamo il tabellone di conseguenza.
-        updateEra();
-
-        // 4. Incremento del contatore del round
-        this.currentRound++;
-
-        // 5. Controllo di Fine Partita
-        // La partita finisce alla fine del 10° round.
-        if (this.currentRound > 10 || this.tribeDeck.isEmpty()) {
-            for(player: players)
-        } else {
-            // Notifichiamo l'interfaccia che un nuovo round sta per iniziare
-            if (this.gameObserver != null) {
-                this.gameObserver.gameStatusChanged();
-            }
+        if (eraAfterRefill != currentEra) {
+            currentEra = eraAfterRefill;
+            handleEraChange(); // Chiama la logica per spostare gli Edifici
         }
+
+        // 4. Update the active player order based on the new Totem positions
+        List<Totem> newOrder = board.getTurnOrderTile().getTurnOrder();
+        players.clear();
+        for (Totem t : newOrder) {
+            players.add(t.getOwner());
+        }
+        activePlayer = players.get(0);
+
+        // 5. Check for end game [cite: 336]
+        if (currentRound >= 10 || tribeDeck.isEmpty()) {
+            currentPhase = GamePhase.END_GAME;
+            determineWinner();
+        } else {
+            currentRound++;
+            currentPhase = GamePhase.TOTEM_PLACEMENT;
+        }
+        notifyObservers();
     }
 
-    public void updateEra() {
-        currentEra++;
+    public Player determineWinner() {
+        currentPhase = GamePhase.END_GAME;
+
+        Player winner = null;
+        int maxPP = -999;
+        int maxFood = -1;
+        for (Player p : players) {
+            int currentFinalPP = p.finalPP();
+            // Trova chi ha più punti
+            if (currentFinalPP > maxPP) {
+                maxPP = currentFinalPP;
+                maxFood = p.getFood();
+                winner = p;
+            }
+            // Gestione dello spareggio in caso di parità di PP
+            else if (currentFinalPP == maxPP) {
+                if (p.getFood() > maxFood) {
+                    // Vince il giocatore in parità con più cibo! [cite: 347]
+                    maxFood = p.getFood();
+                    winner = p;
+                } else if (p.getFood() == maxFood) {
+                    // In caso di ulteriore parità, la vittoria è condivisa??
+                }
+            }
+        }
+        notifyObservers();
+
+        return winner;
+    }
+    private void handleEraChange() {
+        if (currentEra == Era.III) {
+            board.clearLowerBuildings(); // Scarta edifici in basso solo all'Era III
+        }
+
+        board.shiftBuildingsDown(); // Sposta gli edifici dall'alto al basso
+        board.revealNewBuildings(currentEra); // Rivela i nuovi edifici dell'Era corrente
+    }
+
+    // --- GETTERS & SETTERS ---
+
+    public List<Player> getPlayers() { return players; }
+    public Board getBoard() { return board; }
+    public int getCurrentRound() { return currentRound; }
+    public Era getCurrentEra() { return currentEra; }
+    public GamePhase getCurrentPhase() { return currentPhase; }
+    public Player getActivePlayer() { return activePlayer; }
+
+    public void setActivePlayer(Player activePlayer) {
+        activePlayer = activePlayer;
+        notifyObservers(); // Notify so the UI can unlock buttons for this player
     }
 }

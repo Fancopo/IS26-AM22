@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Board {
-    private List<Character> offerTrack;
+    private List<OfferTile> offerTrack;
     private List<Card> upperRow;
     private List<Card> lowerRow;
     private List<Building> buildingMarket;
@@ -19,93 +19,103 @@ public class Board {
         this.numPlayers = numPlayers;
     }
 
-    /**
-     * Inizializza il tracciato delle offerte.
-     */
+
     public void initTrack() {
         // Svuotiamo la lista nel caso venga richiamata per un riavvio
         this.offerTrack.clear();
 
         // Formare il tracciato accostando le tessere in ordine alfabetico
-        this.offerTrack.add('B');
-        this.offerTrack.add('C');
-        this.offerTrack.add('E');
-        this.offerTrack.add('F');
+        this.offerTrack.add(new OfferTile('B',0,1,0));
+        this.offerTrack.add(new OfferTile('C',1,0,0));
+        this.offerTrack.add(new OfferTile('E',1,1,0));
+        this.offerTrack.add(new OfferTile('F',2,0,0));
 
         if (this.numPlayers >= 3) {
-            this.offerTrack.add('D');
+            this.offerTrack.add(new OfferTile('D',0,2,0));
         }
         if (this.numPlayers >= 4) {
-            this.offerTrack.add('G');
+            this.offerTrack.add(new OfferTile('G',2,1,0));
         }
         if (this.numPlayers == 5) {
-            this.offerTrack.add('A');
+            this.offerTrack.add(new OfferTile('A',0,0,3));
         }
     }
 
-    /*
-     * Ricarica le carte sul tabellone pescando dal mazzo.
-     * Viene usato sia per il setup iniziale che alla fine del round.
-     */
-    public void refill(List<Card> deck) {
-        // Regola Fine Round: Pescate dal mazzo un numero di carte pari al
-        // numero di giocatori + 4 per ripristinare la fila superiore
+    public Era refillUpperRow(List<Card> deck, Era currentEra) {
         int cardsToDrawUpper = this.numPlayers + 4;
-
-        for (int i = 0; i < cardsToDrawUpper; i++) {
-            if (!deck.isEmpty()) {
-                // Rimuove la prima carta dal mazzo (pesca) e la aggiunge alla fila superiore
-                this.upperRow.add(deck.removeFirst());
+        Era newEra = currentEra;
+        int i=0;
+        // Continua a pescare finché la fila non è piena o il mazzo finisce
+        while (i < cardsToDrawUpper && !deck.isEmpty()) {
+            Card drawnCard = deck.remove(0);
+            this.upperRow.add(drawnCard);
+            i++;
+            // "Non appena rivelate una carta dell'Era successiva..."
+            if (drawnCard.getEra() != currentEra) {
+                newEra = drawnCard.getEra(); // Segna che c'è stato un cambio!
             }
         }
+        return newEra; // Restituisce l'informazione al Game
     }
-
-    /**
-     * Rimuove carte specifiche dal tabellone (es. quando un giocatore le acquista).
-     */
-    public void remove(List<Card> cardsToRemove) {
-        // Rimuove le carte acquistate sia dalla riga superiore che inferiore
-        this.upperRow.removeAll(cardsToRemove);
-        this.lowerRow.removeAll(cardsToRemove);
-        this.buildingMarket.removeAll(cardsToRemove);
+    public void clearLowerBuildings() {
+        // Remove cards if they are Buildings
+        lowerRow.removeIf(card -> card instanceof Building);
     }
-
-    /**
-     * Fase di fine round: sposta le carte dalla fila superiore a quella inferiore.
-     * Metodo chiamato UpToLow() nel tuo UML.
-     */
-    public void upToLow() {
-        // Regola: Spostate nella fila inferiore tutte le carte Personaggio ed Eventi rimaste nella fila superiore
-        // Le eventuali carte Edificio rimangono al loro posto
-
-        Iterator<Card> iterator = this.upperRow.iterator();
-        while (iterator.hasNext()) {
-            Card c = iterator.next();
-            if (!(c instanceof Building)) {
-                this.lowerRow.add(c);
-                iterator.remove(); // Rimuove in modo sicuro la carta dalla fila superiore
-            }
-        }
-    }
-
-    public List<Card> getUpperRow() {
-        return upperRow;
-    }
-
-    public List<Card> getLowerRow() {
-        return lowerRow;
-    }
-
-    /**
-     * Metodo extra consigliato: pulisce la riga inferiore a fine round.
-     */
-    public void clearLowerRow(int Era) {
+    public void clearLowerRow() {
         // Regola: Scartate tutte le carte Personaggio ed Evento dalla fila inferiore[cite: 212].
         // Gli Edifici rimangono al loro posto[cite: 213].
         this.lowerRow.removeIf(c -> !(c instanceof Building));
-
-        //Se currentEra = 3, gli eventuali edifici di era 1 vanno eliminati.
-
-
     }
+    public void shiftUpToLow() {
+        // Regola: Spostate nella fila inferiore tutte le carte Personaggio ed Eventi rimaste nella fila superiore
+        // Le eventuali carte Edificio rimangono al loro posto
+        List<Card> cardsToKeepInUpper = new ArrayList<>();
+        for (Card card : upperRow) {
+            if (card instanceof Building) {
+                cardsToKeepInUpper.add(card);
+            } else {
+                this.lowerRow.add(card);
+            }
+        }
+        this.upperRow.clear();
+        this.upperRow.addAll(cardsToKeepInUpper);
+    }
+
+    public void shiftBuildingsDown() {
+        List<Card> nonBuildings = new ArrayList<>();
+        for (Card card : upperRow) {
+            if (card instanceof Building) {
+                lowerRow.add(card); // Move building down
+            } else {
+                nonBuildings.add(card); // Keep other cards
+            }
+        }
+        upperRow.clear();
+        upperRow.addAll(nonBuildings);
+    }
+
+    public void revealNewBuildings(Era newEra) {
+        List<Building> buildingsToAdd = new ArrayList<>();
+
+        // 1. Cerca nel mercato (i mazzetti preparati a inizio partita) gli edifici dell'Era giusta
+        for (int i = 0; i < buildingMarket.size(); i++) {
+            Building b = buildingMarket.get(i);
+            if (b.getEra() == newEra) {
+                buildingsToAdd.add(b);
+            }
+        }
+
+        // 2. Rimuove questi edifici dal mercato (perché ora entrano in gioco)
+        buildingMarket.removeAll(buildingsToAdd);
+
+        // 3. Li piazza, scoperti, nella fila superiore
+        // Di solito si piazzano a destra delle carte Tribù, quindi li aggiungiamo in coda alla lista
+        this.upperRow.addAll(buildingsToAdd);
+    }
+    // --- GETTERS ---
+    public List<OfferTile> getOfferTrack() { return offerTrack; }
+    public List<Card> getUpperRow() { return upperRow; }
+    public List<Card> getLowerRow() { return lowerRow; }
+    public List<Building> getBuildingMarket() { return buildingMarket; }
+    public TurnOrderTile getTurnOrderTile() { return turnOrderTile; }
 }
