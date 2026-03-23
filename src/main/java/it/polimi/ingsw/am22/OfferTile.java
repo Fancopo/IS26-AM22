@@ -34,4 +34,7 @@ public class OfferTile {
     public int getUpperCardsToTake() { return upperCardsToTake; }
     public int getLowerCardsToTake() { return lowerCardsToTake; }
     public int getFoodReward() { return foodReward; }
+    public Totem getOccupyingTotem() {
+        return this.occupyingTotem;
+    }
 }

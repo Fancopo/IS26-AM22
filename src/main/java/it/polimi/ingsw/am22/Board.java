@@ -118,4 +118,13 @@ public class Board {
     public List<Card> getLowerRow() { return lowerRow; }
     public List<Building> getBuildingMarket() { return buildingMarket; }
     public TurnOrderTile getTurnOrderTile() { return turnOrderTile; }
+    public int getTotemsOnOffersCount() {
+        int count = 0;
+        for (OfferTile tile : offerTrack) {
+            if (!tile.isAvailable()) {
+                count++;
+            }
+        }
+        return count;
+    }
 }

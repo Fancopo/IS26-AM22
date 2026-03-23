@@ -17,7 +17,7 @@ public class Game {
     private List<GameObserver> observers;
 
     public Game(List<Player> players) {
-        players = players;
+        this.players = players;
         board = new Board(players.size());
         tribeDeck = new ArrayList<>();
         observers = new ArrayList<>();
@@ -163,14 +163,14 @@ public class Game {
         }
 
         board.initTrack();
-        board.refill(tribeDeck);
+        currentEra = board.refillUpperRow(tribeDeck,currentEra);
 
         //carica carte nel lowerRow nel primo round
         int cardsToDrawLower = players.size() + 1;
         for (int i = 0; i < cardsToDrawLower; i++) {
             if (!tribeDeck.isEmpty()) {
                 // Rimuove la prima carta dal mazzo (pesca) e la aggiunge alla fila superiore
-                board.getLowerRow().add(deck.removeFirst());
+                board.getLowerRow().add(tribeDeck.remove(0));
             }
         }
         currentPhase = GamePhase.TOTEM_PLACEMENT;
@@ -202,11 +202,19 @@ public class Game {
                 player.addPP(-2);   // Lose 2 PP if no food
             }
         }
+        if (board.getTurnOrderTile().getOccupiedSlotsCount() == players.size()) {
+            // Action phase is over. Move to Events! [cite: 274-275]
+            this.currentPhase = GamePhase.EVENT_RESOLUTION;
+            resolveEvents(); // Automatically trigger events resolution
 
+        } else {
+            // The phase continues. Find the next leftmost totem on the track[cite: 219].
+            this.activePlayer = getPlayerWithLeftmostTotem();
+        }
         notifyObservers();
     }
     public void resolveEvents() {
-        currentPhase = GamePhase.EVENTS;
+        currentPhase = GamePhase.EVENT_RESOLUTION;
         notifyObservers();
 
         List<Event> activeEvents = new ArrayList<>();
@@ -226,7 +234,6 @@ public class Game {
 
         // Apply each event to all players
         for (Event event : activeEvents) {
-            broadcastMessage("Resolving event: " + event.getEventType());
             event.getEffect().applyEvent(players); // Delegates to the specific EventEffect Strategy
         }
 
@@ -235,13 +242,10 @@ public class Game {
 
     //nextRound
     public void updateRound() {
-        // 1. Risoluzione degli Eventi
-        resolveEvents();
-
         // 2. Pulizia e aggiornamento del tabellone (Passaggi 2, 3 e 4)
         board.clearLowerRow(); // Scarta Personaggi/Eventi dalla riga in basso
         board.shiftUpToLow();       // Sposta le carte dalla riga in alto a quella in basso
-        Era eraAfterRefill = board.refillUpperRow(tribeDeck); // Pesca nuove carte per la riga in alto
+        Era eraAfterRefill = board.refillUpperRow(tribeDeck, currentEra); // Pesca nuove carte per la riga in alto
 
         // 3. Controllo cambio Era
         if (eraAfterRefill != currentEra) {
@@ -297,6 +301,27 @@ public class Game {
 
         return winner;
     }
+
+    public void placeTotemOnOffer(Player player, OfferTile tile) {
+        // 1. Place the totem on the chosen tile
+        tile.placeTotem(player.getTotem());
+
+        // 2. CHECK FOR PHASE CHANGE
+        if (board.getTotemsOnOffersCount() == players.size()) {
+            // Everyone has placed a totem! Move to the next phase
+            this.currentPhase = GamePhase.ACTION_RESOLUTION;
+
+            // The next active player is the one with the leftmost Totem on the Offer Track
+            this.activePlayer = getPlayerWithLeftmostTotem();
+
+        } else {
+            // The phase continues. The next active player is the next one in the players list.
+            int currentIndex = players.indexOf(player);
+            this.activePlayer = players.get(currentIndex + 1);
+        }
+
+        notifyObservers(); //
+    }
     private void handleEraChange() {
         if (currentEra == Era.III) {
             board.clearLowerBuildings(); // Scarta edifici in basso solo all'Era III
@@ -305,7 +330,22 @@ public class Game {
         board.shiftBuildingsDown(); // Sposta gli edifici dall'alto al basso
         board.revealNewBuildings(currentEra); // Rivela i nuovi edifici dell'Era corrente
     }
+    private Player getPlayerWithLeftmostTotem() {
+        for (OfferTile tile : board.getOfferTrack()) {
+            if (!tile.isAvailable()) { // If the tile has a totem
+                // Assuming Totem has a getOwner() method
+                // return tile.getOccupyingTotem().getOwner();
 
+                // Temporary workaround based on your current UML if getOwner isn't there:
+                for (Player p : players) {
+                    if (p.getTotem() == tile.getOccupyingTotem()) {
+                        return p;
+                    }
+                }
+            }
+        }
+        return null;
+    }
     // --- GETTERS & SETTERS ---
 
     public List<Player> getPlayers() { return players; }
@@ -315,8 +355,4 @@ public class Game {
     public GamePhase getCurrentPhase() { return currentPhase; }
     public Player getActivePlayer() { return activePlayer; }
 
-    public void setActivePlayer(Player activePlayer) {
-        activePlayer = activePlayer;
-        notifyObservers(); // Notify so the UI can unlock buttons for this player
-    }
 }

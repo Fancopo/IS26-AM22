@@ -43,4 +43,13 @@ public class TurnOrderTile {
         }
         return turnOrder;
     }
+    public int getOccupiedSlotsCount() {
+        int count = 0;
+        for (Slot slot : slots) {
+            if (!slot.isEmpty()) {
+                count++;
+            }
+        }
+        return count;
+    }
 }
