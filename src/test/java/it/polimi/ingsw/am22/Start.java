@@ -1,7 +1,5 @@
 package it.polimi.ingsw.am22;
 
-import javafx.application.Application;
-
 public class Start {
     string String concat(String a, String b){
         return a + b;

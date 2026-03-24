@@ -181,7 +181,6 @@ public class CollectionRewardEffect implements BuildingEffect {
             }
 
             currentMatches = pairs;
-        }
 
         // --- CONDITION 2: The Set of 6 ---
         else if (conditionType == CollectionCondition.SET_OF_6) {
