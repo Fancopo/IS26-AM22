@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am22;
 
-
+import java.util.HashMap;
+import java.util.Map;
 
 public class Building extends Card {
     private int foodPrice;
@@ -164,8 +165,22 @@ public class CollectionRewardEffect implements BuildingEffect {
 
         // --- CONDITION 1: Pair of Inventors ---
         if (conditionType == CollectionCondition.INVENTOR_PAIR) {
-            // Just ask the tribe how many pairs it has! Need new method in tribe!
-            currentMatches = player.getTribe().countInventorPairs();
+            Map<Character, Integer> iconCounts = new HashMap<>();
+
+            // Get the members list using the standard UML getter
+            for (TribeCharacter character : player.getTribe().getMembers()) {
+                if (character.getCharacterType() == CharacterType.INVENTOR) {
+                    char icon = character.getIconpetentInventor();
+                    iconCounts.put(icon, iconCounts.getOrDefault(icon, 0) + 1);
+                }
+            }
+
+            int pairs = 0;
+            for (int count : iconCounts.values()) {
+                pairs += (count / 2);
+            }
+
+            currentMatches = pairs;
         }
 
         // --- CONDITION 2: The Set of 6 ---
