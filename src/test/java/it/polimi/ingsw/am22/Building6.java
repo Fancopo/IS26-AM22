@@ -19,14 +19,12 @@ public class Building extends Card {
     private int foodPrice;
     private BuildingEffect effect;
 
-    public Building(char id, Era era, int minPlayers, int foodPrice, BuildingEffect effect) {
-        super(id, era, minPlayers);
+    public Building(Era era, int minPlayers, int foodPrice, BuildingEffect effect) {
+        // Ora passi solo i due attributi che hai deciso di mantenere!
+        super(era, minPlayers);
         this.foodPrice = foodPrice;
         this.effect = effect;
     }
-
-    public int getFoodPrice() { return foodPrice; }
-    public BuildingEffect getEffect() { return effect; }
 }
 //1. EndGameScoringEffect
 //Handles buildings that only activate at the end of the game to grant Prestige Points (PP).
@@ -65,7 +63,20 @@ public class EndGameScoringEffect implements BuildingEffect {
 
         // Add double builder points
         if (doubleBuilderPP) {
-            // Logic to calculate and add base builder PP again
+            int extraBuilderPP = 0;
+
+            // Loop through every member of the tribe
+            for (TribeCharacter character : tribe.getMembers()) {
+
+                // Check if the character is a Builder type
+                if (character.getCharacterType() == CharacterType.Builder) {
+
+                    // Add their base PP to the extra total. No casting required!
+                    extraBuilderPP += character.getPP();
+                }
+            }
+
+            total += extraBuilderPP;
         }
 
         return total;
