@@ -26,9 +26,6 @@ public class Game {
         currentEra = Era.I;
         currentPhase = GamePhase.SETUP;
 
-        if (!players.isEmpty()) {
-            activePlayer = players.get(0);
-        }
     }
 
     // --- OBSERVER PATTERN METHODS ---
@@ -145,11 +142,14 @@ public class Game {
      */
     public void startMatch() {
         board.getTurnOrderTile().setup(players.size());
-
+        board.initTrack();
+        currentEra = board.refillUpperRow(tribeDeck,currentEra);
         setupDecks();
 
         // Randomize initial turn order by shuffling players
         Collections.shuffle(players);
+        activePlayer = players.get(0);
+
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
             Slot slot = board.getTurnOrderTile().getSlots().get(i);
@@ -161,9 +161,6 @@ public class Game {
             else if (i == 1 || i == 2) p.addFood(3);
             else if (i == 3 || i == 4) p.addFood(4);
         }
-
-        board.initTrack();
-        currentEra = board.refillUpperRow(tribeDeck,currentEra);
 
         //carica carte nel lowerRow nel primo round
         int cardsToDrawLower = players.size() + 1;
@@ -205,10 +202,10 @@ public class Game {
         if (board.getTurnOrderTile().getOccupiedSlotsCount() == players.size()) {
             // Action phase is over. Move to Events! [cite: 274-275]
             this.currentPhase = GamePhase.EVENT_RESOLUTION;
-            resolveEvents(); // Automatically trigger events resolution
-
+            resolveEvents();
         } else {
-            // The phase continues. Find the next leftmost totem on the track[cite: 219].
+            // The phase continues. Find the next leftmost totem on the track
+
             this.activePlayer = getPlayerWithLeftmostTotem();
         }
         notifyObservers();
@@ -262,7 +259,7 @@ public class Game {
         activePlayer = players.get(0);
 
         // 5. Check for end game [cite: 336]
-        if (currentRound >= 10 || tribeDeck.isEmpty()) {
+        if (currentRound == 10) {
             currentPhase = GamePhase.END_GAME;
             determineWinner();
         } else {
@@ -293,7 +290,7 @@ public class Game {
                     maxFood = p.getFood();
                     winner = p;
                 } else if (p.getFood() == maxFood) {
-                    // In caso di ulteriore parità, la vittoria è condivisa??
+                    // In caso di ulteriore parità, la vittoria è condivisa(??)
                 }
             }
         }
@@ -303,17 +300,22 @@ public class Game {
     }
 
     public void placeTotemOnOffer(Player player, OfferTile tile) {
-        // 1. Place the totem on the chosen tile
+        // RIMUOVE il totem dal suo Slot attuale sulla TurnOrderTile
+        for (Slot slot : board.getTurnOrderTile().getSlots()) {
+            if (slot.getOccupiedBy() == player.getTotem()) {
+                slot.removeTotem(); // (o il metodo che hai usato per svuotare lo slot, es. clear())
+                break;
+            }
+        }
+        // Place the totem on the chosen tile
         tile.placeTotem(player.getTotem());
 
         // 2. CHECK FOR PHASE CHANGE
         if (board.getTotemsOnOffersCount() == players.size()) {
             // Everyone has placed a totem! Move to the next phase
             this.currentPhase = GamePhase.ACTION_RESOLUTION;
-
             // The next active player is the one with the leftmost Totem on the Offer Track
             this.activePlayer = getPlayerWithLeftmostTotem();
-
         } else {
             // The phase continues. The next active player is the next one in the players list.
             int currentIndex = players.indexOf(player);
@@ -326,7 +328,6 @@ public class Game {
         if (currentEra == Era.III) {
             board.clearLowerBuildings(); // Scarta edifici in basso solo all'Era III
         }
-
         board.shiftBuildingsDown(); // Sposta gli edifici dall'alto al basso
         board.revealNewBuildings(currentEra); // Rivela i nuovi edifici dell'Era corrente
     }

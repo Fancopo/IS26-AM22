@@ -20,7 +20,7 @@ public class TurnOrderTile {
             // l'ultimo slot ha penalità
             boolean isLastSpace = (i == playerCount - 1);
 
-            Slot newSlot = new Slot(foodBonus, positionIndex,isLastSpace);
+            Slot newSlot = new Slot(foodBonus,positionIndex,isLastSpace);
             this.slots.add(newSlot);
         }
     }
@@ -38,7 +38,7 @@ public class TurnOrderTile {
         List<Totem> turnOrder = new ArrayList<>();
         for (Slot slot : slots) {
             if (!slot.isEmpty()) {
-                turnOrder.add(slot.getOccupyingTotem());
+                turnOrder.add(slot.getOccupiedBy());
             }
         }
         return turnOrder;
@@ -52,4 +52,5 @@ public class TurnOrderTile {
         }
         return count;
     }
+    public List<Slot> getSlots(){return this.slots;}
 }
