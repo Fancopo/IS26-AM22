@@ -9,12 +9,17 @@ public class Building extends Card {
     private boolean currentApplicable;
     private BuildingEffect effect;
 
-    public Building(Era era, int minPlayers, int foodPrice, int finalPP, BuildingEffect effect) {
-        super(era, minPlayers);
+    public Building(String id, Era era, int minPlayers, int foodPrice, int finalPP, BuildingEffect effect) {
+        super(id, era, minPlayers);
         this.foodPrice = foodPrice;
         this.finalPP = finalPP;
         this.currentApplicable = true;
         this.effect = effect;
+    }
+
+    @Override
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
     }
 
     public void ApplyEffect() {
