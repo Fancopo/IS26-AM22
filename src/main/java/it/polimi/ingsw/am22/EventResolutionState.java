@@ -7,33 +7,18 @@ public class EventResolutionState implements GameState {
 
     @Override
     public void resolveEvents(Game game) {
-        game.notifyObservers(); // Notifica che siamo entrati negli eventi
+        game.notifyObservers();
 
-        List<Event> activeEvents = new ArrayList<>();
+        List<Card> cardsToTrigger = new ArrayList<>(game.getBoard().getLowerRow());
 
-        CardVisitor eventExtractor = new CardVisitor() {
-            @Override public void visit(Event event) { activeEvents.add(event); }
-            @Override public void visit(Building building) { }
-            @Override public void visit(TribeCharacter character) { }
-        };
+        cardsToTrigger.sort(Comparator.comparingInt(Card::getTriggerPriority));
 
-        for (Card c : game.getBoard().getLowerRow()) {
-            c.accept(eventExtractor);
+        for (Card c : cardsToTrigger) {
+            c.onRoundEndTrigger(game);
         }
 
-        activeEvents.sort((e1, e2) -> {
-            if (e1.getEventType() == EventType.SUSTENANCE) return 1;
-            if (e2.getEventType() == EventType.SUSTENANCE) return -1;
-            return 0;
-        });
-
-        for (Event event : activeEvents) {
-            event.getEffect().applyEvent(game.getPlayers());
-        }
-
-        // Transizione di Stato!
         game.setState(new RoundUpdateState());
-        game.updateRound(); // Chiama la pulizia automatica
+        game.updateRound();
     }
 
     @Override
