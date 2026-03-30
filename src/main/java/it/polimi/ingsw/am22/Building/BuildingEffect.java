@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22;
+package Building;
 
 public enum Era { I, II, III }
 public enum CharacterType { INVENTOR, BUILDER, GATHERER, SHAMAN, ARTIST, HUNTER }
