@@ -1,5 +1,7 @@
 package Building;
 
+import il.polimi.ingse.event.EventType
+
 // 5. EventYieldBonusEffect
 public class EventYieldBonusEffect implements BuildingEffect {
     private EventType targetEventType;
@@ -13,11 +15,21 @@ public class EventYieldBonusEffect implements BuildingEffect {
     }
 
     @Override
-    public void modifyEventYield() {
-        // The game engine will fetch these bonuses when the specific event occurs
-    }
+    public void applyEventBonus(EventType eventType, Player player, int characterCount) {
+        if (this.targetEventType == eventType) {
 
-    public EventType getTargetEventType() { return targetEventType; }
-    public int getBonusFood() { return bonusFood; }
-    public int getBonusPP() { return bonusPP; }
+            // Multiply the bonus by the amount of characters (Hunters, Artists)
+            int extraFood = this.bonusFood * characterCount;
+            int extraPP = this.bonusPP * characterCount;
+
+            if (extraFood > 0) {
+                player.addFood(extraFood);
+                System.out.println("Building Bonus: " + player.getNickname() + " got +" + extraFood + " Food!");
+            }
+            if (extraPP > 0) {
+                player.addPP(extraPP);
+                System.out.println("Building Bonus: " + player.getNickname() + " got +" + extraPP + " PP!");
+            }
+        }
+    }
 }

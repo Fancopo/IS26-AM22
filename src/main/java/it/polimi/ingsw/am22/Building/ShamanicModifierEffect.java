@@ -13,12 +13,11 @@ public class ShamanicModifierEffect implements BuildingEffect {
     }
 
     @Override
-    public void modifyShamanicRitual() {
-        // The game engine will fetch these flags when resolving the event
-    }
+    public int getExtraShamanIcons() { return extraIcons; }
 
-    // Getters for the engine to read
-    public int getExtraIcons() { return extraIcons; }
-    public boolean isPreventPPLoss() { return preventPPLoss; }
-    public boolean isDoubleWinPP() { return doubleWinPP; }
+    @Override
+    public boolean preventsShamanPPLoss() { return preventPPLoss; }
+
+    @Override
+    public boolean doublesShamanWinPP() { return doubleWinPP; }
 }

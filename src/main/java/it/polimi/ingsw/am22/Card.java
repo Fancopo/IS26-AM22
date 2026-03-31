@@ -1,6 +1,6 @@
-package it.polimi.ingsw.am22;
+package am22;
 
-public enum Era { I, II, III }
+import il.polimi.ingse.Era
 
 public abstract class Card {
     private String id;

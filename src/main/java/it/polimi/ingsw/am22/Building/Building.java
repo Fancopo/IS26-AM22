@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum Era { I, II, III }
-public enum CharacterType { INVENTOR, BUILDER, GATHERER, SHAMAN, ARTIST, HUNTER }
-public enum EventType { SUSTENANCE, HUNTING, SHAMANIC_RITUAL, CAVE_PAINTINGS }
-public enum CollectionCondition { SET_OF_6, INVENTOR_PAIR }
-
+import il.polimi.ingse.Era
+import il.polimi.ingse.character.CharacterType
+import il.polimi.ingse.event.EventType
+import.CollectionCondition
+import am22.Card
 
 public class Building extends Card {
     private int foodPrice;
@@ -58,7 +58,7 @@ public class Building extends Card {
 
         // 2. Discount for Gatherers (-1 Food)
         deck.add(new Building("BLD_I_02", Era.I, 2, 4, 4,
-                new SustenanceDiscountEffect(CharacterType.GATHERER)));
+                new SustenanceDiscountEffect(CharacterType.COLLECTOR)));
 
         // 3. Discount for Artists (-1 Food)
         deck.add(new Building("BLD_I_03", Era.I, 2, 5, 3,
@@ -102,7 +102,7 @@ public class Building extends Card {
 
         // 12. Cave Painting Event -> 1 Food per Artist
         deck.add(new Building("BLD_II_06", Era.II, 2, 5, 6,
-                new EventYieldBonusEffect(EventType.CAVE_PAINTINGS, 1, 0)));
+                new EventYieldBonusEffect(EventType.CAVE_PAINTING, 1, 0)));
 
         // 13. End Game: Set of 6 Characters -> 6 PP
         deck.add(new Building("BLD_II_07", Era.II, 2, 5, 6,
@@ -118,7 +118,7 @@ public class Building extends Card {
 
         // 15. End Game: 2 PP x Gatherer
         deck.add(new Building("BLD_III_02", Era.III, 2, 7, 6,
-                new EndGameScoringEffect(0,0,CharacterType.GATHERER,4,false)));
+                new EndGameScoringEffect(0,0,CharacterType.COLLECTOR,4,false)));
 
         // 16. End Game: 3 PP x Shaman
         deck.add(new Building("BLD_III_03", Era.III, 2, 7, 4,

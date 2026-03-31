@@ -1,5 +1,7 @@
 package Building;
 
+import il.polimi.ingse.character.CharacterType
+
 // 3. SustenanceDiscountEffect
 public class SustenanceDiscountEffect implements BuildingEffect {
     private CharacterType targetCharacterType;

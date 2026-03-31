@@ -3,6 +3,8 @@ package Building;
 import java.util.HashMap;
 import java.util.Map;
 
+import.CollectionCondition
+
 // 4. CollectionRewardEffect
 public class CollectionRewardEffect implements BuildingEffect {
     private CollectionCondition conditionType;

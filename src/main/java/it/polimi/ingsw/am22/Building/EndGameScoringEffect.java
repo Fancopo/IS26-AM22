@@ -1,5 +1,7 @@
 package Building;
 
+import il.polimi.ingse.character.CharacterType
+
 // 1. EndGameScoringEffect
 public class EndGameScoringEffect implements BuildingEffect {
     private int flatPP;
