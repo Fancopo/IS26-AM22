@@ -1,6 +1,6 @@
 package Building;
 
-// 1. Building.EndGameScoringEffect
+// 1. EndGameScoringEffect
 public class EndGameScoringEffect implements BuildingEffect {
     private int flatPP;
     private int pointsPerSet;
