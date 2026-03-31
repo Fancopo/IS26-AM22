@@ -28,12 +28,12 @@ public class ActionResolutionState implements GameState {
 
             // Pagamento Edifici con sconto
             int totalFoodCost = 0;
-            int builderDiscount = player.getBuilderDiscount();
+            int builderDiscount = player.getTribe().getBuilderDiscount();
 
             for (Card card : selectedCards) {
-                if (card instanceof Building) {
-                    int cost = Math.max(0, ((Building) card).getCost() - builderDiscount);
-                    totalFoodCost += cost;
+                int baseCost = card.getFoodCost();
+                if (baseCost > 0) {
+                    totalFoodCost += Math.max(0, baseCost - builderDiscount);
                 }
             }
 
@@ -41,9 +41,10 @@ public class ActionResolutionState implements GameState {
 
             // Aggiunta carte e pulizia plancia
             for (Card card : selectedCards) {
-                player.addCardToTribe(card);
+                player.getTribe().addCard(card);
             }
-            game.getBoard().removeCards(selectedCards);
+            game.getBoard().getUpperRow().removeAll(selectedCards);
+            game.getBoard().getLowerRow().removeAll(selectedCards);
         }
 
         // 3. SPOSTAMENTO TOTEM SULL'ORDINE DI TURNO
