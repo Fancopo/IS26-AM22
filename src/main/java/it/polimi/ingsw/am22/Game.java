@@ -22,7 +22,6 @@ public class Game {
         this.tribeDeck = new ArrayList<>();
         this.buildingMarket = new ArrayList<>();
         this.observers = new ArrayList<>();
-
         this.currentRound = 1;
         this.currentEra = Era.I;
 
