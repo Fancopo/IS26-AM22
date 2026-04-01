@@ -22,21 +22,20 @@ public class ActionResolutionState implements GameState {
             int lowerSelected = selectedCards.stream().filter(c -> game.getBoard().getLowerRow().contains(c)).count();
 
             // Validazione vincoli tessera
-            if (upperSelected > currentTile.getUpperCardsToTake() || lowerSelected > currentTile.getLowerCardsToTake()) {
+            if (upperSelected != currentTile.getUpperCardsToTake() || lowerSelected != currentTile.getLowerCardsToTake()) {
                 throw new IllegalArgumentException("Selezione carte non valida per la tessera corrente!");
             }
 
             // Pagamento Edifici con sconto
             int totalFoodCost = 0;
             int builderDiscount = player.getTribe().getBuilderDiscount();
-
+            //prezzo scontato
             for (Card card : selectedCards) {
                 int baseCost = card.getFoodCost();
                 if (baseCost > 0) {
                     totalFoodCost += Math.max(0, baseCost - builderDiscount);
                 }
             }
-
             player.payFood(totalFoodCost); // Lancia eccezione se il cibo non basta
 
             // Aggiunta carte e pulizia plancia
@@ -55,7 +54,16 @@ public class ActionResolutionState implements GameState {
 
         // Bonus/Malus Ordine di Turno
         if (nextSlot.getFoodBonus() > 0) {
+            // 1. Il giocatore prende il cibo base dello slot
             player.addFood(nextSlot.getFoodBonus());
+
+            // 2. IL TRIGGER: Svegliamo tutti gli edifici del giocatore!
+            // Questo è il momento esatto che hai descritto.
+            if (player.getTribe() != null) {
+                for (Building b : player.getTribe().getBuildings()) {
+                    b.applyOnFoodSlotPlaced(player);
+                }
+            }
         }
         if (nextSlot.isLastSpace()) {
             if (player.getFood() >= 1) {
@@ -65,14 +73,34 @@ public class ActionResolutionState implements GameState {
             }
         }
 
-        // 4. TRANSIZIONE: Prossimo giocatore o Fase Eventi?
+        // ==========================================
+        // CONTROLLO FINE FASE E PESCATA BONUS EXTRA
+        // ==========================================
         if (game.getBoard().getTurnOrderTile().getOccupiedSlotsCount() == game.getPlayers().size()) {
-            game.setState(new EventResolutionState());
-            game.resolveEvents();
+
+            // Tutti i totem sono tornati. Controlliamo il flag `extraBuyAtRoundEnd`.
+            Player bonusPlayer = null;
+            for (Player p : game.getPlayers()) {
+                if (p.hasExtraBuyAtRoundEnd()) {
+                    bonusPlayer = p;
+                    break;
+                }
+            }
+
+            if (bonusPlayer != null) {
+                // IL GIOCATORE HA L'EDIFICIO: Mettiamo in pausa e andiamo nello stato bonus
+                game.setActivePlayer(bonusPlayer);
+                game.setState(new BonusCardSelectionState());
+                game.notifyObservers();
+            } else {
+                // NESSUN BONUS: Procediamo normalmente con gli eventi
+                game.setState(new EventResolutionState());
+                game.resolveEvents();
+            }
+
         } else {
-            // Rimaniamo nello stesso stato, ma cambiamo il giocatore attivo
             game.setActivePlayer(game.getPlayerWithLeftmostTotem());
-            game.notifyObservers(); // Notifica la View che tocca al prossimo
+            game.notifyObservers();
         }
     }
 

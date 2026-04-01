@@ -24,6 +24,8 @@ public interface GameState {
     default Player determineWinner(Game game) {
         throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
     }
-
+    default void pickBonusCard(Game game, Player player, Card bonusCard) {
+        throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
+    }
     String getPhaseName();
 }

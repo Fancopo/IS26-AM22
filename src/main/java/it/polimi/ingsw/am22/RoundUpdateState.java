@@ -14,7 +14,11 @@ public class RoundUpdateState implements GameState {
             game.setCurrentEra(eraAfterRefill);
             game.handleEraChange();
         }
-
+        for (Player p : game.getPlayers()) {
+            for (Building b : p.getTribe().getBuildings()) {
+                b.onRoundEnd();
+            }
+        }
         List<Totem> newOrder = game.getBoard().getTurnOrderTile().getTurnOrder();
         game.getPlayers().clear();
         for (Totem t : newOrder) {
