@@ -154,10 +154,6 @@ public class Building extends Card {
         tribe.addBuilding(this);
     }
 
-    @Override
-    public int getFoodCost() {
-        return foodPrice; // L'edificio restituisce il suo costo reale
-    }
 
     // Gli Edifici sopravvivono al reset di fine round
     @Override
