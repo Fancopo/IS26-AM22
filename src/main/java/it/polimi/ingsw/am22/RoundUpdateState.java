@@ -14,17 +14,13 @@ public class RoundUpdateState implements GameState {
             game.setCurrentEra(eraAfterRefill);
             game.handleEraChange();
         }
-        for (Player p : game.getPlayers()) {
-            for (Building b : p.getTribe().getBuildings()) {
-                b.onRoundEnd();
-            }
-        }
+
         List<Totem> newOrder = game.getBoard().getTurnOrderTile().getTurnOrder();
         game.getPlayers().clear();
         for (Totem t : newOrder) {
             game.getPlayers().add(t.getOwner());
         }
-        game.setActivePlayer(game.getPlayers().get(0));
+        game.setActivePlayer(game.getPlayers().getFirst());
 
         if (game.getCurrentRound() == 10) {
             game.setState(new EndGameState());

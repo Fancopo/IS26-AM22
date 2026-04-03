@@ -16,7 +16,7 @@ public class BonusCardSelectionState implements GameState {
         }
 
         // 2. Assegnazione carta (Bonus gratuito, nessun check sul cibo)
-        player.addCardToTribe(bonusCard);
+        player.addCard(bonusCard);
         game.getBoard().removeCards(Collections.singletonList(bonusCard));
 
         // 3. Transizione automatica: il bonus è stato preso, procediamo con gli Eventi!
