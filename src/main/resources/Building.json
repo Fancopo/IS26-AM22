@@ -1,0 +1,190 @@
+[
+  {
+    "id": 1,
+    "type": "building",
+    "era": "I",
+    "minPlayers": 2,
+    "foodPrice": 4,
+    "finalPP": 3,
+    "currentApplicable": true,
+    "BuildingEffect": "EndGameScoring",
+    "effect": {
+      "flatPP": 3,
+      "pointsPerSet": ,
+      "targetCharacterType": ,
+      "multiplierPP": ,
+      "doubleBuilderPP": ,
+    }
+  },
+  {
+    "id": 2,
+    "type": "building",
+    "era": "I",
+    "minPlayers": 2,
+    "foodPrice": 4,
+    "finalPP": 4,
+    "effect": {}
+  },
+  {
+    "id": 3,
+    "type": "building",
+    "era": "I",
+    "minPlayers": 2,
+    "foodPrice": 5,
+    "finalPP": 3,
+    "effect": {}
+  },
+  {
+    "id": 4,
+    "type": "building",
+    "era": "I",
+    "minPlayers": 2,
+    "foodPrice": 5,
+    "finalPP": 2,
+    "effect": {}
+  },
+  {
+    "id": 5,
+    "type": "building",
+    "era": "I",
+    "minPlayers": 2,
+    "foodPrice": 3,
+    "finalPP": 3,
+    "effect": {}
+  },
+  {
+    "id": 6,
+    "type": "building",
+    "era": "I",
+    "minPlayers": 2,
+    "foodPrice": 3,
+    "finalPP": 4,
+    "effect": {}
+  },
+  {
+    "id": 7,
+    "type": "building",
+    "era": "II",
+    "minPlayers": 2,
+    "foodPrice": 7,
+    "finalPP": null,
+    "effect": {}
+  },
+  {
+    "id": 8,
+    "type": "building",
+    "era": "II",
+    "minPlayers": 2,
+    "foodPrice": 6,
+    "finalPP": 4,
+    "effect": {}
+  },
+  {
+    "id": 9,
+    "type": "building",
+    "era": "II",
+    "minPlayers": 2,
+    "foodPrice": 7,
+    "finalPP": 4,
+    "effect": {}
+  },
+  {
+    "id": 10,
+    "type": "building",
+    "era": "II",
+    "minPlayers": 2,
+    "foodPrice": 7,
+    "finalPP": 2,
+    "effect": {}
+  },
+  {
+    "id": 11,
+    "type": "building",
+    "era": "II",
+    "minPlayers": 2,
+    "foodPrice": 6,
+    "finalPP": 4,
+    "effect": {}
+  },
+  {
+    "id": 12,
+    "type": "building",
+    "era": "II",
+    "minPlayers": 2,
+    "foodPrice": 5,
+    "finalPP": 6,
+    "effect": {}
+  },
+  {
+    "id": 13,
+    "type": "building",
+    "era": "II",
+    "minPlayers": 2,
+    "foodPrice": 5,
+    "finalPP": 6,
+    "effect": {}
+  },
+  {
+    "id": 14,
+    "type": "building",
+    "era": "III",
+    "minPlayers": 2,
+    "foodPrice": 8,
+    "finalPP": 8,
+    "effect": {}
+  },
+  {
+    "id": 15,
+    "type": "building",
+    "era": "III",
+    "minPlayers": 2,
+    "foodPrice": 7,
+    "finalPP": 6,
+    "effect": {}
+  },
+  {
+    "id": 16,
+    "type": "building",
+    "era": "III",
+    "minPlayers": 2,
+    "foodPrice": 7,
+    "finalPP": 4,
+    "effect": {}
+  },
+  {
+    "id": 17,
+    "type": "building",
+    "era": "III",
+    "minPlayers": 2,
+    "foodPrice": 6,
+    "finalPP": 3,
+    "effect": {}
+  },
+  {
+    "id": 18,
+    "type": "building",
+    "era": "III",
+    "minPlayers": 2,
+    "foodPrice": 7,
+    "finalPP": 4,
+    "effect": {}
+  },
+  {
+    "id": 19,
+    "type": "building",
+    "era": "III",
+    "minPlayers": 2,
+    "foodPrice": 6,
+    "finalPP": 6,
+    "effect": {}
+  },
+  {
+    "id": 20,
+    "type": "building",
+    "era": "III",
+    "minPlayers": 2,
+    "foodPrice": 9,
+    "finalPP": 3,
+    "effect": {}
+  }
+]

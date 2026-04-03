@@ -1,0 +1,890 @@
+[
+  {
+    "id": 1,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": true
+    }
+  },
+  {
+    "id": 2,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": true
+    }
+  },
+  {
+    "id": 3,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": false
+    }
+  },
+  {
+    "id": 4,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 3,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": false
+    }
+  },
+  {
+    "id": 5,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 3,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": false
+    }
+  },
+  {
+    "id": 6,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 1,
+      "pp": 3
+    }
+  },
+  {
+    "id": 7,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 2,
+      "pp": 0
+    }
+  },
+  {
+    "id": 8,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 5,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 2,
+      "pp": 1
+    }
+  },
+  {
+    "id": 9,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 1,
+      "pp": 2
+    }
+  },
+  {
+    "id": 10,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 11,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 12,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 3,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 13,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 5,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 14,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 15,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 16,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 17,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 3,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 18,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 4,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 19,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 20,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 21,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 22,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 23,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 4,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 24,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 4,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 25,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 4,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 26,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 5,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 2
+    }
+  },
+  {
+    "id": 27,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 2
+    }
+  },
+  {
+    "id": 28,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 2,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 1
+    }
+  },
+  {
+    "id": 29,
+    "type": "tribeCharacter",
+    "era": "I",
+    "minPlayers": 4,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 1
+    }
+  },
+  {
+    "id": 30,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": false
+    }
+  },
+  {
+    "id": 31,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": false
+    }
+  },
+  {
+    "id": 32,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 3,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": true
+    }
+  },
+  {
+    "id": 33,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": true
+    }
+  },
+  {
+    "id": 34,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 4,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": true
+    }
+  },
+  {
+    "id": 35,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 5,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": false
+    }
+  },
+  {
+    "id": 36,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 1,
+      "pp": 4
+    }
+  },
+  {
+    "id": 37,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 2,
+      "pp": 1
+    }
+  },
+  {
+    "id": 38,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 3,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 1,
+      "pp": 2
+    }
+  },
+  {
+    "id": 39,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 2,
+      "pp": 3
+    }
+  },
+  {
+    "id": 40,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 41,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 3,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 42,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 4,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 43,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 5,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 44,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 3,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 45,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 46,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 47,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 48,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 49,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 4,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 50,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 51,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 52,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 53,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 54,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 2
+    }
+  },
+  {
+    "id": 55,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 2,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 2
+    }
+  },
+  {
+    "id": 56,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 5,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 1
+    }
+  },
+  {
+    "id": 57,
+    "type": "tribeCharacter",
+    "era": "II",
+    "minPlayers": 5,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 2
+    }
+  },
+  {
+    "id": 58,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 5,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": true
+    }
+  },
+  {
+    "id": 59,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": false
+    }
+  },
+  {
+    "id": 60,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": true
+    }
+  },
+  {
+    "id": 61,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Hunter",
+    "effect": {
+      "hasFoodIcon": true
+    }
+  },
+  {
+    "id": 62,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 1,
+      "pp": 5
+    }
+  },
+  {
+    "id": 63,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 2,
+      "pp": 3
+    }
+  },
+  {
+    "id": 64,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 5,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 1,
+      "pp": 4
+    }
+  },
+  {
+    "id": 65,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Builder",
+    "effect": {
+      "discountFood": 2,
+      "pp": 2
+    }
+  },
+  {
+    "id": 66,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 5,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 67,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 4,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 68,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Collector",
+    "effect": {}
+  },
+  {
+    "id": 69,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 5,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 70,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 71,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 72,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Artist",
+    "effect": {}
+  },
+  {
+    "id": 73,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 4,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 74,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 3,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 75,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 3,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 76,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 77,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 78,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 79,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Inventor",
+    "effect": {
+      "iconPerInventor": 0
+    }
+  },
+  {
+    "id": 80,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 3,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 2
+    }
+  },
+  {
+    "id": 81,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 3
+    }
+  },
+  {
+    "id": 82,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 2
+    }
+  },
+  {
+    "id": 83,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 2,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 3
+    }
+  },
+  {
+    "id": 84,
+    "type": "tribeCharacter",
+    "era": "III",
+    "minPlayers": 4,
+    "characterType": "Shaman",
+    "effect": {
+      "numStars": 2
+    }
+  },
+  {
+    "id": 85,
+    "type": "event",
+    "era": "I",
+    "minPlayers": 2,
+    "eventType": "hunting"
+  },
+  {
+    "id": 86,
+    "type": "event",
+    "era": "I",
+    "minPlayers": 2,
+    "eventType": "sustenance"
+  },
+  {
+    "id": 87,
+    "type": "event",
+    "era": "I",
+    "minPlayers": 2,
+    "eventType": "shamanic ritual"
+  },
+  {
+    "id": 88,
+    "type": "event",
+    "era": "I",
+    "minPlayers": 2,
+    "eventType": "cave paintings"
+  },
+  {
+    "id": 89,
+    "type": "event",
+    "era": "II",
+    "minPlayers": 2,
+    "eventType": "hunting"
+  },
+  {
+    "id": 90,
+    "type": "event",
+    "era": "II",
+    "minPlayers": 2,
+    "eventType": "sustenance"
+  },
+  {
+    "id": 91,
+    "type": "event",
+    "era": "II",
+    "minPlayers": 2,
+    "eventType": "shamanic ritual"
+  },
+  {
+    "id": 92,
+    "type": "event",
+    "era": "II",
+    "minPlayers": 2,
+    "eventType": "cave paintings"
+  },
+  {
+    "id": 93,
+    "type": "event",
+    "era": "III",
+    "minPlayers": 2,
+    "eventType": "hunting"
+  },
+  {
+    "id": 94,
+    "type": "event",
+    "era": "III",
+    "minPlayers": 2,
+    "eventType": "cave paintings"
+  },
+  {
+    "id": 95,
+    "type": "event",
+    "era": "III",
+    "minPlayers": 2,
+    "eventType": "sustenance"
+  },
+  {
+    "id": 96,
+    "type": "event",
+    "era": "III",
+    "minPlayers": 2,
+    "eventType": "shamanic ritual"
+  }
+]
