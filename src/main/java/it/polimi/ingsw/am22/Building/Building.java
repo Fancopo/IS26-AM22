@@ -10,18 +10,17 @@ import il.polimi.ingse.character.CharacterType;
 import il.polimi.ingse.event.EventType;
 import Building.CollectionCondition;
 import am22.Card;
+import Building.BuildingEffect;
 
 public class Building extends Card {
     private int foodPrice;
     private int finalPP;
-    private boolean currentApplicable;
     private BuildingEffect effect;
 
     public Building(String id, Era era, int minPlayers, int foodPrice, int finalPP, BuildingEffect effect) {
         super(id, era, minPlayers);
         this.foodPrice = foodPrice;
         this.finalPP = finalPP;
-        this.currentApplicable = true;
         this.effect = effect;
     }
 
@@ -167,8 +166,6 @@ public class Building extends Card {
         return true;
     }
 
-    public void ApplyEffect() {}
-
     public void applyOnTotemPlaced(Player owner) {
         if (this.effect != null) {
             this.effect.onTotemPlaced(owner);
@@ -182,6 +179,5 @@ public class Building extends Card {
 
     public int getFoodPrice() { return foodPrice; }
     public int getFinalPP() { return finalPP; }
-    public boolean isCurrentApplicable() { return currentApplicable; }
     public BuildingEffect getEffect() { return effect; }
 }
