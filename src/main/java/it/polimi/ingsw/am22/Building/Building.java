@@ -149,9 +149,9 @@ public class Building extends Card {
 
 
     @Override
-    public void addBuilding(Player player, Tribe tribe) {
+    public void addToTribe(Tribe tribe) {
         // La carta aggiunge se stessa alla lista degli edifici della tribù
-        player.getTribe().getBuildings().add(this);
+        tribe.addBuilding(this);
     }
 
     @Override

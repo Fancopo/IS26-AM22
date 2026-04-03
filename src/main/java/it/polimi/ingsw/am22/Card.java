@@ -1,6 +1,7 @@
 package am22;
 
 import il.polimi.ingse.Era;
+import it.polimi.ingsw.am22.Tribe;
 
 public abstract class Card {
     private String id;
@@ -12,6 +13,8 @@ public abstract class Card {
         this.era = era;
         this.minPlayers = minPlayers;
     }
+
+    public abstract void addToTribe(Tribe tribe);
 
     public int getFoodCost() {return 0;} // Di default le carte non costano cibo
 
