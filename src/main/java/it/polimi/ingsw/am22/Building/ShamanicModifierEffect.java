@@ -1,4 +1,5 @@
-package Building;
+package it.polimi.ingsw.am22.Building;
+
 
 // 2. ShamanicModifierEffect
 public class ShamanicModifierEffect implements BuildingEffect {

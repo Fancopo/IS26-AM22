@@ -1,4 +1,5 @@
-package Building;
+package it.polimi.ingsw.am22.Building;
+
 
 import it.polimi.ingsw.am22.Player;
 

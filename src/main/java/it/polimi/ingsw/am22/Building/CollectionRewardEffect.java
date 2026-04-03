@@ -1,4 +1,5 @@
-package Building;
+package it.polimi.ingsw.am22.Building;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,8 @@ public class CollectionRewardEffect implements BuildingEffect {
             // Get the members list using the standard UML getter
             for (TribeCharacter character : player.getTribe().getMembers()) {
                 if (character.getCharacterType() == CharacterType.INVENTOR) {
-                    char icon = character.getIcon();
+                    Inventor inventorCard = (Inventor) character;
+                    char icon = inventorCard.getIcon();
                     iconCounts.put(icon, iconCounts.getOrDefault(icon, 0) + 1);
                 }
             }
@@ -43,6 +45,7 @@ public class CollectionRewardEffect implements BuildingEffect {
             }
 
             currentMatches = pairs;
+        }
 
             // --- CONDITION 2: The Set of 6 ---
         else if (conditionType == CollectionCondition.SET_OF_6) {
@@ -53,7 +56,7 @@ public class CollectionRewardEffect implements BuildingEffect {
                 for (CharacterType type : CharacterType.values()) {
 
                     // Ask the Tribe how many characters of this specific type it currently has
-                    int count = Tribe.countCharacters(type);
+                    int count = player.getTribe().countCharacters(type);
 
                     // If this count is the lowest we have seen so far, it becomes our new bottleneck
                     if (count < minSets) {
@@ -76,4 +79,3 @@ public class CollectionRewardEffect implements BuildingEffect {
             }
         }
     }
-}

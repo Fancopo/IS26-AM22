@@ -1,5 +1,9 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.Card;
+import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.Player;
+import it.polimi.ingsw.am22.Tribe;
 import javafx.application.Application;
 
 public class TribeCharacter extends Card {
@@ -13,10 +17,10 @@ public class TribeCharacter extends Card {
     private char iconperInventor;
 
     // Costruttore
-    public TribeCharacter(Era era, int minPlayers, CharacterType characterType,
+    public TribeCharacter(String id, Era era, int minPlayers, CharacterType characterType,
                           int discountFood, int PP, boolean hasFoodIcon,
                           int numStars, char iconperInventor) {
-        super(era, minPlayers);
+        super(id, era, minPlayers);
         this.characterType = characterType;
         this.discountFood = discountFood;
         this.PP = PP;
