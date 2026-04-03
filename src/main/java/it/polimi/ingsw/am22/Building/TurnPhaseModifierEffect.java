@@ -1,5 +1,7 @@
 package Building;
 
+import it.polimi.ingsw.am22.Player;
+
 // 6. TurnPhaseModifierEffect
 public class TurnPhaseModifierEffect implements BuildingEffect {
     private boolean extraFoodOnTurnOrderBonus;
@@ -11,15 +13,17 @@ public class TurnPhaseModifierEffect implements BuildingEffect {
     }
 
     @Override
-    public void onTotemPlaced() {
-        // Logic executed by the Game class when a totem is placed
+    public void onTotemPlaced(Player owner){
+        // Se l'edificio ha questo flag attivo, dà il bonus(+1 cibo)
+        // Viene chiamato dal GameState solo quando il totem va su uno slot cibo
+        if(extraFoodOnTurnOrderBonus){
+        owner.addFood(1);
+        }
     }
 
     @Override
-    public void onRoundEnd() {
-        // Logic executed by the Game class during the cleanup phase
+    public boolean hasExtraBuyAtRoundEnd(){
+        // Espone il flag alla macchina a stati
+        return this.extraBuyAtRoundEnd;
     }
-
-    public boolean isExtraFoodOnTurnOrderBonus() { return extraFoodOnTurnOrderBonus; }
-    public boolean isExtraBuyAtRoundEnd() { return extraBuyAtRoundEnd; }
 }

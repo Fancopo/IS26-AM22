@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
-import il.polimi.ingse.Era
-import il.polimi.ingse.character.CharacterType
-import il.polimi.ingse.event.EventType
-import.CollectionCondition
-import am22.Card
+import il.polimi.ingse.Era;
+import il.polimi.ingse.character.CharacterType;
+import il.polimi.ingse.event.EventType;
+import Building.CollectionCondition;
+import am22.Card;
 
 public class Building extends Card {
     private int foodPrice;
@@ -155,11 +155,33 @@ public class Building extends Card {
     }
 
     @Override
-    public void accept(CardVisitor visitor) {
-        visitor.visit(this);
+    public int getFoodCost() {
+        return foodPrice; // L'edificio restituisce il suo costo reale
     }
 
-    public void ApplyEffect() {
+    // Gli Edifici sopravvivono al reset di fine round
+    @Override
+    public boolean survivesRoundEnd() {
+        return true;
+    }
+
+    // Gli Edifici nella riga inferiore vengono distrutti all'Era III
+    @Override
+    public boolean isDestroyedOnEraIII() {
+        return true;
+    }
+
+    public void ApplyEffect() {}
+
+    public void applyOnTotemPlaced(Player owner) {
+        if (this.effect != null) {
+            this.effect.onTotemPlaced(owner);
+        }
+    }
+
+    // Controlla se questo specifico edificio fornisce l'acquisto extra.
+    public boolean grantsExtraBuyAtRoundEnd() {
+        return this.effect != null && this.effect.hasExtraBuyAtRoundEnd();
     }
 
     public int getFoodPrice() { return foodPrice; }
