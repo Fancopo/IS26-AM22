@@ -76,3 +76,4 @@ public class CollectionRewardEffect implements BuildingEffect {
             }
         }
     }
+}
