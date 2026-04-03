@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
-import il.polimi.ingse.Era;
-import il.polimi.ingse.character.CharacterType;
-import il.polimi.ingse.event.EventType;
+import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.event.EventType;
 import Building.CollectionCondition;
 import am22.Card;
 import Building.BuildingEffect;

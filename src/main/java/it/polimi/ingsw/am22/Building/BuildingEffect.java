@@ -2,8 +2,8 @@ package Building;
 
 import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.Player;
-import il.polimi.ingse.character.TribeCharacter;
-import il.polimi.ingse.event.EventType;
+import it.polimi.ingsw.am22.character.TribeCharacter;
+import it.polimi.ingsw.am22.event.EventType;
 
 public interface BuildingEffect {
     default int calculateEndGame(Tribe tribe) { return 0; }

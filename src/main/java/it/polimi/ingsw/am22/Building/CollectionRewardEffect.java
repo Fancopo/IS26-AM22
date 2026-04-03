@@ -5,10 +5,10 @@ import java.util.Map;
 
 import Building.CollectionCondition;
 import it.polimi.ingsw.am22.Player;
-import il.polimi.ingse.character.TribeCharacter;
+import it.polimi.ingsw.am22.character.TribeCharacter;
 import it.polimi.ingsw.am22.Tribe;
-import il.polimi.ingse.character.CharacterType;
-import il.polimi.ingse.character.Inventor;
+import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.character.Inventor;
 
 // 4. CollectionRewardEffect
 public class CollectionRewardEffect implements BuildingEffect {

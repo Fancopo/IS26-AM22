@@ -1,6 +1,6 @@
 package Building;
 
-import il.polimi.ingse.event.EventType
+import it.polimi.ingsw.am22.event.EventType;
 
 // 5. EventYieldBonusEffect
 public class EventYieldBonusEffect implements BuildingEffect {

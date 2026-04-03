@@ -1,6 +1,6 @@
 package Building;
 
-import il.polimi.ingse.character.CharacterType
+import it.polimi.ingsw.am22.character.CharacterType;
 
 // 1. EndGameScoringEffect
 public class EndGameScoringEffect implements BuildingEffect {
