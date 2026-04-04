@@ -1,15 +1,17 @@
 package it.polimi.ingsw.am22;
 
+import it.polimi.ingsw.am22.Building.Building;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Game {
-    private List<Player> players;
-    private Board board;
-    private List<Card> tribeDeck;
-    private List<Building> buildingMarket;
+    private final List<Player> players;
+    private final Board board;
+    private final List<Card> tribeDeck;
+    private final List<Building> buildingMarket;
     private int currentRound;
     private Era currentEra;
     private Player activePlayer;
@@ -56,8 +58,8 @@ public class Game {
         currentState.placeTotemOnOffer(this, player, tile);
     }
 
-    public void pickCards(Player player, List<Card> selectedCards) {
-        currentState.pickCards(this, player, selectedCards);
+    public void pickCards1(Player player, List<Card> selectedCards) {
+        currentState.pickCards2(this, player, selectedCards);
     }
 
     // INSERIMENTO del delegato per la mossa bonus di fine round
@@ -151,7 +153,7 @@ public class Game {
         for (OfferTile tile : board.getOfferTrack()) {
             if (!tile.isAvailable()) {
                 for (Player p : players) {
-                    if (p.getTotem() == tile.getOccupyingTotem()) {
+                    if (p.getTotem() == tile.getOccupiedBy()) {
                         return p;
                     }
                 }
