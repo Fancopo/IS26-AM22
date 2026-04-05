@@ -1,7 +1,7 @@
-package il.polimi.ingse.event;
-import il.polimi.ingse.BuildingEffect;
-import il.polimi.ingse.Era;
-import il.polimi.ingse.character.CharacterType;
+package it.polimi.ingsw.am22.event;
+import it.polimi.ingsw.am22.BuildingEffect;
+import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.character.CharacterType;
 
 import java.util.ArrayList;
 import java.util.List;

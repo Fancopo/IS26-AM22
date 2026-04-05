@@ -1,8 +1,8 @@
-package il.polimi.ingse.event;
-import il.polimi.ingse.BuildingEffect;
-import il.polimi.ingse.character.CharacterType;
-import il.polimi.ingse.character.Shaman;
-import il.polimi.ingse.character.TribeCharacter;
+package it.polimi.ingsw.am22.event;
+import it.polimi.ingsw.am22.BuildingEffect;
+import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.character.Shaman;
+import it.polimi.ingsw.am22.character.TribeCharacter;
 
 import java.util.Collections;
 import java.util.List;

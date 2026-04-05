@@ -1,6 +1,6 @@
-package il.polimi.ingse.event;
-import il.polimi.ingse.Era;
-import il.polimi.ingse.event.EventType;
+package it.polimi.ingsw.am22.event;
+import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.event.EventType;
 import java.util.ArrayList;
 import java.util.List;
 

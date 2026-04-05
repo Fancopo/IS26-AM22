@@ -1,4 +1,4 @@
-package il.polimi.ingse.event;
+package it.polimi.ingsw.am22.event;
 
 public enum EventType {
     CAVE_PAINTING,

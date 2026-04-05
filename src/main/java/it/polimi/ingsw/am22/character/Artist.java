@@ -1,4 +1,4 @@
-package il.polimi.ingsw.am22.character;
+package it.polimi.ingsw.am22.character;
 
 public class Artist extends TribeCharacter implements CharacterEffect {
 
