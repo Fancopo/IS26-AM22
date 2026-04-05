@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.character;
+package il.polimi.ingse.character;
 
 public enum CharacterType {
     INVENTOR,

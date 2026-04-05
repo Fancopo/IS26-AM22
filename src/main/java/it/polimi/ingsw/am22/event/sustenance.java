@@ -1,10 +1,10 @@
-package it.polimi.ingsw.am22.event;
-import it.polimi.ingsw.am22.BuildingEffect;
-import it.polimi.ingsw.am22.Era;
-import it.polimi.ingsw.am22.character.CharacterType;
+package il.polimi.ingse.event;
+import il.polimi.ingse.BuildingEffect;
+import il.polimi.ingse.Era;
+import il.polimi.ingse.character.CharacterType;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List;===
 
 
 public class sustenance extends Event implements EventEffect {
@@ -39,12 +39,9 @@ public class sustenance extends Event implements EventEffect {
 
             // 3. Calcola eventuali sconti forniti dagli Edifici
             for (Building building : tribe.getBuildings()) {
-                BuildingEffect effect = building.getEffect();
-                if (effect instanceof SustenanceDiscountEffect) {
-                    SustenanceDiscountEffect sustenanceEffect = (SustenanceDiscountEffect) effect;
+                     BuildingEffect effect = building.getEffect();
                     // L'edificio calcola da solo quanto sconto applicare in base alla tribù
-                    totalDiscount += sustenanceEffect.getSustenanceDiscount(tribe);
-                }
+                    totalDiscount += effect.getSustenanceDiscount(tribe);
             }
 
             // 4. Calcola il costo finale in Cibo (non può essere minore di 0)

@@ -1,8 +1,8 @@
-package it.polimi.ingsw.am22.event;
-import it.polimi.ingsw.am22.BuildingEffect;
-import it.polimi.ingsw.am22.character.CharacterType;
-import it.polimi.ingsw.am22.character.Shaman;
-import it.polimi.ingsw.am22.character.TribeCharacter;
+package il.polimi.ingse.event;
+import il.polimi.ingse.BuildingEffect;
+import il.polimi.ingse.character.CharacterType;
+import il.polimi.ingse.character.Shaman;
+import il.polimi.ingse.character.TribeCharacter;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,15 +54,10 @@ public class ShamanicRitual extends Event implements EventEffect {
                 // Applica effetti degli Edifici per il Rituale Sciamanico
                 for (Building building : tribe.getBuildings()) {
                     BuildingEffect effect = building.getEffect();
-                    if (effect instanceof ShamanicModifierEffect) {
-                        ShamanicModifierEffect shamanicEffect = (ShamanicModifierEffect) effect;
-
                         // Modificatore: 3 icone aggiuntive
-                        extraIcons += shamanicEffect.getExtraIcons();
-
+                        extraIcons += effect.getExtraIcons();
                         // Modificatore: Non perdete Punti Prestigio
                         if (shamanicEffect.isPreventPPLoss()) noLoss = true;
-
                         // Modificatore: Guadagnate il doppio dei Punti Prestigio
                         if (shamanicEffect.isDoubleWinPP()) doublePP = true;
                     }

@@ -1,24 +1,30 @@
-package it.polimi.ingsw.am22.character;
+package it.polimi.ingse.character;
 
 import javafx.application.Application;
 
 public class Inventor extends TribeCharacter implements CharacterEffect{
 
-    private final char icon;
+    private final char IconPerInventor;
 
-    public Inventor(char id, String type, int era, int minPlayers, String characterType, char icon){
+    public Inventor(char id, String type, int era, int minPlayers, String characterType, char IconPerInventor){
         super(id, type, era, minPlayers, "Inventor");
 
-        this.icon = icon;
+        this.IconPerInventor = IconPerInventor;
     }
 
 
-    public char getIcon(){
-        return icon;
+    public char getIconPerInventor(){
+        return IconPerInventor;
     }
 
     @Override
-    public void applyEffect(Player player, Tribe tribe){
-        tribe.addCharacter(getCharacterType());
+    public int getProvidedIcons() {
+        // L'inventore restituisce il suo valore specifico!
+        return this.IconPerInventor;
     }
+
+
+    @Override
+    public void applyImmediateEffectEffect(Player player, Tribe tribe){}
+
 }

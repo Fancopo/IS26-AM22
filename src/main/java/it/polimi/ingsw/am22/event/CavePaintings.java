@@ -1,7 +1,7 @@
-package it.polimi.ingsw.am22.event;
-import it.polimi.ingsw.am22.BuildingEffect;
-import it.polimi.ingsw.am22.Era;
-import it.polimi.ingsw.am22.character.CharacterType;
+package il.polimi.ingse.event;
+import il.polimi.ingse.BuildingEffect;
+import il.polimi.ingse.Era;
+import il.polimi.ingse.character.CharacterType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,19 +39,14 @@ public class CavePaintings extends Event implements EventEffect {
             int artistCount = tribe.countCharacters(CharacterType.ARTIST);
 
             // Controllo per gli Edifici (c'è un edificio che dà 1 Cibo per ogni Artista durante questo evento)
-            int extraFoodPerArtist = 0;
-            for (Building building : tribe.getBuildings()) {
-                BuildingEffect effect = building.getEffect();
-                if (effect instanceof EventYieldBonusEffect) {
-                    // Supponiamo che l'edificio aggiunga un bonus in cibo durante gli eventi
-                    extraFoodPerArtist += 1;
-                }
+            for (Building building : player.getTrbe().getBuildings()){
+                building.getEffect().applyEventBonus(EventType.CavePaintings,player,artistCount);
             }
 
             // Assegna eventuale cibo bonus degli edifici
             if (extraFoodPerArtist > 0 && artistCount > 0) {
-                player.addFood(artistCount * extraFoodPerArtist);
-                System.out.println(player.getNickname() + " ottiene " + (artistCount * extraFoodPerArtist) + " cibo extra grazie a un Edificio!");
+                player.addFood(artistCount);
+                System.out.println(player.getNickname() + " ottiene " + (artistCount) + " cibo extra grazie a un Edificio!");
             }
 
             // 3. Calcolo e Assegnazione dei Punti Prestigio
