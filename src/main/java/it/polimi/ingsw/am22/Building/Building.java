@@ -36,6 +36,7 @@ public class Building extends Card {
 
         return totalSum;
     }
+
 /*
     // THE DECK GENERATOR (21 Cards)
     public static List<Building> createAllBuildings() {
