@@ -1,14 +1,15 @@
 package it.polimi.ingsw.am22;
 
 import it.polimi.ingsw.am22.Building.Building;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
-    private final List<Card> upperRow;
-    private final List<Card> lowerRow;
-    private final TurnOrderTile turnOrderTile;
-    private final List<OfferTile> offerTrack;
+    private List<Card> upperRow;
+    private List<Card> lowerRow;
+    private TurnOrderTile turnOrderTile;
+    private List<OfferTile> offerTrack;
 
     public Board(int numPlayers) {
         upperRow = new ArrayList<>();
@@ -79,18 +80,18 @@ public class Board {
         int cardsNeeded = turnOrderTile.getSlots().size() + 1 - upperRow.size();
         for (int i = 0; i < cardsNeeded; i++) {
             if (!tribeDeck.isEmpty()) {
-                upperRow.add(tribeDeck.removeFirst());
+                upperRow.add(tribeDeck.remove(0));
             }
         }
 
-        if (!upperRow.isEmpty() && upperRow.getFirst().getEra() != currentEra) {
-            return upperRow.getFirst().getEra();
+        if (!upperRow.isEmpty() && upperRow.get(0).getEra() != currentEra) {
+            return upperRow.get(0).getEra();
         }
         return currentEra;
     }
 
     public void revealNewBuildings(List<Building> newBuildings) {
-        this.upperRow.addAll(newBuildings);
+        upperRow.addAll(newBuildings);
     }
     // --- GETTERS ---
     public List<Card> getUpperRow() { return upperRow; }

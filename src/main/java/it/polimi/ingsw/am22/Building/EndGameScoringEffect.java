@@ -1,6 +1,9 @@
 package Building;
 
+import it.polimi.ingsw.am22.Building.BuildingEffect;
+import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.character.TribeCharacter;
 
 // 1. EndGameScoringEffect
 public class EndGameScoringEffect implements BuildingEffect {
@@ -61,7 +64,7 @@ public class EndGameScoringEffect implements BuildingEffect {
             for (TribeCharacter character : tribe.getMembers()) {
 
                 // Check if the character is a Builder type
-                if (character.getCharacterType() == CharacterType.Builder) {
+                if (character.getCharacterType() == CharacterType.BUILDER) {
 
                     // Add their base PP to the extra total
                     extraBuilderPP += character.getPP();

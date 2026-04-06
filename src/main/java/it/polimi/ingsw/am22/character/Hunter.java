@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.Player;
+import it.polimi.ingsw.am22.Tribe;
 import javafx.application.Application;
 
 public class Hunter extends TribeCharacter implements CharacterEffect{
@@ -15,9 +17,9 @@ public class Hunter extends TribeCharacter implements CharacterEffect{
     public void applyImmediateEffect(Player player, Tribe tribe){
 
         if(this.HasFoodIcon){
-            int foodToAdd = player.getTribe().countCharacter(getCharacterType());
+            int foodToAdd = player.getTribe().countCharacters(getCharacterType());
             player.addFood(foodToAdd);
-            System.out.println("Cacciatore con icona giocato! Aggiunto " + hunterCount + " cibo.");
+            System.out.println("Cacciatore con icona giocato! Aggiunto " +foodToAdd + " cibo.");
         }
     }
 

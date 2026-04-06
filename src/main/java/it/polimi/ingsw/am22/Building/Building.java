@@ -1,12 +1,18 @@
 package it.polimi.ingsw.am22.Building;
 
-import it.polimi.ingsw.am22.Card;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
-
-import java.util.ArrayList;
-import java.util.List;
+import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.event.EventType;
+import Building.CollectionCondition;
+import it.polimi.ingsw.am22.Card;
+import it.polimi.ingsw.am22.Building.BuildingEffect;
 
 public class Building extends Card {
     private int foodPrice;
@@ -36,7 +42,7 @@ public class Building extends Card {
 
         return totalSum;
     }
-/*
+
     // THE DECK GENERATOR (21 Cards)
     public static List<Building> createAllBuildings() {
         List<Building> deck = new ArrayList<>();
@@ -141,7 +147,6 @@ public class Building extends Card {
 
         return deck;
     }
- */
 
 
     @Override

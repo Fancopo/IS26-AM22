@@ -1,9 +1,7 @@
 package it.polimi.ingsw.am22;
 
 import it.polimi.ingsw.am22.Building.Building;
-import it.polimi.ingsw.am22.Card;
 import it.polimi.ingsw.am22.character.CharacterType;
-import it.polimi.ingsw.am22.character.Inventor;
 import it.polimi.ingsw.am22.character.TribeCharacter;
 
 import java.util.*;
@@ -60,11 +58,7 @@ public class Tribe {
 
         for (TribeCharacter character : members) {
             if (character.getCharacterType() == CharacterType.INVENTOR) {
-                // 1. CAST TO INVENTOR
-                Inventor inventorCard = (Inventor) character;
-
-                // 2. USE THE SPECIFIC METHOD
-                uniqueIcons.add(inventorCard.getIcon());
+                uniqueIcons.add(character.getIconPerInventor());
             }
         }
 
@@ -99,4 +93,3 @@ public class Tribe {
         return List.copyOf(buildings);
     }
 }
-

@@ -16,21 +16,21 @@ public class Game {
     private Era currentEra;
     private Player activePlayer;
     private GameState currentState;
-    private List<GameObserver> observers;
+    //private List<GameObserver> observers;
 
     public Game(List<Player> players) {
         this.players = players;
         this.board = new Board(players.size());
         this.tribeDeck = new ArrayList<>();
         this.buildingMarket = new ArrayList<>();
-        this.observers = new ArrayList<>();
+        //this.observers = new ArrayList<>();
         this.currentRound = 1;
         this.currentEra = Era.I;
 
-        this.currentState = new SetupState();
+        this.currentState = new SetUpState();
     }
 
-    public void addObserver(GameObserver observer) {
+    /*public void addObserver(GameObserver observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);
         }
@@ -44,7 +44,7 @@ public class Game {
         for (GameObserver observer : observers) {
             observer.gameStatusChanged(this);
         }
-    }
+    }*/
 
     public void setState(GameState state) {
         this.currentState = state;

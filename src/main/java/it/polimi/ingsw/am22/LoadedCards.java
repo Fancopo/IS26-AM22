@@ -1,5 +1,9 @@
 package it.polimi.ingsw.am22;
 
+import it.polimi.ingsw.am22.Building.Building;
+import it.polimi.ingsw.am22.character.TribeCharacter;
+import it.polimi.ingsw.am22.event.Event;
+
 import java.util.List;
 
 public class LoadedCards {
