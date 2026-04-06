@@ -19,9 +19,6 @@ public class Shaman extends TribeCharacter implements CharacterEffect{
 
 
     @Override
-    public void applyEffect(Player player, Tribe tribe){
-        tribe.addCharacter(getCharacterType());
-
-    }
+    public void applyImmediateEffectEffect(Player player, Tribe tribe){}
 
 }

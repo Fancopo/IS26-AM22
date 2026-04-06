@@ -54,15 +54,10 @@ public class ShamanicRitual extends Event implements EventEffect {
                 // Applica effetti degli Edifici per il Rituale Sciamanico
                 for (Building building : tribe.getBuildings()) {
                     BuildingEffect effect = building.getEffect();
-                    if (effect instanceof ShamanicModifierEffect) {
-                        ShamanicModifierEffect shamanicEffect = (ShamanicModifierEffect) effect;
-
                         // Modificatore: 3 icone aggiuntive
-                        extraIcons += shamanicEffect.getExtraIcons();
-
+                        extraIcons += effect.getExtraIcons();
                         // Modificatore: Non perdete Punti Prestigio
                         if (shamanicEffect.isPreventPPLoss()) noLoss = true;
-
                         // Modificatore: Guadagnate il doppio dei Punti Prestigio
                         if (shamanicEffect.isDoubleWinPP()) doublePP = true;
                     }

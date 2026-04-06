@@ -36,23 +36,14 @@ public class hunting extends Event implements EventEffect{
             if (huntersCount > 0) {
                 // Valori base forniti dall'evento per ogni Cacciatore
                 int foodPerHunter = 1;
-                int extraPPPerHunter = 0;
-                int extraFoodPerHunter = 0;
-
-                // 2. Controlla gli effetti degli Edifici (es. +1 Cibo e +1 PP per Cacciatore)
-                for (Building building : tribe.getBuildings()) {
-                    BuildingEffect effect = building.getEffect();
-                    if (effect instanceof EventYieldBonusEffect) {
-                        // In base all'UML, questa classe modifica la resa dell'evento
-                        // Nel manuale c'è un edificio esatto che fa questo:
-                        extraFoodPerHunter += 1;
-                        extraPPPerHunter += 1;
-                    }
+                for (Building building : player.getTrbe().getBuildings()){
+                    building.getEffect().applyEventBonus(EventType.HUNTING,player,huntersCount);
                 }
 
+
                 // 3. Calcolo dei totali
-                int totalFoodToAdd = huntersCount * (foodPerHunter + extraFoodPerHunter);
-                int totalPPToAdd = huntersCount * (PPperHunter + extraPPPerHunter);
+                int totalFoodToAdd = huntersCount * (foodPerHunter);
+                int totalPPToAdd = huntersCount * (PPperHunter);
 
                 // 4. Assegnazione delle risorse al giocatore
                 player.addFood(totalFoodToAdd);

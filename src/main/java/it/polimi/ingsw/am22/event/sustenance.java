@@ -39,12 +39,9 @@ public class sustenance extends Event implements EventEffect {
 
             // 3. Calcola eventuali sconti forniti dagli Edifici
             for (Building building : tribe.getBuildings()) {
-                BuildingEffect effect = building.getEffect();
-                if (effect instanceof SustenanceDiscountEffect) {
-                    SustenanceDiscountEffect sustenanceEffect = (SustenanceDiscountEffect) effect;
+                     BuildingEffect effect = building.getEffect();
                     // L'edificio calcola da solo quanto sconto applicare in base alla tribù
-                    totalDiscount += sustenanceEffect.getSustenanceDiscount(tribe);
-                }
+                    totalDiscount += effect.getSustenanceDiscount(tribe);
             }
 
             // 4. Calcola il costo finale in Cibo (non può essere minore di 0)
