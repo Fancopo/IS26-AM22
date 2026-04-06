@@ -1,13 +1,14 @@
 package it.polimi.ingsw.am22;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class EventResolutionState implements GameState {
 
     @Override
     public void resolveEvents(Game game) {
-        game.notifyObservers();
+       // game.notifyObservers();
 
         List<Card> cardsToTrigger = new ArrayList<>(game.getBoard().getLowerRow());
 

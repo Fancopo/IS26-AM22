@@ -11,7 +11,7 @@ public class SetUpState implements GameState {
         game.setCurrentEra(game.getBoard().refillUpperRow(game.getTribeDeck(), game.getCurrentEra()));
 
         // Chiama il metodo package-private di Game
-        game.setupDecks();
+        //game.setupDecks();
 
         Collections.shuffle(game.getPlayers());
         game.setActivePlayer(game.getPlayers().getFirst());
@@ -36,7 +36,7 @@ public class SetUpState implements GameState {
 
         // Transizione di Stato!
         game.setState(new TotemPlacementState());
-        game.notifyObservers();
+        //game.notifyObservers();
     }
 
     @Override

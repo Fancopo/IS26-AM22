@@ -21,7 +21,7 @@ public class TotemPlacementState implements GameState {
             game.setActivePlayer(game.getPlayers().get(currentIndex + 1));
         }
 
-        game.notifyObservers();
+        //game.notifyObservers();
     }
 
     @Override

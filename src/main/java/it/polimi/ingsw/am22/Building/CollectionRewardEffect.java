@@ -33,7 +33,7 @@ public class CollectionRewardEffect implements BuildingEffect {
             // Get the members list using the standard UML getter
             for (TribeCharacter character : player.getTribe().getMembers()) {
                 if (character.getCharacterType() == CharacterType.INVENTOR) {
-                    char icon = character.getIcon();
+                    char icon = character.getIconPerInventor();
                     iconCounts.put(icon, iconCounts.getOrDefault(icon, 0) + 1);
                 }
             }

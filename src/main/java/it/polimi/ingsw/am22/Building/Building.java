@@ -44,7 +44,7 @@ public class Building extends Card {
     }
 
     // THE DECK GENERATOR (21 Cards)
-    public static List<Building> createAllBuildings() {
+  /*  public static List<Building> createAllBuildings() {
         List<Building> deck = new ArrayList<>();
 
         // Constructor Reminder:
@@ -148,7 +148,7 @@ public class Building extends Card {
         return deck;
     }
 
-
+*/
     @Override
     public void addToTribe(Tribe tribe) {
         // La carta aggiunge se stessa alla lista degli edifici della tribù
@@ -182,4 +182,5 @@ public class Building extends Card {
     public int getFoodPrice() { return foodPrice; }
     public int getFinalPP() { return finalPP; }
     public BuildingEffect getEffect() { return effect; }
+    public void applyOnFoodSlotPlaced(Player player) {}
 }

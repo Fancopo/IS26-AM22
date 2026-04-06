@@ -83,7 +83,7 @@ public class Game {
         return currentState.getPhaseName();
     }
 
-    void setupDecks() {
+    /*void setupDecks() {
         List<Card> allTribeCards = CardDeck.createAllTribeCards();
 
         List<Card> filteredTribe = allTribeCards.stream()
@@ -130,7 +130,7 @@ public class Game {
         this.buildingMarket.addAll(selectedEra2);
         this.buildingMarket.addAll(selectedEra3);
         board.revealNewBuildings(selectedEra1);
-    }
+    }*/
 
     void handleEraChange() {
         if (currentEra == Era.III) {

@@ -17,15 +17,15 @@ public class sustenance extends Event implements EventEffect {
     }
 
     @Override
-    public void applyEvent(List<Player> players, char id) {
+    public void applyEvent(List<Player> players, String id) {
         int PPLose = 0;
 
         // Valori di penalità basati sull'Era corrente
-        if (this.era == Era.I) {
+        if (this.getEra() == Era.I) {
             PPLose = -1;
-        } else if (this.era == Era.II) {
+        } else if (this.getEra() == Era.II) {
             PPLose = -2;
-        } else if (this.era == Era.III) {
+        } else if (this.getEra() == Era.III) {
             PPLose = -3;
         }
 

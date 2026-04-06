@@ -22,7 +22,7 @@ public class EndGameState implements GameState {
             }
         }
 
-        game.notifyObservers(); // Notifica la fine della partita e il vincitore
+        //game.notifyObservers(); // Notifica la fine della partita e il vincitore
         return winner;
     }
 

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22;
 
+import it.polimi.ingsw.am22.Building.Building;
+
 import java.util.List;
 
 public class ActionResolutionState implements GameState {
@@ -8,7 +10,7 @@ public class ActionResolutionState implements GameState {
     @Override
     public void pickCards2(Game game, Player player, List<Card> selectedCards) {
         OfferTile currentTile = game.getBoard().getOfferTrack().stream()
-                .filter(t -> t.getOccupyingTotem() == player.getTotem())
+                .filter(t -> t.getOccupiedBy() == player.getTotem())
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Il giocatore non è sul tracciato offerte!"));
 
@@ -18,8 +20,8 @@ public class ActionResolutionState implements GameState {
         }
         // 2. GESTIONE CARTE E VALIDAZIONE
         else {
-            int upperSelected = selectedCards.stream().filter(c -> game.getBoard().getUpperRow().contains(c)).count();
-            int lowerSelected = selectedCards.stream().filter(c -> game.getBoard().getLowerRow().contains(c)).count();
+            long upperSelected = selectedCards.stream().filter(c -> game.getBoard().getUpperRow().contains(c)).count();
+            long lowerSelected = selectedCards.stream().filter(c -> game.getBoard().getLowerRow().contains(c)).count();
 
             // Validazione vincoli tessera
             if (upperSelected != currentTile.getUpperCardsToTake() || lowerSelected != currentTile.getLowerCardsToTake()) {
@@ -50,7 +52,7 @@ public class ActionResolutionState implements GameState {
         Slot nextSlot = game.getBoard().getTurnOrderTile().getFirstAvailableSlot();
         currentTile.clear();
         nextSlot.placeTotem(player.getTotem());
-        player.getTotem().moveToSlot(nextSlot);
+        player.getTotem().moveToTurnOrder(nextSlot);
 
         // Bonus/Malus Ordine di Turno
         if (nextSlot.getFoodBonus() > 0) {
@@ -91,7 +93,7 @@ public class ActionResolutionState implements GameState {
                 // IL GIOCATORE HA L'EDIFICIO: Mettiamo in pausa e andiamo nello stato bonus
                 game.setActivePlayer(bonusPlayer);
                 game.setState(new BonusCardSelectionState());
-                game.notifyObservers();
+                //game.notifyObservers();
             } else {
                 // NESSUN BONUS: Procediamo normalmente con gli eventi
                 game.setState(new EventResolutionState());
@@ -100,7 +102,7 @@ public class ActionResolutionState implements GameState {
 
         } else {
             game.setActivePlayer(game.getPlayerWithLeftmostTotem());
-            game.notifyObservers();
+           // game.notifyObservers();
         }
     }
 

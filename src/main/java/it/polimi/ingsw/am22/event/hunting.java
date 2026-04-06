@@ -17,15 +17,15 @@ public class hunting extends Event implements EventEffect{
     }
 
     @Override
-    public void applyEvent(List<Player> players, char id) {
+    public void applyEvent(List<Player> players, String id) {
         int PPperHunter = 0;
 
         // Valori di Punti Prestigio per cacciatore basati sull'Era corrente (dal tuo snippet)
-        if (this.era == Era.I) {
+        if (this.getEra() == Era.I) {
             PPperHunter = 1;
-        } else if (this.era == Era.II) {
+        } else if (this.getEra() == Era.II) {
             PPperHunter = 2;
-        } else if (this.era == Era.III) {
+        } else if (this.getEra() == Era.III) {
             PPperHunter = 3;
         }
 
