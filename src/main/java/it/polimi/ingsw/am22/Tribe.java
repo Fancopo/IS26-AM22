@@ -7,7 +7,7 @@ import it.polimi.ingsw.am22.character.TribeCharacter;
 import java.util.*;
 
 public class Tribe {
-    private List<TribeCharacter> members;
+    private static List<TribeCharacter> members;
     private List<Building> buildings;
 
     public Tribe() {
@@ -41,7 +41,7 @@ public class Tribe {
      * This method can also support end-game rules
      * such as artists, builders, inventors, etc.
      */
-    public int countCharacters(CharacterType type) {
+    public static int countCharacters(CharacterType type) {
         int count = 0;
 
         for (TribeCharacter character : members) {

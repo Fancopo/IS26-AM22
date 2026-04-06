@@ -1,12 +1,13 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 
-public class Artist extends TribeCharacter implements CharacterEffect {
+public abstract class Artist extends TribeCharacter implements CharacterEffect {
 
-    public Artist(char id, String type, int era, int minPlayers, String characterType){
-        super(id, type, era, minPlayers, "Artist");
+    public Artist(String id, Era era, int minPlayers, String characterType){
+        super(id, era, minPlayers, CharacterType.ARTIST);
     }
 
 

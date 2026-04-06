@@ -15,22 +15,22 @@ import java.util.Map;
 
 public class ShamanicRitual extends Event implements EventEffect {
 
-    public ShamanicRitual(Era era, int minPlayers) {
-        super(era, minPlayers, EventType.SHAMANIC_RITUAL);
+    public ShamanicRitual(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+        super(id, era, minPlayers, EventType.SHAMANIC_RITUAL, eventEffect);
     }
 
     @Override
-    public void applyEvent(List<Player> players, char id) {
+    public void applyEvent(List<Player> players, String id) {
         int PPtoAdd = 0;
         int PPtoLose = 0;
 
-        if (this.era == Era.I) {
+        if (this.getEra() == Era.I) {
             PPtoAdd = 5;
             PPtoLose = -3;
-        } else if (this.era == Era.II) {
+        } else if (this.getEra() == Era.II) {
             PPtoAdd = 10;
             PPtoLose = -5;
-        } else if (this.era == Era.III) {
+        } else if (this.getEra() == Era.III) {
             PPtoAdd = 15;
             PPtoLose = -7;
         }

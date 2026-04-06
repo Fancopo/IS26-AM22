@@ -1,15 +1,17 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.Card;
+import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 import javafx.application.Application;
 
-public class Builder extends TribeCharacter implements CharacterEffect {
+public abstract class Builder extends TribeCharacter implements CharacterEffect {
     private int DiscountFood;
     private int PP;
 
-    public Builder(char id, String type, int era, int minPlayers, String characterType, int discountFood, int PP){
-        super(id, type, era, minPlayers, "Builder");
+    public Builder(String id, Era era, int minPlayers, String characterType, int discountFood, int PP){
+        super(id, era, minPlayers, CharacterType.BUILDER);
         this.DiscountFood = discountFood;
         this.PP = PP;
     }
@@ -24,5 +26,5 @@ public class Builder extends TribeCharacter implements CharacterEffect {
 
 
     @Override
-    public void applyImmediateEffectEffect(Player player, Tribe tribe){}
+    public void applyImmediateEffect(Player player, Tribe tribe){}
 }

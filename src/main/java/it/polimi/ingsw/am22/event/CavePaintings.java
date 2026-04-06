@@ -16,19 +16,19 @@ public class CavePaintings extends Event implements EventEffect {
     }
 
     @Override
-    public void applyEvent(List<Player> players, char id) {
+    public void applyEvent(List<Player> players, String id) {
         int minArtistsRequired = 0;
         int PPtoLose = -2; // Come da tuo snippet, la penalità è sempre -2
         int PPperArtist = 0;
 
         // 1. Impostazione delle soglie e dei premi in base all'Era
-        if (this.era == Era.I) {
+        if (this.getEra() == Era.I) {
             minArtistsRequired = 1;
             PPperArtist = 1;
-        } else if (this.era == Era.II) {
+        } else if (this.getEra() == Era.II) {
             minArtistsRequired = 2;
             PPperArtist = 2;
-        } else if (this.era == Era.III) {
+        } else if (this.getEra() == Era.III) {
             minArtistsRequired = 3;
             PPperArtist = 3;
         }

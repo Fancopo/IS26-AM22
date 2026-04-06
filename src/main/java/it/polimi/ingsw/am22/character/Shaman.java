@@ -1,16 +1,17 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 import javafx.application.Application;
 
-public class Shaman extends TribeCharacter implements CharacterEffect{
+public abstract class Shaman extends TribeCharacter implements CharacterEffect{
 
     private int numStars;
 
-    public Shaman(char id, String type, int era, int minPlayers,String characterType, int numStars){
+    public Shaman(String id, Era era, int minPlayers, String characterType, int numStars){
 
-        super(id, type, era, minPlayers, "Shaman");
+        super(id, era, minPlayers, CharacterType.SHAMAN);
 
         this.numStars = numStars;
     }

@@ -2,6 +2,9 @@ package it.polimi.ingsw.am22;
 
 import it.polimi.ingsw.am22.character.CharacterType;
 import it.polimi.ingsw.am22.character.TribeCharacter;
+import it.polimi.ingsw.am22.Building.BuildingEffect;
+
+import static it.polimi.ingsw.am22.Building.Building.FinalBuildingPP;
 
 public class Player {
     private String nickname;
@@ -97,12 +100,12 @@ public class Player {
         total += calculateCharacterEndgamePP();
 
         // 2) PP degli edifici
-        total += FinalBuildingPP();
+        total += FinalBuildingPP(this.tribe);
 
         return total;
     }
 
-    public boolean hasExtraBuyAtRound() {
+    public boolean hasExtraBuyAtRoundEnd() {
         return this.tribe != null && this.tribe.hasExtraBuyAtRoundEnd();
     }
 

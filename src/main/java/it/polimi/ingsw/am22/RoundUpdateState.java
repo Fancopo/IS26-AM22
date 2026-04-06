@@ -30,7 +30,7 @@ public class RoundUpdateState implements GameState {
             game.setState(new TotemPlacementState());
         }
 
-        game.notifyObservers();
+        //game.notifyObservers();
     }
 
     @Override
