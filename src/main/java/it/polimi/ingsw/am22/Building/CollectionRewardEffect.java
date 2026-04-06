@@ -4,7 +4,7 @@ package it.polimi.ingsw.am22.Building;
 import java.util.HashMap;
 import java.util.Map;
 
-import Building.CollectionCondition;
+import it.polimi.ingsw.am22.Building.CollectionCondition;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.character.TribeCharacter;
 import it.polimi.ingsw.am22.Tribe;
