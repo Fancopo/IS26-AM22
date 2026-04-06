@@ -34,7 +34,7 @@ public class CollectionRewardEffect implements BuildingEffect {
             for (TribeCharacter character : player.getTribe().getMembers()) {
                 if (character.getCharacterType() == CharacterType.INVENTOR) {
                     Inventor inventorCard = (Inventor) character;
-                    char icon = inventorCard.getIcon();
+                    char icon = inventorCard.getIconPerInventor();
                     iconCounts.put(icon, iconCounts.getOrDefault(icon, 0) + 1);
                 }
             }
