@@ -1,6 +1,7 @@
-package am22;
+package it.polimi.ingsw.am22;
 
-import il.polimi.ingse.Era;
+import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.Game;
 import it.polimi.ingsw.am22.Tribe;
 
 public abstract class Card {

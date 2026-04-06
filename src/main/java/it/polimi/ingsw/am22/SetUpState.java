@@ -2,7 +2,7 @@ package it.polimi.ingsw.am22;
 
 import java.util.Collections;
 
-public class SetupState implements GameState {
+public class SetUpState implements GameState {
 
     @Override
     public void startMatch(Game game) {

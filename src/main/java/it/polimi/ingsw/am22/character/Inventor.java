@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.Player;
+import it.polimi.ingsw.am22.Tribe;
 import javafx.application.Application;
 
 public class Inventor extends TribeCharacter implements CharacterEffect{

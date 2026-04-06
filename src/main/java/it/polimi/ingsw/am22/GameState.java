@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22;
 
+import java.util.List;
+
 public interface GameState {
 
     // Se uno stato non sovrascrive il metodo, scatterà in automatico l'eccezione!

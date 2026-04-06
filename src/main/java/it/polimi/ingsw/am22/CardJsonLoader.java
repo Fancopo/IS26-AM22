@@ -2,6 +2,7 @@ package it.polimi.ingsw.am22;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.ingsw.am22.Building.Building;
 
 import java.io.InputStream;
 import java.util.ArrayList;

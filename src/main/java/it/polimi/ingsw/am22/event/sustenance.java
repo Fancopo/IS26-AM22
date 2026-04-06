@@ -1,6 +1,9 @@
 package it.polimi.ingsw.am22.event;
-import it.polimi.ingsw.am22.BuildingEffect;
+import it.polimi.ingsw.am22.Building.Building;
+import it.polimi.ingsw.am22.Building.BuildingEffect;
 import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.Player;
+import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
 
 import java.util.ArrayList;
@@ -9,8 +12,8 @@ import java.util.List;
 
 public class sustenance extends Event implements EventEffect {
 
-    public Sustenance(Era era, int minPlayers) {
-        super(era, minPlayers, EventType.SUSTENANCE);
+    public sustenance(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+        super(id, era, minPlayers, EventType.SUSTENANCE, eventEffect);
     }
 
     @Override

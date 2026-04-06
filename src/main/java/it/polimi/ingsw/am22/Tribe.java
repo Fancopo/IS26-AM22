@@ -1,5 +1,9 @@
 package it.polimi.ingsw.am22;
 
+import it.polimi.ingsw.am22.Building.Building;
+import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.character.TribeCharacter;
+
 import java.util.*;
 
 public class Tribe {
@@ -88,4 +92,4 @@ public class Tribe {
     public List<Building> getBuildings() {
         return List.copyOf(buildings);
     }
-
+}

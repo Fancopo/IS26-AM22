@@ -1,5 +1,8 @@
 package it.polimi.ingsw.am22;
 
+import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.character.TribeCharacter;
+
 public class Player {
     private String nickname;
     private int PP;
@@ -65,13 +68,13 @@ public class Player {
     private int calculateCharacterEndgamePP() {
         int points = 0;
 
-        int builders = tribe.countCharacters(CharacterType.Builder);
-        int inventors = tribe.countCharacters(CharacterType.Inventor);
-        int artists = tribe.countCharacters(CharacterType.Artist);
+        int builders = tribe.countCharacters(CharacterType.BUILDER);
+        int inventors = tribe.countCharacters(CharacterType.INVENTOR);
+        int artists = tribe.countCharacters(CharacterType.ARTIST);
 
         // Costruttori: somma dei PP stampati sulle carte
         for (TribeCharacter c : tribe.getMembers()) {
-            if (c.getCharacterType() == CharacterType.Builder) {
+            if (c.getCharacterType() == CharacterType.BUILDER) {
                 points += c.getPP();
             }
         }

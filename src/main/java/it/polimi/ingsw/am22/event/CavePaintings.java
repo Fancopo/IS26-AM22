@@ -1,6 +1,9 @@
 package it.polimi.ingsw.am22.event;
+import it.polimi.ingsw.am22.Building.Building;
 import it.polimi.ingsw.am22.BuildingEffect;
 import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.Player;
+import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
 
 import java.util.ArrayList;
@@ -8,8 +11,8 @@ import java.util.List;
 
 public class CavePaintings extends Event implements EventEffect {
 
-    public CavePaintings(Era era, int minPlayers) {
-        super(era, minPlayers, EventType.CAVE_PAINTING);
+    public CavePaintings(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+        super(id, era, minPlayers, EventType.CAVE_PAINTING, eventEffect);
     }
 
     @Override
@@ -39,14 +42,14 @@ public class CavePaintings extends Event implements EventEffect {
             int artistCount = tribe.countCharacters(CharacterType.ARTIST);
 
             // Controllo per gli Edifici (c'è un edificio che dà 1 Cibo per ogni Artista durante questo evento)
-            for (Building building : player.getTrbe().getBuildings()){
-                building.getEffect().applyEventBonus(EventType.CavePaintings,player,artistCount);
+            for (Building building : player.getTribe().getBuildings()){
+                building.getEffect().applyEventBonus(EventType.CAVE_PAINTING,player,artistCount);
             }
 
             // Assegna eventuale cibo bonus degli edifici
-            if (extraFoodPerArtist > 0 && artistCount > 0) {
+            if (artistCount > 0) {
                 player.addFood(artistCount);
-                System.out.println(player.getNickname() + " ottiene " + (artistCount) + " cibo extra grazie a un Edificio!");
+                System.out.println(player.getNickname() + " ottiene " + (artistCount));
             }
 
             // 3. Calcolo e Assegnazione dei Punti Prestigio

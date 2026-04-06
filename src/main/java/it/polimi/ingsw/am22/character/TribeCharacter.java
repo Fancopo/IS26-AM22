@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.*;
+import it.polimi.ingsw.am22.Building.Building;
 import javafx.application.Application;
 
 public class TribeCharacter extends Card {
@@ -8,16 +10,11 @@ public class TribeCharacter extends Card {
     private CharacterType characterType;
 
     // Costruttore
-    public TribeCharacter(Era era, int minPlayers, CharacterType characterType,) {
+    public TribeCharacter(Era era, int minPlayers, CharacterType characterType) {
         super(era, minPlayers);
         this.characterType = characterType;
     }
     public CharacterType getCharacterType() { return characterType; }
-
-    @Override
-    public void accept(CardVisitor visitor) {
-        visitor.visit(this);
-    }
 
     public int getProvidedIcons() {
         return 0;
@@ -33,4 +30,13 @@ public class TribeCharacter extends Card {
             }
         }
     }
+    public int getNumStars(){return 0;}
+
+    public char getIconPerInventor(){return 0;}
+    public int getDiscountFood(){
+        return 0;
+    }public int getPP(){
+        return 0;
+    }
+
 }

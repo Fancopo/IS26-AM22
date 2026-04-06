@@ -1,9 +1,10 @@
-package Building;
+package it.polimi.ingsw.am22.Building;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import Building.CollectionCondition;
+import it.polimi.ingsw.am22.Building.BuildingEffect;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.character.TribeCharacter;
 import it.polimi.ingsw.am22.Tribe;
@@ -43,6 +44,7 @@ public class CollectionRewardEffect implements BuildingEffect {
             }
 
             currentMatches = pairs;
+        }
 
             // --- CONDITION 2: The Set of 6 ---
         else if (conditionType == CollectionCondition.SET_OF_6) {
@@ -76,4 +78,3 @@ public class CollectionRewardEffect implements BuildingEffect {
             }
         }
     }
-}

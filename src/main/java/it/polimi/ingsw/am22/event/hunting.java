@@ -1,6 +1,9 @@
 package it.polimi.ingsw.am22.event;
+import it.polimi.ingsw.am22.Building.Building;
 import it.polimi.ingsw.am22.BuildingEffect;
 import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.Player;
+import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
 
 import java.util.ArrayList;
@@ -9,8 +12,8 @@ import java.util.List;
 
 public class hunting extends Event implements EventEffect{
 
-    public Hunting(Era era, int minPlayers) {
-        super(era, minPlayers, EventType.HUNTING);
+    public hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+        super(id, era, minPlayers, EventType.HUNTING, eventEffect);
     }
 
     @Override
@@ -36,7 +39,7 @@ public class hunting extends Event implements EventEffect{
             if (huntersCount > 0) {
                 // Valori base forniti dall'evento per ogni Cacciatore
                 int foodPerHunter = 1;
-                for (Building building : player.getTrbe().getBuildings()){
+                for (Building building : player.getTribe().getBuildings()){
                     building.getEffect().applyEventBonus(EventType.HUNTING,player,huntersCount);
                 }
 

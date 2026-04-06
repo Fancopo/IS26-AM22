@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.Player;
+import it.polimi.ingsw.am22.Tribe;
 import javafx.application.Application;
 
 public class Shaman extends TribeCharacter implements CharacterEffect{
@@ -19,6 +21,6 @@ public class Shaman extends TribeCharacter implements CharacterEffect{
 
 
     @Override
-    public void applyImmediateEffectEffect(Player player, Tribe tribe){}
+    public void applyImmediateEffect(Player player, Tribe tribe){}
 
 }

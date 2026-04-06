@@ -1,5 +1,10 @@
 package it.polimi.ingsw.am22;
 
+import it.polimi.ingsw.am22.Building.Building;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class CardDeck {
     public static List<Card> createAllTribeCards() {
         List<Card> deck = new ArrayList<>();
@@ -15,3 +20,4 @@ public class CardDeck {
         buildings.add(new Building("Hut", Era.II));
         return buildings;
     }
+}

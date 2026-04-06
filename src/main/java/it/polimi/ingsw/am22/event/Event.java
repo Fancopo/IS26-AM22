@@ -1,5 +1,5 @@
 package it.polimi.ingsw.am22.event;
-import it.polimi.ingsw.am22.Era;
+import it.polimi.ingsw.am22.*;
 import it.polimi.ingsw.am22.event.EventType;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,8 @@ public class Event extends Card {
     private EventType eventType;
     private EventEffect effect;
 
-    public Event(Era era, int minPlayers, EventType eventType, EventEffect effect) {
-        super(era, minPlayers);
+    public Event(String id, Era era, int minPlayers, EventType eventType, EventEffect effect) {
+        super(id, era, minPlayers);
         this.eventType = eventType;
         this.effect = effect;
     }
@@ -17,12 +17,8 @@ public class Event extends Card {
     public EventType getEventType() {
         return eventType;
     }
-    public abstract void applyEvent(List<Player> players, char id);
+    public void applyEvent(List<Player> players, char id);
 
-    @Override
-    public void accept(CardVisitor visitor) {
-        visitor.visit(this);
-    }
 
     @Override
     public void onRoundEndTrigger(Game game){
