@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit 2">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="no errors">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/GameState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/SetUpState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/SetupState.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="game-version3" />
+        <entry key="$PROJECT_DIR$" value="game" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -36,7 +38,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,
-    &quot;accountId&quot;: &quot;039f84ba-5214-4d96-b80b-54c34c7c13bf&quot;
+    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;
   }
 }</component>
   <component name="MavenImportPreferences">
@@ -45,6 +47,10 @@
         <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
       </MavenGeneralSettings>
     </option>
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
@@ -64,6 +70,7 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
+    &quot;git.auto.fetch.suggestion.counter&quot;: &quot;1&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
   }
@@ -115,55 +122,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774109302482</updated>
     </task>
-    <task id="LOCAL-00005" summary="last commit">
+    <task id="LOCAL-00005" summary="no errors">
       <option name="closed" value="true" />
-      <created>1775223396914</created>
+      <created>1775213426241</created>
       <option name="number" value="00005" />
       <option name="presentableId" value="LOCAL-00005" />
       <option name="project" value="LOCAL" />
-      <updated>1775223396914</updated>
+      <updated>1775213426241</updated>
     </task>
-    <task id="LOCAL-00006" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775308970401</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1775308970401</updated>
-    </task>
-    <task id="LOCAL-00007" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775308975722</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1775308975722</updated>
-    </task>
-    <task id="LOCAL-00008" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775420955438</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1775420955438</updated>
-    </task>
-    <task id="LOCAL-00009" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775420960554</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1775420960554</updated>
-    </task>
-    <task id="LOCAL-00010" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775421247371</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1775421247371</updated>
-    </task>
-    <option name="localTasksCounter" value="11" />
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -177,7 +144,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/Test" />
+                        <option value="origin/main" />
                       </list>
                     </value>
                   </entry>
@@ -193,9 +160,8 @@
     <MESSAGE value="Initial version" />
     <MESSAGE value="Second version" />
     <MESSAGE value="Second version of Building" />
-    <MESSAGE value="last commit" />
-    <MESSAGE value="last commit 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="last commit 2" />
+    <MESSAGE value="no errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="no errors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

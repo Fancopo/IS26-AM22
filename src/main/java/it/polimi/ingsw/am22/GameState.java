@@ -27,6 +27,4 @@ public interface GameState {
         throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
     }
     String getPhaseName();
-
-    void pickCards2(Game game, Player player, List<Card> selectedCards);
 }
