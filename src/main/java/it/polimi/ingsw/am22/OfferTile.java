@@ -1,7 +1,5 @@
 package it.polimi.ingsw.am22;
 
-import java.util.List;
-
 public class OfferTile {
     private char letter;
     private int upperCardsToTake;

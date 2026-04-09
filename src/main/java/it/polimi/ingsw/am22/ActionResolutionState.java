@@ -42,7 +42,7 @@ public class ActionResolutionState implements GameState {
 
             // Aggiunta carte e pulizia plancia
             for (Card card : selectedCards) {
-                player.getTribe().addCard(card);
+                player.getTribe().addCard(player, card);
             }
             game.getBoard().getUpperRow().removeAll(selectedCards);
             game.getBoard().getLowerRow().removeAll(selectedCards);

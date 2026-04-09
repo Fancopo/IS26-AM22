@@ -6,7 +6,7 @@ import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 

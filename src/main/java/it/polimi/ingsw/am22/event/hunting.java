@@ -1,6 +1,5 @@
 package it.polimi.ingsw.am22.event;
 import it.polimi.ingsw.am22.Building.Building;
-import it.polimi.ingsw.am22.BuildingEffect;
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;

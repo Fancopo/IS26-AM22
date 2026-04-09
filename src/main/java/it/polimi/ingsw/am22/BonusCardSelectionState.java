@@ -1,7 +1,5 @@
 package it.polimi.ingsw.am22;
 
-import java.util.Collections;
-
 /**
  * Stato temporaneo che si attiva SOLO se un giocatore possiede
  * l'edificio della pescata bonus a fine fase azioni.
@@ -16,7 +14,7 @@ public class BonusCardSelectionState implements GameState {
         }
 
         // 2. Assegnazione carta (Bonus gratuito, nessun check sul cibo)
-        player.getTribe().addCard(bonusCard);
+        player.getTribe().addCard(player, bonusCard);
         //game.getBoard().removeCards(Collections.singletonList(bonusCard));
 
         // 3. Transizione automatica: il bonus è stato preso, procediamo con gli Eventi!

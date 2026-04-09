@@ -11,7 +11,7 @@ public abstract class Card {
         this.minPlayers = minPlayers;
     }
 
-    public abstract void addToTribe(Tribe tribe);
+    public abstract void addToTribe(Player player, Tribe tribe);
 
     public int getFoodCost() {return 0;} // Di default le carte non costano cibo
 

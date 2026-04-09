@@ -3,7 +3,6 @@ import it.polimi.ingsw.am22.Building.Building;
 import it.polimi.ingsw.am22.Building.BuildingEffect;
 import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
-import it.polimi.ingsw.am22.character.Shaman;
 import it.polimi.ingsw.am22.character.TribeCharacter;
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
