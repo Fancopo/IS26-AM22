@@ -8,7 +8,7 @@ public class ActionResolutionState implements GameState {
     // Unico metodo che il Controller chiamerà.
     // Se il giocatore è sulla tessera A (solo cibo), selectedCards sarà una lista vuota.
     @Override
-    public void pickCards2(Game game, Player player, List<Card> selectedCards) {
+    public void pickCards(Game game, Player player, List<Card> selectedCards) {
         OfferTile currentTile = game.getBoard().getOfferTrack().stream()
                 .filter(t -> t.getOccupiedBy() == player.getTotem())
                 .findFirst()

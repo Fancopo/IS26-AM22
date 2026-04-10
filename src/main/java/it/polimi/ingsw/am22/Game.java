@@ -57,8 +57,8 @@ public class Game {
         currentState.placeTotemOnOffer(this, player, tile);
     }
 
-    public void pickCards1(Player player, List<Card> selectedCards) {
-        currentState.pickCards2(this, player, selectedCards);
+    public void pickCards(Player player, List<Card> selectedCards) {
+        currentState.pickCards(this, player, selectedCards);
     }
 
     // INSERIMENTO del delegato per la mossa bonus di fine round
