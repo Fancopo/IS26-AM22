@@ -17,7 +17,7 @@ public class TribeCharacter extends Card {
 
 
     public void addToTribe(Player player, Tribe tribe) {
-        tribe.getMembers().add(this);
+        player.getTribe().addCharacter(this);
         for (Building b : tribe.getBuildings()) {
             if (b.getEffect() != null) {
                 b.getEffect().onCharacterAdded(player, this);
@@ -29,7 +29,8 @@ public class TribeCharacter extends Card {
     public char getIconPerInventor(){return '0';}
     public int getDiscountFood(){
         return 0;
-    }public int getPP(){
+    }
+    public int getPP(){
         return 0;
     }
 
