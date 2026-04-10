@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am22.event;
 
+import it.polimi.ingsw.am22.Building.EventYieldBonusEffect;
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
@@ -56,7 +57,7 @@ class CavePaintingsTest {
         player.getTribe().addCharacter(new Artist("art_02", Era.I, 3, "Artist"));
 
         // Aggiungiamo un edificio con effetto per coprire il ciclo for degli edifici
-        BuildingEffect dummyEffect = new BuildingEffect() {
+        EventYieldBonusEffect dummyEffect = new EventYieldBonusEffect() {
             @Override
             public void applyEventBonus(EventType type, Player p, int count) {
                 // Corpo vuoto: serve solo per non far crashare il test
