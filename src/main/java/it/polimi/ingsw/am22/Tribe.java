@@ -15,11 +15,11 @@ public class Tribe {
         this.buildings = new ArrayList<>();
     }
 
-    public void addCard(Card card) {
+    public void addCard(Player player, Card card) {
         if (card == null) {
             throw new IllegalArgumentException("Card cannot be null.");
         }
-        card.addToTribe(this);
+        card.addToTribe(player, this);
     }
 
     public void addCharacter(TribeCharacter character) {

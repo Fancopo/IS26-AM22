@@ -1,10 +1,9 @@
 package it.polimi.ingsw.am22.event;
 import it.polimi.ingsw.am22.*;
-import it.polimi.ingsw.am22.event.EventType;
-import java.util.ArrayList;
+
 import java.util.List;
 
-public abstract class Event extends Card {
+public class Event extends Card {
     private EventType eventType;
     private EventEffect effect;
 
@@ -31,7 +30,7 @@ public abstract class Event extends Card {
     }
 
     @Override
-    public void addToTribe(Tribe tribe) {
+    public void addToTribe(Player player, Tribe tribe) {
         throw new UnsupportedOperationException("An event cannot be added to the tribe");
     }
 }

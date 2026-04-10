@@ -1,27 +1,31 @@
 package it.polimi.ingsw.am22.character;
 
+import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
 class ArtistTest {
 
     @Test
     void testArtistCreationAndEffect() {
-        // 1. Test del Costruttore (Copre le righe della dichiarazione della classe e del costruttore)
-        Artist artist = new Artist('1', "Artist", 1, 2, "Artist");
+        // 1. Istanziamo l'oggetto Artist reale usando il tuo costruttore.
+        // I parametri sono: id, era, minPlayers, characterType
+        Artist artist = new Artist("art_01", Era.I, 3, "Artist");
 
-        // Verifichiamo che l'oggetto sia stato istanziato correttamente
-        assertNotNull(artist, "L'istanza di Artist non dovrebbe essere nulla");
+        // Verifichiamo che l'istanza sia stata creata correttamente (copre il costruttore)
+        assertNotNull(artist, "L'istanza di Artist non dovrebbe essere null");
 
-        // 2. Test di applyImmediateEffect (Copre le righe del metodo vuoto)
-        // Creiamo istanze dummy per i parametri. (Assicurati che Player e Tribe abbiano costruttori validi senza parametri o adattali di conseguenza)
-        Player dummyPlayer = new Player("FANG");
+        // 2. Prepariamo gli oggetti Player e Tribe necessari per il metodo
+        // (Assicurati che i costruttori di Player e Tribe corrispondano a quelli del tuo progetto)
+        Player dummyPlayer = new Player("Christian");
         Tribe dummyTribe = new Tribe();
 
-        // Eseguiamo il metodo. Utilizziamo assertDoesNotThrow per verificare che l'esecuzione del metodo vuoto non causi crash inaspettati.
+        // 3. Eseguiamo il metodo applyImmediateEffect.
+        // Siccome il metodo è vuoto, testiamo semplicemente che la sua esecuzione
+        // vada a buon fine senza lanciare eccezioni (copre il metodo applyImmediateEffect)
         assertDoesNotThrow(() -> artist.applyImmediateEffect(dummyPlayer, dummyTribe),
-                "applyImmediateEffect non dovrebbe lanciare eccezioni per la classe Artist");
+                "applyImmediateEffect non deve lanciare eccezioni per la classe Artist");
     }
 }

@@ -4,7 +4,7 @@ import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 
-public abstract class Inventor extends TribeCharacter implements CharacterEffect{
+public class Inventor extends TribeCharacter implements CharacterEffect{
 
     private final char IconPerInventor;
 

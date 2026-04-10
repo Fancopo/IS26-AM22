@@ -1,12 +1,12 @@
 package it.polimi.ingsw.am22.character;
 
-import it.polimi.ingsw.am22.Card;
+
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
-import javafx.application.Application;
 
-public abstract class Builder extends TribeCharacter implements CharacterEffect {
+
+public class Builder extends TribeCharacter implements CharacterEffect {
     private int DiscountFood;
     private int PP;
 

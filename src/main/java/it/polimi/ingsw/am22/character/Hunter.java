@@ -3,9 +3,9 @@ package it.polimi.ingsw.am22.character;
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
-import javafx.application.Application;
 
-public abstract class Hunter extends TribeCharacter implements CharacterEffect{
+
+public class Hunter extends TribeCharacter implements CharacterEffect{
     private final boolean HasFoodIcon;
 
     public Hunter(String id, Era era, int minPlayers, String characterType, boolean HasFoodIcon){
