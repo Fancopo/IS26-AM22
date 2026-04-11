@@ -1,0 +1,251 @@
+Index: src/test/java/it/polimi/ingsw/am22/PlayerTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22;\r\n\r\nimport org.junit.jupiter.api.Test;\r\n\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\npublic class PlayerTest {\r\n\r\n    @Test\r\n    void shouldInitializePlayerCorrectly() {\r\n        Player player = new Player(\"Alice\");\r\n\r\n        assertEquals(\"Alice\", player.getNickname());\r\n        assertEquals(0, player.getPP());\r\n        assertEquals(0, player.getFood());\r\n        assertNotNull(player.getTribe());\r\n    }\r\n}
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/PlayerTest.java b/src/test/java/it/polimi/ingsw/am22/PlayerTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/PlayerTest.java	(revision 0c95dbc10b4a5e3fc9fab7099e61a7d1270e31ac)
++++ b/src/test/java/it/polimi/ingsw/am22/PlayerTest.java	(date 1775488634922)
+@@ -3,6 +3,7 @@
+ import org.junit.jupiter.api.Test;
+ 
+ import static org.junit.jupiter.api.Assertions.*;
++import static org.mockito.Mockito.*;
+ 
+ public class PlayerTest {
+ 
+@@ -14,5 +15,231 @@
+         assertEquals(0, player.getPP());
+         assertEquals(0, player.getFood());
+         assertNotNull(player.getTribe());
++        assertNull(player.getTotem());
++    }
++
++    @Test
++    void constructorShouldRejectNullNickname() {
++        assertThrows(IllegalArgumentException.class, () -> new Player(null));
++    }
++
++    @Test
++    void constructorShouldRejectBlankNickname() {
++        assertThrows(IllegalArgumentException.class, () -> new Player("   "));
++    }
++
++    @Test
++    void setTotemShouldAssignTotem() {
++        Player player = new Player("Alice");
++        Totem totem = mock(Totem.class);
++
++        player.setTotem(totem);
++
++        assertEquals(totem, player.getTotem());
++    }
++
++    @Test
++    void addFoodShouldIncreaseFood() {
++        Player player = new Player("Alice");
++
++        player.addFood(3);
++
++        assertEquals(3, player.getFood());
++    }
++
++    @Test
++    void addFoodShouldAllowNegativeAmountsIfUsedAsGenericAdder() {
++        Player player = new Player("Alice");
++        player.addFood(5);
++
++        player.addFood(-2);
++
++        assertEquals(3, player.getFood());
++    }
++
++    @Test
++    void payFoodShouldDecreaseFood() {
++        Player player = new Player("Alice");
++        player.addFood(5);
++
++        player.payFood(2);
++
++        assertEquals(3, player.getFood());
++    }
++
++    @Test
++    void payFoodShouldAllowPayingExactAmount() {
++        Player player = new Player("Alice");
++        player.addFood(4);
++
++        player.payFood(4);
++
++        assertEquals(0, player.getFood());
++    }
++
++    @Test
++    void payFoodShouldDoNothingWhenAmountIsZero() {
++        Player player = new Player("Alice");
++        player.addFood(4);
++
++        player.payFood(0);
++
++        assertEquals(4, player.getFood());
++    }
++
++    @Test
++    void payFoodShouldThrowIfAmountIsNegative() {
++        Player player = new Player("Alice");
++
++        assertThrows(IllegalArgumentException.class, () -> player.payFood(-1));
++    }
++
++    @Test
++    void payFoodShouldThrowIfFoodIsInsufficient() {
++        Player player = new Player("Alice");
++        player.addFood(1);
++
++        assertThrows(IllegalStateException.class, () -> player.payFood(2));
++        assertEquals(1, player.getFood());
++    }
++
++    @Test
++    void addPPShouldIncreasePrestigePoints() {
++        Player player = new Player("Alice");
++
++        player.addPP(4);
++
++        assertEquals(4, player.getPP());
++    }
++
++    @Test
++    void addPPShouldAllowNegativePrestigePoints() {
++        Player player = new Player("Alice");
++        player.addPP(5);
++
++        player.addPP(-2);
++
++        assertEquals(3, player.getPP());
++    }
++
++    @Test
++    void hasExtraBuyAtRoundShouldReturnFalseWhenNoBuildingGrantsIt() {
++        Player player = new Player("Alice");
++
++        assertFalse(player.hasExtraBuyAtRound());
++    }
++
++    @Test
++    void hasExtraBuyAtRoundShouldReturnTrueWhenOneBuildingGrantsIt() {
++        Player player = new Player("Alice");
++        Building building = mock(Building.class);
++
++        when(building.grantsExtraBuyAtRoundEnd()).thenReturn(true);
++        player.getTribe().addBuilding(building);
++
++        assertTrue(player.hasExtraBuyAtRound());
++    }
++
++    @Test
++    void finalPPShouldReturnBasePPWhenNoExtraEndgamePointsExist() {
++        Player player = new Player("Alice");
++        player.addPP(7);
++
++        assertEquals(7, player.finalPP());
++    }
++
++    @Test
++    void finalPPShouldIncludeBuilderPrintedPP() {
++        Player player = new Player("Alice");
++
++        TribeCharacter builder = mock(TribeCharacter.class);
++        when(builder.getCharacterType()).thenReturn(CharacterType.BUILDER);
++        when(builder.getPP()).thenReturn(3);
++
++        player.getTribe().addCharacter(builder);
++
++        assertEquals(3, player.finalPP());
++    }
++
++    @Test
++    void finalPPShouldIncludeInventorBonus() {
++        Player player = new Player("Alice");
++
++        TribeCharacter inventor1 = mock(TribeCharacter.class);
++        when(inventor1.getCharacterType()).thenReturn(CharacterType.INVENTOR);
++        when(inventor1.getIconPerInventor()).thenReturn('A');
++
++        TribeCharacter inventor2 = mock(TribeCharacter.class);
++        when(inventor2.getCharacterType()).thenReturn(CharacterType.INVENTOR);
++        when(inventor2.getIconPerInventor()).thenReturn('B');
++
++        player.getTribe().addCharacter(inventor1);
++        player.getTribe().addCharacter(inventor2);
++
++        assertEquals(4, player.finalPP()); // 2 inventori * 2 icone diverse
++    }
++
++    @Test
++    void finalPPShouldIncludeArtistBonus() {
++        Player player = new Player("Alice");
++
++        TribeCharacter artist1 = mock(TribeCharacter.class);
++        when(artist1.getCharacterType()).thenReturn(CharacterType.ARTIST);
++
++        TribeCharacter artist2 = mock(TribeCharacter.class);
++        when(artist2.getCharacterType()).thenReturn(CharacterType.ARTIST);
++
++        player.getTribe().addCharacter(artist1);
++        player.getTribe().addCharacter(artist2);
++
++        assertEquals(10, player.finalPP());
++    }
++
++    @Test
++    void finalPPShouldIncludeBuildingEndgamePoints() {
++        Player player = new Player("Alice");
++        Building building = mock(Building.class);
++
++        when(building.finalBuildingPP(player.getTribe())).thenReturn(8);
++        player.getTribe().addBuilding(building);
++
++        assertEquals(8, player.finalPP());
++    }
++
++    @Test
++    void finalPPShouldCombineAllSourcesOfPoints() {
++        Player player = new Player("Alice");
++        player.addPP(5);
++
++        TribeCharacter builder = mock(TribeCharacter.class);
++        when(builder.getCharacterType()).thenReturn(CharacterType.BUILDER);
++        when(builder.getPP()).thenReturn(3);
++
++        TribeCharacter inventor1 = mock(TribeCharacter.class);
++        when(inventor1.getCharacterType()).thenReturn(CharacterType.INVENTOR);
++        when(inventor1.getIconPerInventor()).thenReturn('A');
++
++        TribeCharacter inventor2 = mock(TribeCharacter.class);
++        when(inventor2.getCharacterType()).thenReturn(CharacterType.INVENTOR);
++        when(inventor2.getIconPerInventor()).thenReturn('B');
++
++        TribeCharacter artist1 = mock(TribeCharacter.class);
++        when(artist1.getCharacterType()).thenReturn(CharacterType.ARTIST);
++
++        TribeCharacter artist2 = mock(TribeCharacter.class);
++        when(artist2.getCharacterType()).thenReturn(CharacterType.ARTIST);
++
++        Building building = mock(Building.class);
++        when(building.finalBuildingPP(player.getTribe())).thenReturn(7);
++
++        player.getTribe().addCharacter(builder);
++        player.getTribe().addCharacter(inventor1);
++        player.getTribe().addCharacter(inventor2);
++        player.getTribe().addCharacter(artist1);
++        player.getTribe().addCharacter(artist2);
++        player.getTribe().addBuilding(building);
++
++        // base 5 + builder 3 + inventors 4 + artists 10 + building 7 = 29
++        assertEquals(29, player.finalPP());
+     }
+-}
+\ No newline at end of file
++}}
+\ No newline at end of file

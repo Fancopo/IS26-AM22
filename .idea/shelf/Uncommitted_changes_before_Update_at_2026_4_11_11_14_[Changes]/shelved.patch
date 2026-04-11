@@ -1,0 +1,2474 @@
+Index: src/main/java/it/polimi/ingsw/am22/character/Inventor.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\n\r\npublic class Inventor extends TribeCharacter implements CharacterEffect{\r\n\r\n    private final char IconPerInventor;\r\n\r\n    public Inventor(String id, Era era, int minPlayers, String characterType, char IconPerInventor){\r\n        super(id, era, minPlayers, CharacterType.INVENTOR);\r\n\r\n        this.IconPerInventor = IconPerInventor;\r\n    }\r\n\r\n\r\n    public char getIconPerInventor(){\r\n        return IconPerInventor;\r\n    }\r\n\r\n    @Override\r\n    public void applyImmediateEffect(Player player, Tribe tribe){}\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/Inventor.java b/src/main/java/it/polimi/ingsw/am22/character/Inventor.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/Inventor.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/character/Inventor.java	(date 1775856483079)
+@@ -4,22 +4,39 @@
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ 
+-public class Inventor extends TribeCharacter implements CharacterEffect{
++public class Inventor implements CharacterEffect {
++
++    private char iconPerInventor;
+ 
+-    private final char IconPerInventor;
++    public Inventor() {
++    }
+ 
+-    public Inventor(String id, Era era, int minPlayers, String characterType, char IconPerInventor){
+-        super(id, era, minPlayers, CharacterType.INVENTOR);
++    public Inventor(char iconPerInventor) {
++        this.iconPerInventor = iconPerInventor;
++    }
+ 
+-        this.IconPerInventor = IconPerInventor;
++    @Override
++    public void applyImmediateEffect(Player player, Tribe tribe) {
++        // no immediate effect
+     }
+ 
++    @Override
++    public int getNumStars() {
++        return 0;
++    }
+ 
+-    public char getIconPerInventor(){
+-        return IconPerInventor;
++    @Override
++    public char getIconPerInventor() {
++        return iconPerInventor;
+     }
+ 
+     @Override
+-    public void applyImmediateEffect(Player player, Tribe tribe){}
++    public int getDiscountFood() {
++        return 0;
++    }
+ 
++    @Override
++    public int getPP() {
++        return 0;
++    }
+ }
+Index: src/main/java/it/polimi/ingsw/am22/character/Hunter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\n\r\n\r\npublic class Hunter extends TribeCharacter implements CharacterEffect{\r\n    private final boolean HasFoodIcon;\r\n\r\n    public Hunter(String id, Era era, int minPlayers, String characterType, boolean HasFoodIcon){\r\n        super(id, era, minPlayers, CharacterType.HUNTER);\r\n        this.HasFoodIcon = HasFoodIcon;\r\n    }\r\n\r\n\r\n    @Override\r\n    public void applyImmediateEffect(Player player, Tribe tribe){\r\n\r\n        if(this.HasFoodIcon){\r\n            int foodToAdd = player.getTribe().countCharacters(getCharacterType());\r\n            player.addFood(foodToAdd);\r\n            System.out.println(\"Cacciatore con icona giocato! Aggiunto \" +foodToAdd + \" cibo.\");\r\n        }\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/Hunter.java b/src/main/java/it/polimi/ingsw/am22/character/Hunter.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/Hunter.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/character/Hunter.java	(date 1775859814829)
+@@ -1,27 +1,52 @@
+ package it.polimi.ingsw.am22.character;
+ 
+-import it.polimi.ingsw.am22.Era;
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ 
++public class Hunter implements CharacterEffect {
++
++    private boolean hasFoodIcon;
+ 
+-public class Hunter extends TribeCharacter implements CharacterEffect{
+-    private final boolean HasFoodIcon;
++    public Hunter() {
++    }
+ 
+-    public Hunter(String id, Era era, int minPlayers, String characterType, boolean HasFoodIcon){
+-        super(id, era, minPlayers, CharacterType.HUNTER);
+-        this.HasFoodIcon = HasFoodIcon;
++    public Hunter(boolean hasFoodIcon) {
++        this.hasFoodIcon = hasFoodIcon;
+     }
+ 
++    public boolean isHasFoodIcon() {
++        return hasFoodIcon;
++    }
++
++    public void setHasFoodIcon(boolean hasFoodIcon) {
++        this.hasFoodIcon = hasFoodIcon;
++    }
+ 
+     @Override
+-    public void applyImmediateEffect(Player player, Tribe tribe){
++    public void applyImmediateEffect(Player player, Tribe tribe) {
++        if (hasFoodIcon) {
++            int hunters = tribe.countCharacters(CharacterType.HUNTER);
++            player.addFood(hunters);
++        }
++    }
+ 
+-        if(this.HasFoodIcon){
+-            int foodToAdd = player.getTribe().countCharacters(getCharacterType());
+-            player.addFood(foodToAdd);
+-            System.out.println("Cacciatore con icona giocato! Aggiunto " +foodToAdd + " cibo.");
+-        }
++    @Override
++    public int getNumStars() {
++        return 0;
++    }
++
++    @Override
++    public char getIconPerInventor() {
++        return '0';
+     }
+ 
+-}
++    @Override
++    public int getDiscountFood() {
++        return 0;
++    }
++
++    @Override
++    public int getPP() {
++        return 0;
++    }
++}
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.*;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\n\r\npublic class TribeCharacter extends Card {\r\n\r\n    // Attributi definiti nel diagramma UML\r\n    private CharacterType characterType;\r\n\r\n    // Costruttore\r\n    public TribeCharacter(String id, Era era, int minPlayers, CharacterType characterType) {\r\n        super(id, era, minPlayers);\r\n        this.characterType = characterType;\r\n    }\r\n    public CharacterType getCharacterType() { return characterType; }\r\n\r\n\r\n    public void addToTribe(Player player, Tribe tribe) {\r\n        tribe.getMembers().add(this);\r\n        for (Building b : tribe.getBuildings()) {\r\n            if (b.getEffect() != null) {\r\n                b.getEffect().onCharacterAdded(player, this);\r\n            }\r\n        }\r\n    }\r\n    public int getNumStars(){return 0;}\r\n\r\n    public char getIconPerInventor(){return '0';}\r\n    public int getDiscountFood(){\r\n        return 0;\r\n    }public int getPP(){\r\n        return 0;\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java b/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java	(date 1775864998323)
+@@ -1,36 +1,57 @@
+ package it.polimi.ingsw.am22.character;
+ 
++
++import com.fasterxml.jackson.annotation.JsonCreator;
+ import it.polimi.ingsw.am22.*;
+ import it.polimi.ingsw.am22.Building.Building;
+ 
+ public class TribeCharacter extends Card {
+ 
+-    // Attributi definiti nel diagramma UML
+     private CharacterType characterType;
++    private CharacterEffect effect;
+ 
+-    // Costruttore
+-    public TribeCharacter(String id, Era era, int minPlayers, CharacterType characterType) {
++    @JsonCreator
++    public TribeCharacter(String id, Era era, int minPlayers, CharacterType characterType, CharacterEffect effect) {
+         super(id, era, minPlayers);
+         this.characterType = characterType;
++        this.effect = effect;
++    }
++
++    public CharacterType getCharacterType() {
++        return characterType;
+     }
+-    public CharacterType getCharacterType() { return characterType; }
+ 
++    public CharacterEffect getEffect() {
++        return effect;
++    }
+ 
+     public void addToTribe(Player player, Tribe tribe) {
+         tribe.getMembers().add(this);
++
++        if (effect != null) {
++            effect.applyImmediateEffect(player, tribe);
++        }
++
+         for (Building b : tribe.getBuildings()) {
+             if (b.getEffect() != null) {
+                 b.getEffect().onCharacterAdded(player, this);
+             }
+         }
+     }
+-    public int getNumStars(){return 0;}
++
++    public int getNumStars() {
++        return effect != null ? effect.getNumStars() : 0;
++    }
+ 
+-    public char getIconPerInventor(){return '0';}
+-    public int getDiscountFood(){
+-        return 0;
+-    }public int getPP(){
+-        return 0;
++    public char getIconPerInventor() {
++        return effect != null ? effect.getIconPerInventor() : '0';
++    }
++
++    public int getDiscountFood() {
++        return effect != null ? effect.getDiscountFood() : 0;
+     }
+ 
++    public int getPP() {
++        return effect != null ? effect.getPP() : 0;
++    }
+ }
+\ No newline at end of file
+Index: src/test/java/it/polimi/ingsw/am22/TribeTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22;\r\n\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.character.CharacterType;\r\nimport it.polimi.ingsw.am22.character.TribeCharacter;\r\nimport org.junit.jupiter.api.Test;\r\n\r\nimport static org.junit.jupiter.api.Assertions.*;\r\nimport static org.mockito.Mockito.*;\r\n\r\npublic class TribeTest {\r\n\r\n    @Test\r\n    void shouldInitializeEmptyTribe() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        assertNotNull(tribe.getMembers());\r\n        assertNotNull(tribe.getBuildings());\r\n        assertTrue(tribe.getMembers().isEmpty());\r\n        assertTrue(tribe.getBuildings().isEmpty());\r\n    }\r\n\r\n    @Test\r\n    void addCardShouldRejectNull() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        assertThrows(IllegalArgumentException.class, () -> tribe.addCard(null));\r\n    }\r\n\r\n    @Test\r\n    void addCardShouldDelegateToCard() {\r\n        Tribe tribe = new Tribe();\r\n        Card card = mock(Card.class);\r\n\r\n        tribe.addCard(card);\r\n\r\n        verify(card).addToTribe(tribe);\r\n    }\r\n\r\n    @Test\r\n    void addCharacterShouldAddCharacter() {\r\n        Tribe tribe = new Tribe();\r\n        TribeCharacter character = mock(TribeCharacter.class);\r\n\r\n        tribe.addCharacter(character);\r\n\r\n        assertEquals(1, tribe.getMembers().size());\r\n        assertTrue(tribe.getMembers().contains(character));\r\n    }\r\n\r\n    @Test\r\n    void addCharacterShouldRejectNull() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        assertThrows(IllegalArgumentException.class, () -> tribe.addCharacter(null));\r\n    }\r\n\r\n    @Test\r\n    void addBuildingShouldAddBuilding() {\r\n        Tribe tribe = new Tribe();\r\n        Building building = mock(Building.class);\r\n\r\n        tribe.addBuilding(building);\r\n\r\n        assertEquals(1, tribe.getBuildings().size());\r\n        assertTrue(tribe.getBuildings().contains(building));\r\n    }\r\n\r\n    @Test\r\n    void addBuildingShouldRejectNull() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        assertThrows(IllegalArgumentException.class, () -> tribe.addBuilding(null));\r\n    }\r\n    @Test\r\n    void countCharactersShouldReturnCorrectNumber() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        TribeCharacter hunter1 = mock(TribeCharacter.class);\r\n        when(hunter1.getCharacterType()).thenReturn(CharacterType.HUNTER);\r\n\r\n        TribeCharacter hunter2 = mock(TribeCharacter.class);\r\n        when(hunter2.getCharacterType()).thenReturn(CharacterType.HUNTER);\r\n\r\n        TribeCharacter builder = mock(TribeCharacter.class);\r\n        when(builder.getCharacterType()).thenReturn(CharacterType.BUILDER);\r\n\r\n        tribe.addCharacter(hunter1);\r\n        tribe.addCharacter(hunter2);\r\n        tribe.addCharacter(builder);\r\n\r\n        assertEquals(2, Tribe.countCharacters(CharacterType.HUNTER));\r\n        assertEquals(1, Tribe.countCharacters(CharacterType.BUILDER));\r\n        assertEquals(0, Tribe.countCharacters(CharacterType.ARTIST));\r\n    }\r\n\r\n    @Test\r\n    void countUniqueInventorIconsShouldReturnZeroForEmptyTribe() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        assertEquals(0, tribe.countUniqueInventorIcons());\r\n    }\r\n\r\n    @Test\r\n    void countUniqueInventorIconsShouldIgnoreNonInventors() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        TribeCharacter hunter = mock(TribeCharacter.class);\r\n        when(hunter.getCharacterType()).thenReturn(CharacterType.HUNTER);\r\n\r\n        tribe.addCharacter(hunter);\r\n\r\n        assertEquals(0, tribe.countUniqueInventorIcons());\r\n    }\r\n\r\n    @Test\r\n    void countUniqueInventorIconsShouldCountDistinctIconsOnly() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        TribeCharacter inventor1 = mock(TribeCharacter.class);\r\n        when(inventor1.getCharacterType()).thenReturn(CharacterType.INVENTOR);\r\n        when(inventor1.getIconPerInventor()).thenReturn('A');\r\n\r\n        TribeCharacter inventor2 = mock(TribeCharacter.class);\r\n        when(inventor2.getCharacterType()).thenReturn(CharacterType.INVENTOR);\r\n        when(inventor2.getIconPerInventor()).thenReturn('A');\r\n\r\n        TribeCharacter inventor3 = mock(TribeCharacter.class);\r\n        when(inventor3.getCharacterType()).thenReturn(CharacterType.INVENTOR);\r\n        when(inventor3.getIconPerInventor()).thenReturn('B');\r\n\r\n        tribe.addCharacter(inventor1);\r\n        tribe.addCharacter(inventor2);\r\n        tribe.addCharacter(inventor3);\r\n\r\n        assertEquals(2, tribe.countUniqueInventorIcons());\r\n    }\r\n\r\n    @Test\r\n    void getBuilderDiscountShouldReturnZeroWhenNoBuildersExist() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        assertEquals(0, tribe.getBuilderDiscount());\r\n    }\r\n\r\n    @Test\r\n    void getBuilderDiscountShouldSumDiscountsOfAllBuilders() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        TribeCharacter builder1 = mock(TribeCharacter.class);\r\n        when(builder1.getCharacterType()).thenReturn(CharacterType.BUILDER);\r\n        when(builder1.getDiscountFood()).thenReturn(1);\r\n\r\n        TribeCharacter builder2 = mock(TribeCharacter.class);\r\n        when(builder2.getCharacterType()).thenReturn(CharacterType.BUILDER);\r\n        when(builder2.getDiscountFood()).thenReturn(2);\r\n\r\n        TribeCharacter hunter = mock(TribeCharacter.class);\r\n        when(hunter.getCharacterType()).thenReturn(CharacterType.HUNTER);\r\n\r\n        tribe.addCharacter(builder1);\r\n        tribe.addCharacter(builder2);\r\n        tribe.addCharacter(hunter);\r\n\r\n        assertEquals(3, tribe.getBuilderDiscount());\r\n    }\r\n\r\n    @Test\r\n    void hasExtraBuyAtRoundEndShouldReturnFalseWhenNoBuildingsExist() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        assertFalse(tribe.hasExtraBuyAtRoundEnd());\r\n    }\r\n\r\n    @Test\r\n    void hasExtraBuyAtRoundEndShouldReturnFalseWhenNoBuildingGrantsIt() {\r\n        Tribe tribe = new Tribe();\r\n        Building building = mock(Building.class);\r\n\r\n        when(building.grantsExtraBuyAtRoundEnd()).thenReturn(false);\r\n        tribe.addBuilding(building);\r\n\r\n        assertFalse(tribe.hasExtraBuyAtRoundEnd());\r\n    }\r\n\r\n    @Test\r\n    void hasExtraBuyAtRoundEndShouldReturnTrueWhenAtLeastOneBuildingGrantsIt() {\r\n        Tribe tribe = new Tribe();\r\n\r\n        Building building1 = mock(Building.class);\r\n        when(building1.grantsExtraBuyAtRoundEnd()).thenReturn(false);\r\n\r\n        Building building2 = mock(Building.class);\r\n        when(building2.grantsExtraBuyAtRoundEnd()).thenReturn(true);\r\n\r\n        tribe.addBuilding(building1);\r\n        tribe.addBuilding(building2);\r\n\r\n        assertTrue(tribe.hasExtraBuyAtRoundEnd());\r\n    }\r\n\r\n    @Test\r\n    void getMembersShouldReturnUnmodifiableList() {\r\n        Tribe tribe = new Tribe();\r\n        TribeCharacter character = mock(TribeCharacter.class);\r\n        tribe.addCharacter(character);\r\n\r\n        assertThrows(UnsupportedOperationException.class,\r\n                () -> tribe.getMembers().add(mock(TribeCharacter.class)));\r\n    }\r\n\r\n    @Test\r\n    void getBuildingsShouldReturnUnmodifiableList() {\r\n        Tribe tribe = new Tribe();\r\n        Building building = mock(Building.class);\r\n        tribe.addBuilding(building);\r\n\r\n        assertThrows(UnsupportedOperationException.class,\r\n                () -> tribe.getBuildings().add(mock(Building.class)));\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/TribeTest.java b/src/test/java/it/polimi/ingsw/am22/TribeTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/TribeTest.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/test/java/it/polimi/ingsw/am22/TribeTest.java	(date 1775827185159)
+@@ -23,18 +23,19 @@
+     @Test
+     void addCardShouldRejectNull() {
+         Tribe tribe = new Tribe();
++        Player player = mock(Player.class);
+ 
+-        assertThrows(IllegalArgumentException.class, () -> tribe.addCard(null));
++        assertThrows(IllegalArgumentException.class, () -> tribe.addCard(player, null));
+     }
+-
+     @Test
+     void addCardShouldDelegateToCard() {
+         Tribe tribe = new Tribe();
++        Player player = mock(Player.class);
+         Card card = mock(Card.class);
+ 
+-        tribe.addCard(card);
++        tribe.addCard(player, card);
+ 
+-        verify(card).addToTribe(tribe);
++        verify(card).addToTribe(player, tribe);
+     }
+ 
+     @Test
+Index: src/main/java/it/polimi/ingsw/am22/character/Shaman.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\n\r\n\r\npublic class Shaman extends TribeCharacter implements CharacterEffect{\r\n\r\n    private int numStars;\r\n\r\n    public Shaman(String id, Era era, int minPlayers, String characterType, int numStars){\r\n\r\n        super(id, era, minPlayers, CharacterType.SHAMAN);\r\n\r\n        this.numStars = numStars;\r\n    }\r\n\r\n    public int getNumStars() {\r\n        return numStars;\r\n    }\r\n\r\n\r\n    @Override\r\n    public void applyImmediateEffect(Player player, Tribe tribe){}\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/Shaman.java b/src/main/java/it/polimi/ingsw/am22/character/Shaman.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/Shaman.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/character/Shaman.java	(date 1775864263397)
+@@ -1,27 +1,44 @@
+ package it.polimi.ingsw.am22.character;
+ 
+-import it.polimi.ingsw.am22.Era;
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ 
+-
+-public class Shaman extends TribeCharacter implements CharacterEffect{
++public class Shaman implements CharacterEffect {
+ 
+     private int numStars;
+ 
+-    public Shaman(String id, Era era, int minPlayers, String characterType, int numStars){
++    public Shaman() {
++    }
+ 
+-        super(id, era, minPlayers, CharacterType.SHAMAN);
++    public Shaman(int numStars) {
++        this.numStars = numStars;
++    }
+ 
++    public void setNumStars(int numStars) {
+         this.numStars = numStars;
+     }
+ 
++    @Override
++    public void applyImmediateEffect(Player player, Tribe tribe) {
++    }
++
++    @Override
+     public int getNumStars() {
+         return numStars;
+     }
+ 
+-
+     @Override
+-    public void applyImmediateEffect(Player player, Tribe tribe){}
++    public char getIconPerInventor() {
++        return '0';
++    }
+ 
+-}
++    @Override
++    public int getDiscountFood() {
++        return 0;
++    }
++
++    @Override
++    public int getPP() {
++        return 0;
++    }
++}
+\ No newline at end of file
+Index: src/main/java/module-info.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>module it.polimi.ingsw.am {\r\n    requires javafx.controls;\r\n    requires javafx.fxml;\r\n    requires com.fasterxml.jackson.databind;\r\n\r\n\r\n    opens it.polimi.ingsw.am22 to javafx.fxml;\r\n    exports it.polimi.ingsw.am22;\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/module-info.java b/src/main/java/module-info.java
+--- a/src/main/java/module-info.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/module-info.java	(date 1775858785011)
+@@ -3,7 +3,10 @@
+     requires javafx.fxml;
+     requires com.fasterxml.jackson.databind;
+ 
++    opens it.polimi.ingsw.am22 to javafx.fxml, com.fasterxml.jackson.databind;
++    opens it.polimi.ingsw.am22.character to com.fasterxml.jackson.databind;
++    opens it.polimi.ingsw.am22.event to com.fasterxml.jackson.databind;
++    opens it.polimi.ingsw.am22.Building to com.fasterxml.jackson.databind;
+ 
+-    opens it.polimi.ingsw.am22 to javafx.fxml;
+     exports it.polimi.ingsw.am22;
+ }
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/event/Event.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\nimport it.polimi.ingsw.am22.*;\r\n\r\nimport java.util.List;\r\n\r\npublic class Event extends Card {\r\n    private EventType eventType;\r\n    private EventEffect effect;\r\n\r\n    public Event(String id, Era era, int minPlayers, EventType eventType, EventEffect effect) {\r\n        super(id, era, minPlayers);\r\n        this.eventType = eventType;\r\n        this.effect = effect;\r\n    }\r\n\r\n    public EventType getEventType() {\r\n        return eventType;\r\n    }\r\n    public void applyEvent(List<Player> players, String id){}\r\n\r\n\r\n    @Override\r\n    public void onRoundEndTrigger(Game game){\r\n        this.effect.applyEvent(game.getPlayers(), this.getId());\r\n    }\r\n\r\n    @Override\r\n    public int getTriggerPriority(){\r\n        return this.eventType == EventType.SUSTENANCE ? 1 : 0;\r\n    }\r\n\r\n    @Override\r\n    public void addToTribe(Player player, Tribe tribe) {\r\n        throw new UnsupportedOperationException(\"An event cannot be added to the tribe\");\r\n    }\r\n}\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/event/Event.java b/src/main/java/it/polimi/ingsw/am22/event/Event.java
+--- a/src/main/java/it/polimi/ingsw/am22/event/Event.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/event/Event.java	(date 1775860227419)
+@@ -1,4 +1,5 @@
+ package it.polimi.ingsw.am22.event;
++
+ import it.polimi.ingsw.am22.*;
+ 
+ import java.util.List;
+@@ -16,16 +17,20 @@
+     public EventType getEventType() {
+         return eventType;
+     }
++
++    public EventEffect getEffect() {
++        return effect;
++    }
++
+     public void applyEvent(List<Player> players, String id){}
+ 
+-
+     @Override
+-    public void onRoundEndTrigger(Game game){
+-        this.effect.applyEvent(game.getPlayers(), this.getId());
++    public void onRoundEndTrigger(Game game) {
++        effect.applyEvent(game.getPlayers(), this.getId());
+     }
+ 
+     @Override
+-    public int getTriggerPriority(){
++    public int getTriggerPriority() {
+         return this.eventType == EventType.SUSTENANCE ? 1 : 0;
+     }
+ 
+@@ -33,7 +38,4 @@
+     public void addToTribe(Player player, Tribe tribe) {
+         throw new UnsupportedOperationException("An event cannot be added to the tribe");
+     }
+-}
+-
+-
+-
++}
+\ No newline at end of file
+Index: src/main/resources/TribeCharacter-Event.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[\r\n  {\r\n    \"id\": 1,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": true\r\n    }\r\n  },\r\n  {\r\n    \"id\": 2,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": true\r\n    }\r\n  },\r\n  {\r\n    \"id\": 3,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": false\r\n    }\r\n  },\r\n  {\r\n    \"id\": 4,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": false\r\n    }\r\n  },\r\n  {\r\n    \"id\": 5,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": false\r\n    }\r\n  },\r\n  {\r\n    \"id\": 6,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 1,\r\n      \"pp\": 3\r\n    }\r\n  },\r\n  {\r\n    \"id\": 7,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 2,\r\n      \"pp\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 8,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 2,\r\n      \"pp\": 1\r\n    }\r\n  },\r\n  {\r\n    \"id\": 9,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 1,\r\n      \"pp\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 10,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 11,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 12,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 13,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 14,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 15,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 16,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 17,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 18,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 19,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 20,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 21,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 22,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 23,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 24,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 25,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 26,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 27,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 28,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 1\r\n    }\r\n  },\r\n  {\r\n    \"id\": 29,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 1\r\n    }\r\n  },\r\n  {\r\n    \"id\": 30,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": false\r\n    }\r\n  },\r\n  {\r\n    \"id\": 31,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": false\r\n    }\r\n  },\r\n  {\r\n    \"id\": 32,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": true\r\n    }\r\n  },\r\n  {\r\n    \"id\": 33,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": true\r\n    }\r\n  },\r\n  {\r\n    \"id\": 34,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": true\r\n    }\r\n  },\r\n  {\r\n    \"id\": 35,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": false\r\n    }\r\n  },\r\n  {\r\n    \"id\": 36,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 1,\r\n      \"pp\": 4\r\n    }\r\n  },\r\n  {\r\n    \"id\": 37,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 2,\r\n      \"pp\": 1\r\n    }\r\n  },\r\n  {\r\n    \"id\": 38,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 1,\r\n      \"pp\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 39,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 2,\r\n      \"pp\": 3\r\n    }\r\n  },\r\n  {\r\n    \"id\": 40,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 41,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 42,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 43,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 44,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 45,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 46,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 47,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 48,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 49,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 50,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 51,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 52,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 53,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 54,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 55,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 56,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 1\r\n    }\r\n  },\r\n  {\r\n    \"id\": 57,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 58,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": true\r\n    }\r\n  },\r\n  {\r\n    \"id\": 59,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": false\r\n    }\r\n  },\r\n  {\r\n    \"id\": 60,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": true\r\n    }\r\n  },\r\n  {\r\n    \"id\": 61,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Hunter\",\r\n    \"effect\": {\r\n      \"hasFoodIcon\": true\r\n    }\r\n  },\r\n  {\r\n    \"id\": 62,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 1,\r\n      \"pp\": 5\r\n    }\r\n  },\r\n  {\r\n    \"id\": 63,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 2,\r\n      \"pp\": 3\r\n    }\r\n  },\r\n  {\r\n    \"id\": 64,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 1,\r\n      \"pp\": 4\r\n    }\r\n  },\r\n  {\r\n    \"id\": 65,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Builder\",\r\n    \"effect\": {\r\n      \"discountFood\": 2,\r\n      \"pp\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 66,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 67,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 68,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Collector\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 69,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 5,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 70,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 71,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 72,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Artist\",\r\n    \"effect\": {}\r\n  },\r\n  {\r\n    \"id\": 73,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 74,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 75,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 76,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 77,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 78,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 79,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Inventor\",\r\n    \"effect\": {\r\n      \"iconPerInventor\": 0\r\n    }\r\n  },\r\n  {\r\n    \"id\": 80,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 3,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 81,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 3\r\n    }\r\n  },\r\n  {\r\n    \"id\": 82,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 83,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 3\r\n    }\r\n  },\r\n  {\r\n    \"id\": 84,\r\n    \"type\": \"tribeCharacter\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 4,\r\n    \"characterType\": \"Shaman\",\r\n    \"effect\": {\r\n      \"numStars\": 2\r\n    }\r\n  },\r\n  {\r\n    \"id\": 85,\r\n    \"type\": \"event\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"hunting\"\r\n  },\r\n  {\r\n    \"id\": 86,\r\n    \"type\": \"event\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"sustenance\"\r\n  },\r\n  {\r\n    \"id\": 87,\r\n    \"type\": \"event\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"shamanic ritual\"\r\n  },\r\n  {\r\n    \"id\": 88,\r\n    \"type\": \"event\",\r\n    \"era\": \"I\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"cave paintings\"\r\n  },\r\n  {\r\n    \"id\": 89,\r\n    \"type\": \"event\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"hunting\"\r\n  },\r\n  {\r\n    \"id\": 90,\r\n    \"type\": \"event\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"sustenance\"\r\n  },\r\n  {\r\n    \"id\": 91,\r\n    \"type\": \"event\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"shamanic ritual\"\r\n  },\r\n  {\r\n    \"id\": 92,\r\n    \"type\": \"event\",\r\n    \"era\": \"II\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"cave paintings\"\r\n  },\r\n  {\r\n    \"id\": 93,\r\n    \"type\": \"event\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"hunting\"\r\n  },\r\n  {\r\n    \"id\": 94,\r\n    \"type\": \"event\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"cave paintings\"\r\n  },\r\n  {\r\n    \"id\": 95,\r\n    \"type\": \"event\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"sustenance\"\r\n  },\r\n  {\r\n    \"id\": 96,\r\n    \"type\": \"event\",\r\n    \"era\": \"III\",\r\n    \"minPlayers\": 2,\r\n    \"eventType\": \"shamanic ritual\"\r\n  }\r\n]
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/TribeCharacter-Event.json b/src/main/resources/TribeCharacter-Event.json
+--- a/src/main/resources/TribeCharacter-Event.json	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/resources/TribeCharacter-Event.json	(date 1775898585697)
+@@ -4,7 +4,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": true
+     }
+@@ -14,7 +14,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": true
+     }
+@@ -24,7 +24,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": false
+     }
+@@ -34,7 +34,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 3,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": false
+     }
+@@ -44,7 +44,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 3,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": false
+     }
+@@ -54,7 +54,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 1,
+       "pp": 3
+@@ -65,7 +65,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 2,
+       "pp": 0
+@@ -76,7 +76,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 5,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 2,
+       "pp": 1
+@@ -87,7 +87,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 1,
+       "pp": 2
+@@ -98,7 +98,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -106,7 +106,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -114,7 +114,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 3,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -122,7 +122,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 5,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -130,7 +130,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -138,7 +138,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -146,7 +146,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -154,7 +154,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 3,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -162,7 +162,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 4,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -170,9 +170,9 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "A"
+     }
+   },
+   {
+@@ -180,9 +180,9 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "B"
+     }
+   },
+   {
+@@ -190,9 +190,9 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "C"
+     }
+   },
+   {
+@@ -200,9 +200,9 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "D"
+     }
+   },
+   {
+@@ -210,9 +210,9 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 4,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "E"
+     }
+   },
+   {
+@@ -220,9 +220,9 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 4,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "F"
+     }
+   },
+   {
+@@ -230,9 +230,9 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 4,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "G"
+     }
+   },
+   {
+@@ -240,7 +240,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 5,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 2
+     }
+@@ -250,7 +250,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 2
+     }
+@@ -260,7 +260,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 2,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 1
+     }
+@@ -270,7 +270,7 @@
+     "type": "tribeCharacter",
+     "era": "I",
+     "minPlayers": 4,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 1
+     }
+@@ -280,7 +280,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": false
+     }
+@@ -290,7 +290,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": false
+     }
+@@ -300,7 +300,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 3,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": true
+     }
+@@ -310,7 +310,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": true
+     }
+@@ -320,7 +320,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 4,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": true
+     }
+@@ -330,7 +330,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 5,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": false
+     }
+@@ -340,7 +340,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 1,
+       "pp": 4
+@@ -351,7 +351,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 2,
+       "pp": 1
+@@ -362,7 +362,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 3,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 1,
+       "pp": 2
+@@ -373,7 +373,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 2,
+       "pp": 3
+@@ -384,7 +384,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -392,7 +392,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 3,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -400,7 +400,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 4,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -408,7 +408,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 5,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -416,7 +416,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 3,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -424,7 +424,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -432,7 +432,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -440,7 +440,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -448,9 +448,9 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "G"
+     }
+   },
+   {
+@@ -458,9 +458,9 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 4,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "H"
+     }
+   },
+   {
+@@ -468,9 +468,9 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "I"
+     }
+   },
+   {
+@@ -478,9 +478,9 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "E"
+     }
+   },
+   {
+@@ -488,9 +488,9 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "F"
+     }
+   },
+   {
+@@ -498,9 +498,9 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "A"
+     }
+   },
+   {
+@@ -508,7 +508,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 2
+     }
+@@ -518,7 +518,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 2,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 2
+     }
+@@ -528,7 +528,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 5,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 1
+     }
+@@ -538,7 +538,7 @@
+     "type": "tribeCharacter",
+     "era": "II",
+     "minPlayers": 5,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 2
+     }
+@@ -548,7 +548,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 5,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": true
+     }
+@@ -558,7 +558,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": false
+     }
+@@ -568,7 +568,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": true
+     }
+@@ -578,7 +578,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Hunter",
++    "characterType": "HUNTER",
+     "effect": {
+       "hasFoodIcon": true
+     }
+@@ -588,7 +588,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 1,
+       "pp": 5
+@@ -599,7 +599,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 2,
+       "pp": 3
+@@ -610,7 +610,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 5,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 1,
+       "pp": 4
+@@ -621,7 +621,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Builder",
++    "characterType": "BUILDER",
+     "effect": {
+       "discountFood": 2,
+       "pp": 2
+@@ -632,7 +632,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 5,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -640,7 +640,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 4,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -648,7 +648,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Collector",
++    "characterType": "COLLECTOR",
+     "effect": {}
+   },
+   {
+@@ -656,7 +656,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 5,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -664,7 +664,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -672,7 +672,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -680,7 +680,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Artist",
++    "characterType": "ARTIST",
+     "effect": {}
+   },
+   {
+@@ -688,9 +688,9 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 4,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "J"
+     }
+   },
+   {
+@@ -698,9 +698,9 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 3,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "B"
+     }
+   },
+   {
+@@ -708,9 +708,9 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 3,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "L"
+     }
+   },
+   {
+@@ -718,9 +718,9 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "H"
+     }
+   },
+   {
+@@ -728,9 +728,9 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "I"
+     }
+   },
+   {
+@@ -738,9 +738,9 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "K"
+     }
+   },
+   {
+@@ -748,9 +748,9 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Inventor",
++    "characterType": "INVENTOR",
+     "effect": {
+-      "iconPerInventor": 0
++      "iconPerInventor": "C"
+     }
+   },
+   {
+@@ -758,7 +758,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 3,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 2
+     }
+@@ -768,7 +768,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 3
+     }
+@@ -778,7 +778,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 2
+     }
+@@ -788,7 +788,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 2,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 3
+     }
+@@ -798,7 +798,7 @@
+     "type": "tribeCharacter",
+     "era": "III",
+     "minPlayers": 4,
+-    "characterType": "Shaman",
++    "characterType": "SHAMAN",
+     "effect": {
+       "numStars": 2
+     }
+@@ -808,83 +808,83 @@
+     "type": "event",
+     "era": "I",
+     "minPlayers": 2,
+-    "eventType": "hunting"
++    "eventType": "HUNTING"
+   },
+   {
+     "id": 86,
+     "type": "event",
+     "era": "I",
+     "minPlayers": 2,
+-    "eventType": "sustenance"
++    "eventType": "SUSTENANCE"
+   },
+   {
+     "id": 87,
+     "type": "event",
+     "era": "I",
+     "minPlayers": 2,
+-    "eventType": "shamanic ritual"
++    "eventType": "SHAMANIC_RITUAL"
+   },
+   {
+     "id": 88,
+     "type": "event",
+     "era": "I",
+     "minPlayers": 2,
+-    "eventType": "cave paintings"
++    "eventType": "CAVE_PAINTING"
+   },
+   {
+     "id": 89,
+     "type": "event",
+     "era": "II",
+     "minPlayers": 2,
+-    "eventType": "hunting"
++    "eventType": "HUNTING"
+   },
+   {
+     "id": 90,
+     "type": "event",
+     "era": "II",
+     "minPlayers": 2,
+-    "eventType": "sustenance"
++    "eventType": "SUSTENANCE"
+   },
+   {
+     "id": 91,
+     "type": "event",
+     "era": "II",
+     "minPlayers": 2,
+-    "eventType": "shamanic ritual"
++    "eventType": "SHAMANIC_RITUAL"
+   },
+   {
+     "id": 92,
+     "type": "event",
+     "era": "II",
+     "minPlayers": 2,
+-    "eventType": "cave paintings"
++    "eventType": "CAVE_PAINTING"
+   },
+   {
+     "id": 93,
+     "type": "event",
+     "era": "III",
+     "minPlayers": 2,
+-    "eventType": "hunting"
++    "eventType": "HUNTING"
+   },
+   {
+     "id": 94,
+     "type": "event",
+     "era": "III",
+     "minPlayers": 2,
+-    "eventType": "cave paintings"
++    "eventType": "CAVE_PAINTING"
+   },
+   {
+     "id": 95,
+     "type": "event",
+     "era": "III",
+     "minPlayers": 2,
+-    "eventType": "sustenance"
++    "eventType": "SUSTENANCE"
+   },
+   {
+     "id": 96,
+     "type": "event",
+     "era": "III",
+     "minPlayers": 2,
+-    "eventType": "shamanic ritual"
++    "eventType": "SHAMANIC_RITUAL"
+   }
+ ]
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.CharacterType;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class CavePaintings extends Event implements EventEffect {\r\n\r\n    public CavePaintings(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {\r\n        super(id, era, minPlayers, EventType.CAVE_PAINTING, eventEffect);\r\n    }\r\n\r\n    @Override\r\n    public void applyEvent(List<Player> players, String id) {\r\n        int minArtistsRequired = 0;\r\n        int PPtoLose = -2; // Come da tuo snippet, la penalità è sempre -2\r\n        int PPperArtist = 0;\r\n\r\n        // 1. Impostazione delle soglie e dei premi in base all'Era\r\n        if (this.getEra() == Era.I) {\r\n            minArtistsRequired = 1;\r\n            PPperArtist = 1;\r\n        } else if (this.getEra() == Era.II) {\r\n            minArtistsRequired = 2;\r\n            PPperArtist = 2;\r\n        } else if (this.getEra() == Era.III) {\r\n            minArtistsRequired = 3;\r\n            PPperArtist = 3;\r\n        }\r\n\r\n        // 2. Risoluzione dell'evento per ogni giocatore\r\n        for (Player player : players) {\r\n            Tribe tribe = player.getTribe();\r\n            if (tribe == null) continue;\r\n\r\n            // Conta il numero di Artisti\r\n            int artistCount = tribe.countCharacters(CharacterType.ARTIST);\r\n\r\n            // Controllo per gli Edifici (c'è un edificio che dà 1 Cibo per ogni Artista durante questo evento)\r\n            for (Building building : player.getTribe().getBuildings()){\r\n                building.getEffect().applyEventBonus(EventType.CAVE_PAINTING,player,artistCount);\r\n            }\r\n\r\n            // Assegna eventuale cibo bonus degli edifici\r\n            if (artistCount > 0) {\r\n                player.addFood(artistCount);\r\n                System.out.println(player.getNickname() + \" ottiene \" + (artistCount));\r\n            }\r\n\r\n            // 3. Calcolo e Assegnazione dei Punti Prestigio\r\n            if (artistCount >= minArtistsRequired) {\r\n                // Il giocatore ha abbastanza Artisti: guadagna PP per ogni Artista\r\n                int earnedPP = artistCount * PPperArtist;\r\n                player.addPP(earnedPP);\r\n                System.out.println(player.getNickname() + \" ha \" + artistCount +\r\n                        \" Artisti (minimo richiesto: \" + minArtistsRequired +\r\n                        \"). Guadagna \" + earnedPP + \" PP!\");\r\n            } else {\r\n                // Il giocatore non ha abbastanza Artisti: subisce la penalità\r\n                player.addPP(PPtoLose); // PPtoLose è già negativo (-2)\r\n                System.out.println(player.getNickname() + \" ha solo \" + artistCount +\r\n                        \" Artisti (minimo richiesto: \" + minArtistsRequired +\r\n                        \"). Subisce \" + PPtoLose + \" PP.\");\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java b/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java
+--- a/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java	(date 1775862016375)
+@@ -1,73 +1,65 @@
+ package it.polimi.ingsw.am22.event;
++
+ import it.polimi.ingsw.am22.Building.Building;
+-
+ import it.polimi.ingsw.am22.Era;
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ import it.polimi.ingsw.am22.character.CharacterType;
+ 
+-import java.util.ArrayList;
+ import java.util.List;
+ 
+-public class CavePaintings extends Event implements EventEffect {
++public class CavePaintings implements EventEffect {
+ 
+-    public CavePaintings(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+-        super(id, era, minPlayers, EventType.CAVE_PAINTING, eventEffect);
++    private Era era;
++
++    public CavePaintings(Era era) {
++        this.era = era;
+     }
+ 
+     @Override
+     public void applyEvent(List<Player> players, String id) {
+         int minArtistsRequired = 0;
+-        int PPtoLose = -2; // Come da tuo snippet, la penalità è sempre -2
++        int PPtoLose = -2;
+         int PPperArtist = 0;
+ 
+-        // 1. Impostazione delle soglie e dei premi in base all'Era
+-        if (this.getEra() == Era.I) {
++        if (era == Era.I) {
+             minArtistsRequired = 1;
+             PPperArtist = 1;
+-        } else if (this.getEra() == Era.II) {
++        } else if (era == Era.II) {
+             minArtistsRequired = 2;
+             PPperArtist = 2;
+-        } else if (this.getEra() == Era.III) {
++        } else if (era == Era.III) {
+             minArtistsRequired = 3;
+             PPperArtist = 3;
+         }
+ 
+-        // 2. Risoluzione dell'evento per ogni giocatore
+         for (Player player : players) {
+             Tribe tribe = player.getTribe();
+             if (tribe == null) continue;
+ 
+-            // Conta il numero di Artisti
+             int artistCount = tribe.countCharacters(CharacterType.ARTIST);
+ 
+-            // Controllo per gli Edifici (c'è un edificio che dà 1 Cibo per ogni Artista durante questo evento)
+-            for (Building building : player.getTribe().getBuildings()){
+-                building.getEffect().applyEventBonus(EventType.CAVE_PAINTING,player,artistCount);
++            for (Building building : player.getTribe().getBuildings()) {
++                building.getEffect().applyEventBonus(EventType.CAVE_PAINTING, player, artistCount);
+             }
+ 
+-            // Assegna eventuale cibo bonus degli edifici
+             if (artistCount > 0) {
+                 player.addFood(artistCount);
+-                System.out.println(player.getNickname() + " ottiene " + (artistCount));
++                System.out.println(player.getNickname() + " ottiene " + artistCount);
+             }
+ 
+-            // 3. Calcolo e Assegnazione dei Punti Prestigio
+             if (artistCount >= minArtistsRequired) {
+-                // Il giocatore ha abbastanza Artisti: guadagna PP per ogni Artista
+                 int earnedPP = artistCount * PPperArtist;
+                 player.addPP(earnedPP);
+                 System.out.println(player.getNickname() + " ha " + artistCount +
+                         " Artisti (minimo richiesto: " + minArtistsRequired +
+                         "). Guadagna " + earnedPP + " PP!");
+             } else {
+-                // Il giocatore non ha abbastanza Artisti: subisce la penalità
+-                player.addPP(PPtoLose); // PPtoLose è già negativo (-2)
++                player.addPP(PPtoLose);
+                 System.out.println(player.getNickname() + " ha solo " + artistCount +
+                         " Artisti (minimo richiesto: " + minArtistsRequired +
+                         "). Subisce " + PPtoLose + " PP.");
+             }
+         }
+     }
+-}
+-
++}
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.CharacterType;\r\nimport it.polimi.ingsw.am22.character.TribeCharacter;\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\n\r\nimport java.util.Collections;\r\nimport java.util.List;\r\nimport java.util.HashMap;\r\nimport java.util.Map;\r\n\r\npublic class ShamanicRitual extends Event implements EventEffect {\r\n\r\n    public ShamanicRitual(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {\r\n        super(id, era, minPlayers, EventType.SHAMANIC_RITUAL, eventEffect);\r\n    }\r\n\r\n    @Override\r\n    public void applyEvent(List<Player> players, String id) {\r\n        int PPtoAdd = 0;\r\n        int PPtoLose = 0;\r\n\r\n        if (this.getEra() == Era.I) {\r\n            PPtoAdd = 5;\r\n            PPtoLose = -3;\r\n        } else if (this.getEra() == Era.II) {\r\n            PPtoAdd = 10;\r\n            PPtoLose = -5;\r\n        } else if (this.getEra() == Era.III) {\r\n            PPtoAdd = 15;\r\n            PPtoLose = -7;\r\n        }\r\n\r\n        Map<Player, Integer> totalIconsPerPlayer = new HashMap<>();\r\n        Map<Player, Boolean> preventLoss = new HashMap<>();\r\n        Map<Player, Boolean> doubleWin = new HashMap<>();\r\n\r\n        // 1. CALCOLO ICONE E MODIFICATORI EDIFICI\r\n        for (Player player : players) {\r\n            int baseIcons = 0;\r\n            int extraIcons = 0;\r\n            boolean noLoss = false;\r\n            boolean doublePP = false;\r\n\r\n            Tribe tribe = player.getTribe();\r\n            if (tribe != null) {\r\n                // Conta icone base degli Sciamani\r\n                for (TribeCharacter character : tribe.getMembers()) {\r\n                    if (character.getCharacterType() == CharacterType.SHAMAN) {\r\n                        baseIcons += character.getNumStars();\r\n                    }\r\n                }\r\n\r\n                // Applica effetti degli Edifici per il Rituale Sciamanico\r\n                for (Building building : tribe.getBuildings()) {\r\n                    BuildingEffect effect = building.getEffect();\r\n                        // Modificatore: 3 icone aggiuntive\r\n                        extraIcons += effect.getExtraShamanIcons();\r\n                        // Modificatore: Non perdete Punti Prestigio\r\n                        if (effect.preventsShamanPPLoss()) noLoss = true;\r\n                        // Modificatore: Guadagnate il doppio dei Punti Prestigio\r\n                        if (effect.doublesShamanWinPP()) doublePP = true;\r\n                    }\r\n                }\r\n\r\n            totalIconsPerPlayer.put(player, baseIcons + extraIcons);\r\n            preventLoss.put(player, noLoss);\r\n            doubleWin.put(player, doublePP);\r\n        }\r\n\r\n\r\n        if (totalIconsPerPlayer.isEmpty()) return;\r\n\r\n        // 2. TROVA IL MASSIMO E IL MINIMO\r\n        int maxIcons = Collections.max(totalIconsPerPlayer.values());\r\n        int minIcons = Collections.min(totalIconsPerPlayer.values());\r\n\r\n        // 3. ASSEGNAZIONE PREMI E PENALITÀ\r\n        for (Player player : players) {\r\n            int icons = totalIconsPerPlayer.get(player);\r\n\r\n            // Vittoria: Il giocatore con più icone nella propria tribù, guadagna i Punti Prestigio indicati\r\n            // In caso di parità, tutti i giocatori in parità ottengono i Punti Prestigio indicati\r\n            if (icons == maxIcons) {\r\n                int earnedPP = doubleWin.get(player) ? PPtoAdd * 2 : PPtoAdd;\r\n                player.addPP(earnedPP);\r\n                System.out.println(player.getNickname() + \" vince il rito e ottiene \" + earnedPP + \" PP!\");\r\n            }\r\n\r\n            // Sconfitta: Il giocatore con meno icone nella propria tribù, perde i Punti Prestigio indicati\r\n            // Anche in questo caso si applica la regola della parità\r\n            if (icons == minIcons) {\r\n                if (preventLoss.get(player)) {\r\n                    System.out.println(player.getNickname() + \" ha meno icone, ma l'Edificio lo protegge dalla perdita di PP!\");\r\n                } else {\r\n                    // Nota: PPtoLose è già un numero negativo, quindi usiamo addPP o un metodo equivalente\r\n                    player.addPP(PPtoLose);\r\n                    System.out.println(player.getNickname() + \" perde il rito e subisce \" + PPtoLose + \" PP.\");\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java b/src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java
+--- a/src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java	(date 1775861994886)
+@@ -1,4 +1,5 @@
+ package it.polimi.ingsw.am22.event;
++
+ import it.polimi.ingsw.am22.Building.Building;
+ import it.polimi.ingsw.am22.Building.BuildingEffect;
+ import it.polimi.ingsw.am22.Tribe;
+@@ -12,10 +13,12 @@
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+-public class ShamanicRitual extends Event implements EventEffect {
++public class ShamanicRitual implements EventEffect {
+ 
+-    public ShamanicRitual(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+-        super(id, era, minPlayers, EventType.SHAMANIC_RITUAL, eventEffect);
++    private Era era;
++
++    public ShamanicRitual(Era era) {
++        this.era = era;
+     }
+ 
+     @Override
+@@ -23,13 +26,13 @@
+         int PPtoAdd = 0;
+         int PPtoLose = 0;
+ 
+-        if (this.getEra() == Era.I) {
++        if (era == Era.I) {
+             PPtoAdd = 5;
+             PPtoLose = -3;
+-        } else if (this.getEra() == Era.II) {
++        } else if (era == Era.II) {
+             PPtoAdd = 10;
+             PPtoLose = -5;
+-        } else if (this.getEra() == Era.III) {
++        } else if (era == Era.III) {
+             PPtoAdd = 15;
+             PPtoLose = -7;
+         }
+@@ -38,7 +41,6 @@
+         Map<Player, Boolean> preventLoss = new HashMap<>();
+         Map<Player, Boolean> doubleWin = new HashMap<>();
+ 
+-        // 1. CALCOLO ICONE E MODIFICATORI EDIFICI
+         for (Player player : players) {
+             int baseIcons = 0;
+             int extraIcons = 0;
+@@ -47,63 +49,47 @@
+ 
+             Tribe tribe = player.getTribe();
+             if (tribe != null) {
+-                // Conta icone base degli Sciamani
+                 for (TribeCharacter character : tribe.getMembers()) {
+                     if (character.getCharacterType() == CharacterType.SHAMAN) {
+                         baseIcons += character.getNumStars();
+                     }
+                 }
+ 
+-                // Applica effetti degli Edifici per il Rituale Sciamanico
+                 for (Building building : tribe.getBuildings()) {
+                     BuildingEffect effect = building.getEffect();
+-                        // Modificatore: 3 icone aggiuntive
+-                        extraIcons += effect.getExtraShamanIcons();
+-                        // Modificatore: Non perdete Punti Prestigio
+-                        if (effect.preventsShamanPPLoss()) noLoss = true;
+-                        // Modificatore: Guadagnate il doppio dei Punti Prestigio
+-                        if (effect.doublesShamanWinPP()) doublePP = true;
+-                    }
+-                }
++                    extraIcons += effect.getExtraShamanIcons();
++                    if (effect.preventsShamanPPLoss()) noLoss = true;
++                    if (effect.doublesShamanWinPP()) doublePP = true;
++                }
++            }
+ 
+             totalIconsPerPlayer.put(player, baseIcons + extraIcons);
+             preventLoss.put(player, noLoss);
+             doubleWin.put(player, doublePP);
+         }
+ 
+-
+         if (totalIconsPerPlayer.isEmpty()) return;
+ 
+-        // 2. TROVA IL MASSIMO E IL MINIMO
+         int maxIcons = Collections.max(totalIconsPerPlayer.values());
+         int minIcons = Collections.min(totalIconsPerPlayer.values());
+ 
+-        // 3. ASSEGNAZIONE PREMI E PENALITÀ
+         for (Player player : players) {
+             int icons = totalIconsPerPlayer.get(player);
+ 
+-            // Vittoria: Il giocatore con più icone nella propria tribù, guadagna i Punti Prestigio indicati
+-            // In caso di parità, tutti i giocatori in parità ottengono i Punti Prestigio indicati
+             if (icons == maxIcons) {
+                 int earnedPP = doubleWin.get(player) ? PPtoAdd * 2 : PPtoAdd;
+                 player.addPP(earnedPP);
+                 System.out.println(player.getNickname() + " vince il rito e ottiene " + earnedPP + " PP!");
+             }
+ 
+-            // Sconfitta: Il giocatore con meno icone nella propria tribù, perde i Punti Prestigio indicati
+-            // Anche in questo caso si applica la regola della parità
+             if (icons == minIcons) {
+                 if (preventLoss.get(player)) {
+                     System.out.println(player.getNickname() + " ha meno icone, ma l'Edificio lo protegge dalla perdita di PP!");
+                 } else {
+-                    // Nota: PPtoLose è già un numero negativo, quindi usiamo addPP o un metodo equivalente
+                     player.addPP(PPtoLose);
+                     System.out.println(player.getNickname() + " perde il rito e subisce " + PPtoLose + " PP.");
+                 }
+             }
+         }
+     }
+-
+-
+-
+-}
++}
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/event/hunting.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.CharacterType;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\n\r\npublic class hunting extends Event implements EventEffect{\r\n\r\n    public hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {\r\n        super(id, era, minPlayers, EventType.HUNTING, eventEffect);\r\n    }\r\n\r\n    @Override\r\n    public void applyEvent(List<Player> players, String id) {\r\n        int PPperHunter = 0;\r\n\r\n        // Valori di Punti Prestigio per cacciatore basati sull'Era corrente (dal tuo snippet)\r\n        if (this.getEra() == Era.I) {\r\n            PPperHunter = 1;\r\n        } else if (this.getEra() == Era.II) {\r\n            PPperHunter = 2;\r\n        } else if (this.getEra() == Era.III) {\r\n            PPperHunter = 3;\r\n        }\r\n\r\n        for (Player player : players) {\r\n            Tribe tribe = player.getTribe();\r\n            if (tribe == null) continue;\r\n\r\n            // 1. Conta quanti Cacciatori ci sono nella tribù\r\n            int huntersCount = tribe.countCharacters(CharacterType.HUNTER);\r\n\r\n            if (huntersCount > 0) {\r\n                // Valori base forniti dall'evento per ogni Cacciatore\r\n                int foodPerHunter = 1;\r\n                for (Building building : player.getTribe().getBuildings()){\r\n                    building.getEffect().applyEventBonus(EventType.HUNTING,player,huntersCount);\r\n                }\r\n\r\n\r\n                // 3. Calcolo dei totali\r\n                int totalFoodToAdd = huntersCount * (foodPerHunter);\r\n                int totalPPToAdd = huntersCount * (PPperHunter);\r\n\r\n                // 4. Assegnazione delle risorse al giocatore\r\n                player.addFood(totalFoodToAdd);\r\n                player.addPP(totalPPToAdd);\r\n\r\n                System.out.println(player.getNickname() + \" ha \" + huntersCount +\r\n                        \" Cacciatori. Ottiene \" + totalFoodToAdd +\r\n                        \" Cibo e \" + totalPPToAdd + \" PP dalla Caccia!\");\r\n            } else {\r\n                System.out.println(player.getNickname() + \" non ha Cacciatori e non ottiene nulla.\");\r\n            }\r\n        }\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/event/hunting.java b/src/main/java/it/polimi/ingsw/am22/event/hunting.java
+--- a/src/main/java/it/polimi/ingsw/am22/event/hunting.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/event/hunting.java	(date 1775861986611)
+@@ -1,30 +1,30 @@
+ package it.polimi.ingsw.am22.event;
++
+ import it.polimi.ingsw.am22.Building.Building;
+ import it.polimi.ingsw.am22.Era;
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ import it.polimi.ingsw.am22.character.CharacterType;
+ 
+-import java.util.ArrayList;
+ import java.util.List;
+ 
++public class hunting implements EventEffect {
+ 
+-public class hunting extends Event implements EventEffect{
++    private Era era;
+ 
+-    public hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+-        super(id, era, minPlayers, EventType.HUNTING, eventEffect);
++    public hunting(Era era) {
++        this.era = era;
+     }
+ 
+     @Override
+     public void applyEvent(List<Player> players, String id) {
+         int PPperHunter = 0;
+ 
+-        // Valori di Punti Prestigio per cacciatore basati sull'Era corrente (dal tuo snippet)
+-        if (this.getEra() == Era.I) {
++        if (era == Era.I) {
+             PPperHunter = 1;
+-        } else if (this.getEra() == Era.II) {
++        } else if (era == Era.II) {
+             PPperHunter = 2;
+-        } else if (this.getEra() == Era.III) {
++        } else if (era == Era.III) {
+             PPperHunter = 3;
+         }
+ 
+@@ -32,22 +32,17 @@
+             Tribe tribe = player.getTribe();
+             if (tribe == null) continue;
+ 
+-            // 1. Conta quanti Cacciatori ci sono nella tribù
+             int huntersCount = tribe.countCharacters(CharacterType.HUNTER);
+ 
+             if (huntersCount > 0) {
+-                // Valori base forniti dall'evento per ogni Cacciatore
+                 int foodPerHunter = 1;
+-                for (Building building : player.getTribe().getBuildings()){
+-                    building.getEffect().applyEventBonus(EventType.HUNTING,player,huntersCount);
++                for (Building building : player.getTribe().getBuildings()) {
++                    building.getEffect().applyEventBonus(EventType.HUNTING, player, huntersCount);
+                 }
+ 
++                int totalFoodToAdd = huntersCount * foodPerHunter;
++                int totalPPToAdd = huntersCount * PPperHunter;
+ 
+-                // 3. Calcolo dei totali
+-                int totalFoodToAdd = huntersCount * (foodPerHunter);
+-                int totalPPToAdd = huntersCount * (PPperHunter);
+-
+-                // 4. Assegnazione delle risorse al giocatore
+                 player.addFood(totalFoodToAdd);
+                 player.addPP(totalPPToAdd);
+ 
+@@ -59,5 +54,4 @@
+             }
+         }
+     }
+-
+-}
++}
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/event/sustenance.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.CharacterType;\r\n\r\n\r\nimport java.util.List;\r\n\r\n\r\npublic class sustenance extends Event implements EventEffect {\r\n\r\n    public sustenance(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {\r\n        super(id, era, minPlayers, EventType.SUSTENANCE, eventEffect);\r\n    }\r\n\r\n    @Override\r\n    public void applyEvent(List<Player> players, String id) {\r\n        int PPLose = 0;\r\n\r\n        // Valori di penalità basati sull'Era corrente\r\n        if (this.getEra() == Era.I) {\r\n            PPLose = -1;\r\n        } else if (this.getEra() == Era.II) {\r\n            PPLose = -2;\r\n        } else if (this.getEra() == Era.III) {\r\n            PPLose = -3;\r\n        }\r\n\r\n        for (Player player : players) {\r\n            Tribe tribe = player.getTribe();\r\n            if (tribe == null) continue;\r\n\r\n            // 1. Calcola quanti personaggi ci sono (1 cibo per personaggio)\r\n            int totalCharacters = tribe.getMembers().size();\r\n\r\n            // 2. Calcola lo sconto base dei Raccoglitori (3 cibo per ogni raccoglitore)\r\n            int collectorsCount = tribe.countCharacters(CharacterType.COLLECTOR);\r\n            int totalDiscount = collectorsCount * 3;\r\n\r\n            // 3. Calcola eventuali sconti forniti dagli Edifici\r\n            for (Building building : tribe.getBuildings()) {\r\n                     BuildingEffect effect = building.getEffect();\r\n                    // L'edificio calcola da solo quanto sconto applicare in base alla tribù\r\n                    totalDiscount += effect.getSustenanceDiscount(tribe);\r\n            }\r\n\r\n            // 4. Calcola il costo finale in Cibo (non può essere minore di 0)\r\n            int foodToPay = Math.max(0, totalCharacters - totalDiscount);\r\n\r\n            // 5. Risoluzione del pagamento\r\n            if (player.getFood() >= foodToPay) {\r\n                // Ha abbastanza cibo per sfamare tutti\r\n                player.addFood(-foodToPay); // Sottrae il cibo dal totale del giocatore\r\n                System.out.println(player.getNickname() + \" paga \" + foodToPay + \" cibo e sfama tutta la tribù.\");\r\n\r\n            } else {\r\n                // Non ha abbastanza cibo: deve pagare tutto quello che ha\r\n                int foodAvailable = player.getFood();\r\n                int unfedCharacters = foodToPay - foodAvailable;\r\n\r\n                // Azzera il cibo del giocatore (paga tutto quello che possiede)\r\n                player.addFood(-foodAvailable);\r\n\r\n                // Calcola e applica la penalità (PPLose è già negativo)\r\n                int totalPenalty = PPLose * unfedCharacters;\r\n                player.addPP(totalPenalty);\r\n\r\n                System.out.println(player.getNickname() + \" ha solo \" + foodAvailable +\r\n                        \" cibo. Non riesce a sfamare \" + unfedCharacters +\r\n                        \" personaggi e subisce \" + totalPenalty + \" PP di penalità.\");\r\n            }\r\n        }\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/event/sustenance.java b/src/main/java/it/polimi/ingsw/am22/event/sustenance.java
+--- a/src/main/java/it/polimi/ingsw/am22/event/sustenance.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/event/sustenance.java	(date 1775862002390)
+@@ -1,4 +1,5 @@
+ package it.polimi.ingsw.am22.event;
++
+ import it.polimi.ingsw.am22.Building.Building;
+ import it.polimi.ingsw.am22.Building.BuildingEffect;
+ import it.polimi.ingsw.am22.Era;
+@@ -6,26 +7,25 @@
+ import it.polimi.ingsw.am22.Tribe;
+ import it.polimi.ingsw.am22.character.CharacterType;
+ 
+-
+ import java.util.List;
+ 
++public class sustenance implements EventEffect {
+ 
+-public class sustenance extends Event implements EventEffect {
++    private Era era;
+ 
+-    public sustenance(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+-        super(id, era, minPlayers, EventType.SUSTENANCE, eventEffect);
++    public sustenance(Era era) {
++        this.era = era;
+     }
+ 
+     @Override
+     public void applyEvent(List<Player> players, String id) {
+         int PPLose = 0;
+ 
+-        // Valori di penalità basati sull'Era corrente
+-        if (this.getEra() == Era.I) {
++        if (era == Era.I) {
+             PPLose = -1;
+-        } else if (this.getEra() == Era.II) {
++        } else if (era == Era.II) {
+             PPLose = -2;
+-        } else if (this.getEra() == Era.III) {
++        } else if (era == Era.III) {
+             PPLose = -3;
+         }
+ 
+@@ -33,38 +33,28 @@
+             Tribe tribe = player.getTribe();
+             if (tribe == null) continue;
+ 
+-            // 1. Calcola quanti personaggi ci sono (1 cibo per personaggio)
+             int totalCharacters = tribe.getMembers().size();
+ 
+-            // 2. Calcola lo sconto base dei Raccoglitori (3 cibo per ogni raccoglitore)
+             int collectorsCount = tribe.countCharacters(CharacterType.COLLECTOR);
+             int totalDiscount = collectorsCount * 3;
+ 
+-            // 3. Calcola eventuali sconti forniti dagli Edifici
+             for (Building building : tribe.getBuildings()) {
+-                     BuildingEffect effect = building.getEffect();
+-                    // L'edificio calcola da solo quanto sconto applicare in base alla tribù
+-                    totalDiscount += effect.getSustenanceDiscount(tribe);
++                BuildingEffect effect = building.getEffect();
++                totalDiscount += effect.getSustenanceDiscount(tribe);
+             }
+ 
+-            // 4. Calcola il costo finale in Cibo (non può essere minore di 0)
+             int foodToPay = Math.max(0, totalCharacters - totalDiscount);
+ 
+-            // 5. Risoluzione del pagamento
+             if (player.getFood() >= foodToPay) {
+-                // Ha abbastanza cibo per sfamare tutti
+-                player.addFood(-foodToPay); // Sottrae il cibo dal totale del giocatore
++                player.addFood(-foodToPay);
+                 System.out.println(player.getNickname() + " paga " + foodToPay + " cibo e sfama tutta la tribù.");
+ 
+             } else {
+-                // Non ha abbastanza cibo: deve pagare tutto quello che ha
+                 int foodAvailable = player.getFood();
+                 int unfedCharacters = foodToPay - foodAvailable;
+ 
+-                // Azzera il cibo del giocatore (paga tutto quello che possiede)
+                 player.addFood(-foodAvailable);
+ 
+-                // Calcola e applica la penalità (PPLose è già negativo)
+                 int totalPenalty = PPLose * unfedCharacters;
+                 player.addPP(totalPenalty);
+ 
+@@ -74,5 +64,4 @@
+             }
+         }
+     }
+-
+-}
++}
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22;\r\nimport com.fasterxml.jackson.databind.JsonNode;\r\nimport com.fasterxml.jackson.databind.ObjectMapper;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport it.polimi.ingsw.am22.character.TribeCharacter;\r\nimport it.polimi.ingsw.am22.event.Event;\r\nimport it.polimi.ingsw.am22.Building.*;\r\nimport it.polimi.ingsw.am22.character.CharacterType;\r\nimport it.polimi.ingsw.am22.event.EventType;\r\n\r\nimport java.io.InputStream;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class CardJsonLoader {\r\n\r\n    private final ObjectMapper mapper = new ObjectMapper();\r\n\r\n    public LoadedCards loadTribeCharactersAndEvents(String resourcePath) {\r\n        List<TribeCharacter> tribeCharacters = new ArrayList<>();\r\n        List<Event> events = new ArrayList<>();\r\n\r\n        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {\r\n            if (is == null) {\r\n                throw new IllegalArgumentException(\"File non trovato: \" + resourcePath);\r\n            }\r\n\r\n            JsonNode root = mapper.readTree(is);\r\n\r\n            if (!root.isArray()) {\r\n                throw new IllegalArgumentException(\"La radice del JSON deve essere un array\");\r\n            }\r\n\r\n            for (JsonNode node : root) {\r\n                String type = node.get(\"type\").asText();\r\n\r\n                switch (type) {\r\n                    case \"tribeCharacter\" ->\r\n                            tribeCharacters.add(mapper.treeToValue(node, TribeCharacter.class));\r\n\r\n                    case \"event\" ->\r\n                            events.add(mapper.treeToValue(node, Event.class));\r\n\r\n                    default ->\r\n                            throw new IllegalArgumentException(\"Tipo non valido in \" + resourcePath + \": \" + type);\r\n                }\r\n            }\r\n\r\n            return new LoadedCards(tribeCharacters, events, new ArrayList<>());\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel caricamento di tribeCharacter/event\", e);\r\n        }\r\n    }\r\n\r\n    public List<Building> loadBuildings(String resourcePath) {\r\n        List<Building> buildings = new ArrayList<>();\r\n\r\n        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {\r\n            if (is == null) {\r\n                throw new IllegalArgumentException(\"File non trovato: \" + resourcePath);\r\n            }\r\n\r\n            JsonNode root = mapper.readTree(is);\r\n\r\n            if (!root.isArray()) {\r\n                throw new IllegalArgumentException(\"La radice del JSON dei building deve essere un array\");\r\n            }\r\n\r\n            for (JsonNode node : root) {\r\n                buildings.add(parseBuilding(node));\r\n            }\r\n\r\n            return buildings;\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel caricamento dei building\", e);\r\n        }\r\n    }\r\n\r\n    private Building parseBuilding(JsonNode node) {\r\n        String id = node.get(\"id\").asText();   // se il costruttore vuole int, usa asInt()\r\n        Era era = Era.valueOf(node.get(\"era\").asText());\r\n        int minPlayers = node.get(\"minPlayers\").asInt();\r\n        int foodPrice = node.get(\"foodPrice\").asInt();\r\n        int finalPP = node.get(\"finalPP\").asInt();\r\n\r\n        String effectType = node.get(\"BuildingEffectType\").asText();\r\n        JsonNode effectNode = node.get(\"effect\");\r\n\r\n        BuildingEffect effect = parseBuildingEffect(effectType, effectNode, id);\r\n\r\n        return new Building(id, era, minPlayers, foodPrice, finalPP, effect);\r\n    }\r\n\r\n    private BuildingEffect parseBuildingEffect(String effectType, JsonNode effectNode, String buildingId) {\r\n        return switch (effectType) {\r\n\r\n            case \"COLLECTION_REWARD_EFFECT\" -> new CollectionRewardEffect(\r\n                    CollectionCondition.valueOf(effectNode.get(\"conditionType\").asText()),\r\n                    effectNode.get(\"foodReward\").asInt()\r\n            );\r\n\r\n            case \"SUSTENANCE_DISCOUNT_EFFECT\" -> new SustenanceDiscountEffect(\r\n                    CharacterType.valueOf(effectNode.get(\"targetCharacterType\").asText())\r\n            );\r\n\r\n            case \"SHAMANIC_MODIFIER_EFFECT\" -> new ShamanicModifierEffect(\r\n                    effectNode.get(\"extraIcons\").asInt(),\r\n                    effectNode.get(\"preventPPLoss\").asBoolean(),\r\n                    effectNode.get(\"doubleWinPP\").asBoolean()\r\n            );\r\n\r\n            case \"EVENT_YIELD_BONUS_EFFECT\" -> new EventYieldBonusEffect(\r\n                    EventType.valueOf(effectNode.get(\"targetEventType\").asText()),\r\n                    effectNode.get(\"bonusFood\").asInt(),\r\n                    effectNode.get(\"bonusPP\").asInt()\r\n            );\r\n\r\n            case \"ENDGAME_SCORING_EFFECT\" -> new EndGameScoringEffect(\r\n                    effectNode.get(\"flatPP\").asInt(),\r\n                    effectNode.get(\"pointsPerSet\").asInt(),\r\n                    readNullableCharacterType(effectNode.get(\"targetCharacterType\")),\r\n                    effectNode.get(\"multiplierPP\").asInt(),\r\n                    effectNode.get(\"doubleBuilderPP\").asBoolean()\r\n            );\r\n\r\n            case \"TURN_PHASE_MODIFIER_EFFECT\" -> new TurnPhaseModifierEffect(\r\n                    effectNode.get(\"extraFoodOnTurnOrderBonus\").asBoolean(),\r\n                    effectNode.get(\"extraBuyAtRoundEnd\").asBoolean()\r\n            );\r\n\r\n            default -> throw new IllegalArgumentException(\r\n                    \"BuildingEffectType sconosciuto nel building \" + buildingId + \": \" + effectType\r\n            );\r\n        };\r\n    }\r\n\r\n    private CharacterType readNullableCharacterType(JsonNode node) {\r\n        if (node == null || node.isNull()) {\r\n            return null;\r\n        }\r\n        return CharacterType.valueOf(node.asText());\r\n    }\r\n    public LoadedCards loadAllCards(String tribeEventPath, String buildingPath) {\r\n        LoadedCards partial = loadTribeCharactersAndEvents(tribeEventPath);\r\n        List<Building> buildings = loadBuildings(buildingPath);\r\n\r\n        return new LoadedCards(\r\n                partial.getTribeCharacters(),\r\n                partial.getEvents(),\r\n                buildings\r\n        );\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java b/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java
+--- a/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java	(date 1775863848389)
+@@ -1,17 +1,14 @@
+ package it.polimi.ingsw.am22;
++
+ import com.fasterxml.jackson.databind.JsonNode;
+ import com.fasterxml.jackson.databind.ObjectMapper;
+-import it.polimi.ingsw.am22.Building.BuildingEffect;
+-import it.polimi.ingsw.am22.character.TribeCharacter;
+-import it.polimi.ingsw.am22.event.Event;
+ import it.polimi.ingsw.am22.Building.*;
+-import it.polimi.ingsw.am22.character.CharacterType;
+-import it.polimi.ingsw.am22.event.EventType;
+-
++import it.polimi.ingsw.am22.Building.BuildingEffect;
++import it.polimi.ingsw.am22.character.*;
++import it.polimi.ingsw.am22.event.*;
+ import java.io.InputStream;
+ import java.util.ArrayList;
+ import java.util.List;
+-
+ public class CardJsonLoader {
+ 
+     private final ObjectMapper mapper = new ObjectMapper();
+@@ -36,10 +33,10 @@
+ 
+                 switch (type) {
+                     case "tribeCharacter" ->
+-                            tribeCharacters.add(mapper.treeToValue(node, TribeCharacter.class));
++                            tribeCharacters.add(parseTribeCharacter(node));
+ 
+                     case "event" ->
+-                            events.add(mapper.treeToValue(node, Event.class));
++                            events.add(parseEvent(node));
+ 
+                     default ->
+                             throw new IllegalArgumentException("Tipo non valido in " + resourcePath + ": " + type);
+@@ -52,7 +49,62 @@
+             throw new RuntimeException("Errore nel caricamento di tribeCharacter/event", e);
+         }
+     }
++    private TribeCharacter parseTribeCharacter(JsonNode node) {
++        try {
++            String id = node.get("id").asText();
++            Era era = Era.valueOf(node.get("era").asText());
++            int minPlayers = node.get("minPlayers").asInt();
++            CharacterType characterType = CharacterType.valueOf(node.get("characterType").asText());
++
++            JsonNode effectNode = node.get("effect");
++            CharacterEffect effect = parseCharacterEffect(characterType, effectNode);
++
++            return new TribeCharacter(id, era, minPlayers, characterType, effect);
++
++        } catch (Exception e) {
++            throw new RuntimeException("Errore nel parsing di tribeCharacter", e);
++        }
++    }
++
++    private CharacterEffect parseCharacterEffect(CharacterType characterType, JsonNode effectNode) {
++        try {
++            return switch (characterType) {
++                case INVENTOR -> mapper.treeToValue(effectNode, Inventor.class);
++                case ARTIST -> mapper.treeToValue(effectNode, Artist.class);
++                case HUNTER -> mapper.treeToValue(effectNode, Hunter.class);
++                case BUILDER -> mapper.treeToValue(effectNode, Builder.class);
++                case SHAMAN -> mapper.treeToValue(effectNode, Shaman.class);
++                case COLLECTOR -> mapper.treeToValue(effectNode, Collector.class);
++            };
++        } catch (Exception e) {
++            throw new RuntimeException("Errore nel parsing di CharacterEffect: " + characterType, e);
++        }
++    }
++
++    private Event parseEvent(JsonNode node) {
++        try {
++            String id = node.get("id").asText();
++            Era era = Era.valueOf(node.get("era").asText());
++            int minPlayers = node.get("minPlayers").asInt();
++            EventType eventType = EventType.valueOf(node.get("eventType").asText());
++
++            EventEffect effect = parseEventEffect(eventType, era);
++
++            return new Event(id, era, minPlayers, eventType, effect);
+ 
++        } catch (Exception e) {
++            throw new RuntimeException("Errore nel parsing di event", e);
++        }
++    }
++
++    private EventEffect parseEventEffect(EventType eventType, Era era) {
++        return switch (eventType) {
++            case HUNTING -> new hunting(era);
++            case SHAMANIC_RITUAL -> new ShamanicRitual(era);
++            case CAVE_PAINTING -> new CavePaintings(era);
++            case SUSTENANCE -> new sustenance(era);
++        };
++    }
+     public List<Building> loadBuildings(String resourcePath) {
+         List<Building> buildings = new ArrayList<>();
+ 
+@@ -78,10 +130,11 @@
+         }
+     }
+ 
++
+     private Building parseBuilding(JsonNode node) {
+-        String id = node.get("id").asText();   // se il costruttore vuole int, usa asInt()
++        String id = node.get("id").asText();
+         Era era = Era.valueOf(node.get("era").asText());
+-        int minPlayers = node.get("minPlayers").asInt();
++        int minPlayers = 2;
+         int foodPrice = node.get("foodPrice").asInt();
+         int finalPP = node.get("finalPP").asInt();
+ 
+@@ -142,6 +195,7 @@
+         }
+         return CharacterType.valueOf(node.asText());
+     }
++
+     public LoadedCards loadAllCards(String tribeEventPath, String buildingPath) {
+         LoadedCards partial = loadTribeCharactersAndEvents(tribeEventPath);
+         List<Building> buildings = loadBuildings(buildingPath);
+Index: src/main/java/it/polimi/ingsw/am22/character/Artist.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\n\r\npublic class Artist extends TribeCharacter implements CharacterEffect {\r\n\r\n    public Artist(String id, Era era, int minPlayers, String characterType){\r\n        super(id, era, minPlayers, CharacterType.ARTIST);\r\n    }\r\n\r\n    @Override\r\n    public void applyImmediateEffect(Player player, Tribe tribe) {\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/Artist.java b/src/main/java/it/polimi/ingsw/am22/character/Artist.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/Artist.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/character/Artist.java	(date 1775857391433)
+@@ -4,14 +4,33 @@
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ 
+-public class Artist extends TribeCharacter implements CharacterEffect {
++public class Artist implements CharacterEffect {
+ 
+-    public Artist(String id, Era era, int minPlayers, String characterType){
+-        super(id, era, minPlayers, CharacterType.ARTIST);
++    public Artist() {
+     }
+ 
+     @Override
+     public void applyImmediateEffect(Player player, Tribe tribe) {
++        // no immediate effect
++    }
++
++    @Override
++    public int getNumStars() {
++        return 0;
++    }
++
++    @Override
++    public char getIconPerInventor() {
++        return '0';
+     }
+ 
+-}
++    @Override
++    public int getDiscountFood() {
++        return 0;
++    }
++
++    @Override
++    public int getPP() {
++        return 0;
++    }
++}
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\n\r\n\r\npublic interface CharacterEffect {\r\n    void applyImmediateEffect(Player player, Tribe tribe);\r\n    public int getNumStars();\r\n    public char getIconPerInventor();\r\n    public int getDiscountFood();\r\n    public int getPP();\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java b/src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java	(date 1775859638243)
+@@ -3,11 +3,10 @@
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ 
+-
+ public interface CharacterEffect {
+     void applyImmediateEffect(Player player, Tribe tribe);
+-    public int getNumStars();
+-    public char getIconPerInventor();
+-    public int getDiscountFood();
+-    public int getPP();
+-}
++    int getNumStars();
++    char getIconPerInventor();
++    int getDiscountFood();
++    int getPP();
++}
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/character/Builder.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\n\r\n\r\npublic class Builder extends TribeCharacter implements CharacterEffect {\r\n    private int DiscountFood;\r\n    private int PP;\r\n\r\n    public Builder(String id, Era era, int minPlayers, String characterType, int discountFood, int PP){\r\n        super(id, era, minPlayers, CharacterType.BUILDER);\r\n        this.DiscountFood = discountFood;\r\n        this.PP = PP;\r\n    }\r\n\r\n    public int getDiscountFood(){\r\n        return DiscountFood;\r\n    }\r\n\r\n    public int getPP(){\r\n        return PP;\r\n    }\r\n\r\n\r\n    @Override\r\n    public void applyImmediateEffect(Player player, Tribe tribe){}\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/Builder.java b/src/main/java/it/polimi/ingsw/am22/character/Builder.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/Builder.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/character/Builder.java	(date 1775864247442)
+@@ -1,30 +1,50 @@
+ package it.polimi.ingsw.am22.character;
+ 
+-
+-import it.polimi.ingsw.am22.Era;
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ 
++public class Builder implements CharacterEffect {
++
++    private int discountFood;
++    private int pp;
++
++    public Builder() {
++    }
++
++    public Builder(int discountFood, int pp) {
++        this.discountFood = discountFood;
++        this.pp = pp;
++    }
++
++    public void setDiscountFood(int discountFood) {
++        this.discountFood = discountFood;
++    }
++
++    public void setPp(int pp) {
++        this.pp = pp;
++    }
+ 
+-public class Builder extends TribeCharacter implements CharacterEffect {
+-    private int DiscountFood;
+-    private int PP;
++    @Override
++    public void applyImmediateEffect(Player player, Tribe tribe) {
++    }
+ 
+-    public Builder(String id, Era era, int minPlayers, String characterType, int discountFood, int PP){
+-        super(id, era, minPlayers, CharacterType.BUILDER);
+-        this.DiscountFood = discountFood;
+-        this.PP = PP;
++    @Override
++    public int getNumStars() {
++        return 0;
+     }
+ 
+-    public int getDiscountFood(){
+-        return DiscountFood;
++    @Override
++    public char getIconPerInventor() {
++        return '0';
++    }
++
++    @Override
++    public int getDiscountFood() {
++        return discountFood;
+     }
+ 
+-    public int getPP(){
+-        return PP;
++    @Override
++    public int getPP() {
++        return pp;
+     }
+-
+-
+-    @Override
+-    public void applyImmediateEffect(Player player, Tribe tribe){}
+-}
++}
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/CardDeck.java
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/CardDeck.java b/src/main/java/it/polimi/ingsw/am22/CardDeck.java
+deleted file mode 100644
+--- a/src/main/java/it/polimi/ingsw/am22/CardDeck.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ /dev/null	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
+@@ -1,25 +0,0 @@
+-package it.polimi.ingsw.am22;
+-
+-import it.polimi.ingsw.am22.Building.Building;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-
+-
+-public class CardDeck {
+-    /*public static List<Card> createAllTribeCards() {
+-        List<Card> deck = new ArrayList<>();
+-        deck.add(new Character("Hunter", 1, 2)); // Era 1, min 2 giocatori
+-        deck.add(new Character("Shaman", 1, 3));   // Era 1, min 3 giocatori
+-        deck.add(new Character("Artist", 2, 4)); // Era 2, min 4 giocatori
+-        return deck;
+-    }
+-    // Metodo separato per gli Edifici!
+-    public static List<Building> createAllBuildings() {
+-        List<Building> buildings = new ArrayList<>();
+-        buildings.add(new Building("Tent", Era.I));
+-        buildings.add(new Building("Hut", Era.II));
+-        return buildings;
+-    }*/
+-}
+Index: src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java b/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java
+deleted file mode 100644
+--- a/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ /dev/null	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
+@@ -1,32 +0,0 @@
+-package it.polimi.ingsw.am22.character;
+-
+-import it.polimi.ingsw.am22.Era;
+-import it.polimi.ingsw.am22.Player;
+-import it.polimi.ingsw.am22.Tribe;
+-import org.junit.jupiter.api.Test;
+-import static org.junit.jupiter.api.Assertions.*;
+-
+-class BuilderTest {
+-
+-    @Test
+-    void testBuilderCreationGettersAndEffect() {
+-        // 1. Istanziamo l'oggetto Builder.
+-        // Oltre ai parametri standard, passiamo uno sconto cibo (es. 2) e i PP (es. 3)
+-        Builder builder = new Builder("build_01", Era.I, 3, "Builder", 2, 3);
+-
+-        // Verifichiamo che l'istanza sia stata creata (copre il costruttore)
+-        assertNotNull(builder, "L'istanza di Builder non dovrebbe essere null");
+-
+-        // 2. Verifichiamo che i Getter restituiscano i valori corretti (copre i metodi get)
+-        assertEquals(2, builder.getDiscountFood(), "Lo sconto cibo dovrebbe essere 2");
+-        assertEquals(3, builder.getPP(), "I Punti Prestigio dovrebbero essere 3");
+-
+-        // 3. Prepariamo gli oggetti Player e Tribe necessari per il metodo
+-        Player dummyPlayer = new Player("Christian");
+-        Tribe dummyTribe = new Tribe();
+-
+-        // 4. Eseguiamo applyImmediateEffect per assicurarci che non faccia nulla di inaspettato
+-        assertDoesNotThrow(() -> builder.applyImmediateEffect(dummyPlayer, dummyTribe),
+-                "applyImmediateEffect non deve lanciare eccezioni per la classe Builder");
+-    }
+-}
+\ No newline at end of file
+Index: src/test/java/it/polimi/ingsw/am22/CardJsonLoaderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/CardJsonLoaderTest.java b/src/test/java/it/polimi/ingsw/am22/CardJsonLoaderTest.java
+new file mode 100644
+--- /dev/null	(date 1775865243473)
++++ b/src/test/java/it/polimi/ingsw/am22/CardJsonLoaderTest.java	(date 1775865243473)
+@@ -0,0 +1,212 @@
++package it.polimi.ingsw.am22;
++
++import it.polimi.ingsw.am22.Building.Building;
++import it.polimi.ingsw.am22.character.Builder;
++import it.polimi.ingsw.am22.character.CharacterEffect;
++import it.polimi.ingsw.am22.character.CharacterType;
++import it.polimi.ingsw.am22.character.Hunter;
++import it.polimi.ingsw.am22.character.TribeCharacter;
++import it.polimi.ingsw.am22.event.Event;
++import it.polimi.ingsw.am22.event.EventType;
++import org.junit.jupiter.api.Test;
++
++import java.util.List;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++public class CardJsonLoaderTest {
++
++    @Test
++    void loadTribeCharactersAndEvents_shouldLoadBuilderCorrectly() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        assertNotNull(loadedCards);
++        assertFalse(loadedCards.getTribeCharacters().isEmpty());
++
++        TribeCharacter builderCard = loadedCards.getTribeCharacters().stream()
++                .filter(c -> c.getCharacterType() == CharacterType.BUILDER)
++                .findFirst()
++                .orElse(null);
++
++        assertNotNull(builderCard);
++        assertEquals(CharacterType.BUILDER, builderCard.getCharacterType());
++        assertEquals(1, builderCard.getDiscountFood());
++        assertEquals(3, builderCard.getPP());
++        assertTrue(builderCard.getEffect() instanceof Builder);
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_shouldLoadShamanCorrectly() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        TribeCharacter shamanCard = loadedCards.getTribeCharacters().stream()
++                .filter(c -> c.getCharacterType() == CharacterType.SHAMAN)
++                .findFirst()
++                .orElse(null);
++
++        assertNotNull(shamanCard);
++        assertEquals(CharacterType.SHAMAN, shamanCard.getCharacterType());
++        assertTrue(shamanCard.getNumStars() > 0);
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_allTribeCharactersShouldHaveEffect() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        assertNotNull(loadedCards);
++        assertFalse(loadedCards.getTribeCharacters().isEmpty());
++
++        for (TribeCharacter card : loadedCards.getTribeCharacters()) {
++            assertNotNull(card.getCharacterType());
++            assertNotNull(card.getEffect());
++        }
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_builderShouldHaveBuilderEffect() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        TribeCharacter builderCard = loadedCards.getTribeCharacters().stream()
++                .filter(c -> c.getCharacterType() == CharacterType.BUILDER)
++                .findFirst()
++                .orElse(null);
++
++        assertNotNull(builderCard);
++        assertNotNull(builderCard.getEffect());
++        assertTrue(builderCard.getEffect() instanceof Builder);
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_shouldLoadHunterCorrectly() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        TribeCharacter hunterCard = loadedCards.getTribeCharacters().stream()
++                .filter(c -> c.getCharacterType() == CharacterType.HUNTER)
++                .findFirst()
++                .orElse(null);
++
++        assertNotNull(hunterCard);
++        assertEquals(CharacterType.HUNTER, hunterCard.getCharacterType());
++
++        CharacterEffect effect = hunterCard.getEffect();
++        assertTrue(effect instanceof Hunter);
++
++        Hunter hunter = (Hunter) effect;
++        assertTrue(hunter.isHasFoodIcon() || !hunter.isHasFoodIcon());
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_shouldContainShamanWithStars() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        boolean found = loadedCards.getTribeCharacters().stream()
++                .filter(c -> c.getCharacterType() == CharacterType.SHAMAN)
++                .anyMatch(c -> c.getNumStars() > 0);
++
++        assertTrue(found);
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_shouldLoadEventsCorrectly() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        assertNotNull(loadedCards);
++        assertFalse(loadedCards.getEvents().isEmpty());
++
++        boolean hasHunting = loadedCards.getEvents().stream()
++                .anyMatch(e -> e.getEventType() == EventType.HUNTING);
++
++        boolean hasSustenance = loadedCards.getEvents().stream()
++                .anyMatch(e -> e.getEventType() == EventType.SUSTENANCE);
++
++        assertTrue(hasHunting);
++        assertTrue(hasSustenance);
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_sustenanceShouldHavePriorityOne() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        Event sustenance = loadedCards.getEvents().stream()
++                .filter(e -> e.getEventType() == EventType.SUSTENANCE)
++                .findFirst()
++                .orElse(null);
++
++        assertNotNull(sustenance);
++        assertEquals(1, sustenance.getTriggerPriority());
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_shouldThrowIfFileDoesNotExist() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        RuntimeException ex = assertThrows(RuntimeException.class, () ->
++                loader.loadTribeCharactersAndEvents("/file-che-non-esiste.json")
++        );
++
++        assertNotNull(ex.getMessage());
++    }
++
++    @Test
++    void loadAllCards_shouldLoadCharactersEventsAndBuildings() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadAllCards("/TribeCharacter-Event.json", "/Building.json");
++
++        assertNotNull(loadedCards);
++        assertFalse(loadedCards.getTribeCharacters().isEmpty());
++        assertFalse(loadedCards.getEvents().isEmpty());
++        assertFalse(loadedCards.getBuildings().isEmpty());
++    }
++
++    @Test
++    void loadBuildings_allBuildingsShouldHaveEffect() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        List<Building> buildings = loader.loadBuildings("/Building.json");
++
++        assertNotNull(buildings);
++        assertFalse(buildings.isEmpty());
++
++        for (Building building : buildings) {
++            assertNotNull(building.getEffect());
++        }
++    }
++
++    @Test
++    void loadTribeCharactersAndEvents_allCardsShouldHaveBaseFields() {
++        CardJsonLoader loader = new CardJsonLoader();
++
++        LoadedCards loadedCards = loader.loadTribeCharactersAndEvents("/TribeCharacter-Event.json");
++
++        for (TribeCharacter card : loadedCards.getTribeCharacters()) {
++            assertNotNull(card.getId());
++            assertNotNull(card.getEra());
++            assertTrue(card.getMinPlayers() >= 2);
++            assertNotNull(card.getCharacterType());
++        }
++
++        for (Event event : loadedCards.getEvents()) {
++            assertNotNull(event.getId());
++            assertNotNull(event.getEra());
++            assertTrue(event.getMinPlayers() >= 2);
++            assertNotNull(event.getEventType());
++        }
++    }
++}
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"last commit\">\r\n      <change afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/OfferTileTest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/PlayerTest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/SlotTest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TotemTest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TribeTest.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/pom.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/pom.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionCondition.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionCondition.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EndGameScoringEffect.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EndGameScoringEffect.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffect.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffect.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffect.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffect.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffect.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffect.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffect.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffect.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Shaman.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Shaman.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Event.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Event.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/resources/Building.json\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/resources/Building.json\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/ArtistTest.java\" beforeDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"Test\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Fancopo&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,\r\n    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3AtUiA6XPNTIVvuMJwuRyVJnWzA\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,\r\n    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"MoveClassesOrPackagesDialog.RECENTS_KEY\">\r\n      <recent name=\"it.polimi.ingsw.am22\" />\r\n    </key>\r\n    <key name=\"CopyClassDialog.RECENTS_KEY\">\r\n      <recent name=\"it.polimi.ingsw.am22\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"JUnit.TribeTest\">\r\n    <configuration name=\"OfferTileTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.OfferTileTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"PlayerTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.PlayerTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"SlotTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.SlotTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"TotemTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.TotemTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"TribeTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.TribeTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"JUnit.TribeTest\" />\r\n        <item itemvalue=\"JUnit.TotemTest\" />\r\n        <item itemvalue=\"JUnit.SlotTest\" />\r\n        <item itemvalue=\"JUnit.PlayerTest\" />\r\n        <item itemvalue=\"JUnit.OfferTileTest\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"\" />\r\n      <created>1773411487475</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1773411487475</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589285100</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589285100</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589402689</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589402689</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589432607</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589432607</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Second version of Building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1774109302482</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1774109302482</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"last commit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775223396914</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775223396914</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"6\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial version\" />\r\n    <MESSAGE value=\"Second version\" />\r\n    <MESSAGE value=\"Second version of Building\" />\r\n    <MESSAGE value=\"last commit\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"last commit\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/BuildingEffect.java</url>\r\n          <line>5</line>\r\n          <option name=\"timeStamp\" value=\"1\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>58</line>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>77</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>143</line>\r\n          <option name=\"timeStamp\" value=\"4\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>167</line>\r\n          <option name=\"timeStamp\" value=\"5\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>179</line>\r\n          <option name=\"timeStamp\" value=\"7\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TotemTest.java</url>\r\n          <line>7</line>\r\n          <option name=\"timeStamp\" value=\"10\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/OfferTileTest.java</url>\r\n          <line>7</line>\r\n          <option name=\"timeStamp\" value=\"11\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>118</line>\r\n          <properties class=\"it.polimi.ingsw.am22.ShamanicModifierEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"8\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>219</line>\r\n          <properties class=\"it.polimi.ingsw.am22.EventYieldBonusEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"9\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/am22$PlayerTest.ic\" NAME=\"PlayerTest Coverage Results\" MODIFIED=\"1775646643233\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeTest.ic\" NAME=\"TribeTest Coverage Results\" MODIFIED=\"1775647307257\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$OfferTileTest.ic\" NAME=\"OfferTileTest Coverage Results\" MODIFIED=\"1775646627410\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$SlotTest.ic\" NAME=\"SlotTest Coverage Results\" MODIFIED=\"1775646676668\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TotemTest.ic\" NAME=\"TotemTest Coverage Results\" MODIFIED=\"1775646686996\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/.idea/workspace.xml	(date 1775895993808)
+@@ -5,26 +5,27 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit">
+-      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/OfferTileTest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/PlayerTest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/SlotTest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TotemTest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TribeTest.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/CardJsonLoaderTest.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionCondition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionCondition.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EndGameScoringEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EndGameScoringEffect.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffect.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffect.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffect.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffect.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardDeck.java" beforeDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Artist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Artist.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Builder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Builder.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Collector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Collector.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Hunter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Hunter.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Inventor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Inventor.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Shaman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Shaman.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Event.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/resources/Building.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Building.json" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/ArtistTest.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/hunting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/hunting.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/sustenance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/sustenance.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/resources/TribeCharacter-Event.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/TribeCharacter-Event.json" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TribeTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TribeTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java" beforeDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -78,6 +79,7 @@
+   </component>
+   <component name="PropertiesComponent">{
+   &quot;keyToString&quot;: {
++    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
+     &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
+     &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
+     &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,
+@@ -100,8 +102,8 @@
+       <recent name="it.polimi.ingsw.am22" />
+     </key>
+   </component>
+-  <component name="RunManager" selected="JUnit.TribeTest">
+-    <configuration name="OfferTileTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++  <component name="RunManager" selected="JUnit.CardJsonLoaderTest">
++    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+@@ -110,7 +112,7 @@
+         </pattern>
+       </extension>
+       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.OfferTileTest" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
+       <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+@@ -178,11 +180,11 @@
+     </configuration>
+     <recent_temporary>
+       <list>
++        <item itemvalue="JUnit.CardJsonLoaderTest" />
+         <item itemvalue="JUnit.TribeTest" />
+         <item itemvalue="JUnit.TotemTest" />
+         <item itemvalue="JUnit.SlotTest" />
+         <item itemvalue="JUnit.PlayerTest" />
+-        <item itemvalue="JUnit.OfferTileTest" />
+       </list>
+     </recent_temporary>
+   </component>
+@@ -304,6 +306,11 @@
+           <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/OfferTileTest.java</url>
+           <line>7</line>
+           <option name="timeStamp" value="11" />
++        </line-breakpoint>
++        <line-breakpoint enabled="true" type="java-line">
++          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/CardJsonLoaderTest.java</url>
++          <line>16</line>
++          <option name="timeStamp" value="14" />
+         </line-breakpoint>
+         <line-breakpoint enabled="true" type="java-method">
+           <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
+@@ -330,10 +337,13 @@
+     <SUITE FILE_PATH="coverage/am22$PlayerTest.ic" NAME="PlayerTest Coverage Results" MODIFIED="1775646643233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$TribeTest.ic" NAME="TribeTest Coverage Results" MODIFIED="1775647307257" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++    <SUITE FILE_PATH="coverage/am22$TribeTest.ic" NAME="TribeTest Coverage Results" MODIFIED="1775827189738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$OfferTileTest.ic" NAME="OfferTileTest Coverage Results" MODIFIED="1775646627410" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++      <FILTER>it.polimi.ingsw.am22.*</FILTER>
++    </SUITE>
++    <SUITE FILE_PATH="coverage/am22$CardJsonLoaderTest.ic" NAME="CardJsonLoaderTest Coverage Results" MODIFIED="1775865245194" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$SlotTest.ic" NAME="SlotTest Coverage Results" MODIFIED="1775646676668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+Index: src/main/java/it/polimi/ingsw/am22/character/Collector.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\n\r\npublic class Collector extends TribeCharacter implements CharacterEffect{\r\n\r\n    public Collector(String id, Era era, int minPlayers, String characterType){\r\n        super(id, era, minPlayers, CharacterType.COLLECTOR);\r\n    }\r\n\r\n    @Override\r\n    public void applyImmediateEffect(Player player, Tribe tribe) {\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/Collector.java b/src/main/java/it/polimi/ingsw/am22/character/Collector.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/Collector.java	(revision 435721678a7d8549594cf00d2f50fe1e2679032c)
++++ b/src/main/java/it/polimi/ingsw/am22/character/Collector.java	(date 1775857291017)
+@@ -5,14 +5,33 @@
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ 
+-public class Collector extends TribeCharacter implements CharacterEffect{
++public class Collector implements CharacterEffect {
+ 
+-    public Collector(String id, Era era, int minPlayers, String characterType){
+-        super(id, era, minPlayers, CharacterType.COLLECTOR);
++    public Collector() {
+     }
+ 
+     @Override
+     public void applyImmediateEffect(Player player, Tribe tribe) {
++        // no immediate effect
++    }
++
++    @Override
++    public int getNumStars() {
++        return 0;
++    }
++
++    @Override
++    public char getIconPerInventor() {
++        return '0';
+     }
+ 
+-}
++    @Override
++    public int getDiscountFood() {
++        return 0;
++    }
++
++    @Override
++    public int getPP() {
++        return 0;
++    }
++}
+\ No newline at end of file

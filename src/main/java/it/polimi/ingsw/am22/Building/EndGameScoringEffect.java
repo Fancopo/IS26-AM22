@@ -1,6 +1,5 @@
-package Building;
+package it.polimi.ingsw.am22.Building;
 
-import it.polimi.ingsw.am22.Building.BuildingEffect;
 import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
 import it.polimi.ingsw.am22.character.TribeCharacter;

@@ -4,22 +4,39 @@ import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 
-public class Inventor extends TribeCharacter implements CharacterEffect{
+public class Inventor implements CharacterEffect {
 
-    private final char IconPerInventor;
+    private char iconPerInventor;
 
-    public Inventor(String id, Era era, int minPlayers, String characterType, char IconPerInventor){
-        super(id, era, minPlayers, CharacterType.INVENTOR);
-
-        this.IconPerInventor = IconPerInventor;
+    public Inventor() {
     }
 
-
-    public char getIconPerInventor(){
-        return IconPerInventor;
+    public Inventor(char iconPerInventor) {
+        this.iconPerInventor = iconPerInventor;
     }
 
     @Override
-    public void applyImmediateEffect(Player player, Tribe tribe){}
+    public void applyImmediateEffect(Player player, Tribe tribe) {
+        // no immediate effect
+    }
 
+    @Override
+    public int getNumStars() {
+        return 0;
+    }
+
+    @Override
+    public char getIconPerInventor() {
+        return iconPerInventor;
+    }
+
+    @Override
+    public int getDiscountFood() {
+        return 0;
+    }
+
+    @Override
+    public int getPP() {
+        return 0;
+    }
 }
