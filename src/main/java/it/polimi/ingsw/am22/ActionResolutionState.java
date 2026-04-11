@@ -63,7 +63,7 @@ public class ActionResolutionState implements GameState {
             // Questo è il momento esatto che hai descritto.
             if (player.getTribe() != null) {
                 for (Building b : player.getTribe().getBuildings()) {
-                    b.applyOnFoodSlotPlaced(player);
+                    b.applyOnTotemPlaced(player);
                 }
             }
         }
