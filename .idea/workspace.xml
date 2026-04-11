@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="no error now">
-      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/hunting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Hunting.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Inventor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Inventor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,28 +58,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JUnit.ArtistTest.executor": "Coverage",
-    "JUnit.CavePaintingsTest.executor": "Coverage",
-    "JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings.executor": "Run",
-    "JUnit.CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings.executor": "Run",
-    "JUnit.GameTest.executor": "Coverage",
-    "JUnit.HuntingTest.executor": "Coverage",
-    "JUnit.ShamanicRitualTest.executor": "Coverage",
-    "JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "game-version2",
-    "kotlin-language-version-configured": "true",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "copyright"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JUnit.ArtistTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CavePaintingsTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.HuntingTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.ShamanicRitualTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;copyright&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
@@ -327,7 +320,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775860788853</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="no error now">
+      <option name="closed" value="true" />
+      <created>1775896276391</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1775896276391</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -414,15 +415,6 @@
             <option name="WATCH_EXIT" value="false" />
           </properties>
           <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java</url>
-          <line>81</line>
-          <properties class="it.polimi.ingsw.am22.event.ShamanicRitualTest" method="testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
