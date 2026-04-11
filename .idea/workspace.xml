@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="no error now">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java" afterDir="false" />
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit">
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Hunting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Hunting.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,14 +17,13 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
-        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="game-version3" />
+        <entry key="$PROJECT_DIR$" value="Test" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -40,7 +37,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,
-    &quot;accountId&quot;: &quot;039f84ba-5214-4d96-b80b-54c34c7c13bf&quot;
+    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;
   }
 }</component>
   <component name="MavenImportPreferences">
@@ -61,122 +58,114 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JUnit.ArtistTest.executor": "Coverage",
-    "JUnit.CavePaintingsTest.executor": "Coverage",
-    "JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings.executor": "Run",
-    "JUnit.CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings.executor": "Run",
-    "JUnit.GameTest.executor": "Coverage",
-    "JUnit.HuntingTest.executor": "Run",
-    "JUnit.ShamanicRitualTest.executor": "Coverage",
-    "JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "game-version2",
-    "kotlin-language-version-configured": "true",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "copyright"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
-    <key name="CreateTestDialog.Recents.Supers">
-      <recent name="" />
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="it.polimi.ingsw.am22" />
     </key>
-    <key name="CreateTestDialog.RecentsKey">
-      <recent name="it.polimi.ingsw.am22.event" />
-      <recent name="it.polimi.ingsw.am22.character" />
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="it.polimi.ingsw.am22" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.HuntingTest">
-    <configuration name="CavePaintingsTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.CardJsonLoaderTest">
+    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.event.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.CavePaintingsTest" />
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="PlayerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.event.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.CavePaintingsTest" />
-      <option name="METHOD_NAME" value="testCavePaintingsEra3_EnoughArtists_WithBuildings" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HuntingTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.event.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.HuntingTest" />
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.PlayerTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ShamanicRitualTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="SlotTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.event.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.ShamanicRitualTest" />
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.SlotTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="TotemTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.event.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.ShamanicRitualTest" />
-      <option name="METHOD_NAME" value="testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.TotemTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TribeTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.TribeTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.HuntingTest" />
-        <item itemvalue="JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie" />
-        <item itemvalue="JUnit.ShamanicRitualTest" />
-        <item itemvalue="JUnit.CavePaintingsTest" />
-        <item itemvalue="JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings" />
+        <item itemvalue="JUnit.CardJsonLoaderTest" />
+        <item itemvalue="JUnit.TribeTest" />
+        <item itemvalue="JUnit.TotemTest" />
+        <item itemvalue="JUnit.SlotTest" />
+        <item itemvalue="JUnit.PlayerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -235,111 +224,7 @@
       <option name="project" value="LOCAL" />
       <updated>1775223396914</updated>
     </task>
-    <task id="LOCAL-00006" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775308970401</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1775308970401</updated>
-    </task>
-    <task id="LOCAL-00007" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775308975722</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1775308975722</updated>
-    </task>
-    <task id="LOCAL-00008" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775420955438</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1775420955438</updated>
-    </task>
-    <task id="LOCAL-00009" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775420960554</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1775420960554</updated>
-    </task>
-    <task id="LOCAL-00010" summary="last commit 2">
-      <option name="closed" value="true" />
-      <created>1775421247371</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1775421247371</updated>
-    </task>
-    <task id="LOCAL-00011" summary="add a missed class">
-      <option name="closed" value="true" />
-      <created>1775422275343</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1775422275343</updated>
-    </task>
-    <task id="LOCAL-00012" summary="new commit">
-      <option name="closed" value="true" />
-      <created>1775483048613</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1775483048613</updated>
-    </task>
-    <task id="LOCAL-00013" summary="no error now">
-      <option name="closed" value="true" />
-      <created>1775488388504</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1775488388504</updated>
-    </task>
-    <task id="LOCAL-00014" summary="no error now">
-      <option name="closed" value="true" />
-      <created>1775858377428</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1775858377428</updated>
-    </task>
-    <task id="LOCAL-00015" summary="no error now">
-      <option name="closed" value="true" />
-      <created>1775860559998</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1775860559998</updated>
-    </task>
-    <task id="LOCAL-00016" summary="no error now">
-      <option name="closed" value="true" />
-      <created>1775860788853</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1775860788853</updated>
-    </task>
-    <task id="LOCAL-00017" summary="no error now">
-      <option name="closed" value="true" />
-      <created>1775896276391</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1775896276391</updated>
-    </task>
-    <task id="LOCAL-00018" summary="no error now">
-      <option name="closed" value="true" />
-      <created>1775896761697</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1775896761697</updated>
-    </task>
-    <option name="localTasksCounter" value="19" />
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -347,19 +232,7 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="game-version2" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -370,11 +243,7 @@
     <MESSAGE value="Second version" />
     <MESSAGE value="Second version of Building" />
     <MESSAGE value="last commit" />
-    <MESSAGE value="last commit 2" />
-    <MESSAGE value="add a missed class" />
-    <MESSAGE value="new commit" />
-    <MESSAGE value="no error now" />
-    <option name="LAST_COMMIT_MESSAGE" value="no error now" />
+    <option name="LAST_COMMIT_MESSAGE" value="last commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -409,6 +278,16 @@
           <line>179</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TotemTest.java</url>
+          <line>7</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/OfferTileTest.java</url>
+          <line>7</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
           <line>118</line>
@@ -434,16 +313,49 @@
     <SUITE FILE_PATH="coverage/am22$CollectorTest.ic" NAME="CollectorTest Coverage Results" MODIFIED="1775858159929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
     </SUITE>
+    <SUITE FILE_PATH="coverage/am22$sustenanceTest.ic" NAME="sustenanceTest Coverage Results" MODIFIED="1775901688841" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$SlotTest.ic" NAME="SlotTest Coverage Results" MODIFIED="1775646676668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$it_polimi_ingsw_am22_event_in_am22.ic" NAME="it.polimi.ingsw.am22.event in am22 Coverage Results" MODIFIED="1775898869138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$CavePaintingsTest.ic" NAME="CavePaintingsTest Coverage Results" MODIFIED="1775901670426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$TribeCharacterTest_testAddToTribeWithBuildings.ic" NAME="TribeCharacterTest.testAddToTribeWithBuildings Coverage Results" MODIFIED="1775856424577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$TribeTest.ic" NAME="TribeTest Coverage Results" MODIFIED="1775827189738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$TribeCharacterTest.ic" NAME="TribeCharacterTest Coverage Results" MODIFIED="1775858125675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$TurnOrderTileTest_testGetTurnOrderAndOccupiedSlotsCount.ic" NAME="TurnOrderTileTest.testGetTurnOrderAndOccupiedSlotsCount Coverage Results" MODIFIED="1775900872067" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$EventTest.ic" NAME="EventTest Coverage Results" MODIFIED="1775901702242" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$BuilderTest.ic" NAME="BuilderTest Coverage Results" MODIFIED="1775858153900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$huntingTest.ic" NAME="huntingTest Coverage Results" MODIFIED="1775901698235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$PlayerTest.ic" NAME="PlayerTest Coverage Results" MODIFIED="1775646643233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+    </SUITE>
     <SUITE FILE_PATH="coverage/am22$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1775858765732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/am22$ShamanTest_testShamanCreationGettersAndEffect.ic" NAME="ShamanTest.testShamanCreationGettersAndEffect Coverage Results" MODIFIED="1775854652620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/am22$HuntingTest.ic" NAME="HuntingTest Coverage Results" MODIFIED="1775862886674" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/am22$CavePaintingsTest.ic" NAME="CavePaintingsTest Coverage Results" MODIFIED="1775862659809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+    <SUITE FILE_PATH="coverage/am22$HuntingTest.ic" NAME="HuntingTest Coverage Results" MODIFIED="1775897928004" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/am22$CavePaintingsTest_testCavePaintingsEra3_NotEnoughArtists_WithBuildings.ic" NAME="CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings Coverage Results" MODIFIED="1775862436854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
@@ -455,11 +367,17 @@
     <SUITE FILE_PATH="coverage/am22$ArtistTest.ic" NAME="ArtistTest Coverage Results" MODIFIED="1775858613631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/am22$TribeCharacterTest_testAddToTribeWithBuildings.ic" NAME="TribeCharacterTest.testAddToTribeWithBuildings Coverage Results" MODIFIED="1775856424577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+    <SUITE FILE_PATH="coverage/am22$TurnOrderTileTest.ic" NAME="TurnOrderTileTest Coverage Results" MODIFIED="1775901207178" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.*</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/am22$TribeCharacterTest.ic" NAME="TribeCharacterTest Coverage Results" MODIFIED="1775858125675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+    <SUITE FILE_PATH="coverage/am22$CardJsonLoaderTest.ic" NAME="CardJsonLoaderTest Coverage Results" MODIFIED="1775865245194" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$OfferTileTest.ic" NAME="OfferTileTest Coverage Results" MODIFIED="1775646627410" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/am22$TotemTest.ic" NAME="TotemTest Coverage Results" MODIFIED="1775646686996" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/am22$HunterTest_testHunterCreationAndNoIconEffect.ic" NAME="HunterTest.testHunterCreationAndNoIconEffect Coverage Results" MODIFIED="1775854103694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
@@ -476,11 +394,8 @@
     <SUITE FILE_PATH="coverage/am22$ShamanTest.ic" NAME="ShamanTest Coverage Results" MODIFIED="1775858214161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/am22$ShamanicRitualTest.ic" NAME="ShamanicRitualTest Coverage Results" MODIFIED="1775895411661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+    <SUITE FILE_PATH="coverage/am22$ShamanicRitualTest.ic" NAME="ShamanicRitualTest Coverage Results" MODIFIED="1775901693900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/am22$BuilderTest.ic" NAME="BuilderTest Coverage Results" MODIFIED="1775858153900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
     </SUITE>
   </component>
 </project>
