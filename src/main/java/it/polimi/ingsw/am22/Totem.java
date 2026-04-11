@@ -46,14 +46,6 @@ public class Totem {
     }
 
     public void moveToTurnOrder(Slot slot) {
-        if (slot == null) {
-            throw new IllegalArgumentException("Slot cannot be null.");
-        }
-
-        if (!slot.isEmpty()) {
-            throw new IllegalStateException("Slot is already occupied.");
-        }
-
         if (currentOfferTile != null) {
             currentOfferTile.clear();
         }

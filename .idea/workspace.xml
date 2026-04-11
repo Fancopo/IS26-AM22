@@ -4,66 +4,36 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit">
+    <list default="true" id="f213b3b3-788b-483d-9671-a1e37ce21d86" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/ActionResolutionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/ActionResolutionState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EndGameScoringEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/EndGameScoringEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Card.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/GameState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Start.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/SetUpState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/SetUpState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Tribe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Tribe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Artist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Artist.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Builder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Builder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/CharacterEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Collector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Collector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Hunter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Hunter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Inventor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Inventor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Shaman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/Shaman.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Event.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/ShamanicRitual.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/sustenance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/sustenance.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/TribeCharacter-Event.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/TribeCharacter-Event.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TribeTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TribeTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Totem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Totem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/GameTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/GameTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="Test" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;Fancopo&quot;
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "TaoChen1026"
   }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,
-    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Fancopo/Codice-Software.git",
+    "accountId": "e9675031-88cd-44dc-8f15-55e1826c1df1"
   }
-}</component>
+}]]></component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -71,44 +41,36 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 6
-}</component>
-  <component name="ProjectId" id="3AtUiA6XPNTIVvuMJwuRyVJnWzA" />
-  <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="3CBYziVCacpX43x2RQLl8lJ8zRw" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "JUnit.ArtistTest.executor": "Coverage",
+    "JUnit.BuilderTest.executor": "Coverage",
+    "JUnit.GameTest.executor": "Coverage",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "game-version2",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.language.and.region",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RecentsManager">
-    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
-      <recent name="it.polimi.ingsw.am22" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="it.polimi.ingsw.am22" />
-    </key>
-  </component>
-  <component name="RunManager" selected="JUnit.CardJsonLoaderTest">
-    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+}]]></component>
+  <component name="RunManager">
+    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
@@ -117,67 +79,7 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PlayerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.PlayerTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="SlotTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.SlotTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="TotemTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.TotemTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="TribeTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.TribeTest" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.GameTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -185,172 +87,33 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.CardJsonLoaderTest" />
-        <item itemvalue="JUnit.TribeTest" />
-        <item itemvalue="JUnit.TotemTest" />
-        <item itemvalue="JUnit.SlotTest" />
-        <item itemvalue="JUnit.PlayerTest" />
+        <item itemvalue="JUnit.GameTest" />
       </list>
     </recent_temporary>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="" />
-      <created>1773411487475</created>
+      <changelist id="f213b3b3-788b-483d-9671-a1e37ce21d86" name="Changes" comment="" />
+      <created>1775860696955</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1773411487475</updated>
+      <updated>1775860696955</updated>
+      <workItem from="1775860699867" duration="4904000" />
     </task>
-    <task id="LOCAL-00001" summary="Initial version">
-      <option name="closed" value="true" />
-      <created>1773589285100</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1773589285100</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Second version">
-      <option name="closed" value="true" />
-      <created>1773589402689</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1773589402689</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Second version">
-      <option name="closed" value="true" />
-      <created>1773589432607</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1773589432607</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Second version of Building">
-      <option name="closed" value="true" />
-      <created>1774109302482</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1774109302482</updated>
-    </task>
-    <task id="LOCAL-00005" summary="last commit">
-      <option name="closed" value="true" />
-      <created>1775223396914</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1775223396914</updated>
-    </task>
-    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Initial version" />
-    <MESSAGE value="Second version" />
-    <MESSAGE value="Second version of Building" />
-    <MESSAGE value="last commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="last commit" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/BuildingEffect.java</url>
-          <line>5</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
-          <line>58</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
-          <line>77</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
-          <line>143</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
-          <line>167</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
-          <line>179</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TotemTest.java</url>
-          <line>7</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/OfferTileTest.java</url>
-          <line>7</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
-          <line>118</line>
-          <properties class="it.polimi.ingsw.am22.ShamanicModifierEffect">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
-          <line>219</line>
-          <properties class="it.polimi.ingsw.am22.EventYieldBonusEffect">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/am22$PlayerTest.ic" NAME="PlayerTest Coverage Results" MODIFIED="1775646643233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+    <SUITE FILE_PATH="coverage/mesos$ArtistTest.ic" NAME="ArtistTest Coverage Results" MODIFIED="1775860829770" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/mesos$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1775898576456" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>it.polimi.ingsw.am22.*</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/am22$TribeTest.ic" NAME="TribeTest Coverage Results" MODIFIED="1775827189738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/am22$OfferTileTest.ic" NAME="OfferTileTest Coverage Results" MODIFIED="1775646627410" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/am22$CardJsonLoaderTest.ic" NAME="CardJsonLoaderTest Coverage Results" MODIFIED="1775865245194" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/am22$SlotTest.ic" NAME="SlotTest Coverage Results" MODIFIED="1775646676668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/am22$TotemTest.ic" NAME="TotemTest Coverage Results" MODIFIED="1775646686996" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+    <SUITE FILE_PATH="coverage/mesos$BuilderTest.ic" NAME="BuilderTest Coverage Results" MODIFIED="1775860905922" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
     </SUITE>
   </component>
 </project>

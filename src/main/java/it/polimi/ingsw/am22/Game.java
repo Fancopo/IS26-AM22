@@ -7,10 +7,10 @@ import java.util.List;
 
 
 public class Game {
-    private List<Player> players;
-    private Board board;
-    private List<Card> tribeDeck;
-    private List<Building> buildingMarket;
+    private final List<Player> players;
+    private final Board board;
+    private final List<Card> tribeDeck;
+    private final List<Building> buildingMarket;
     private int currentRound;
     private Era currentEra;
     private Player activePlayer;

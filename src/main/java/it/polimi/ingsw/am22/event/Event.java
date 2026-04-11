@@ -1,5 +1,4 @@
 package it.polimi.ingsw.am22.event;
-
 import it.polimi.ingsw.am22.*;
 
 import java.util.List;
@@ -17,20 +16,16 @@ public class Event extends Card {
     public EventType getEventType() {
         return eventType;
     }
-
-    public EventEffect getEffect() {
-        return effect;
-    }
-
     public void applyEvent(List<Player> players, String id){}
 
+
     @Override
-    public void onRoundEndTrigger(Game game) {
-        effect.applyEvent(game.getPlayers(), this.getId());
+    public void onRoundEndTrigger(Game game){
+        this.effect.applyEvent(game.getPlayers(), this.getId());
     }
 
     @Override
-    public int getTriggerPriority() {
+    public int getTriggerPriority(){
         return this.eventType == EventType.SUSTENANCE ? 1 : 0;
     }
 
@@ -39,3 +34,6 @@ public class Event extends Card {
         throw new UnsupportedOperationException("An event cannot be added to the tribe");
     }
 }
+
+
+

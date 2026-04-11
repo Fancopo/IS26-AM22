@@ -60,13 +60,15 @@ class GameTest {
     @Test
     void testStartMatchExecution() {
         // Eseguiamo il setup effettivo
-        game.startMatch();
+        // ... setup del gioco e dei giocatori ...
+        game.startMatch(); // Questo chiama SetUpState.startMatch()
 
-        // REGOLE DEL CIBO INIZIALE (Regola 10, Pagina 3 del manuale):
-        // Il 1° giocatore riceve 2 Cibo, il 2° e il 3° ricevono 3 Cibo.
-        assertEquals(2, player1.getFood(), "Il primo giocatore deve ricevere 2 cibo iniziale");
-        assertEquals(3, player2.getFood(), "Il secondo giocatore deve ricevere 3 cibo iniziale");
+        // Non controllare 'player1', controlla chi è finito primo in lista!
+        Player chiEPrimo = game.getPlayers().get(0);
+        Player chiESecondo = game.getPlayers().get(1);
 
+        assertEquals(2, chiEPrimo.getFood(), "Il giocatore in prima posizione deve avere 2 cibo");
+        assertEquals(3, chiESecondo.getFood(), "Il giocatore in seconda posizione deve avere 3 cibo");
         // TRANSIZIONE DI STATO:
         // Dopo il setup, la fase corretta deve essere il piazzamento dei Totem
         assertEquals("Piazzamento Totem", game.getCurrentPhaseName(),

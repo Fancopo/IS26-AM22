@@ -6,10 +6,14 @@
     "minPlayers": 2,
     "foodPrice": 4,
     "finalPP": 3,
-    "BuildingEffectType": "COLLECTION_REWARD_EFFECT",
+    "currentApplicable": true,
+    "BuildingEffect": "EndGameScoring",
     "effect": {
-      "conditionType": "SET_OF_6",
-      "foodReward": 5
+      "flatPP": 3,
+      "pointsPerSet": ,
+      "targetCharacterType": ,
+      "multiplierPP": ,
+      "doubleBuilderPP": ,
     }
   },
   {
@@ -19,10 +23,7 @@
     "minPlayers": 2,
     "foodPrice": 4,
     "finalPP": 4,
-    "BuildingEffectType": "SUSTENANCE_DISCOUNT_EFFECT",
-    "effect": {
-      "targetCharacterType": "COLLECTOR"
-    }
+    "effect": {}
   },
   {
     "id": 3,
@@ -31,10 +32,7 @@
     "minPlayers": 2,
     "foodPrice": 5,
     "finalPP": 3,
-    "BuildingEffectType": "SUSTENANCE_DISCOUNT_EFFECT",
-    "effect": {
-      "targetCharacterType": "ARTIST"
-    }
+    "effect": {}
   },
   {
     "id": 4,
@@ -43,12 +41,7 @@
     "minPlayers": 2,
     "foodPrice": 5,
     "finalPP": 2,
-    "BuildingEffectType": "SHAMANIC_MODIFIER_EFFECT",
-    "effect": {
-      "extraIcons": 0,
-      "preventPPLoss": true,
-      "doubleWinPP": false
-    }
+    "effect": {}
   },
   {
     "id": 5,
@@ -57,11 +50,7 @@
     "minPlayers": 2,
     "foodPrice": 3,
     "finalPP": 3,
-    "BuildingEffectType": "TURN_PHASE_MODIFIER_EFFECT",
-    "effect": {
-      "extraFoodOnTurnOrderBonus": true,
-      "extraBuyAtRoundEnd": false
-    }
+    "effect": {}
   },
   {
     "id": 6,
@@ -70,11 +59,7 @@
     "minPlayers": 2,
     "foodPrice": 3,
     "finalPP": 4,
-    "BuildingEffectType": "COLLECTION_REWARD_EFFECT",
-    "effect": {
-      "conditionType": "INVENTOR_PAIR",
-      "foodReward": 3
-    }
+    "effect": {}
   },
   {
     "id": 7,
@@ -82,13 +67,8 @@
     "era": "II",
     "minPlayers": 2,
     "foodPrice": 7,
-    "finalPP": 0,
-    "BuildingEffectType": "SHAMANIC_MODIFIER_EFFECT",
-    "effect": {
-      "extraIcons": 0,
-      "preventPPLoss": false,
-      "doubleWinPP": true
-    }
+    "finalPP": null,
+    "effect": {}
   },
   {
     "id": 8,
@@ -97,12 +77,7 @@
     "minPlayers": 2,
     "foodPrice": 6,
     "finalPP": 4,
-    "BuildingEffectType": "SHAMANIC_MODIFIER_EFFECT",
-    "effect": {
-      "extraIcons": 3,
-      "preventPPLoss": false,
-      "doubleWinPP": false
-    }
+    "effect": {}
   },
   {
     "id": 9,
@@ -111,10 +86,7 @@
     "minPlayers": 2,
     "foodPrice": 7,
     "finalPP": 4,
-    "BuildingEffectType": "SUSTENANCE_DISCOUNT_EFFECT",
-    "effect": {
-      "targetCharacterType": "INVENTOR"
-    }
+    "effect": {}
   },
   {
     "id": 10,
@@ -123,12 +95,7 @@
     "minPlayers": 2,
     "foodPrice": 7,
     "finalPP": 2,
-    "BuildingEffectType": "EVENT_YIELD_BONUS_EFFECT",
-    "effect": {
-      "targetEventType": "HUNTING",
-      "bonusFood": 1,
-      "bonusPP": 1
-    }
+    "effect": {}
   },
   {
     "id": 11,
@@ -137,14 +104,7 @@
     "minPlayers": 2,
     "foodPrice": 6,
     "finalPP": 4,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 0,
-      "pointsPerSet": 0,
-      "targetCharacterType": null,
-      "multiplierPP": 0,
-      "doubleBuilderPP": true
-    }
+    "effect": {}
   },
   {
     "id": 12,
@@ -153,12 +113,7 @@
     "minPlayers": 2,
     "foodPrice": 5,
     "finalPP": 6,
-    "BuildingEffectType": "EVENT_YIELD_BONUS_EFFECT",
-    "effect": {
-      "targetEventType": "CAVE_PAINTING",
-      "bonusFood": 1,
-      "bonusPP": 0
-    }
+    "effect": {}
   },
   {
     "id": 13,
@@ -167,14 +122,7 @@
     "minPlayers": 2,
     "foodPrice": 5,
     "finalPP": 6,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 0,
-      "pointsPerSet": 6,
-      "targetCharacterType": null,
-      "multiplierPP": 0,
-      "doubleBuilderPP": false
-    }
+    "effect": {}
   },
   {
     "id": 14,
@@ -183,14 +131,7 @@
     "minPlayers": 2,
     "foodPrice": 8,
     "finalPP": 8,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 0,
-      "pointsPerSet": 0,
-      "targetCharacterType": "HUNTER",
-      "multiplierPP": 3,
-      "doubleBuilderPP": false
-    }
+    "effect": {}
   },
   {
     "id": 15,
@@ -199,14 +140,7 @@
     "minPlayers": 2,
     "foodPrice": 7,
     "finalPP": 6,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 0,
-      "pointsPerSet": 0,
-      "targetCharacterType": "COLLECTOR",
-      "multiplierPP": 4,
-      "doubleBuilderPP": false
-    }
+    "effect": {}
   },
   {
     "id": 16,
@@ -215,14 +149,7 @@
     "minPlayers": 2,
     "foodPrice": 7,
     "finalPP": 4,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 0,
-      "pointsPerSet": 0,
-      "targetCharacterType": "SHAMAN",
-      "multiplierPP": 4,
-      "doubleBuilderPP": false
-    }
+    "effect": {}
   },
   {
     "id": 17,
@@ -231,14 +158,7 @@
     "minPlayers": 2,
     "foodPrice": 6,
     "finalPP": 3,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 0,
-      "pointsPerSet": 0,
-      "targetCharacterType": "BUILDER",
-      "multiplierPP": 4,
-      "doubleBuilderPP": false
-    }
+    "effect": {}
   },
   {
     "id": 18,
@@ -247,14 +167,7 @@
     "minPlayers": 2,
     "foodPrice": 7,
     "finalPP": 4,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 0,
-      "pointsPerSet": 0,
-      "targetCharacterType": "ARTIST",
-      "multiplierPP": 4,
-      "doubleBuilderPP": false
-    }
+    "effect": {}
   },
   {
     "id": 19,
@@ -263,14 +176,7 @@
     "minPlayers": 2,
     "foodPrice": 6,
     "finalPP": 6,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 0,
-      "pointsPerSet": 0,
-      "targetCharacterType": "INVENTOR",
-      "multiplierPP": 2,
-      "doubleBuilderPP": false
-    }
+    "effect": {}
   },
   {
     "id": 20,
@@ -279,26 +185,6 @@
     "minPlayers": 2,
     "foodPrice": 9,
     "finalPP": 3,
-    "BuildingEffectType": "TURN_PHASE_MODIFIER_EFFECT",
-    "effect": {
-      "extraFoodOnTurnOrderBonus": false,
-      "extraBuyAtRoundEnd": true
-    }
-  },
-  {
-    "id": 21,
-    "type": "building",
-    "era": "III",
-    "minPlayers": 2,
-    "foodPrice": 10,
-    "finalPP": 0,
-    "BuildingEffectType": "ENDGAME_SCORING_EFFECT",
-    "effect": {
-      "flatPP": 25,
-      "pointsPerSet": 0,
-      "targetCharacterType": null,
-      "multiplierPP": 0,
-      "doubleBuilderPP": false
-    }
+    "effect": {}
   }
 ]

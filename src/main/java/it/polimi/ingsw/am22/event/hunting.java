@@ -1,30 +1,30 @@
 package it.polimi.ingsw.am22.event;
-
 import it.polimi.ingsw.am22.Building.Building;
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class hunting implements EventEffect {
 
-    private Era era;
+public class hunting extends Event implements EventEffect{
 
-    public hunting(Era era) {
-        this.era = era;
+    public hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+        super(id, era, minPlayers, EventType.HUNTING, eventEffect);
     }
 
     @Override
     public void applyEvent(List<Player> players, String id) {
         int PPperHunter = 0;
 
-        if (era == Era.I) {
+        // Valori di Punti Prestigio per cacciatore basati sull'Era corrente (dal tuo snippet)
+        if (this.getEra() == Era.I) {
             PPperHunter = 1;
-        } else if (era == Era.II) {
+        } else if (this.getEra() == Era.II) {
             PPperHunter = 2;
-        } else if (era == Era.III) {
+        } else if (this.getEra() == Era.III) {
             PPperHunter = 3;
         }
 
@@ -32,17 +32,22 @@ public class hunting implements EventEffect {
             Tribe tribe = player.getTribe();
             if (tribe == null) continue;
 
+            // 1. Conta quanti Cacciatori ci sono nella tribù
             int huntersCount = tribe.countCharacters(CharacterType.HUNTER);
 
             if (huntersCount > 0) {
+                // Valori base forniti dall'evento per ogni Cacciatore
                 int foodPerHunter = 1;
-                for (Building building : player.getTribe().getBuildings()) {
-                    building.getEffect().applyEventBonus(EventType.HUNTING, player, huntersCount);
+                for (Building building : player.getTribe().getBuildings()){
+                    building.getEffect().applyEventBonus(EventType.HUNTING,player,huntersCount);
                 }
 
-                int totalFoodToAdd = huntersCount * foodPerHunter;
-                int totalPPToAdd = huntersCount * PPperHunter;
 
+                // 3. Calcolo dei totali
+                int totalFoodToAdd = huntersCount * (foodPerHunter);
+                int totalPPToAdd = huntersCount * (PPperHunter);
+
+                // 4. Assegnazione delle risorse al giocatore
                 player.addFood(totalFoodToAdd);
                 player.addPP(totalPPToAdd);
 
@@ -54,4 +59,5 @@ public class hunting implements EventEffect {
             }
         }
     }
+
 }
