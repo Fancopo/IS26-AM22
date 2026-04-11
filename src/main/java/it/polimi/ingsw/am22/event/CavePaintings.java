@@ -56,7 +56,7 @@ public class CavePaintings extends Event implements EventEffect {
                         "). Guadagna " + earnedPP + " PP!");
             } else {
                 // Il giocatore non ha abbastanza Artisti: subisce la penalità
-                player.addPP(PPtoLose); // PPtoLose è già negativo (-2)
+                player.addPP(-2); // PPtoLose è già negativo (-2)
                 System.out.println(player.getNickname() + " ha solo " + artistCount +
                         " Artisti (minimo richiesto: " + minArtistsRequired +
                         "). Subisce " + PPtoLose + " PP.");

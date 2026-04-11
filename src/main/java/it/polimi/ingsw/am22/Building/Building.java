@@ -1,12 +1,18 @@
 package it.polimi.ingsw.am22.Building;
 
-import it.polimi.ingsw.am22.Card;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
-
-import java.util.ArrayList;
-import java.util.List;
+import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.event.EventType;
+import Building.CollectionCondition;
+import it.polimi.ingsw.am22.Card;
+import it.polimi.ingsw.am22.Building.BuildingEffect;
 
 public class Building extends Card {
     private int foodPrice;
@@ -37,9 +43,8 @@ public class Building extends Card {
         return totalSum;
     }
 
-/*
     // THE DECK GENERATOR (21 Cards)
-    public static List<Building> createAllBuildings() {
+  /*  public static List<Building> createAllBuildings() {
         List<Building> deck = new ArrayList<>();
 
         // Constructor Reminder:
@@ -142,9 +147,8 @@ public class Building extends Card {
 
         return deck;
     }
- */
 
-
+*/
     @Override
     public void addToTribe(Player player, Tribe tribe) {
         // La carta aggiunge se stessa alla lista degli edifici della tribù
@@ -178,4 +182,5 @@ public class Building extends Card {
     public int getFoodPrice() { return foodPrice; }
     public int getFinalPP() { return finalPP; }
     public BuildingEffect getEffect() { return effect; }
+    public void applyOnFoodSlotPlaced(Player player) {}
 }

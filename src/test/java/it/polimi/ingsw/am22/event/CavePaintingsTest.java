@@ -57,19 +57,14 @@ class CavePaintingsTest {
         player.getTribe().addCharacter(new Artist("art_02", Era.I, 3, "Artist"));
 
         // Aggiungiamo un edificio con effetto per coprire il ciclo for degli edifici
-        EventYieldBonusEffect dummyEffect = new EventYieldBonusEffect() {
-            @Override
-            public void applyEventBonus(EventType type, Player p, int count) {
-                // Corpo vuoto: serve solo per non far crashare il test
-            }
+        EventYieldBonusEffect dummyEffect = new EventYieldBonusEffect(EventType.CAVE_PAINTING, 1, 0);
             // (Aggiungi qui eventuali altri metodi obbligatori dell'interfaccia BuildingEffect)
-        };
         // Adatta i parametri di new Building in base al tuo costruttore reale
         Building building = new Building("b_01", Era.I, 3, 2, 5, dummyEffect);
         player.getTribe().addBuilding(building);
+        assertEquals(0, player.getPP(), "Il giocatore deve partire da 0 PP");
 
         assertDoesNotThrow(() -> event.applyEvent(List.of(player), "cp_03"));
-        // Il giocatore ha abbastanza artisti: guadagna 9 PP (3 * 3) e prende 3 cibo.
         assertEquals(2, player.getFood(), "Il cibo non deve essere stato speso grazie allo sconto");
         assertEquals(-2, player.getPP(), "normalPlayer subisce -2 PP");
     }
@@ -86,13 +81,7 @@ class CavePaintingsTest {
         player.getTribe().addCharacter(new Artist("art_03", Era.I, 3, "Artist"));
 
         // Aggiungiamo un edificio con effetto per coprire il ciclo for degli edifici
-        BuildingEffect dummyEffect = new BuildingEffect() {
-            @Override
-            public void applyEventBonus(EventType type, Player p, int count) {
-                // Corpo vuoto: serve solo per non far crashare il test
-            }
-            // (Aggiungi qui eventuali altri metodi obbligatori dell'interfaccia BuildingEffect)
-        };
+        EventYieldBonusEffect dummyEffect = new EventYieldBonusEffect(EventType.CAVE_PAINTING, 1, 0);
         // Adatta i parametri di new Building in base al tuo costruttore reale
         Building building = new Building("b_01", Era.I, 3, 2, 5, dummyEffect);
         player.getTribe().addBuilding(building);
