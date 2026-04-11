@@ -3,23 +3,40 @@ package it.polimi.ingsw.am22.character;
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
-import javafx.application.Application;
 
-public class Inventor extends TribeCharacter implements CharacterEffect{
+public class Inventor implements CharacterEffect {
 
-    private final char icon;
+    private char iconPerInventor;
 
-    public Inventor(String id, Era era, int minPlayers, String characterType, char icon){
-        super(id, era, minPlayers, CharacterType.INVENTOR);
-
-        this.icon = icon;
+    public Inventor() {
     }
 
-
-    public char getIcon(){
-        return icon;
+    public Inventor(char iconPerInventor) {
+        this.iconPerInventor = iconPerInventor;
     }
 
     @Override
-    public void applyImmediateEffect(Player player, Tribe tribe){}
+    public void applyImmediateEffect(Player player, Tribe tribe) {
+        // no immediate effect
+    }
+
+    @Override
+    public int getNumStars() {
+        return 0;
+    }
+
+    @Override
+    public char getIconPerInventor() {
+        return iconPerInventor;
+    }
+
+    @Override
+    public int getDiscountFood() {
+        return 0;
+    }
+
+    @Override
+    public int getPP() {
+        return 0;
+    }
 }

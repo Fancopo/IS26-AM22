@@ -1,10 +1,5 @@
 package it.polimi.ingsw.am22;
 
-
-import it.polimi.ingsw.am22.Era;
-import it.polimi.ingsw.am22.Game;
-import it.polimi.ingsw.am22.Tribe;
-
 public abstract class Card {
     private String id;
     private Era era;

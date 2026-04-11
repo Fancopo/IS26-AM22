@@ -39,21 +39,7 @@ public class Board {
             offerTrack.add(new OfferTile('A',0,0,3));
         }
     }
-    public void dealInitialCards(List<Card> tribeDeck, int numPlayers) {
-        // Regola del manuale: Fila inferiore = numero giocatori + 1
-        for (int i = 0; i < numPlayers + 1; i++) {
-            if (!tribeDeck.isEmpty()) {
-                lowerRow.add(tribeDeck.remove(0));
-            }
-        }
 
-        // Regola del manuale: Fila superiore = numero giocatori + 4
-        for (int i = 0; i < numPlayers + 4; i++) {
-            if (!tribeDeck.isEmpty()) {
-                upperRow.add(tribeDeck.remove(0));
-            }
-        }
-    }
     public void clearLowerRow() {
         lowerRow.removeIf(card -> !card.survivesRoundEnd());
     }
@@ -91,15 +77,15 @@ public class Board {
     }
 
     public Era refillUpperRow(List<Card> tribeDeck, Era currentEra) {
-        int cardsNeeded = turnOrderTile.getSlots().size() + 4;
+        int cardsNeeded = turnOrderTile.getSlots().size() + 1 - upperRow.size();
         for (int i = 0; i < cardsNeeded; i++) {
             if (!tribeDeck.isEmpty()) {
-                upperRow.add(tribeDeck.removeFirst());
+                upperRow.add(tribeDeck.remove(0));
             }
         }
 
-        if (!upperRow.isEmpty() && upperRow.getFirst().getEra() != currentEra) {
-            return upperRow.getFirst().getEra();
+        if (!upperRow.isEmpty() && upperRow.get(0).getEra() != currentEra) {
+            return upperRow.get(0).getEra();
         }
         return currentEra;
     }

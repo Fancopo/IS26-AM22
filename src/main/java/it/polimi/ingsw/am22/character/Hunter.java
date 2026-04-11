@@ -1,27 +1,52 @@
 package it.polimi.ingsw.am22.character;
 
-import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 
+public class Hunter implements CharacterEffect {
 
-public class Hunter extends TribeCharacter implements CharacterEffect{
-    private final boolean HasFoodIcon;
+    private boolean hasFoodIcon;
 
-    public Hunter(String id, Era era, int minPlayers, String characterType, boolean HasFoodIcon){
-        super(id, era, minPlayers, CharacterType.HUNTER);
-        this.HasFoodIcon = HasFoodIcon;
+    public Hunter() {
     }
 
+    public Hunter(boolean hasFoodIcon) {
+        this.hasFoodIcon = hasFoodIcon;
+    }
+
+    public boolean isHasFoodIcon() {
+        return hasFoodIcon;
+    }
+
+    public void setHasFoodIcon(boolean hasFoodIcon) {
+        this.hasFoodIcon = hasFoodIcon;
+    }
 
     @Override
-    public void applyImmediateEffect(Player player, Tribe tribe){
-
-        if(this.HasFoodIcon){
-            int foodToAdd = player.getTribe().countCharacters(getCharacterType());
-            player.addFood(foodToAdd);
-            System.out.println("Cacciatore con icona giocato! Aggiunto " +foodToAdd + " cibo.");
+    public void applyImmediateEffect(Player player, Tribe tribe) {
+        if (hasFoodIcon) {
+            int hunters = tribe.countCharacters(CharacterType.HUNTER);
+            player.addFood(hunters);
         }
     }
 
+    @Override
+    public int getNumStars() {
+        return 0;
+    }
+
+    @Override
+    public char getIconPerInventor() {
+        return '0';
+    }
+
+    @Override
+    public int getDiscountFood() {
+        return 0;
+    }
+
+    @Override
+    public int getPP() {
+        return 0;
+    }
 }

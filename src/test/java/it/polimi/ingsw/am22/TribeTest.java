@@ -23,18 +23,19 @@ public class TribeTest {
     @Test
     void addCardShouldRejectNull() {
         Tribe tribe = new Tribe();
+        Player player = mock(Player.class);
 
-        assertThrows(IllegalArgumentException.class, () -> tribe.addCard(null));
+        assertThrows(IllegalArgumentException.class, () -> tribe.addCard(player, null));
     }
-
     @Test
     void addCardShouldDelegateToCard() {
         Tribe tribe = new Tribe();
+        Player player = mock(Player.class);
         Card card = mock(Card.class);
 
-        tribe.addCard(card);
+        tribe.addCard(player, card);
 
-        verify(card).addToTribe(tribe);
+        verify(card).addToTribe(player, tribe);
     }
 
     @Test

@@ -1,17 +1,14 @@
 package it.polimi.ingsw.am22;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.ingsw.am22.Building.BuildingEffect;
-import it.polimi.ingsw.am22.character.TribeCharacter;
-import it.polimi.ingsw.am22.event.Event;
 import it.polimi.ingsw.am22.Building.*;
-import it.polimi.ingsw.am22.character.CharacterType;
-import it.polimi.ingsw.am22.event.EventType;
-
+import it.polimi.ingsw.am22.Building.BuildingEffect;
+import it.polimi.ingsw.am22.character.*;
+import it.polimi.ingsw.am22.event.*;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 public class CardJsonLoader {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -36,10 +33,10 @@ public class CardJsonLoader {
 
                 switch (type) {
                     case "tribeCharacter" ->
-                            tribeCharacters.add(mapper.treeToValue(node, TribeCharacter.class));
+                            tribeCharacters.add(parseTribeCharacter(node));
 
                     case "event" ->
-                            events.add(mapper.treeToValue(node, Event.class));
+                            events.add(parseEvent(node));
 
                     default ->
                             throw new IllegalArgumentException("Tipo non valido in " + resourcePath + ": " + type);
@@ -52,7 +49,62 @@ public class CardJsonLoader {
             throw new RuntimeException("Errore nel caricamento di tribeCharacter/event", e);
         }
     }
+    private TribeCharacter parseTribeCharacter(JsonNode node) {
+        try {
+            String id = node.get("id").asText();
+            Era era = Era.valueOf(node.get("era").asText());
+            int minPlayers = node.get("minPlayers").asInt();
+            CharacterType characterType = CharacterType.valueOf(node.get("characterType").asText());
 
+            JsonNode effectNode = node.get("effect");
+            CharacterEffect effect = parseCharacterEffect(characterType, effectNode);
+
+            return new TribeCharacter(id, era, minPlayers, characterType, effect);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Errore nel parsing di tribeCharacter", e);
+        }
+    }
+
+    private CharacterEffect parseCharacterEffect(CharacterType characterType, JsonNode effectNode) {
+        try {
+            return switch (characterType) {
+                case INVENTOR -> mapper.treeToValue(effectNode, Inventor.class);
+                case ARTIST -> mapper.treeToValue(effectNode, Artist.class);
+                case HUNTER -> mapper.treeToValue(effectNode, Hunter.class);
+                case BUILDER -> mapper.treeToValue(effectNode, Builder.class);
+                case SHAMAN -> mapper.treeToValue(effectNode, Shaman.class);
+                case COLLECTOR -> mapper.treeToValue(effectNode, Collector.class);
+            };
+        } catch (Exception e) {
+            throw new RuntimeException("Errore nel parsing di CharacterEffect: " + characterType, e);
+        }
+    }
+
+    private Event parseEvent(JsonNode node) {
+        try {
+            String id = node.get("id").asText();
+            Era era = Era.valueOf(node.get("era").asText());
+            int minPlayers = node.get("minPlayers").asInt();
+            EventType eventType = EventType.valueOf(node.get("eventType").asText());
+
+            EventEffect effect = parseEventEffect(eventType, era);
+
+            return new Event(id, era, minPlayers, eventType, effect);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Errore nel parsing di event", e);
+        }
+    }
+
+    private EventEffect parseEventEffect(EventType eventType, Era era) {
+        return switch (eventType) {
+            case HUNTING -> new hunting(era);
+            case SHAMANIC_RITUAL -> new ShamanicRitual(era);
+            case CAVE_PAINTING -> new CavePaintings(era);
+            case SUSTENANCE -> new sustenance(era);
+        };
+    }
     public List<Building> loadBuildings(String resourcePath) {
         List<Building> buildings = new ArrayList<>();
 
@@ -78,10 +130,11 @@ public class CardJsonLoader {
         }
     }
 
+
     private Building parseBuilding(JsonNode node) {
-        String id = node.get("id").asText();   // se il costruttore vuole int, usa asInt()
+        String id = node.get("id").asText();
         Era era = Era.valueOf(node.get("era").asText());
-        int minPlayers = node.get("minPlayers").asInt();
+        int minPlayers = 2;
         int foodPrice = node.get("foodPrice").asInt();
         int finalPP = node.get("finalPP").asInt();
 
@@ -142,6 +195,7 @@ public class CardJsonLoader {
         }
         return CharacterType.valueOf(node.asText());
     }
+
     public LoadedCards loadAllCards(String tribeEventPath, String buildingPath) {
         LoadedCards partial = loadTribeCharactersAndEvents(tribeEventPath);
         List<Building> buildings = loadBuildings(buildingPath);
