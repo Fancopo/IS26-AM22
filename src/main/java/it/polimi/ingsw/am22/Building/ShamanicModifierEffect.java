@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22.Building;
 
+import it.polimi.ingsw.am22.Building.BuildingEffect;
+
 // 2. ShamanicModifierEffect
 public class ShamanicModifierEffect implements BuildingEffect {
     private int extraIcons;

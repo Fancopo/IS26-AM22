@@ -12,9 +12,9 @@ public class SetUpState implements GameState {
 
         // Chiama il metodo package-private di Game
         //game.setupDecks();
-
+        game.getBoard().dealInitialCards(game.getTribeDeck(), game.getPlayers().size());
         Collections.shuffle(game.getPlayers());
-        game.setActivePlayer(game.getPlayers().get(0));
+        game.setActivePlayer(game.getPlayers().getFirst());
 
         for (int i = 0; i < game.getPlayers().size(); i++) {
             Player p = game.getPlayers().get(i);
@@ -25,13 +25,6 @@ public class SetUpState implements GameState {
             if (i == 0) p.addFood(2);
             else if (i == 1 || i == 2) p.addFood(3);
             else if (i == 3 || i == 4) p.addFood(4);
-        }
-
-        int cardsToDrawLower = game.getPlayers().size() + 1;
-        for (int i = 0; i < cardsToDrawLower; i++) {
-            if (!game.getTribeDeck().isEmpty()) {
-                game.getBoard().getLowerRow().add(game.getTribeDeck().remove(0));
-            }
         }
 
         // Transizione di Stato!

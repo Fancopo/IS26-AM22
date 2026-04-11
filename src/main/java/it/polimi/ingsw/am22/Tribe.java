@@ -1,13 +1,15 @@
 package it.polimi.ingsw.am22;
 
 import it.polimi.ingsw.am22.Building.Building;
+import it.polimi.ingsw.am22.Card;
 import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.character.Inventor;
 import it.polimi.ingsw.am22.character.TribeCharacter;
 
 import java.util.*;
 
 public class Tribe {
-    private static List<TribeCharacter> members;
+    private List<TribeCharacter> members;
     private List<Building> buildings;
 
     public Tribe() {
@@ -41,7 +43,7 @@ public class Tribe {
      * This method can also support end-game rules
      * such as artists, builders, inventors, etc.
      */
-    public static int countCharacters(CharacterType type) {
+    public int countCharacters(CharacterType type) {
         int count = 0;
 
         for (TribeCharacter character : members) {
@@ -58,7 +60,11 @@ public class Tribe {
 
         for (TribeCharacter character : members) {
             if (character.getCharacterType() == CharacterType.INVENTOR) {
-                uniqueIcons.add(character.getIconPerInventor());
+                // 1. CAST TO INVENTOR
+                Inventor inventorCard = (Inventor) character;
+
+                // 2. USE THE SPECIFIC METHOD
+                uniqueIcons.add(inventorCard.getIcon());
             }
         }
 
@@ -93,3 +99,4 @@ public class Tribe {
         return List.copyOf(buildings);
     }
 }
+

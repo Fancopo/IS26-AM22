@@ -11,7 +11,7 @@ public interface GameState {
     default void placeTotemOnOffer(Game game, Player player, OfferTile tile) {
         throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
     }
-    default void pickCards(Game game, Player player, List<Card> selectedCards) {
+    default void pickCards2(Game game, Player player, List<Card> selectedCards) {
         throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
     }
     default void pickBonusCard(Game game, Player player, Card bonusCard) {

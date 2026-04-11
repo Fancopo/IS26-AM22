@@ -46,12 +46,6 @@ public class CavePaintings extends Event implements EventEffect {
                 building.getEffect().applyEventBonus(EventType.CAVE_PAINTING,player,artistCount);
             }
 
-            // Assegna eventuale cibo bonus degli edifici
-            if (artistCount > 0) {
-                player.addFood(artistCount);
-                System.out.println(player.getNickname() + " ottiene " + (artistCount));
-            }
-
             // 3. Calcolo e Assegnazione dei Punti Prestigio
             if (artistCount >= minArtistsRequired) {
                 // Il giocatore ha abbastanza Artisti: guadagna PP per ogni Artista
@@ -62,7 +56,7 @@ public class CavePaintings extends Event implements EventEffect {
                         "). Guadagna " + earnedPP + " PP!");
             } else {
                 // Il giocatore non ha abbastanza Artisti: subisce la penalità
-                player.addPP(PPtoLose); // PPtoLose è già negativo (-2)
+                player.addPP(-2); // PPtoLose è già negativo (-2)
                 System.out.println(player.getNickname() + " ha solo " + artistCount +
                         " Artisti (minimo richiesto: " + minArtistsRequired +
                         "). Subisce " + PPtoLose + " PP.");
