@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am22.Building;
 
+import it.polimi.ingsw.am22.Building.BuildingEffect;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.event.EventType;
 

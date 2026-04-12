@@ -3,10 +3,13 @@ package it.polimi.ingsw.am22.Building;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.character.TribeCharacter;
 import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.character.CharacterType;
+import it.polimi.ingsw.am22.character.Inventor;
 
 // 4. CollectionRewardEffect
 public class CollectionRewardEffect implements BuildingEffect {

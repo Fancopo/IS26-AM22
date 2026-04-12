@@ -8,10 +8,10 @@ public class SetUpState implements GameState {
     public void startMatch(Game game) {
         game.getBoard().getTurnOrderTile().setup(game.getPlayers().size());
         game.getBoard().initTrack(game.getPlayers().size());
-        game.setCurrentEra(game.getBoard().refillUpperRow(game.getTribeDeck(), game.getCurrentEra()));
 
         // Chiama il metodo package-private di Game
-        //game.setupDecks();
+        game.setupDecks();
+
         game.getBoard().dealInitialCards(game.getTribeDeck(), game.getPlayers().size());
         Collections.shuffle(game.getPlayers());
         game.setActivePlayer(game.getPlayers().getFirst());

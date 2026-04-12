@@ -3,6 +3,7 @@ package it.polimi.ingsw.am22;
 import it.polimi.ingsw.am22.Building.Building;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -82,55 +83,101 @@ public class Game {
         return currentState.getPhaseName();
     }
 
-    /*void setupDecks() {
-        List<Card> allTribeCards = CardDeck.createAllTribeCards();
+    void setupDecks() {
+        CardJsonLoader loader = new CardJsonLoader();
+        LoadedCards loadedCards = loader.loadAllCards("/TribeCharacter-Event.json", "/Building.json");
 
-        List<Card> filteredTribe = allTribeCards.stream()
-                .filter(c -> c.getMinPlayers() <= players.size())
-                .collect(Collectors.toList());
+        List<Card> allTribeCards = new ArrayList<>();
+        allTribeCards.addAll(loadedCards.getTribeCharacters());
+        allTribeCards.addAll(loadedCards.getEvents());
 
-        List<Card> era1 = filteredTribe.stream().filter(c -> c.getEra() == Era.I).collect(Collectors.toList());
-        List<Card> era2 = filteredTribe.stream().filter(c -> c.getEra() == Era.II).collect(Collectors.toList());
-        List<Card> era3 = filteredTribe.stream().filter(c -> c.getEra() == Era.III).collect(Collectors.toList());
-        List<Card> finalEvents = filteredTribe.stream().filter(c -> c.isFinalEvent()).collect(Collectors.toList());
+        List<Card> filteredTribe = new ArrayList<>(allTribeCards.stream()
+                .filter(card -> card.getMinPlayers() <= players.size())
+                .toList());
+
+        List<Card> era1 = new ArrayList<>(filteredTribe.stream()
+                .filter(card -> card.getEra() == Era.I)
+                .toList());
+
+        List<Card> era2 = new ArrayList<>(filteredTribe.stream()
+                .filter(card -> card.getEra() == Era.II)
+                .toList());
+
+        List<Card> era3 = new ArrayList<>(filteredTribe.stream()
+                .filter(card -> card.getEra() == Era.III)
+                .toList());
+
+        List<Card> finalEvents = new ArrayList<>(loadedCards.getFinalEvents().stream()
+                .filter(card -> card.getMinPlayers() <= players.size())
+                .toList());
 
         Collections.shuffle(era1);
         Collections.shuffle(era2);
         Collections.shuffle(era3);
         Collections.shuffle(finalEvents);
 
-        this.tribeDeck.addAll(finalEvents);
-        this.tribeDeck.addAll(era3);
-        this.tribeDeck.addAll(era2);
-        this.tribeDeck.addAll(era1);
+        tribeDeck.clear();
+        tribeDeck.addAll(era1);
+        tribeDeck.addAll(era2);
+        tribeDeck.addAll(era3);
+        tribeDeck.addAll(finalEvents);
 
-        List<Building> allBuildings = CardDeck.createAllBuildings();
+        List<Building> allBuildings = new ArrayList<>(loadedCards.getBuildings());
 
-        List<Building> buildEra1 = allBuildings.stream().filter(b -> b.getEra() == Era.I).collect(Collectors.toList());
-        List<Building> buildEra2 = allBuildings.stream().filter(b -> b.getEra() == Era.II).collect(Collectors.toList());
-        List<Building> buildEra3 = allBuildings.stream().filter(b -> b.getEra() == Era.III).collect(Collectors.toList());
+        List<Building> buildEra1 = new ArrayList<>(allBuildings.stream()
+                .filter(building -> building.getEra() == Era.I)
+                .toList());
+
+        List<Building> buildEra2 = new ArrayList<>(allBuildings.stream()
+                .filter(building -> building.getEra() == Era.II)
+                .toList());
+
+        List<Building> buildEra3 = new ArrayList<>(allBuildings.stream()
+                .filter(building -> building.getEra() == Era.III)
+                .toList());
 
         Collections.shuffle(buildEra1);
         Collections.shuffle(buildEra2);
         Collections.shuffle(buildEra3);
 
-        int countEra1 = 0, countEra2 = 0, countEra3 = 0;
+        int countEra1;
+        int countEra2;
+        int countEra3;
+
         switch (players.size()) {
-            case 2: countEra1 = 1; countEra2 = 2; countEra3 = 3; break;
-            case 3: countEra1 = 2; countEra2 = 2; countEra3 = 4; break;
-            case 4: countEra1 = 2; countEra2 = 3; countEra3 = 4; break;
-            case 5: countEra1 = 2; countEra2 = 3; countEra3 = 5; break;
+            case 2 -> {
+                countEra1 = 1;
+                countEra2 = 2;
+                countEra3 = 3;
+            }
+            case 3 -> {
+                countEra1 = 2;
+                countEra2 = 2;
+                countEra3 = 4;
+            }
+            case 4 -> {
+                countEra1 = 2;
+                countEra2 = 3;
+                countEra3 = 4;
+            }
+            case 5 -> {
+                countEra1 = 2;
+                countEra2 = 3;
+                countEra3 = 5;
+            }
+            default -> throw new IllegalStateException("Numero giocatori non valido: " + players.size());
         }
 
         List<Building> selectedEra1 = new ArrayList<>(buildEra1.subList(0, countEra1));
         List<Building> selectedEra2 = new ArrayList<>(buildEra2.subList(0, countEra2));
         List<Building> selectedEra3 = new ArrayList<>(buildEra3.subList(0, countEra3));
 
-        this.buildingMarket.addAll(selectedEra2);
-        this.buildingMarket.addAll(selectedEra3);
-        board.revealNewBuildings(selectedEra1);
-    }*/
+        buildingMarket.clear();
+        buildingMarket.addAll(selectedEra2);
+        buildingMarket.addAll(selectedEra3);
 
+        board.revealNewBuildings(selectedEra1);
+    }
     void handleEraChange() {
         if (currentEra == Era.III) {
             board.clearLowerBuildings();

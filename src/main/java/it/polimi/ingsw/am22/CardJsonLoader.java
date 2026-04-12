@@ -4,18 +4,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.am22.Building.*;
 import it.polimi.ingsw.am22.Building.BuildingEffect;
+import it.polimi.ingsw.am22.Building.CollectionCondition;
 import it.polimi.ingsw.am22.character.*;
 import it.polimi.ingsw.am22.event.*;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 public class CardJsonLoader {
+
+    private static final int FINAL_EVENT_ID_1 = 95;
+    private static final int FINAL_EVENT_ID_2 = 96;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     public LoadedCards loadTribeCharactersAndEvents(String resourcePath) {
         List<TribeCharacter> tribeCharacters = new ArrayList<>();
         List<Event> events = new ArrayList<>();
+        List<Event> finalEvents = new ArrayList<>();
 
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
             if (is == null) {
@@ -32,23 +38,35 @@ public class CardJsonLoader {
                 String type = node.get("type").asText();
 
                 switch (type) {
-                    case "tribeCharacter" ->
-                            tribeCharacters.add(parseTribeCharacter(node));
+                    case "tribeCharacter" -> tribeCharacters.add(parseTribeCharacter(node));
 
-                    case "event" ->
-                            events.add(parseEvent(node));
+                    case "event" -> {
+                        Event event = parseEvent(node);
+                        if (isFinalEventNode(node)) {
+                            finalEvents.add(event);
+                        } else {
+                            events.add(event);
+                        }
+                    }
 
-                    default ->
-                            throw new IllegalArgumentException("Tipo non valido in " + resourcePath + ": " + type);
+                    default -> throw new IllegalArgumentException(
+                            "Tipo non valido in " + resourcePath + ": " + type
+                    );
                 }
             }
 
-            return new LoadedCards(tribeCharacters, events, new ArrayList<>());
+            return new LoadedCards(tribeCharacters, events, finalEvents, new ArrayList<>());
 
         } catch (Exception e) {
             throw new RuntimeException("Errore nel caricamento di tribeCharacter/event", e);
         }
     }
+
+    private boolean isFinalEventNode(JsonNode node) {
+        int id = node.get("id").asInt();
+        return id == FINAL_EVENT_ID_1 || id == FINAL_EVENT_ID_2;
+    }
+
     private TribeCharacter parseTribeCharacter(JsonNode node) {
         try {
             String id = node.get("id").asText();
@@ -57,27 +75,43 @@ public class CardJsonLoader {
             CharacterType characterType = CharacterType.valueOf(node.get("characterType").asText());
 
             JsonNode effectNode = node.get("effect");
-            CharacterEffect effect = parseCharacterEffect(characterType, effectNode);
 
-            return new TribeCharacter(id, era, minPlayers, characterType, effect);
+            return switch (characterType) {
+                case HUNTER -> new Hunter(
+                        id,
+                        era,
+                        minPlayers,
+                        effectNode.get("hasFoodIcon").asBoolean()
+                );
+
+                case BUILDER -> new Builder(
+                        id,
+                        era,
+                        minPlayers,
+                        effectNode.get("discountFood").asInt(),
+                        effectNode.get("PP").asInt()
+                );
+
+                case SHAMAN -> new Shaman(
+                        id,
+                        era,
+                        minPlayers,
+                        effectNode.get("numStars").asInt()
+                );
+
+                case INVENTOR -> new Inventor(
+                        id,
+                        era,
+                        minPlayers,
+                        (char) effectNode.get("iconPerInventor").asInt()
+                );
+
+                case ARTIST -> new Artist(id, era, minPlayers);
+                case COLLECTOR -> new Collector(id, era, minPlayers);
+            };
 
         } catch (Exception e) {
             throw new RuntimeException("Errore nel parsing di tribeCharacter", e);
-        }
-    }
-
-    private CharacterEffect parseCharacterEffect(CharacterType characterType, JsonNode effectNode) {
-        try {
-            return switch (characterType) {
-                case INVENTOR -> mapper.treeToValue(effectNode, Inventor.class);
-                case ARTIST -> mapper.treeToValue(effectNode, Artist.class);
-                case HUNTER -> mapper.treeToValue(effectNode, Hunter.class);
-                case BUILDER -> mapper.treeToValue(effectNode, Builder.class);
-                case SHAMAN -> mapper.treeToValue(effectNode, Shaman.class);
-                case COLLECTOR -> mapper.treeToValue(effectNode, Collector.class);
-            };
-        } catch (Exception e) {
-            throw new RuntimeException("Errore nel parsing di CharacterEffect: " + characterType, e);
         }
     }
 
@@ -88,23 +122,45 @@ public class CardJsonLoader {
             int minPlayers = node.get("minPlayers").asInt();
             EventType eventType = EventType.valueOf(node.get("eventType").asText());
 
-            EventEffect effect = parseEventEffect(eventType, era);
+            return switch (eventType) {
+                case HUNTING -> new hunting(
+                        id,
+                        era,
+                        minPlayers,
+                        EventType.HUNTING,
+                        null
+                );
 
-            return new Event(id, era, minPlayers, eventType, effect);
+                case SUSTENANCE -> new sustenance(
+                        id,
+                        era,
+                        minPlayers,
+                        EventType.SUSTENANCE,
+                        null
+                );
+
+                case SHAMANIC_RITUAL -> new ShamanicRitual(
+                        id,
+                        era,
+                        minPlayers,
+                        EventType.SHAMANIC_RITUAL,
+                        null
+                );
+
+                case CAVE_PAINTING -> new CavePaintings(
+                        id,
+                        era,
+                        minPlayers,
+                        EventType.CAVE_PAINTING,
+                        null
+                );
+            };
 
         } catch (Exception e) {
             throw new RuntimeException("Errore nel parsing di event", e);
         }
     }
 
-    private EventEffect parseEventEffect(EventType eventType, Era era) {
-        return switch (eventType) {
-            case HUNTING -> new hunting(era);
-            case SHAMANIC_RITUAL -> new ShamanicRitual(era);
-            case CAVE_PAINTING -> new CavePaintings(era);
-            case SUSTENANCE -> new sustenance(era);
-        };
-    }
     public List<Building> loadBuildings(String resourcePath) {
         List<Building> buildings = new ArrayList<>();
 
@@ -130,7 +186,6 @@ public class CardJsonLoader {
         }
     }
 
-
     private Building parseBuilding(JsonNode node) {
         String id = node.get("id").asText();
         Era era = Era.valueOf(node.get("era").asText());
@@ -148,7 +203,6 @@ public class CardJsonLoader {
 
     private BuildingEffect parseBuildingEffect(String effectType, JsonNode effectNode, String buildingId) {
         return switch (effectType) {
-
             case "COLLECTION_REWARD_EFFECT" -> new CollectionRewardEffect(
                     CollectionCondition.valueOf(effectNode.get("conditionType").asText()),
                     effectNode.get("foodReward").asInt()
@@ -203,6 +257,7 @@ public class CardJsonLoader {
         return new LoadedCards(
                 partial.getTribeCharacters(),
                 partial.getEvents(),
+                partial.getFinalEvents(),
                 buildings
         );
     }

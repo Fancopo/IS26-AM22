@@ -1,10 +1,11 @@
 package it.polimi.ingsw.am22.Building;
 
+
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
 import it.polimi.ingsw.am22.Tribe;
 import it.polimi.ingsw.am22.Card;
-
+import it.polimi.ingsw.am22.Building.BuildingEffect;
 
 public class Building extends Card {
     private int foodPrice;
