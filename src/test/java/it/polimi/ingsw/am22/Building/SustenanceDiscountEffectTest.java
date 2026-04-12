@@ -34,8 +34,8 @@ class SustenanceDiscountEffectTest {
         SustenanceDiscountEffect effect = new SustenanceDiscountEffect(CharacterType.COLLECTOR);
 
         // Add 2 Collectors to the tribe
-        testTribe.addCharacter(new Collector("COL1", Era.I, 2, "COLLECTOR"));
-        testTribe.addCharacter(new Collector("COL2", Era.I, 2, "COLLECTOR"));
+        testTribe.addCharacter(new Collector("COL1", Era.I, 2));
+        testTribe.addCharacter(new Collector("COL2", Era.I, 2));
 
         // The discount should be exactly 2 (1 per Collector)
         assertEquals(2, effect.getSustenanceDiscount(testTribe), "Discount should match the exact number of target characters");
@@ -46,11 +46,11 @@ class SustenanceDiscountEffectTest {
         SustenanceDiscountEffect effect = new SustenanceDiscountEffect(CharacterType.COLLECTOR);
 
         // Add 1 Collector
-        testTribe.addCharacter(new Collector("COL1", Era.I, 2, "COLLECTOR"));
+        testTribe.addCharacter(new Collector("COL1", Era.I, 2));
 
         // Add 2 Hunters (These should NOT grant a discount)
-        testTribe.addCharacter(new Hunter("HUNT1", Era.I, 2, "HUNTER", false));
-        testTribe.addCharacter(new Hunter("HUNT2", Era.I, 2, "HUNTER", false));
+        testTribe.addCharacter(new Hunter("HUNT1", Era.I, 2, false));
+        testTribe.addCharacter(new Hunter("HUNT2", Era.I, 2, false));
 
         // The discount should still be exactly 1, ignoring the Hunters
         assertEquals(1, effect.getSustenanceDiscount(testTribe), "Effect must ignore characters that do not match the target type");

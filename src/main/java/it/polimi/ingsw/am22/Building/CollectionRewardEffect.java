@@ -55,7 +55,7 @@ public class CollectionRewardEffect implements BuildingEffect {
                 for (CharacterType type : CharacterType.values()) {
 
                     // Ask the Tribe how many characters of this specific type it currently has
-                    int count = Tribe.countCharacters(type);
+                    int count = player.getTribe().countCharacters(type);
 
                     // If this count is the lowest we have seen so far, it becomes our new bottleneck
                     if (count < minSets) {
@@ -63,10 +63,12 @@ public class CollectionRewardEffect implements BuildingEffect {
                     }
                 }
 
+                /*
                 // Safety check: if the enum is empty for some reason, prevent it from staying at MAX_VALUE
                 if (minSets == Integer.MAX_VALUE) {
                     minSets = 0;
                 }
+                 */
 
                 // The number of complete sets is equal to the quantity of your scarcest character
                 currentMatches = minSets;
