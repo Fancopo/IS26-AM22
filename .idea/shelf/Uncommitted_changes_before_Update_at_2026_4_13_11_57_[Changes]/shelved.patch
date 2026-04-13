@@ -1,0 +1,667 @@
+Index: src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\n\r\nimport com.fasterxml.jackson.annotation.JsonCreator;\r\nimport it.polimi.ingsw.am22.*;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\n\r\npublic class TribeCharacter extends Card {\r\n\r\n    private CharacterType characterType;\r\n    private CharacterEffect effect;\r\n\r\n    @JsonCreator\r\n    public TribeCharacter(String id, Era era, int minPlayers, CharacterType characterType, CharacterEffect effect) {\r\n        super(id, era, minPlayers);\r\n        this.characterType = characterType;\r\n        this.effect = effect;\r\n    }\r\n\r\n    public CharacterType getCharacterType() {\r\n        return characterType;\r\n    }\r\n\r\n    public CharacterEffect getEffect() {\r\n        return effect;\r\n    }\r\n\r\n    public void addToTribe(Player player, Tribe tribe) {\r\n        tribe.getMembers().add(this);\r\n\r\n        if (effect != null) {\r\n            effect.applyImmediateEffect(player, tribe);\r\n        }\r\n\r\n        for (Building b : tribe.getBuildings()) {\r\n            if (b.getEffect() != null) {\r\n                b.getEffect().onCharacterAdded(player, this);\r\n            }\r\n        }\r\n    }\r\n\r\n    public int getNumStars() {\r\n        return effect != null ? effect.getNumStars() : 0;\r\n    }\r\n\r\n    public char getIconPerInventor() {\r\n        return effect != null ? effect.getIconPerInventor() : '0';\r\n    }\r\n\r\n    public int getDiscountFood() {\r\n        return effect != null ? effect.getDiscountFood() : 0;\r\n    }\r\n\r\n    public int getPP() {\r\n        return effect != null ? effect.getPP() : 0;\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java b/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java
+--- a/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java	(date 1775902679952)
+@@ -5,7 +5,7 @@
+ import it.polimi.ingsw.am22.*;
+ import it.polimi.ingsw.am22.Building.Building;
+ 
+-public class TribeCharacter extends Card {
++public class TribeCharacter extends Card{
+ 
+     private CharacterType characterType;
+     private CharacterEffect effect;
+Index: src/test/java/it/polimi/ingsw/am22/character/CollectorTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nclass CollectorTest {\r\n\r\n    @Test\r\n    void testCollectorCreationAndEffect() {\r\n        // 1. Istanziamo l'oggetto Collector reale.\r\n        // I parametri sono: id, era, minPlayers, characterType\r\n        Collector collector = new Collector(\"col_01\", Era.I, 3, \"Collector\");\r\n\r\n        // Verifichiamo che l'istanza sia stata creata correttamente (copre il costruttore)\r\n        assertNotNull(collector, \"L'istanza di Collector non dovrebbe essere null\");\r\n\r\n        // 2. Prepariamo gli oggetti Player e Tribe necessari per il metodo\r\n        Player dummyPlayer = new Player(\"Christian\");\r\n        Tribe dummyTribe = new Tribe();\r\n\r\n        // 3. Eseguiamo il metodo applyImmediateEffect.\r\n        // Siccome i Raccoglitori agiscono solo nell'Evento Sostentamento, qui testiamo\r\n        // solo che non esploda nulla eseguendo il metodo vuoto.\r\n        assertDoesNotThrow(() -> collector.applyImmediateEffect(dummyPlayer, dummyTribe),\r\n                \"applyImmediateEffect non deve lanciare eccezioni per la classe Collector\");\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/character/CollectorTest.java b/src/test/java/it/polimi/ingsw/am22/character/CollectorTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/character/CollectorTest.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/test/java/it/polimi/ingsw/am22/character/CollectorTest.java	(date 1775902679965)
+@@ -12,7 +12,7 @@
+     void testCollectorCreationAndEffect() {
+         // 1. Istanziamo l'oggetto Collector reale.
+         // I parametri sono: id, era, minPlayers, characterType
+-        Collector collector = new Collector("col_01", Era.I, 3, "Collector");
++        Collector collector = new Collector();
+ 
+         // Verifichiamo che l'istanza sia stata creata correttamente (copre il costruttore)
+         assertNotNull(collector, "L'istanza di Collector non dovrebbe essere null");
+Index: src/test/java/it/polimi/ingsw/am22/character/InventorTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nclass InventorTest {\r\n\r\n    @Test\r\n    void testInventorCreationGettersAndEffect() {\r\n        // 1. Istanziamo l'oggetto Inventor.\r\n        Inventor inventor = new Inventor(\"inv_01\", Era.I, 3, \"Inventor\", 'A');\r\n\r\n        // Verifichiamo che l'istanza sia stata creata (copre il costruttore)\r\n        assertNotNull(inventor, \"L'istanza di Inventor non dovrebbe essere null\");\r\n\r\n        // 2. Verifichiamo il Getter per l'icona (copre getIconPerInventor())\r\n        assertEquals('A', inventor.getIconPerInventor(), \"L'icona dovrebbe essere 'A'\");\r\n\r\n        // 3. Prepariamo gli oggetti Player e Tribe\r\n        Player dummyPlayer = new Player(\"Christian\");\r\n\r\n        // 4. Eseguiamo applyImmediateEffect per assicurarci che non faccia nulla\r\n        // e non lanci eccezioni (copre applyImmediateEffect())\r\n        assertDoesNotThrow(() -> inventor.applyImmediateEffect(dummyPlayer, dummyPlayer.getTribe()),\r\n                \"applyImmediateEffect non deve lanciare eccezioni per la classe Inventor\");\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/character/InventorTest.java b/src/test/java/it/polimi/ingsw/am22/character/InventorTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/character/InventorTest.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/test/java/it/polimi/ingsw/am22/character/InventorTest.java	(date 1775902679956)
+@@ -11,7 +11,7 @@
+     @Test
+     void testInventorCreationGettersAndEffect() {
+         // 1. Istanziamo l'oggetto Inventor.
+-        Inventor inventor = new Inventor("inv_01", Era.I, 3, "Inventor", 'A');
++        Inventor inventor = new Inventor('A');
+ 
+         // Verifichiamo che l'istanza sia stata creata (copre il costruttore)
+         assertNotNull(inventor, "L'istanza di Inventor non dovrebbe essere null");
+Index: src/test/java/it/polimi/ingsw/am22/character/ShamanTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nclass ShamanTest {\r\n\r\n    @Test\r\n    void testShamanCreationGettersAndEffect() {\r\n        // 1. Istanziamo l'oggetto Shaman.\r\n        // Oltre ai parametri standard, passiamo il numero di stelle/icone (es. 2)\r\n        Shaman shaman = new Shaman(\"sha_01\", Era.I, 3, \"Shaman\", 2);\r\n\r\n        // Verifichiamo che l'istanza sia stata creata (copre il costruttore)\r\n        assertNotNull(shaman, \"L'istanza di Shaman non dovrebbe essere null\");\r\n\r\n        // 2. Verifichiamo il Getter per le stelle (copre getNumStars())\r\n        assertEquals(2, shaman.getNumStars(), \"Il numero di stelle dovrebbe essere 2\");\r\n\r\n        // 3. Prepariamo gli oggetti Player e Tribe\r\n        Player dummyPlayer = new Player(\"Christian\");\r\n\r\n        // 4. Eseguiamo applyImmediateEffect per assicurarci che non lanci eccezioni\r\n        assertDoesNotThrow(() -> shaman.applyImmediateEffect(dummyPlayer, dummyPlayer.getTribe()),\r\n                \"applyImmediateEffect non deve lanciare eccezioni per la classe Shaman\");\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/character/ShamanTest.java b/src/test/java/it/polimi/ingsw/am22/character/ShamanTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/character/ShamanTest.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/test/java/it/polimi/ingsw/am22/character/ShamanTest.java	(date 1775902679946)
+@@ -12,7 +12,7 @@
+     void testShamanCreationGettersAndEffect() {
+         // 1. Istanziamo l'oggetto Shaman.
+         // Oltre ai parametri standard, passiamo il numero di stelle/icone (es. 2)
+-        Shaman shaman = new Shaman("sha_01", Era.I, 3, "Shaman", 2);
++        Shaman shaman = new Shaman(2);
+ 
+         // Verifichiamo che l'istanza sia stata creata (copre il costruttore)
+         assertNotNull(shaman, "L'istanza di Shaman non dovrebbe essere null");
+Index: src/test/java/it/polimi/ingsw/am22/character/HunterTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nclass HunterTest {\r\n\r\n    @Test\r\n    void testHunterCreationAndNoIconEffect() {\r\n        // 1. Creiamo un Hunter SENZA icona cibo (parametro booleano = false)\r\n        Hunter hunterNoIcon = new Hunter(\"hunt_01\", Era.I, 3, \"Hunter\", false);\r\n        assertNotNull(hunterNoIcon, \"L'istanza non dovrebbe essere null\");\r\n\r\n        Player dummyPlayer = new Player(\"Christian\");\r\n\r\n\r\n        // 2. Eseguiamo l'effetto. Essendo false, l'if viene saltato.\r\n        assertDoesNotThrow(() -> hunterNoIcon.applyImmediateEffect(dummyPlayer, dummyPlayer.getTribe()),\r\n                \"applyImmediateEffect non deve lanciare eccezioni\");\r\n\r\n        // (Opzionale) Se hai un metodo getFood(), puoi verificare che il cibo sia rimasto invariato\r\n        assertEquals(0, dummyPlayer.getFood(), \"Il cibo non deve aumentare se l'Hunter non ha l'icona\");\r\n    }\r\n\r\n    @Test\r\n    void testHunterWithIconEffect() {\r\n        // 1. Creiamo un Hunter CON icona cibo (parametro booleano = true)\r\n        Hunter hunterWithIcon = new Hunter(\"hunt_02\", Era.I, 3, \"Hunter\", true);\r\n        assertNotNull(hunterWithIcon);\r\n\r\n        Player dummyPlayer = new Player(\"Christian\");\r\n\r\n        dummyPlayer.getTribe().addCharacter(hunterWithIcon);\r\n\r\n        // 2. Eseguiamo l'effetto. Questa volta entrerà nell'if!\r\n        assertDoesNotThrow(() -> hunterWithIcon.applyImmediateEffect(dummyPlayer, dummyPlayer.getTribe()),\r\n                \"L'aggiunta del cibo non deve lanciare eccezioni\");\r\n\r\n        // (Opzionale) Verifica effettiva che il cibo sia stato aggiunto!\r\n        // Se l'Hunter è stato aggiunto alla tribù, countCharacters dovrebbe restituire almeno 1.\r\n        assertTrue(dummyPlayer.getFood() > 0, \"Il giocatore dovrebbe aver ricevuto cibo\");\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/character/HunterTest.java b/src/test/java/it/polimi/ingsw/am22/character/HunterTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/character/HunterTest.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/test/java/it/polimi/ingsw/am22/character/HunterTest.java	(date 1775902679969)
+@@ -11,7 +11,7 @@
+     @Test
+     void testHunterCreationAndNoIconEffect() {
+         // 1. Creiamo un Hunter SENZA icona cibo (parametro booleano = false)
+-        Hunter hunterNoIcon = new Hunter("hunt_01", Era.I, 3, "Hunter", false);
++        Hunter hunterNoIcon = new Hunter(false);
+         assertNotNull(hunterNoIcon, "L'istanza non dovrebbe essere null");
+ 
+         Player dummyPlayer = new Player("Christian");
+@@ -28,7 +28,7 @@
+     @Test
+     void testHunterWithIconEffect() {
+         // 1. Creiamo un Hunter CON icona cibo (parametro booleano = true)
+-        Hunter hunterWithIcon = new Hunter("hunt_02", Era.I, 3, "Hunter", true);
++        Hunter hunterWithIcon = new Hunter(true);
+         assertNotNull(hunterWithIcon);
+ 
+         Player dummyPlayer = new Player("Christian");
+Index: src/test/java/it/polimi/ingsw/am22/character/TribeCharacterTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.character;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nclass TribeCharacterTest {\r\n\r\n    @Test\r\n    void testTribeCharacterCreationAndDummyGetters() {\r\n        // 1. Testiamo la creazione base e il getter del tipo\r\n        TribeCharacter character = new TribeCharacter(\"tc_01\", Era.I, 3, CharacterType.ARTIST);\r\n        assertNotNull(character, \"L'istanza non dovrebbe essere null\");\r\n        assertEquals(CharacterType.ARTIST, character.getCharacterType(), \"Il tipo dovrebbe essere ARTIST\");\r\n\r\n        // 2. Testiamo i getter fittizi della superclasse per la coverage\r\n        assertEquals(0, character.getNumStars());\r\n        assertEquals('0', character.getIconPerInventor());\r\n        assertEquals(0, character.getDiscountFood());\r\n        assertEquals(0, character.getPP());\r\n    }\r\n\r\n    @Test\r\n    void testAddToTribeWithoutBuildings() {\r\n        // Test base: Aggiunta a una tribù vuota\r\n        TribeCharacter character = new TribeCharacter(\"tc_02\", Era.I, 3, CharacterType.HUNTER);\r\n        Player dummyPlayer = new Player(\"Christian\");\r\n\r\n        assertDoesNotThrow(() -> character.addToTribe(dummyPlayer, dummyPlayer.getTribe()));\r\n\r\n        // Verifichiamo che sia stato effettivamente aggiunto alla lista dei membri\r\n        assertTrue(dummyPlayer.getTribe().getMembers().contains(character), \"Il personaggio deve essere nei membri della tribù\");\r\n    }\r\n\r\n    @Test\r\n    void testAddToTribeWithBuildings() {\r\n        TribeCharacter character = new TribeCharacter(\"tc_03\", Era.I, 3, CharacterType.SHAMAN);\r\n        Player dummyPlayer = new Player(\"Christian\");\r\n\r\n\r\n        // 1. Creiamo un edificio SENZA effetto (passando null come effetto)\r\n        // ATTENZIONE: Modifica i parametri di \"new Building(...)\" con quelli reali del tuo progetto!\r\n        Building buildingNoEffect = new Building(\"b_01\", Era.I, 3, 2, 5, null);\r\n        dummyPlayer.getTribe().addBuilding(buildingNoEffect);\r\n\r\n        // 2. Creiamo un edificio CON effetto.\r\n        // Creiamo un effetto fittizio \"al volo\" implementando l'interfaccia/classe.\r\n        BuildingEffect dummyEffect = new BuildingEffect() {\r\n            @Override\r\n            public void onCharacterAdded(Player player, TribeCharacter newChar) {\r\n                // Corpo vuoto: ci serve solo che il metodo esista e venga chiamato senza esplodere\r\n            }\r\n        };\r\n        // ATTENZIONE: Anche qui modifica i parametri del Building!\r\n        Building buildingWithEffect = new Building(\"b_02\", Era.I, 3, 2, 5, dummyEffect);\r\n        dummyPlayer.getTribe().addBuilding(buildingWithEffect);\r\n\r\n        // -- ESEGUIAMO IL METODO --\r\n        // Ora il ciclo 'for' troverà edifici, e l'if controllerà sia il ramo true che false.\r\n        assertDoesNotThrow(() -> character.addToTribe(dummyPlayer, dummyPlayer.getTribe()));\r\n\r\n        // Verifichiamo che sia stato aggiunto\r\n        assertTrue(dummyPlayer.getTribe().getMembers().contains(character));\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/character/TribeCharacterTest.java b/src/test/java/it/polimi/ingsw/am22/character/TribeCharacterTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/character/TribeCharacterTest.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/test/java/it/polimi/ingsw/am22/character/TribeCharacterTest.java	(date 1775902917750)
+@@ -13,7 +13,8 @@
+     @Test
+     void testTribeCharacterCreationAndDummyGetters() {
+         // 1. Testiamo la creazione base e il getter del tipo
+-        TribeCharacter character = new TribeCharacter("tc_01", Era.I, 3, CharacterType.ARTIST);
++        CharacterEffect effect = null;
++        TribeCharacter character = new TribeCharacter("tc_01", Era.I, 3, CharacterType.ARTIST, effect);
+         assertNotNull(character, "L'istanza non dovrebbe essere null");
+         assertEquals(CharacterType.ARTIST, character.getCharacterType(), "Il tipo dovrebbe essere ARTIST");
+ 
+@@ -27,7 +28,8 @@
+     @Test
+     void testAddToTribeWithoutBuildings() {
+         // Test base: Aggiunta a una tribù vuota
+-        TribeCharacter character = new TribeCharacter("tc_02", Era.I, 3, CharacterType.HUNTER);
++        CharacterEffect effect = null;
++        TribeCharacter character = new TribeCharacter("tc_02", Era.I, 3, CharacterType.HUNTER, effect);
+         Player dummyPlayer = new Player("Christian");
+ 
+         assertDoesNotThrow(() -> character.addToTribe(dummyPlayer, dummyPlayer.getTribe()));
+@@ -38,7 +40,8 @@
+ 
+     @Test
+     void testAddToTribeWithBuildings() {
+-        TribeCharacter character = new TribeCharacter("tc_03", Era.I, 3, CharacterType.SHAMAN);
++        CharacterEffect effect = null;
++        TribeCharacter character = new TribeCharacter("tc_03", Era.I, 3, CharacterType.SHAMAN, effect);
+         Player dummyPlayer = new Player("Christian");
+ 
+ 
+Index: src/test/java/it/polimi/ingsw/am22/event/huntingTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.Hunter;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nimport java.util.Arrays;\r\nimport java.util.List;\r\n\r\nclass HuntingTest {\r\n\r\n    @Test\r\n    void testHuntingEra1_NoHunters_AndNullTribe() {\r\n        Hunting event = new Hunting(Era.I);\r\n\r\n        Player normalPlayer = new Player(\"Christian\");\r\n        // Non aggiungiamo Cacciatori. Si aspetta 0 Cibo e 0 PP.\r\n\r\n        // Giocatore fittizio per coprire la riga \"if (tribe == null) continue;\"\r\n        Player nullTribePlayer = new Player(\"Fantasma\") {\r\n            @Override\r\n            public Tribe getTribe() { return null; }\r\n        };\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(normalPlayer, nullTribePlayer), \"hunt_01\"));\r\n\r\n        // VERIFICA: Nessun cacciatore = Nessuna risorsa\r\n        assertEquals(0, normalPlayer.getFood(), \"Non avendo cacciatori, il cibo deve restare invariato\");\r\n        assertEquals(0, normalPlayer.getPP(), \"Non avendo cacciatori, i PP devono restare invariati\");\r\n    }\r\n\r\n    @Test\r\n    void testHuntingEra2_WithHunters_AndBuildings() {\r\n        Hunting event = new Hunting(Era.II);\r\n        Player player = new Player(\"Christian\");\r\n\r\n        // Aggiungiamo 2 Cacciatori\r\n        player.getTribe().addCharacter(new Hunter(\"h1\", Era.I, 3, \"Hunter\", false));\r\n        player.getTribe().addCharacter(new Hunter(\"h2\", Era.I, 3, \"Hunter\", true));\r\n\r\n        // Aggiungiamo un Edificio per testare il ciclo 'for' interno in sicurezza\r\n        BuildingEffect dummyEffect = new BuildingEffect() {\r\n            @Override\r\n            public void applyEventBonus(EventType type, Player p, int count) {}\r\n        };\r\n        // Usa i parametri corretti per il tuo costruttore Building\r\n        Building building = new Building(\"b_01\", Era.I, 3, 2, 5, dummyEffect);\r\n        player.getTribe().addBuilding(building);\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(List.of(player), \"hunt_02\"));\r\n\r\n        // VERIFICA ERA II: 2 Cacciatori. Cibo = 1x2=2. PP = 2x2=4.\r\n        assertEquals(2, player.getFood(), \"Dovrebbe aver ottenuto 2 Cibo (1 per ogni Cacciatore)\");\r\n        assertEquals(4, player.getPP(), \"Dovrebbe aver ottenuto 4 PP (2 per ogni Cacciatore in Era II)\");\r\n    }\r\n\r\n    @Test\r\n    void testHuntingEra3_CalculatesPPCorrectly() {\r\n        Hunting event = new Hunting(Era.III);\r\n        Player player = new Player(\"Christian\");\r\n\r\n        // Aggiungiamo 3 Cacciatori\r\n        player.getTribe().addCharacter(new Hunter(\"h1\", Era.I, 3, \"Hunter\", false));\r\n        player.getTribe().addCharacter(new Hunter(\"h2\", Era.I, 3, \"Hunter\", false));\r\n        player.getTribe().addCharacter(new Hunter(\"h3\", Era.I, 3, \"Hunter\", false));\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(List.of(player), \"hunt_03\"));\r\n\r\n        // VERIFICA ERA III: 3 Cacciatori. Cibo = 1x3=3. PP = 3x3=9.\r\n        assertEquals(3, player.getFood(), \"Dovrebbe aver ottenuto 3 Cibo\");\r\n        assertEquals(9, player.getPP(), \"Dovrebbe aver ottenuto 9 PP (3 per ogni Cacciatore in Era III)\");\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java b/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java	(date 1775904554805)
+@@ -12,7 +12,7 @@
+ import java.util.Arrays;
+ import java.util.List;
+ 
+-class HuntingTest {
++class huntingTest {
+ 
+     @Test
+     void testHuntingEra1_NoHunters_AndNullTribe() {
+Index: src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\n\r\nimport it.polimi.ingsw.am22.Building.ShamanicModifierEffect;\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.Shaman;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nimport java.util.Arrays;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\nclass ShamanicRitualTest {\r\n\r\n    // Classe di supporto per non dover riscrivere tutti i metodi di BuildingEffect ogni volta\r\n    abstract class BaseDummyEffect implements BuildingEffect {\r\n        @Override public void applyEventBonus(EventType type, Player p, int count) {}\r\n        // Aggiungi qui eventuali altri metodi base della tua interfaccia con return di default (0 o false)\r\n        public int getExtraShamanIcons() { return 0; }\r\n        public boolean preventsShamanPPLoss() { return false; }\r\n        public boolean doublesShamanWinPP() { return false; }\r\n    }\r\n\r\n    @Test\r\n    void testShamanicRitualEra1_NormalWinAndLoss_WithNullTribe() {\r\n        ShamanicRitual event = new ShamanicRitual(\"sha_01\", Era.I, 3, EventType.SHAMANIC_RITUAL, null);\r\n\r\n        Player winner = new Player(\"Vincitore\");\r\n        winner.getTribe().addCharacter(new Shaman(\"s1\", Era.I, 3, \"Shaman\", 3)); // 3 icone\r\n\r\n        Player loser = new Player(\"Perdente\");\r\n        loser.getTribe().addCharacter(new Shaman(\"s2\", Era.I, 3, \"Shaman\", 1)); // 1 icona\r\n\r\n        Player nullTribePlayer = new Player(\"Fantasma\") {\r\n            @Override public Tribe getTribe() { return null; }\r\n        };\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(winner, loser, nullTribePlayer), \"sha_01\"));\r\n\r\n        // Era I: Vittoria = +5, Sconfitta = -3\r\n        assertEquals(5, winner.getPP(), \"Il vincitore deve avere 5 PP\");\r\n        assertEquals(-3, loser.getPP(), \"Il perdente deve avere -3 PP\");\r\n    }\r\n\r\n    @Test\r\n    void testShamanicRitualEra2_BuildingsModifiers_AndTie() {\r\n        ShamanicRitual event = new ShamanicRitual(\"sha_02\", Era.II, 3, EventType.SHAMANIC_RITUAL, null);\r\n\r\n        Player doubleWinner = new Player(\"Doppio Vincitore\");\r\n        doubleWinner.getTribe().addCharacter(new Shaman(\"s1\", Era.I, 3, \"Shaman\", 2));\r\n\r\n        // Edificio: Raddoppia i PP in caso di vittoria\r\n        Building doublePPBuilding = new Building(\"b_01\", Era.I, 3, 2, 0, new BaseDummyEffect() {\r\n            @Override public boolean doublesShamanWinPP() { return true; }\r\n        });\r\n        doubleWinner.getTribe().addBuilding(doublePPBuilding);\r\n\r\n        Player normalWinner = new Player(\"Vincitore Normale\");\r\n        normalWinner.getTribe().addCharacter(new Shaman(\"s2\", Era.I, 3, \"Shaman\", 2)); // Pareggio!\r\n\r\n        Player safeLoser = new Player(\"Perdente Protetto\");\r\n        safeLoser.getTribe().addCharacter(new Shaman(\"s3\", Era.I, 3, \"Shaman\", 0));\r\n\r\n        // Edificio: Previene la perdita di PP\r\n        Building safeBuilding = new Building(\"b_02\", Era.I, 3, 2, 0, new BaseDummyEffect() {\r\n            @Override public boolean preventsShamanPPLoss() { return true; }\r\n        });\r\n        safeLoser.getTribe().addBuilding(safeBuilding);\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(doubleWinner, normalWinner, safeLoser), \"sha_02\"));\r\n\r\n        // Era II: Vittoria = +10, Sconfitta = -5\r\n        assertEquals(20, doubleWinner.getPP(), \"In pareggio vince, ma con l'edificio prende 10 * 2 = 20 PP\");\r\n        assertEquals(10, normalWinner.getPP(), \"In pareggio vince e prende i normali 10 PP\");\r\n        assertEquals(0, safeLoser.getPP(), \"Ha perso, ma l'edificio ha bloccato il -5 PP\");\r\n    }\r\n\r\n    @Test\r\n    void testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie() {\r\n        ShamanicRitual event = new ShamanicRitual(\"sha_03\", Era.III, 3, EventType.SHAMANIC_RITUAL, null);\r\n\r\n        Player p1 = new Player(\"P1\"); // 0 icone base\r\n        // Edificio: 3 icone extra\r\n        Building extraIconsBuilding = new Building(\"b_03\", Era.I, 3, 2, 0, new BaseDummyEffect() {\r\n            @Override public int getExtraShamanIcons() { return 3; }\r\n        });\r\n        p1.getTribe().addBuilding(extraIconsBuilding);\r\n\r\n        Player p2 = new Player(\"P2\"); // 3 icone base\r\n        p2.getTribe().addCharacter(new Shaman(\"s1\", Era.I, 3, \"Shaman\", 3));\r\n\r\n        // Entrambi hanno 3 icone totali. Sono SIA i massimi che i minimi (Pareggio Totale).\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(p1, p2), \"sha_03\"));\r\n\r\n        // Era III: Vittoria = +15, Sconfitta = -7. Pareggio totale = prendono entrambi (15 - 7 = 8 PP)\r\n        assertEquals(8, p1.getPP(), \"Guadagna 15 e perde 7 = 8 PP\");\r\n        assertEquals(8, p2.getPP(), \"Guadagna 15 e perde 7 = 8 PP\");\r\n    }\r\n\r\n    @Test\r\n    void testShamanicRitual_EmptyList() {\r\n        // Verifica la riga 76: if (totalIconsPerPlayer.isEmpty()) return;\r\n        ShamanicRitual event = new ShamanicRitual(\"sha_04\", Era.I, 3, EventType.SHAMANIC_RITUAL, null);\r\n        assertDoesNotThrow(() -> event.applyEvent(new ArrayList<>(), \"sha_04\"));\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java b/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java	(date 1775904296610)
+@@ -43,7 +43,7 @@
+ 
+         // Era I: Vittoria = +5, Sconfitta = -3
+         assertEquals(5, winner.getPP(), "Il vincitore deve avere 5 PP");
+-        assertEquals(-3, loser.getPP(), "Il perdente deve avere -3 PP");
++        assertEquals(-3, nullTribePlayer.getPP(), "Il perdente deve avere -3 PP");
+     }
+ 
+     @Test
+Index: .idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ /dev/null	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_rebase_[Changes]" date="1775393654955" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before rebase [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/event/hunting.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/event/hunting.java b/src/main/java/it/polimi/ingsw/am22/event/hunting.java
+deleted file mode 100644
+--- a/src/main/java/it/polimi/ingsw/am22/event/hunting.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ /dev/null	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
+@@ -1,57 +0,0 @@
+-package it.polimi.ingsw.am22.event;
+-
+-import it.polimi.ingsw.am22.Building.Building;
+-import it.polimi.ingsw.am22.Era;
+-import it.polimi.ingsw.am22.Player;
+-import it.polimi.ingsw.am22.Tribe;
+-import it.polimi.ingsw.am22.character.CharacterType;
+-
+-import java.util.List;
+-
+-public class hunting implements EventEffect {
+-
+-    private Era era;
+-
+-    public hunting(Era era) {
+-        this.era = era;
+-    }
+-
+-    @Override
+-    public void applyEvent(List<Player> players, String id) {
+-        int PPperHunter = 0;
+-
+-        if (era == Era.I) {
+-            PPperHunter = 1;
+-        } else if (era == Era.II) {
+-            PPperHunter = 2;
+-        } else if (era == Era.III) {
+-            PPperHunter = 3;
+-        }
+-
+-        for (Player player : players) {
+-            Tribe tribe = player.getTribe();
+-            if (tribe == null) continue;
+-
+-            int huntersCount = tribe.countCharacters(CharacterType.HUNTER);
+-
+-            if (huntersCount > 0) {
+-                int foodPerHunter = 1;
+-                for (Building building : player.getTribe().getBuildings()) {
+-                    building.getEffect().applyEventBonus(EventType.HUNTING, player, huntersCount);
+-                }
+-
+-                int totalFoodToAdd = huntersCount * foodPerHunter;
+-                int totalPPToAdd = huntersCount * PPperHunter;
+-
+-                player.addFood(totalFoodToAdd);
+-                player.addPP(totalPPToAdd);
+-
+-                System.out.println(player.getNickname() + " ha " + huntersCount +
+-                        " Cacciatori. Ottiene " + totalFoodToAdd +
+-                        " Cibo e " + totalPPToAdd + " PP dalla Caccia!");
+-            } else {
+-                System.out.println(player.getNickname() + " non ha Cacciatori e non ottiene nulla.");
+-            }
+-        }
+-    }
+-}
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ /dev/null	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
+@@ -1,219 +0,0 @@
+-Index: src/main/java/it/polimi/ingsw/am22/Player.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package it.polimi.ingsw.am22;\r\n\r\npublic class Player {\r\n    private String nickname;\r\n    private int PP;\r\n    private int food;\r\n    private Tribe tribe;\r\n    private Totem totem;\r\n\r\n    public Player(String nickname) {\r\n        this.nickname = nickname;\r\n        this.PP = 0;\r\n        this.food = 0;\r\n        this.tribe = new Tribe();\r\n        this.totem = null;\r\n    }\r\n\r\n    public String getNickname() {\r\n        return nickname;\r\n    }\r\n\r\n    public int getPP() {\r\n        return PP;\r\n    }\r\n\r\n    public int getFood() {\r\n        return food;\r\n    }\r\n\r\n    public Tribe getTribe() {\r\n        return tribe;\r\n    }\r\n\r\n    public Totem getTotem() {\r\n        return totem;\r\n    }\r\n\r\n    public void setTotem(Totem totem) {\r\n        this.totem = totem;\r\n    }\r\n\r\n    public void addFood(int amount) {\r\n        this.food += amount;\r\n    }\r\n\r\n    public void payFood(int amount) {\r\n        if (amount < 0) {\r\n            throw new IllegalArgumentException(\"L'importo da pagare non può essere negativo.\");\r\n        }\r\n\r\n        if (this.food < amount) {\r\n            throw new IllegalStateException(\"Cibo insufficiente.\");\r\n        }\r\n\r\n        this.food -= amount;\r\n    }\r\n\r\n    /**\r\n     * Adds or subtracts prestige points.\r\n     */\r\n    public void addPP(int amount) {\r\n        this.PP += amount;\r\n    }\r\n\r\n    private int calculateCharacterEndgamePP() {\r\n        int points = 0;\r\n\r\n        int builders = tribe.countCharacters(CharacterType.Builder);\r\n        int inventors = tribe.countCharacters(CharacterType.Inventor);\r\n        int artists = tribe.countCharacters(CharacterType.Artist);\r\n\r\n        // Costruttori: somma dei PP stampati sulle carte\r\n        for (TribeCharacter c : tribe.getMembers()) {\r\n            if (c.getCharacterType() == CharacterType.Builder) {\r\n                points += c.getPP();\r\n            }\r\n        }\r\n\r\n        // Inventori: numero inventori * numero icone invenzione diverse\r\n        int uniqueInventorIcons = tribe.countUniqueInventorIcons();\r\n        points += inventors * uniqueInventorIcons;\r\n\r\n        // Artisti: 10 PP ogni 2 artisti\r\n        points += (artists / 2) * 10;\r\n\r\n        return points;\r\n    }\r\n\r\n\r\n    public int finalPP() {\r\n        int total = this.PP; // PP accumulati durante la partita\r\n\r\n        // 1) PP dei personaggi\r\n        total += calculateCharacterEndgamePP();\r\n\r\n        // 2) PP degli edifici\r\n        total += FinalBuildingPP();\r\n\r\n        return total;\r\n    }\r\n\r\n    public boolean hasExtraBuyAtRound() {\r\n        return this.tribe != null && this.tribe.hasExtraBuyAtRoundEnd();\r\n    }\r\n\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main/java/it/polimi/ingsw/am22/Player.java b/src/main/java/it/polimi/ingsw/am22/Player.java
+---- a/src/main/java/it/polimi/ingsw/am22/Player.java	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/src/main/java/it/polimi/ingsw/am22/Player.java	(date 1775393653855)
+-@@ -1,5 +1,10 @@
+- package it.polimi.ingsw.am22;
+- 
+-+import it.polimi.ingsw.am22.character.CharacterType;
+-+import it.polimi.ingsw.am22.character.TribeCharacter;
+-+
+-+import static it.polimi.ingsw.am22.Building.Building.FinalBuildingPP;
+-+
+- public class Player {
+-     private String nickname;
+-     private int PP;
+-@@ -65,13 +70,13 @@
+-     private int calculateCharacterEndgamePP() {
+-         int points = 0;
+- 
+--        int builders = tribe.countCharacters(CharacterType.Builder);
+--        int inventors = tribe.countCharacters(CharacterType.Inventor);
+--        int artists = tribe.countCharacters(CharacterType.Artist);
+-+        int builders = tribe.countCharacters(CharacterType.BUILDER);
+-+        int inventors = tribe.countCharacters(CharacterType.INVENTOR);
+-+        int artists = tribe.countCharacters(CharacterType.ARTIST);
+- 
+-         // Costruttori: somma dei PP stampati sulle carte
+-         for (TribeCharacter c : tribe.getMembers()) {
+--            if (c.getCharacterType() == CharacterType.Builder) {
+-+            if (c.getCharacterType() == CharacterType.BUILDER) {
+-                 points += c.getPP();
+-             }
+-         }
+-Index: pom.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\r\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\r\n  <modelVersion>4.0.0</modelVersion>\r\n\r\n  <groupId>it.polimi.ingsw</groupId>\r\n  <artifactId>am22</artifactId>\r\n  <version>1.0-SNAPSHOT</version>\r\n  <name>am22</name>\r\n\r\n  <properties>\r\n    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\r\n\r\n  <dependencies>\r\n    <dependency>\r\n      <groupId>org.openjfx</groupId>\r\n      <artifactId>javafx-controls</artifactId>\r\n      <version>21.0.6</version>\r\n    </dependency>\r\n    <dependency>\r\n      <groupId>org.openjfx</groupId>\r\n      <artifactId>javafx-fxml</artifactId>\r\n      <version>21.0.6</version>\r\n    </dependency>\r\n\r\n<dependency>\r\n      <groupId>org.junit.jupiter</groupId>\r\n      <artifactId>junit-jupiter-api</artifactId>\r\n      <version>${junit.version}</version>\r\n      <scope>test</scope>\r\n    </dependency>\r\n    <dependency>\r\n      <groupId>org.junit.jupiter</groupId>\r\n      <artifactId>junit-jupiter-engine</artifactId>\r\n      <version>${junit.version}</version>\r\n      <scope>test</scope>\r\n\r\n  <build>\r\n    <plugins>\r\n      <plugin>\r\n        <groupId>org.apache.maven.plugins</groupId>\r\n        <artifactId>maven-compiler-plugin</artifactId>\r\n        <version>3.13.0</version>\r\n        <configuration>\r\n          <source>25</source>\r\n          <target>25</target>\r\n        </configuration>\r\n      </plugin>\r\n      <plugin>\r\n        <groupId>org.openjfx</groupId>\r\n        <artifactId>javafx-maven-plugin</artifactId>\r\n        <version>0.0.8</version>\r\n        <executions>\r\n          <execution>\r\n            <!-- Default configuration for running with: mvn clean javafx:run -->\r\n            <id>default-cli</id>\r\n            <configuration>\r\n              <mainClass>it.polimi.ingsw.am22/it.polimi.ingsw.am22.HelloApplication</mainClass>\r\n              <launcher>app</launcher>\r\n              <jlinkZipName>app</jlinkZipName>\r\n              <jlinkImageName>app</jlinkImageName>\r\n              <noManPages>true</noManPages>\r\n              <stripDebug>true</stripDebug>\r\n              <noHeaderFiles>true</noHeaderFiles>\r\n            </configuration>\r\n          </execution>\r\n        </executions>\r\n      </plugin>\r\n    </plugins>\r\n  </build>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/pom.xml b/pom.xml
+---- a/pom.xml	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/pom.xml	(date 1775391952173)
+-@@ -11,6 +11,8 @@
+- 
+-   <properties>
+-     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+-+    <junit.version>5.10.2</junit.version>
+-+  </properties>
+- 
+-   <dependencies>
+-     <dependency>
+-@@ -18,23 +20,27 @@
+-       <artifactId>javafx-controls</artifactId>
+-       <version>21.0.6</version>
+-     </dependency>
+-+
+-     <dependency>
+-       <groupId>org.openjfx</groupId>
+-       <artifactId>javafx-fxml</artifactId>
+-       <version>21.0.6</version>
+-     </dependency>
+- 
+--<dependency>
+-+    <dependency>
+-       <groupId>org.junit.jupiter</groupId>
+-       <artifactId>junit-jupiter-api</artifactId>
+-       <version>${junit.version}</version>
+-       <scope>test</scope>
+-     </dependency>
+-+
+-     <dependency>
+-       <groupId>org.junit.jupiter</groupId>
+-       <artifactId>junit-jupiter-engine</artifactId>
+-       <version>${junit.version}</version>
+-       <scope>test</scope>
+-+    </dependency>
+-+  </dependencies>
+- 
+-   <build>
+-     <plugins>
+-@@ -47,13 +53,13 @@
+-           <target>25</target>
+-         </configuration>
+-       </plugin>
+-+
+-       <plugin>
+-         <groupId>org.openjfx</groupId>
+-         <artifactId>javafx-maven-plugin</artifactId>
+-         <version>0.0.8</version>
+-         <executions>
+-           <execution>
+--            <!-- Default configuration for running with: mvn clean javafx:run -->
+-             <id>default-cli</id>
+-             <configuration>
+-               <mainClass>it.polimi.ingsw.am22/it.polimi.ingsw.am22.HelloApplication</mainClass>
+-Index: src/main/java/it/polimi/ingsw/am22/EventResolutionState.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package it.polimi.ingsw.am22;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class EventResolutionState implements GameState {\r\n\r\n    @Override\r\n    public void resolveEvents(Game game) {\r\n        game.notifyObservers();\r\n\r\n        List<Card> cardsToTrigger = new ArrayList<>(game.getBoard().getLowerRow());\r\n\r\n        cardsToTrigger.sort(Comparator.comparingInt(Card::getTriggerPriority));\r\n\r\n        for (Card c : cardsToTrigger) {\r\n            c.onRoundEndTrigger(game);\r\n        }\r\n\r\n        game.setState(new RoundUpdateState());\r\n        game.updateRound();\r\n    }\r\n\r\n    @Override\r\n    public String getPhaseName() { return \"Risoluzione Eventi\"; }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java b/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java
+---- a/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java	(date 1775393507533)
+-@@ -1,6 +1,7 @@
+- package it.polimi.ingsw.am22;
+- 
+- import java.util.ArrayList;
+-+import java.util.Comparator;
+- import java.util.List;
+- 
+- public class EventResolutionState implements GameState {
+-Index: src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package it.polimi.ingsw.am22;\r\nimport com.fasterxml.jackson.core.type.TypeReference;\r\nimport com.fasterxml.jackson.databind.JsonNode;\r\nimport com.fasterxml.jackson.databind.ObjectMapper;\r\n\r\nimport java.io.InputStream;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class CardJsonLoader {\r\n\r\n    private final ObjectMapper mapper = new ObjectMapper();\r\n\r\n    public LoadedCards loadTribeCharactersAndEvents(String resourcePath) {\r\n        List<TribeCharacter> tribeCharacters = new ArrayList<>();\r\n        List<Event> events = new ArrayList<>();\r\n\r\n        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {\r\n            if (is == null) {\r\n                throw new IllegalArgumentException(\"File non trovato: \" + resourcePath);\r\n            }\r\n\r\n            JsonNode root = mapper.readTree(is);\r\n\r\n            if (!root.isArray()) {\r\n                throw new IllegalArgumentException(\"La radice del JSON deve essere un array\");\r\n            }\r\n\r\n            for (JsonNode node : root) {\r\n                String type = node.get(\"type\").asText();\r\n\r\n                switch (type) {\r\n                    case \"tribeCharacter\" ->\r\n                            tribeCharacters.add(mapper.treeToValue(node, TribeCharacter.class));\r\n\r\n                    case \"event\" ->\r\n                            events.add(mapper.treeToValue(node, Event.class));\r\n\r\n                    default ->\r\n                            throw new IllegalArgumentException(\"Tipo non valido in \" + resourcePath + \": \" + type);\r\n                }\r\n            }\r\n\r\n            return new LoadedCards(tribeCharacters, events, new ArrayList<>());\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel caricamento di tribeCharacter/event\", e);\r\n        }\r\n    }\r\n\r\n    public List<Building> loadBuildings(String resourcePath) {\r\n        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {\r\n            if (is == null) {\r\n                throw new IllegalArgumentException(\"File non trovato: \" + resourcePath);\r\n            }\r\n\r\n            return mapper.readValue(is, new TypeReference<List<Building>>() {});\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel caricamento dei building\", e);\r\n        }\r\n    }\r\n\r\n    public LoadedCards loadAllCards(String tribeEventPath, String buildingPath) {\r\n        LoadedCards partial = loadTribeCharactersAndEvents(tribeEventPath);\r\n        List<Building> buildings = loadBuildings(buildingPath);\r\n\r\n        return new LoadedCards(\r\n                partial.getTribeCharacters(),\r\n                partial.getEvents(),\r\n                buildings\r\n        );\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java b/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java
+---- a/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java	(date 1775393507538)
+-@@ -2,6 +2,8 @@
+- import com.fasterxml.jackson.core.type.TypeReference;
+- import com.fasterxml.jackson.databind.JsonNode;
+- import com.fasterxml.jackson.databind.ObjectMapper;
+-+import it.polimi.ingsw.am22.character.TribeCharacter;
+-+import it.polimi.ingsw.am22.event.Event;
+- 
+- import java.io.InputStream;
+- import java.util.ArrayList;
+-Index: src/main/java/it/polimi/ingsw/am22/CardVisitor.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package it.polimi.ingsw.am22;\r\n\r\npublic interface CardVisitor {\r\n    void visit(Event event);\r\n    void visit(Building building);\r\n    void visit(TribeCharacter character); // Sostituisci con \"Character\" se hai tenuto quel nome\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main/java/it/polimi/ingsw/am22/CardVisitor.java b/src/main/java/it/polimi/ingsw/am22/CardVisitor.java
+---- a/src/main/java/it/polimi/ingsw/am22/CardVisitor.java	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/src/main/java/it/polimi/ingsw/am22/CardVisitor.java	(date 1775393507527)
+-@@ -1,5 +1,9 @@
+- package it.polimi.ingsw.am22;
+- 
+-+import it.polimi.ingsw.am22.Building.Building;
+-+import it.polimi.ingsw.am22.character.TribeCharacter;
+-+import it.polimi.ingsw.am22.event.Event;
+-+
+- public interface CardVisitor {
+-     void visit(Event event);
+-     void visit(Building building);
+-Index: .idea/vcs.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"$PROJECT_DIR$\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+---- a/.idea/vcs.xml	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/.idea/vcs.xml	(date 1775391030125)
+-@@ -1,6 +1,6 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+-   <component name="VcsDirectoryMappings">
+--    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+-+    <mapping directory="" vcs="Git" />
+-   </component>
+- </project>
+-\ No newline at end of file
+-Index: .idea/workspace.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"last commit\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Fancopo&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,\r\n    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3AtUiA6XPNTIVvuMJwuRyVJnWzA\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"git-widget-placeholder\": \"game-version2\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\"\r\n  }\r\n}]]></component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"\" />\r\n      <created>1773411487475</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1773411487475</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589285100</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589285100</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589402689</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589402689</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589432607</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589432607</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Second version of Building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1774109302482</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1774109302482</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"last commit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775223396914</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775223396914</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"6\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial version\" />\r\n    <MESSAGE value=\"Second version\" />\r\n    <MESSAGE value=\"Second version of Building\" />\r\n    <MESSAGE value=\"last commit\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"last commit\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/BuildingEffect.java</url>\r\n          <line>5</line>\r\n          <option name=\"timeStamp\" value=\"1\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>58</line>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>77</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>143</line>\r\n          <option name=\"timeStamp\" value=\"4\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>167</line>\r\n          <option name=\"timeStamp\" value=\"5\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>179</line>\r\n          <option name=\"timeStamp\" value=\"7\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>118</line>\r\n          <properties class=\"it.polimi.ingsw.am22.ShamanicModifierEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"8\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>219</line>\r\n          <properties class=\"it.polimi.ingsw.am22.EventYieldBonusEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"9\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+---- a/.idea/workspace.xml	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/.idea/workspace.xml	(date 1775393577371)
+-@@ -4,7 +4,14 @@
+-     <option name="autoReloadType" value="SELECTIVE" />
+-   </component>
+-   <component name="ChangeListManager">
+--    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit" />
+-+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit">
+-+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardVisitor.java" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java" afterDir="false" />
+-+    </list>
+-     <option name="SHOW_DIALOG" value="false" />
+-     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+-     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+-@@ -56,9 +63,12 @@
+-     "RunOnceActivity.ShowReadmeOnStart": "true",
+-     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+-     "RunOnceActivity.git.unshallow": "true",
+--    "git-widget-placeholder": "game-version2",
+-+    "git-widget-placeholder": "Nuovo-jacopo",
+-     "kotlin-language-version-configured": "true",
+--    "node.js.selected.package.tslint": "(autodetect)"
+-+    "node.js.selected.package.tslint": "(autodetect)",
+-+    "project.structure.last.edited": "Modules",
+-+    "project.structure.proportion": "0.15",
+-+    "project.structure.side.proportion": "0.2"
+-   }
+- }]]></component>
+-   <component name="SharedIndexes">
+Index: src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22;\r\n\r\nimport com.fasterxml.jackson.databind.JsonNode;\r\nimport com.fasterxml.jackson.databind.ObjectMapper;\r\nimport it.polimi.ingsw.am22.Building.*;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport it.polimi.ingsw.am22.character.*;\r\nimport it.polimi.ingsw.am22.event.*;\r\nimport java.io.InputStream;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\npublic class CardJsonLoader {\r\n\r\n    private final ObjectMapper mapper = new ObjectMapper();\r\n\r\n    public LoadedCards loadTribeCharactersAndEvents(String resourcePath) {\r\n        List<TribeCharacter> tribeCharacters = new ArrayList<>();\r\n        List<Event> events = new ArrayList<>();\r\n\r\n        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {\r\n            if (is == null) {\r\n                throw new IllegalArgumentException(\"File non trovato: \" + resourcePath);\r\n            }\r\n\r\n            JsonNode root = mapper.readTree(is);\r\n\r\n            if (!root.isArray()) {\r\n                throw new IllegalArgumentException(\"La radice del JSON deve essere un array\");\r\n            }\r\n\r\n            for (JsonNode node : root) {\r\n                String type = node.get(\"type\").asText();\r\n\r\n                switch (type) {\r\n                    case \"tribeCharacter\" ->\r\n                            tribeCharacters.add(parseTribeCharacter(node));\r\n\r\n                    case \"event\" ->\r\n                            events.add(parseEvent(node));\r\n\r\n                    default ->\r\n                            throw new IllegalArgumentException(\"Tipo non valido in \" + resourcePath + \": \" + type);\r\n                }\r\n            }\r\n\r\n            return new LoadedCards(tribeCharacters, events, new ArrayList<>());\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel caricamento di tribeCharacter/event\", e);\r\n        }\r\n    }\r\n    private TribeCharacter parseTribeCharacter(JsonNode node) {\r\n        try {\r\n            String id = node.get(\"id\").asText();\r\n            Era era = Era.valueOf(node.get(\"era\").asText());\r\n            int minPlayers = node.get(\"minPlayers\").asInt();\r\n            CharacterType characterType = CharacterType.valueOf(node.get(\"characterType\").asText());\r\n\r\n            JsonNode effectNode = node.get(\"effect\");\r\n            CharacterEffect effect = parseCharacterEffect(characterType, effectNode);\r\n\r\n            return new TribeCharacter(id, era, minPlayers, characterType, effect);\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel parsing di tribeCharacter\", e);\r\n        }\r\n    }\r\n\r\n    private CharacterEffect parseCharacterEffect(CharacterType characterType, JsonNode effectNode) {\r\n        try {\r\n            return switch (characterType) {\r\n                case INVENTOR -> mapper.treeToValue(effectNode, Inventor.class);\r\n                case ARTIST -> mapper.treeToValue(effectNode, Artist.class);\r\n                case HUNTER -> mapper.treeToValue(effectNode, Hunter.class);\r\n                case BUILDER -> mapper.treeToValue(effectNode, Builder.class);\r\n                case SHAMAN -> mapper.treeToValue(effectNode, Shaman.class);\r\n                case COLLECTOR -> mapper.treeToValue(effectNode, Collector.class);\r\n            };\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel parsing di CharacterEffect: \" + characterType, e);\r\n        }\r\n    }\r\n\r\n    private Event parseEvent(JsonNode node) {\r\n        try {\r\n            String id = node.get(\"id\").asText();\r\n            Era era = Era.valueOf(node.get(\"era\").asText());\r\n            int minPlayers = node.get(\"minPlayers\").asInt();\r\n            EventType eventType = EventType.valueOf(node.get(\"eventType\").asText());\r\n\r\n            EventEffect effect = parseEventEffect(eventType, era);\r\n\r\n            return new Event(id, era, minPlayers, eventType, effect);\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel parsing di event\", e);\r\n        }\r\n    }\r\n\r\n    private EventEffect parseEventEffect(EventType eventType, Era era) {\r\n        return switch (eventType) {\r\n            case HUNTING -> new hunting(era);\r\n            case SHAMANIC_RITUAL -> new ShamanicRitual(era);\r\n            case CAVE_PAINTING -> new CavePaintings(era);\r\n            case SUSTENANCE -> new sustenance(era);\r\n        };\r\n    }\r\n    public List<Building> loadBuildings(String resourcePath) {\r\n        List<Building> buildings = new ArrayList<>();\r\n\r\n        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {\r\n            if (is == null) {\r\n                throw new IllegalArgumentException(\"File non trovato: \" + resourcePath);\r\n            }\r\n\r\n            JsonNode root = mapper.readTree(is);\r\n\r\n            if (!root.isArray()) {\r\n                throw new IllegalArgumentException(\"La radice del JSON dei building deve essere un array\");\r\n            }\r\n\r\n            for (JsonNode node : root) {\r\n                buildings.add(parseBuilding(node));\r\n            }\r\n\r\n            return buildings;\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel caricamento dei building\", e);\r\n        }\r\n    }\r\n\r\n\r\n    private Building parseBuilding(JsonNode node) {\r\n        String id = node.get(\"id\").asText();\r\n        Era era = Era.valueOf(node.get(\"era\").asText());\r\n        int minPlayers = 2;\r\n        int foodPrice = node.get(\"foodPrice\").asInt();\r\n        int finalPP = node.get(\"finalPP\").asInt();\r\n\r\n        String effectType = node.get(\"BuildingEffectType\").asText();\r\n        JsonNode effectNode = node.get(\"effect\");\r\n\r\n        BuildingEffect effect = parseBuildingEffect(effectType, effectNode, id);\r\n\r\n        return new Building(id, era, minPlayers, foodPrice, finalPP, effect);\r\n    }\r\n\r\n    private BuildingEffect parseBuildingEffect(String effectType, JsonNode effectNode, String buildingId) {\r\n        return switch (effectType) {\r\n\r\n            case \"COLLECTION_REWARD_EFFECT\" -> new CollectionRewardEffect(\r\n                    CollectionCondition.valueOf(effectNode.get(\"conditionType\").asText()),\r\n                    effectNode.get(\"foodReward\").asInt()\r\n            );\r\n\r\n            case \"SUSTENANCE_DISCOUNT_EFFECT\" -> new SustenanceDiscountEffect(\r\n                    CharacterType.valueOf(effectNode.get(\"targetCharacterType\").asText())\r\n            );\r\n\r\n            case \"SHAMANIC_MODIFIER_EFFECT\" -> new ShamanicModifierEffect(\r\n                    effectNode.get(\"extraIcons\").asInt(),\r\n                    effectNode.get(\"preventPPLoss\").asBoolean(),\r\n                    effectNode.get(\"doubleWinPP\").asBoolean()\r\n            );\r\n\r\n            case \"EVENT_YIELD_BONUS_EFFECT\" -> new EventYieldBonusEffect(\r\n                    EventType.valueOf(effectNode.get(\"targetEventType\").asText()),\r\n                    effectNode.get(\"bonusFood\").asInt(),\r\n                    effectNode.get(\"bonusPP\").asInt()\r\n            );\r\n\r\n            case \"ENDGAME_SCORING_EFFECT\" -> new EndGameScoringEffect(\r\n                    effectNode.get(\"flatPP\").asInt(),\r\n                    effectNode.get(\"pointsPerSet\").asInt(),\r\n                    readNullableCharacterType(effectNode.get(\"targetCharacterType\")),\r\n                    effectNode.get(\"multiplierPP\").asInt(),\r\n                    effectNode.get(\"doubleBuilderPP\").asBoolean()\r\n            );\r\n\r\n            case \"TURN_PHASE_MODIFIER_EFFECT\" -> new TurnPhaseModifierEffect(\r\n                    effectNode.get(\"extraFoodOnTurnOrderBonus\").asBoolean(),\r\n                    effectNode.get(\"extraBuyAtRoundEnd\").asBoolean()\r\n            );\r\n\r\n            default -> throw new IllegalArgumentException(\r\n                    \"BuildingEffectType sconosciuto nel building \" + buildingId + \": \" + effectType\r\n            );\r\n        };\r\n    }\r\n\r\n    private CharacterType readNullableCharacterType(JsonNode node) {\r\n        if (node == null || node.isNull()) {\r\n            return null;\r\n        }\r\n        return CharacterType.valueOf(node.asText());\r\n    }\r\n\r\n    public LoadedCards loadAllCards(String tribeEventPath, String buildingPath) {\r\n        LoadedCards partial = loadTribeCharactersAndEvents(tribeEventPath);\r\n        List<Building> buildings = loadBuildings(buildingPath);\r\n\r\n        return new LoadedCards(\r\n                partial.getTribeCharacters(),\r\n                partial.getEvents(),\r\n                buildings\r\n        );\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java b/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java
+--- a/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java	(date 1775904554810)
+@@ -99,7 +99,7 @@
+ 
+     private EventEffect parseEventEffect(EventType eventType, Era era) {
+         return switch (eventType) {
+-            case HUNTING -> new hunting(era);
++            case HUNTING -> new Hunting(era);
+             case SHAMANIC_RITUAL -> new ShamanicRitual(era);
+             case CAVE_PAINTING -> new CavePaintings(era);
+             case SUSTENANCE -> new sustenance(era);
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"\" vcs=\"Git\" />\r\n    <mapping directory=\"$PROJECT_DIR$/am22 - 副本\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/.idea/vcs.xml	(date 1775992193364)
+@@ -2,6 +2,5 @@
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+     <mapping directory="" vcs="Git" />
+-    <mapping directory="$PROJECT_DIR$/am22 - 副本" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"last commit\">\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Hunting.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Hunting.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"Test\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Fancopo&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,\r\n    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3AtUiA6XPNTIVvuMJwuRyVJnWzA\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,\r\n    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"MoveClassesOrPackagesDialog.RECENTS_KEY\">\r\n      <recent name=\"it.polimi.ingsw.am22\" />\r\n    </key>\r\n    <key name=\"CopyClassDialog.RECENTS_KEY\">\r\n      <recent name=\"it.polimi.ingsw.am22\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"JUnit.CardJsonLoaderTest\">\r\n    <configuration name=\"CardJsonLoaderTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.CardJsonLoaderTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"PlayerTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.PlayerTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"SlotTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.SlotTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"TotemTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.TotemTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"TribeTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.TribeTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"JUnit.CardJsonLoaderTest\" />\r\n        <item itemvalue=\"JUnit.TribeTest\" />\r\n        <item itemvalue=\"JUnit.TotemTest\" />\r\n        <item itemvalue=\"JUnit.SlotTest\" />\r\n        <item itemvalue=\"JUnit.PlayerTest\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"\" />\r\n      <created>1773411487475</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1773411487475</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589285100</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589285100</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589402689</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589402689</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589432607</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589432607</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Second version of Building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1774109302482</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1774109302482</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"last commit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775223396914</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775223396914</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"6\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial version\" />\r\n    <MESSAGE value=\"Second version\" />\r\n    <MESSAGE value=\"Second version of Building\" />\r\n    <MESSAGE value=\"last commit\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"last commit\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/BuildingEffect.java</url>\r\n          <line>5</line>\r\n          <option name=\"timeStamp\" value=\"1\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>58</line>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>77</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>143</line>\r\n          <option name=\"timeStamp\" value=\"4\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>167</line>\r\n          <option name=\"timeStamp\" value=\"5\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>179</line>\r\n          <option name=\"timeStamp\" value=\"7\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TotemTest.java</url>\r\n          <line>7</line>\r\n          <option name=\"timeStamp\" value=\"10\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/OfferTileTest.java</url>\r\n          <line>7</line>\r\n          <option name=\"timeStamp\" value=\"11\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>118</line>\r\n          <properties class=\"it.polimi.ingsw.am22.ShamanicModifierEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"8\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>219</line>\r\n          <properties class=\"it.polimi.ingsw.am22.EventYieldBonusEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"9\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/am22$CollectorTest.ic\" NAME=\"CollectorTest Coverage Results\" MODIFIED=\"1775858159929\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$sustenanceTest.ic\" NAME=\"sustenanceTest Coverage Results\" MODIFIED=\"1775901688841\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$SlotTest.ic\" NAME=\"SlotTest Coverage Results\" MODIFIED=\"1775646676668\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$it_polimi_ingsw_am22_event_in_am22.ic\" NAME=\"it.polimi.ingsw.am22.event in am22 Coverage Results\" MODIFIED=\"1775898869138\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CavePaintingsTest.ic\" NAME=\"CavePaintingsTest Coverage Results\" MODIFIED=\"1775901670426\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest_testAddToTribeWithBuildings.ic\" NAME=\"TribeCharacterTest.testAddToTribeWithBuildings Coverage Results\" MODIFIED=\"1775856424577\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeTest.ic\" NAME=\"TribeTest Coverage Results\" MODIFIED=\"1775827189738\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest.ic\" NAME=\"TribeCharacterTest Coverage Results\" MODIFIED=\"1775858125675\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TurnOrderTileTest_testGetTurnOrderAndOccupiedSlotsCount.ic\" NAME=\"TurnOrderTileTest.testGetTurnOrderAndOccupiedSlotsCount Coverage Results\" MODIFIED=\"1775900872067\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$EventTest.ic\" NAME=\"EventTest Coverage Results\" MODIFIED=\"1775901702242\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$BuilderTest.ic\" NAME=\"BuilderTest Coverage Results\" MODIFIED=\"1775858153900\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$huntingTest.ic\" NAME=\"huntingTest Coverage Results\" MODIFIED=\"1775901698235\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$PlayerTest.ic\" NAME=\"PlayerTest Coverage Results\" MODIFIED=\"1775646643233\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$GameTest.ic\" NAME=\"GameTest Coverage Results\" MODIFIED=\"1775858765732\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanTest_testShamanCreationGettersAndEffect.ic\" NAME=\"ShamanTest.testShamanCreationGettersAndEffect Coverage Results\" MODIFIED=\"1775854652620\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HuntingTest.ic\" NAME=\"HuntingTest Coverage Results\" MODIFIED=\"1775897928004\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CavePaintingsTest_testCavePaintingsEra3_NotEnoughArtists_WithBuildings.ic\" NAME=\"CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings Coverage Results\" MODIFIED=\"1775862436854\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest_testAddToTribeWithoutBuildings.ic\" NAME=\"TribeCharacterTest.testAddToTribeWithoutBuildings Coverage Results\" MODIFIED=\"1775856302307\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ArtistTest.ic\" NAME=\"ArtistTest Coverage Results\" MODIFIED=\"1775858613631\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TurnOrderTileTest.ic\" NAME=\"TurnOrderTileTest Coverage Results\" MODIFIED=\"1775901207178\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CardJsonLoaderTest.ic\" NAME=\"CardJsonLoaderTest Coverage Results\" MODIFIED=\"1775865245194\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$OfferTileTest.ic\" NAME=\"OfferTileTest Coverage Results\" MODIFIED=\"1775646627410\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TotemTest.ic\" NAME=\"TotemTest Coverage Results\" MODIFIED=\"1775646686996\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest_testHunterCreationAndNoIconEffect.ic\" NAME=\"HunterTest.testHunterCreationAndNoIconEffect Coverage Results\" MODIFIED=\"1775854103694\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest.ic\" NAME=\"HunterTest Coverage Results\" MODIFIED=\"1775858166142\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest_testHunterWithIconEffect.ic\" NAME=\"HunterTest.testHunterWithIconEffect Coverage Results\" MODIFIED=\"1775854094672\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$InventorTest.ic\" NAME=\"InventorTest Coverage Results\" MODIFIED=\"1775858174633\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanTest.ic\" NAME=\"ShamanTest Coverage Results\" MODIFIED=\"1775858214161\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanicRitualTest.ic\" NAME=\"ShamanicRitualTest Coverage Results\" MODIFIED=\"1775901693900\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision e91ba7490df460ba75c016814b33e91c25c01b46)
++++ b/.idea/workspace.xml	(date 1775992412766)
+@@ -4,9 +4,19 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit">
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Hunting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/Hunting.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/BuilderTest.java" afterDir="false" />
++    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="no error now">
++      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/character/TribeCharacter.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/hunting.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/CollectorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/CollectorTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/HunterTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/HunterTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/InventorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/InventorTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/ShamanTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/ShamanTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/TribeCharacterTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/TribeCharacterTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -34,12 +44,15 @@
+     &quot;assignee&quot;: &quot;Fancopo&quot;
+   }
+ }</component>
+-  <component name="GithubPullRequestsUISettings">{
+-  &quot;selectedUrlAndAccountId&quot;: {
+-    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,
+-    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;
+-  }
+-}</component>
++  <component name="GithubPullRequestsUISettings"><![CDATA[{
++  "selectedUrlAndAccountId": {
++    "url": "https://github.com/Fancopo/Codice-Software.git",
++    "accountId": "039f84ba-5214-4d96-b80b-54c34c7c13bf"
++  }
++}]]></component>
++  <component name="HighlightingSettingsPerFile">
++    <setting file="file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/character/ArtistTest.java" root0="FORCE_HIGHLIGHTING" />
++  </component>
+   <component name="MavenImportPreferences">
+     <option name="generalSettings">
+       <MavenGeneralSettings>
+@@ -60,6 +73,7 @@
+   </component>
+   <component name="PropertiesComponent">{
+   &quot;keyToString&quot;: {
++    &quot;JUnit.ArtistTest.executor&quot;: &quot;Coverage&quot;,
+     &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
+     &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
+     &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
+@@ -83,23 +97,23 @@
+       <recent name="it.polimi.ingsw.am22" />
+     </key>
+   </component>
+-  <component name="RunManager" selected="JUnit.CardJsonLoaderTest">
+-    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++  <component name="RunManager" selected="JUnit.ArtistTest">
++    <configuration name="ArtistTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
++          <option name="PATTERN" value="it.polimi.ingsw.am22.character.*" />
+           <option name="ENABLED" value="true" />
+         </pattern>
+       </extension>
+-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
++      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.character" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.character.ArtistTest" />
+       <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+     </configuration>
+-    <configuration name="PlayerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+@@ -108,7 +122,7 @@
+         </pattern>
+       </extension>
+       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.PlayerTest" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
+       <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+@@ -161,11 +175,11 @@
+     </configuration>
+     <recent_temporary>
+       <list>
++        <item itemvalue="JUnit.ArtistTest" />
+         <item itemvalue="JUnit.CardJsonLoaderTest" />
+         <item itemvalue="JUnit.TribeTest" />
+         <item itemvalue="JUnit.TotemTest" />
+         <item itemvalue="JUnit.SlotTest" />
+-        <item itemvalue="JUnit.PlayerTest" />
+       </list>
+     </recent_temporary>
+   </component>
+@@ -224,7 +238,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1775223396914</updated>
+     </task>
+-    <option name="localTasksCounter" value="6" />
++    <task id="LOCAL-00006" summary="no error now">
++      <option name="closed" value="true" />
++      <created>1775902053706</created>
++      <option name="number" value="00006" />
++      <option name="presentableId" value="LOCAL-00006" />
++      <option name="project" value="LOCAL" />
++      <updated>1775902053706</updated>
++    </task>
++    <option name="localTasksCounter" value="7" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -243,7 +265,8 @@
+     <MESSAGE value="Second version" />
+     <MESSAGE value="Second version of Building" />
+     <MESSAGE value="last commit" />
+-    <option name="LAST_COMMIT_MESSAGE" value="last commit" />
++    <MESSAGE value="no error now" />
++    <option name="LAST_COMMIT_MESSAGE" value="no error now" />
+   </component>
+   <component name="XDebuggerManager">
+     <breakpoint-manager>

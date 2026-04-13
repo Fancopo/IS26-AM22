@@ -142,7 +142,7 @@ public class CardJsonLoaderTest {
 
         assertNotNull(event);
         assertEquals(EventType.HUNTING, event.getEventType());
-        assertInstanceOf(hunting.class, event);
+        assertInstanceOf(Hunting.class, event);
     }
 
     @Test

@@ -1,4 +1,4 @@
-/*package it.polimi.ingsw.am22.character;
+package it.polimi.ingsw.am22.character;
 
 import it.polimi.ingsw.am22.Era;
 import it.polimi.ingsw.am22.Player;
@@ -6,13 +6,13 @@ import it.polimi.ingsw.am22.Tribe;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/*class ArtistTest {
+class ArtistTest {
 
     @Test
-    /*void testArtistCreationAndEffect() {
+    void testArtistCreationAndEffect() {
         // 1. Istanziamo l'oggetto Artist reale usando il tuo costruttore.
         // I parametri sono: id, era, minPlayers, characterType
-        Artist artist = new Artist("art_01", Era.I, 3, "Artist");
+        Artist artist = new Artist("art_01", Era.I, 3);
 
         // Verifichiamo che l'istanza sia stata creata correttamente (copre il costruttore)
         assertNotNull(artist, "L'istanza di Artist non dovrebbe essere null");
@@ -28,4 +28,4 @@ import static org.junit.jupiter.api.Assertions.*;
         assertDoesNotThrow(() -> artist.applyImmediateEffect(dummyPlayer, dummyTribe),
                 "applyImmediateEffect non deve lanciare eccezioni per la classe Artist");
     }
-}*/
+}

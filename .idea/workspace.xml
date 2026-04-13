@@ -6,14 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Tests update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/BuildingTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/BuildingTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/CollectionRewardEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/CollectionRewardEffectTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EndGameScoringEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EndGameScoringEffectTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffectTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffectTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffectTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffectTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/hunting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/hunting.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,34 +65,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JUnit.ArtistTest.executor": "Coverage",
-    "JUnit.BuildingTest.executor": "Coverage",
-    "JUnit.CardJsonLoaderTest.executor": "Coverage",
-    "JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor": "Coverage",
-    "JUnit.CardTest.executor": "Coverage",
-    "JUnit.CollectionRewardEffectTest.executor": "Coverage",
-    "JUnit.EndGameScoringEffectTest.executor": "Coverage",
-    "JUnit.EventYieldBonusEffectTest.executor": "Coverage",
-    "JUnit.OfferTileTest.executor": "Coverage",
-    "JUnit.PlayerTest.executor": "Coverage",
-    "JUnit.ShamanicModifierEffectTest.executor": "Coverage",
-    "JUnit.SlotTest.executor": "Coverage",
-    "JUnit.SustenanceDiscountEffectTest.executor": "Coverage",
-    "JUnit.TotemTest.executor": "Coverage",
-    "JUnit.TribeTest.executor": "Coverage",
-    "JUnit.TurnPhaseModifierEffectTest.executor": "Coverage",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "game-version2",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22",
-    "node.js.selected.package.tslint": "(autodetect)"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JUnit.ArtistTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.BuildingTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CardTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CollectionRewardEffectTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.EndGameScoringEffectTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.EventYieldBonusEffectTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.ShamanicModifierEffectTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.SustenanceDiscountEffectTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TurnPhaseModifierEffectTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\jacop\IdeaProjects\am22\src\main\java\it\polimi\ingsw\am22" />
@@ -111,7 +104,7 @@
       <recent name="it.polimi.ingsw.am22" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.ArtistTest">
     <configuration name="ArtistTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">

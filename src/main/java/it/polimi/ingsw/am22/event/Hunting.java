@@ -8,21 +8,23 @@ import it.polimi.ingsw.am22.character.CharacterType;
 
 import java.util.List;
 
-public class Hunting extends Event implements EventEffect {
+public class hunting implements EventEffect {
 
-    public Hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
-        super(id, era, minPlayers, EventType.HUNTING, eventEffect);
+    private Era era;
+
+    public hunting(Era era) {
+        this.era = era;
     }
 
     @Override
     public void applyEvent(List<Player> players, String id) {
         int PPperHunter = 0;
 
-        if (this.getEra() == Era.I) {
+        if (era == Era.I) {
             PPperHunter = 1;
-        } else if (this.getEra() == Era.II) {
+        } else if (era == Era.II) {
             PPperHunter = 2;
-        } else if (this.getEra() == Era.III) {
+        } else if (era == Era.III) {
             PPperHunter = 3;
         }
 

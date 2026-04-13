@@ -1,0 +1,23 @@
+Index: src/main/java/it/polimi/ingsw/am22/event/hunting.java
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/event/hunting.java b/src/main/java/it/polimi/ingsw/am22/event/Hunting.java
+rename from src/main/java/it/polimi/ingsw/am22/event/hunting.java
+rename to src/main/java/it/polimi/ingsw/am22/event/Hunting.java
+--- a/src/main/java/it/polimi/ingsw/am22/event/hunting.java	(revision 4f3d3417d537e09e32511e667f0c596a1ac6e622)
++++ b/src/main/java/it/polimi/ingsw/am22/event/Hunting.java	(date 1775862885572)
+@@ -5,13 +5,12 @@
+ import it.polimi.ingsw.am22.Tribe;
+ import it.polimi.ingsw.am22.character.CharacterType;
+ 
+-import java.util.ArrayList;
+ import java.util.List;
+ 
+ 
+-public class hunting extends Event implements EventEffect{
++public class Hunting extends Event implements EventEffect{
+ 
+-    public hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
++    public Hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+         super(id, era, minPlayers, EventType.HUNTING, eventEffect);
+     }
+ 
