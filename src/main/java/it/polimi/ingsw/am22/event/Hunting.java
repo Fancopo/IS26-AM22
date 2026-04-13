@@ -8,11 +8,11 @@ import it.polimi.ingsw.am22.character.CharacterType;
 
 import java.util.List;
 
-public class Hunting implements EventEffect {
+public class hunting implements EventEffect {
 
     private Era era;
 
-    public Hunting(Era era) {
+    public hunting(Era era) {
         this.era = era;
     }
 
