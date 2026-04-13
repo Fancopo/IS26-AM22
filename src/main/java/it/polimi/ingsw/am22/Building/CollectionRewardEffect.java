@@ -63,10 +63,12 @@ public class CollectionRewardEffect implements BuildingEffect {
                     }
                 }
 
+                /*
                 // Safety check: if the enum is empty for some reason, prevent it from staying at MAX_VALUE
                 if (minSets == Integer.MAX_VALUE) {
                     minSets = 0;
                 }
+                 */
 
                 // The number of complete sets is equal to the quantity of your scarcest character
                 currentMatches = minSets;

@@ -40,12 +40,12 @@ public class EndGameScoringEffect implements BuildingEffect {
                     completeSets = count;
                 }
             }
-
+/*
             // Safety fallback
             if (completeSets == Integer.MAX_VALUE) {
                 completeSets = 0;
             }
-
+*/
             // Multiply and add to total
             total += (completeSets * pointsPerSet);
         }
