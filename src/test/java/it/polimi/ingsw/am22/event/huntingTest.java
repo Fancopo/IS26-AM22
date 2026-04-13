@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.List;
 
-class HuntingTest {
+class huntingTest {
 
     @Test
     void testHuntingEra1_NoHunters_AndNullTribe() {

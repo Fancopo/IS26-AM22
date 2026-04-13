@@ -43,7 +43,7 @@ class ShamanicRitualTest {
 
         // Era I: Vittoria = +5, Sconfitta = -3
         assertEquals(5, winner.getPP(), "Il vincitore deve avere 5 PP");
-        assertEquals(-3, loser.getPP(), "Il perdente deve avere -3 PP");
+        assertEquals(-3, nullTribePlayer.getPP(), "Il perdente deve avere -3 PP");
     }
 
     @Test
