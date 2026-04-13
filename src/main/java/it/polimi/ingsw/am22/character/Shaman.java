@@ -15,6 +15,7 @@ public class Shaman extends TribeCharacter implements CharacterEffect{
         setEffect(this);
     }
 
+    @Override
     public int getNumStars() {
         return numStars;
     }

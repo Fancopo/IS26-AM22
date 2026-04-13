@@ -34,7 +34,7 @@ public class TribeCharacter extends Card {
             }
         }
     }
-    public int getNumStars(){return 0;}
+    public int getNumStars(){ return 0;}
 
     public char getIconPerInventor(){return '0';}
     public int getDiscountFood(){

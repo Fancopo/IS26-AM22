@@ -90,9 +90,9 @@ public class TribeTest {
         tribe.addCharacter(hunter2);
         tribe.addCharacter(builder);
 
-        assertEquals(2, Tribe.countCharacters(CharacterType.HUNTER));
-        assertEquals(1, Tribe.countCharacters(CharacterType.BUILDER));
-        assertEquals(0, Tribe.countCharacters(CharacterType.ARTIST));
+        assertEquals(2, tribe.countCharacters(CharacterType.HUNTER));
+        assertEquals(1, tribe.countCharacters(CharacterType.BUILDER));
+        assertEquals(0, tribe.countCharacters(CharacterType.ARTIST));
     }
 
     @Test

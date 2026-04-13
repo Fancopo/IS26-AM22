@@ -10,8 +10,6 @@ import java.util.List;
 
 public class Hunting extends Event implements EventEffect {
 
-    private Era era;
-
     public Hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.HUNTING, eventEffect);
     }
@@ -20,11 +18,11 @@ public class Hunting extends Event implements EventEffect {
     public void applyEvent(List<Player> players, String id) {
         int PPperHunter = 0;
 
-        if (era == Era.I) {
+        if (this.getEra() == Era.I) {
             PPperHunter = 1;
-        } else if (era == Era.II) {
+        } else if (this.getEra() == Era.II) {
             PPperHunter = 2;
-        } else if (era == Era.III) {
+        } else if (this.getEra() == Era.III) {
             PPperHunter = 3;
         }
 

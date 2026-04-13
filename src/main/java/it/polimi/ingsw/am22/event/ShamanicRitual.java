@@ -49,9 +49,7 @@ public class ShamanicRitual extends Event implements EventEffect {
             if (tribe != null) {
                 // Conta icone base degli Sciamani
                 for (TribeCharacter character : tribe.getMembers()) {
-                    if (character.getCharacterType() == CharacterType.SHAMAN) {
                         baseIcons += character.getNumStars();
-                    }
                 }
 
                 // Applica effetti degli Edifici per il Rituale Sciamanico

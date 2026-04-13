@@ -55,7 +55,7 @@ public class CollectionRewardEffect implements BuildingEffect {
                 for (CharacterType type : CharacterType.values()) {
 
                     // Ask the Tribe how many characters of this specific type it currently has
-                    int count = Tribe.countCharacters(type);
+                    int count = player.getTribe().countCharacters(type);
 
                     // If this count is the lowest we have seen so far, it becomes our new bottleneck
                     if (count < minSets) {
