@@ -1,0 +1,18 @@
+package it.polimi.ingsw.am22.model.Building;
+
+import it.polimi.ingsw.am22.model.Tribe;
+import it.polimi.ingsw.am22.model.Player;
+import it.polimi.ingsw.am22.model.character.TribeCharacter;
+import it.polimi.ingsw.am22.model.event.EventType;
+
+public interface BuildingEffect {
+    default int calculateEndGame(Tribe tribe) { return 0; }
+    default int getExtraShamanIcons() {return 0;}
+    default boolean preventsShamanPPLoss() {return false;}
+    default boolean doublesShamanWinPP() {return false;}
+    default void onTotemPlaced(Player owner) {}
+    default boolean hasExtraBuyAtRoundEnd() {return false;} // By default, buildings do NOT give an extra buy!
+    default int getSustenanceDiscount(Tribe tribe) { return 0; }
+    default void onCharacterAdded(Player player, TribeCharacter newChar) {}
+    default void applyEventBonus(EventType eventType, Player player, int characterCount) {}
+}
