@@ -1,0 +1,809 @@
+Index: src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.CharacterType;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class CavePaintings extends Event implements EventEffect {\r\n\r\n    public CavePaintings(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {\r\n        super(id, era, minPlayers, EventType.CAVE_PAINTING, eventEffect);\r\n    }\r\n\r\n    @Override\r\n    public void applyEvent(List<Player> players, String id) {\r\n        int minArtistsRequired = 0;\r\n        int PPtoLose = -2; // Come da tuo snippet, la penalità è sempre -2\r\n        int PPperArtist = 0;\r\n\r\n        // 1. Impostazione delle soglie e dei premi in base all'Era\r\n        if (this.getEra() == Era.I) {\r\n            minArtistsRequired = 1;\r\n            PPperArtist = 1;\r\n        } else if (this.getEra() == Era.II) {\r\n            minArtistsRequired = 2;\r\n            PPperArtist = 2;\r\n        } else if (this.getEra() == Era.III) {\r\n            minArtistsRequired = 3;\r\n            PPperArtist = 3;\r\n        }\r\n\r\n        // 2. Risoluzione dell'evento per ogni giocatore\r\n        for (Player player : players) {\r\n            Tribe tribe = player.getTribe();\r\n            if (tribe == null) continue;\r\n\r\n            // Conta il numero di Artisti\r\n            int artistCount = tribe.countCharacters(CharacterType.ARTIST);\r\n\r\n            // Controllo per gli Edifici (c'è un edificio che dà 1 Cibo per ogni Artista durante questo evento)\r\n            for (Building building : player.getTribe().getBuildings()){\r\n                building.getEffect().applyEventBonus(EventType.CAVE_PAINTING,player,artistCount);\r\n            }\r\n\r\n            // 3. Calcolo e Assegnazione dei Punti Prestigio\r\n            if (artistCount >= minArtistsRequired) {\r\n                // Il giocatore ha abbastanza Artisti: guadagna PP per ogni Artista\r\n                int earnedPP = artistCount * PPperArtist;\r\n                player.addPP(earnedPP);\r\n                System.out.println(player.getNickname() + \" ha \" + artistCount +\r\n                        \" Artisti (minimo richiesto: \" + minArtistsRequired +\r\n                        \"). Guadagna \" + earnedPP + \" PP!\");\r\n            } else {\r\n                // Il giocatore non ha abbastanza Artisti: subisce la penalità\r\n                player.addPP(-2); // PPtoLose è già negativo (-2)\r\n                System.out.println(player.getNickname() + \" ha solo \" + artistCount +\r\n                        \" Artisti (minimo richiesto: \" + minArtistsRequired +\r\n                        \"). Subisce \" + PPtoLose + \" PP.\");\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java b/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java
+--- a/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java	(revision a8cc380b60b821670247af87050af9481af145a0)
++++ b/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java	(date 1775901593368)
+@@ -28,7 +28,7 @@
+         } else if (this.getEra() == Era.II) {
+             minArtistsRequired = 2;
+             PPperArtist = 2;
+-        } else if (this.getEra() == Era.III) {
++        } else if (this.getEra() == Era.III){
+             minArtistsRequired = 3;
+             PPperArtist = 3;
+         }
+Index: src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\n\r\nimport it.polimi.ingsw.am22.Building.EventYieldBonusEffect;\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.Artist;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nimport java.util.Arrays;\r\nimport java.util.List;\r\n\r\nclass CavePaintingsTest {\r\n\r\n    @Test\r\n    void testCavePaintingsEra1_NoArtists_AndNullTribe() {\r\n        CavePaintings event = new CavePaintings(\"cp_01\", Era.I, 3, EventType.CAVE_PAINTING, null);\r\n\r\n        Player normalPlayer = new Player(\"Christian\");\r\n        // Non aggiungiamo Artisti, quindi artistCount = 0\r\n\r\n        // Creiamo un giocatore fittizio con tribù nulla per coprire la riga \"if (tribe == null) continue;\"\r\n        Player nullTribePlayer = new Player(\"Fantasma\") {\r\n            @Override\r\n            public Tribe getTribe() { return null; }\r\n        };\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(normalPlayer, nullTribePlayer), \"cp_01\"));\r\n        // normalPlayer subisce -2 PP, 0 cibo. nullTribePlayer viene saltato.\r\n        assertEquals(0, normalPlayer.getFood(), \"Il cibo non deve essere stato speso grazie allo sconto\");\r\n        assertEquals(-2, normalPlayer.getPP(), \"normalPlayer subisce -2 PP\");\r\n    }\r\n\r\n    @Test\r\n    void testCavePaintingsEra2_NotEnoughArtists() {\r\n        CavePaintings event = new CavePaintings(\"cp_02\", Era.II, 3, EventType.CAVE_PAINTING, null);\r\n        Player player = new Player(\"Christian\");\r\n\r\n        // Aggiungiamo 1 Artista. (L'Era II ne richiede minimo 2!)\r\n        player.getTribe().addCharacter(new Artist(\"art_01\", Era.I, 3, \"Artist\"));\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(List.of(player), \"cp_02\"));\r\n        //finisce nell'else dei PP subendo la penalità.\r\n        assertEquals(-2, player.getPP(), \"normalPlayer subisce -2 PP\");\r\n    }\r\n\r\n    @Test\r\n    void testCavePaintingsEra3_NotEnoughArtists_WithBuildings() {\r\n        CavePaintings event = new CavePaintings(\"cp_03\", Era.III, 3, EventType.CAVE_PAINTING, null);\r\n        Player player = new Player(\"Christian\");\r\n\r\n        // Aggiungiamo 2 Artisti (L'Era III ne richiede minimo 3)\r\n        player.getTribe().addCharacter(new Artist(\"art_01\", Era.I, 3, \"Artist\"));\r\n        player.getTribe().addCharacter(new Artist(\"art_02\", Era.I, 3, \"Artist\"));\r\n\r\n        // Aggiungiamo un edificio con effetto per coprire il ciclo for degli edifici\r\n        EventYieldBonusEffect dummyEffect = new EventYieldBonusEffect(EventType.CAVE_PAINTING, 1, 0);\r\n            // (Aggiungi qui eventuali altri metodi obbligatori dell'interfaccia BuildingEffect)\r\n        // Adatta i parametri di new Building in base al tuo costruttore reale\r\n        Building building = new Building(\"b_01\", Era.I, 3, 2, 5, dummyEffect);\r\n        player.getTribe().addBuilding(building);\r\n        assertEquals(0, player.getPP(), \"Il giocatore deve partire da 0 PP\");\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(List.of(player), \"cp_03\"));\r\n        assertEquals(2, player.getFood(), \"Il cibo non deve essere stato speso grazie allo sconto\");\r\n        assertEquals(-2, player.getPP(), \"normalPlayer subisce -2 PP\");\r\n    }\r\n\r\n\r\n    @Test\r\n    void testCavePaintingsEra3_EnoughArtists_WithBuildings() {\r\n        CavePaintings event = new CavePaintings(\"cp_03\", Era.III, 3, EventType.CAVE_PAINTING, null);\r\n        Player player = new Player(\"Christian\");\r\n\r\n        // Aggiungiamo 3 Artisti (L'Era III ne richiede minimo 3)\r\n        player.getTribe().addCharacter(new Artist(\"art_01\", Era.I, 3, \"Artist\"));\r\n        player.getTribe().addCharacter(new Artist(\"art_02\", Era.I, 3, \"Artist\"));\r\n        player.getTribe().addCharacter(new Artist(\"art_03\", Era.I, 3, \"Artist\"));\r\n\r\n        // Aggiungiamo un edificio con effetto per coprire il ciclo for degli edifici\r\n        EventYieldBonusEffect dummyEffect = new EventYieldBonusEffect(EventType.CAVE_PAINTING, 1, 0);\r\n        // Adatta i parametri di new Building in base al tuo costruttore reale\r\n        Building building = new Building(\"b_01\", Era.I, 3, 2, 5, dummyEffect);\r\n        player.getTribe().addBuilding(building);\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(List.of(player), \"cp_03\"));\r\n        // Il giocatore ha abbastanza artisti: guadagna 9 PP (3 * 3) e prende 3 cibo.\r\n        assertEquals(3, player.getFood(), \"Il cibo non deve essere stato speso grazie allo sconto\");\r\n        assertEquals(9, player.getPP(), \"normalPlayer subisce -2 PP\");\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java b/src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java	(revision a8cc380b60b821670247af87050af9481af145a0)
++++ b/src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java	(date 1775901633199)
+@@ -91,4 +91,21 @@
+         assertEquals(3, player.getFood(), "Il cibo non deve essere stato speso grazie allo sconto");
+         assertEquals(9, player.getPP(), "normalPlayer subisce -2 PP");
+     }
++    @Test
++    void testSustenance_UnknownEra_ForCoverage() {
++        // Copertura: Forza il fallimento di tutti gli "if" e "else if" sulle Ere passando null
++        // Questo simula un'Era sconosciuta e chiude il branch mancante al 100%
++        sustenance event = new sustenance("sust_06", null, 3, EventType.SUSTENANCE, null);
++
++        Player p = new Player("Player Null Era");
++        // Non assegniamo cibo, ma aggiungiamo 1 personaggio per forzare il calcolo della penalità
++        p.getTribe().addCharacter(new Artist("c1", Era.III, 3, "Artist"));
++
++        assertDoesNotThrow(() -> event.applyEvent(List.of(p), "sust_06"));
++
++        // Cosa succede qui?
++        // Poiché l'Era è null, la variabile PPLose definita a inizio metodo rimane al suo valore di default (0).
++        // Il giocatore non ha cibo per sfamare il personaggio. Penalità calcolata: 0 * 1 = 0.
++        assertEquals(0, p.getPP(), "Se l'era è sconosciuta o null, PPLose rimane a 0 e non si subiscono danni");
++    }
+ }
+Index: src/test/java/it/polimi/ingsw/am22/event/huntingTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.Hunter;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nimport java.util.Arrays;\r\nimport java.util.List;\r\n\r\nclass HuntingTest {\r\n\r\n    @Test\r\n    void testHuntingEra1_NoHunters_AndNullTribe() {\r\n        Hunting event = new Hunting(Era.I);\r\n\r\n        Player normalPlayer = new Player(\"Christian\");\r\n        // Non aggiungiamo Cacciatori. Si aspetta 0 Cibo e 0 PP.\r\n\r\n        // Giocatore fittizio per coprire la riga \"if (tribe == null) continue;\"\r\n        Player nullTribePlayer = new Player(\"Fantasma\") {\r\n            @Override\r\n            public Tribe getTribe() { return null; }\r\n        };\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(normalPlayer, nullTribePlayer), \"hunt_01\"));\r\n\r\n        // VERIFICA: Nessun cacciatore = Nessuna risorsa\r\n        assertEquals(0, normalPlayer.getFood(), \"Non avendo cacciatori, il cibo deve restare invariato\");\r\n        assertEquals(0, normalPlayer.getPP(), \"Non avendo cacciatori, i PP devono restare invariati\");\r\n    }\r\n\r\n    @Test\r\n    void testHuntingEra2_WithHunters_AndBuildings() {\r\n        Hunting event = new Hunting(Era.II);\r\n        Player player = new Player(\"Christian\");\r\n\r\n        // Aggiungiamo 2 Cacciatori\r\n        player.getTribe().addCharacter(new Hunter(\"h1\", Era.I, 3, \"Hunter\", false));\r\n        player.getTribe().addCharacter(new Hunter(\"h2\", Era.I, 3, \"Hunter\", true));\r\n\r\n        // Aggiungiamo un Edificio per testare il ciclo 'for' interno in sicurezza\r\n        BuildingEffect dummyEffect = new BuildingEffect() {\r\n            @Override\r\n            public void applyEventBonus(EventType type, Player p, int count) {}\r\n        };\r\n        // Usa i parametri corretti per il tuo costruttore Building\r\n        Building building = new Building(\"b_01\", Era.I, 3, 2, 5, dummyEffect);\r\n        player.getTribe().addBuilding(building);\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(List.of(player), \"hunt_02\"));\r\n\r\n        // VERIFICA ERA II: 2 Cacciatori. Cibo = 1x2=2. PP = 2x2=4.\r\n        assertEquals(2, player.getFood(), \"Dovrebbe aver ottenuto 2 Cibo (1 per ogni Cacciatore)\");\r\n        assertEquals(4, player.getPP(), \"Dovrebbe aver ottenuto 4 PP (2 per ogni Cacciatore in Era II)\");\r\n    }\r\n\r\n    @Test\r\n    void testHuntingEra3_CalculatesPPCorrectly() {\r\n        Hunting event = new Hunting(Era.III);\r\n        Player player = new Player(\"Christian\");\r\n\r\n        // Aggiungiamo 3 Cacciatori\r\n        player.getTribe().addCharacter(new Hunter(\"h1\", Era.I, 3, \"Hunter\", false));\r\n        player.getTribe().addCharacter(new Hunter(\"h2\", Era.I, 3, \"Hunter\", false));\r\n        player.getTribe().addCharacter(new Hunter(\"h3\", Era.I, 3, \"Hunter\", false));\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(List.of(player), \"hunt_03\"));\r\n\r\n        // VERIFICA ERA III: 3 Cacciatori. Cibo = 1x3=3. PP = 3x3=9.\r\n        assertEquals(3, player.getFood(), \"Dovrebbe aver ottenuto 3 Cibo\");\r\n        assertEquals(9, player.getPP(), \"Dovrebbe aver ottenuto 9 PP (3 per ogni Cacciatore in Era III)\");\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java b/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java	(revision a8cc380b60b821670247af87050af9481af145a0)
++++ b/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java	(date 1775901361273)
+@@ -12,7 +12,7 @@
+ import java.util.Arrays;
+ import java.util.List;
+ 
+-class HuntingTest {
++class huntingTest {
+ 
+     @Test
+     void testHuntingEra1_NoHunters_AndNullTribe() {
+Index: src/test/java/it/polimi/ingsw/am22/event/sustenanceTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/event/sustenanceTest.java b/src/test/java/it/polimi/ingsw/am22/event/sustenanceTest.java
+new file mode 100644
+--- /dev/null	(date 1775898441086)
++++ b/src/test/java/it/polimi/ingsw/am22/event/sustenanceTest.java	(date 1775898441086)
+@@ -0,0 +1,142 @@
++package it.polimi.ingsw.am22.event;
++
++import it.polimi.ingsw.am22.Era;
++import it.polimi.ingsw.am22.Player;
++import it.polimi.ingsw.am22.Tribe;
++import it.polimi.ingsw.am22.Building.Building;
++import it.polimi.ingsw.am22.Building.BuildingEffect;
++import it.polimi.ingsw.am22.character.CharacterType;
++import it.polimi.ingsw.am22.character.TribeCharacter;
++import org.junit.jupiter.api.Test;
++
++import java.util.Arrays;
++import java.util.ArrayList;
++import java.util.List;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class sustenanceTest {
++
++    // Classe dummy per testare comodamente gli effetti degli edifici
++    abstract class DummyBuildingEffect implements BuildingEffect {
++        @Override public void applyEventBonus(EventType type, Player p, int count) {}
++        public int getExtraShamanIcons() { return 0; }
++        public boolean preventsShamanPPLoss() { return false; }
++        public boolean doublesShamanWinPP() { return false; }
++        public void onCharacterAdded(Player p, TribeCharacter c) {}
++
++        // Questo è il metodo che ci interessa per questo test
++        public int getSustenanceDiscount(Tribe tribe) { return 0; }
++    }
++
++    @Test
++    void testSustenance_NullTribe() {
++        // Copertura: if (tribe == null) continue;
++        sustenance event = new sustenance("sust_00", Era.I, 3, EventType.SUSTENANCE, null);
++
++        Player ghostPlayer = new Player("Fantasma") {
++            @Override public Tribe getTribe() { return null; }
++        };
++
++        assertDoesNotThrow(() -> event.applyEvent(List.of(ghostPlayer), "sust_00"));
++    }
++
++    @Test
++    void testSustenanceEra1_EnoughFood_NoDiscounts() {
++        // Copertura: Era.I (PPLose = -1), Nessuno sconto, Cibo sufficiente
++        sustenance event = new sustenance("sust_01", Era.I, 3, EventType.SUSTENANCE, null);
++
++        Player p1 = new Player("Giocatore Cibo");
++        // Supponiamo che il giocatore parta o venga settato con 5 cibo
++        p1.addFood(5);
++
++        // Aggiungiamo 3 personaggi normali (es. BUILDER, o qualsiasi cosa non sia COLLECTOR)
++        p1.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.BUILDER));
++        p1.getTribe().addCharacter(new TribeCharacter("c2", Era.I, 3, CharacterType.BUILDER));
++        p1.getTribe().addCharacter(new TribeCharacter("c3", Era.I, 3, CharacterType.BUILDER));
++
++        event.applyEvent(List.of(p1), "sust_01");
++
++        // Aveva 5 cibo, doveva sfamare 3 personaggi senza sconti.
++        // Risultato atteso: 5 - 3 = 2 cibo rimanente. Nessuna perdita di PP.
++        assertEquals(2, p1.getFood(), "Deve aver pagato 3 cibo, restando con 2");
++        assertEquals(0, p1.getPP(), "Non deve perdere Punti Prestigio");
++    }
++
++    @Test
++    void testSustenanceEra2_NotEnoughFood_WithCollectorDiscount() {
++        // Copertura: Era.II (PPLose = -2), Sconto Raccoglitore, Cibo INSUFFICIENTE
++        sustenance event = new sustenance("sust_02", Era.II, 3, EventType.SUSTENANCE, null);
++
++        Player p2 = new Player("Giocatore Povero");
++        p2.addFood(1); // Ha solo 1 cibo
++
++        // Aggiungiamo 6 personaggi totali, di cui 1 COLLECTOR
++        p2.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.COLLECTOR)); // Sconto di 3
++        for(int i=0; i<5; i++) {
++            p2.getTribe().addCharacter(new TribeCharacter("c" + (i+2), Era.I, 3, CharacterType.BUILDER));
++        }
++
++        // Totale personaggi: 6. Sconto: 3 (1 Collector). Cibo da pagare = 6 - 3 = 3.
++        // Ha solo 1 cibo. Cibo mancante = 3 - 1 = 2.
++        // Penalità Era II = 2 (cibo mancante) * -2 = -4 PP.
++        event.applyEvent(List.of(p2), "sust_02");
++
++        assertEquals(0, p2.getFood(), "Deve aver azzerato il suo cibo");
++        assertEquals(-4, p2.getPP(), "Deve aver perso 4 PP per non aver sfamato 2 personaggi nell'Era II");
++    }
++
++    @Test
++    void testSustenanceEra3_NotEnoughFood_WithBuildingDiscount() {
++        // Copertura: Era.III (PPLose = -3), Sconto Edificio, Cibo INSUFFICIENTE a 0
++        sustenance event = new sustenance("sust_03", Era.III, 3, EventType.SUSTENANCE, null);
++
++        Player p3 = new Player("Senza Cibo");
++        // Parte con 0 cibo di default (nessuna addFood chiamata)
++
++        // Aggiungiamo 2 personaggi normali
++        p3.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.BUILDER));
++        p3.getTribe().addCharacter(new TribeCharacter("c2", Era.I, 3, CharacterType.BUILDER));
++
++        // Aggiungiamo un edificio che dà 1 di sconto sul cibo
++        Building foodBuilding = new Building("b1", Era.I, 3, 0, 0, new DummyBuildingEffect() {
++            @Override public int getSustenanceDiscount(Tribe tribe) {
++                return 1;
++            }
++        });
++        p3.getTribe().addBuilding(foodBuilding);
++
++        // Totale personaggi: 2. Sconto: 1 (Edificio). Cibo da pagare = 2 - 1 = 1.
++        // Cibo posseduto = 0. Cibo mancante = 1.
++        // Penalità Era III = 1 (cibo mancante) * -3 = -3 PP.
++        event.applyEvent(List.of(p3), "sust_03");
++
++        assertEquals(0, p3.getFood(), "Il cibo resta 0");
++        assertEquals(-3, p3.getPP(), "Deve aver perso 3 PP per non aver sfamato 1 personaggio nell'Era III");
++    }
++
++    @Test
++    void testSustenance_MaxZero_HugeDiscount() {
++        // Copertura: Math.max(0, totalCharacters - totalDiscount)
++        sustenance event = new sustenance("sust_04", Era.I, 3, EventType.SUSTENANCE, null);
++
++        Player p4 = new Player("Giocatore Scontato");
++        p4.addFood(2);
++
++        // 1 Solo personaggio, ma è un COLLECTOR (Sconto = 3)
++        p4.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.COLLECTOR));
++
++        // Cibo richiesto = max(0, 1 - 3) = 0. Non deve pagare nulla.
++        event.applyEvent(List.of(p4), "sust_04");
++
++        assertEquals(2, p4.getFood(), "Non deve aver speso cibo perché lo sconto copre tutto");
++        assertEquals(0, p4.getPP(), "Nessuna penalità");
++    }
++
++    @Test
++    void testSustenance_EmptyPlayersList() {
++        // Copertura: Test robustezza con lista vuota (salta il for)
++        sustenance event = new sustenance("sust_05", Era.I, 3, EventType.SUSTENANCE, null);
++        assertDoesNotThrow(() -> event.applyEvent(new ArrayList<>(), "sust_05"));
++    }
++}
+\ No newline at end of file
+Index: src/test/java/it/polimi/ingsw/am22/event/EventTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/event/EventTest.java b/src/test/java/it/polimi/ingsw/am22/event/EventTest.java
+new file mode 100644
+--- /dev/null	(date 1775898830513)
++++ b/src/test/java/it/polimi/ingsw/am22/event/EventTest.java	(date 1775898830513)
+@@ -0,0 +1,94 @@
++package it.polimi.ingsw.am22.event;
++
++import it.polimi.ingsw.am22.Era;
++import it.polimi.ingsw.am22.Game;
++import it.polimi.ingsw.am22.Player;
++import it.polimi.ingsw.am22.Tribe;
++import org.junit.jupiter.api.Test;
++
++import java.util.ArrayList;
++import java.util.List;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class EventTest {
++
++    // 1. DUMMY CLASSES PER ISOLARE IL TEST
++
++    // Dummy per l'effetto: ci serve solo per verificare che venga effettivamente chiamato
++    class DummyEventEffect implements EventEffect {
++        boolean wasCalled = false;
++        String passedId = "";
++
++        @Override
++        public void applyEvent(List<Player> players, String id) {
++            this.wasCalled = true;
++            this.passedId = id;
++        }
++    }
++
++
++
++    // 2. I TEST
++
++    @Test
++    void testEventGettersAndBaseMethods() {
++        // Copertura: Costruttore, getEventType, e applyEvent (che è vuoto)
++        Event event = new Event("ev_01", Era.I, 3, EventType.SHAMANIC_RITUAL, null);
++
++        assertEquals(EventType.SHAMANIC_RITUAL, event.getEventType(), "Il tipo di evento deve coincidere con quello passato al costruttore");
++
++        // Verifichiamo che il metodo applyEvent padre non faccia crashare nulla
++        assertDoesNotThrow(() -> event.applyEvent(new ArrayList<>(), "ev_01"), "Il metodo applyEvent di base dovrebbe essere vuoto e non lanciare eccezioni");
++    }
++
++    @Test
++    void testGetTriggerPriority_Sustenance() {
++        // Copertura: Ramo "true" dell'operatore ternario in getTriggerPriority
++        Event event = new Event("ev_sust", Era.I, 3, EventType.SUSTENANCE, null);
++
++        assertEquals(1, event.getTriggerPriority(), "L'evento SUSTENANCE deve avere priorità 1");
++    }
++
++    @Test
++    void testGetTriggerPriority_OtherEvents() {
++        // Copertura: Ramo "false" dell'operatore ternario in getTriggerPriority
++        Event event = new Event("ev_shaman", Era.II, 3, EventType.SHAMANIC_RITUAL, null);
++
++        assertEquals(0, event.getTriggerPriority(), "Tutti gli eventi non-SUSTENANCE devono avere priorità 0");
++    }
++
++    @Test
++    void testAddToTribeThrowsException() {
++        // Copertura: Il metodo addToTribe deve lanciare UnsupportedOperationException
++        Event event = new Event("ev_02", Era.III, 3, EventType.SUSTENANCE, null);
++        Player dummyPlayer = new Player("P1");
++        Tribe dummyTribe = new Tribe();
++
++        UnsupportedOperationException exception = assertThrows(
++                UnsupportedOperationException.class,
++                () -> event.addToTribe(dummyPlayer, dummyTribe)
++        );
++
++        assertEquals("An event cannot be added to the tribe", exception.getMessage());
++    }
++
++    @Test
++    void testOnRoundEndTrigger() {
++        // Copertura: Verifica che onRoundEndTrigger deleghi correttamente l'esecuzione a EventEffect
++        DummyEventEffect dummyEffect = new DummyEventEffect();
++        Event event = new Event("ev_trigger", Era.I, 3, EventType.SHAMANIC_RITUAL, dummyEffect);
++
++        // Creiamo una lista di giocatori fittizia e un game dummy
++        List<Player> fakePlayers = new ArrayList<>();
++        fakePlayers.add(new Player("Tester"));
++        Game dummyGame = new Game(fakePlayers);
++
++        // Eseguiamo il trigger
++        event.onRoundEndTrigger(dummyGame);
++
++        // Verifiche
++        assertTrue(dummyEffect.wasCalled, "L'effetto dell'evento doveva essere chiamato");
++        assertEquals("ev_trigger", dummyEffect.passedId, "L'ID passato all'effetto deve corrispondere a quello dell'evento");
++    }
++}
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"no error now\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n        <option value=\"JUnit5 Test Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"game-version3\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Fancopo&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,\r\n    &quot;accountId&quot;: &quot;039f84ba-5214-4d96-b80b-54c34c7c13bf&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3AtUiA6XPNTIVvuMJwuRyVJnWzA\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"JUnit.ArtistTest.executor\": \"Coverage\",\r\n    \"JUnit.CavePaintingsTest.executor\": \"Coverage\",\r\n    \"JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings.executor\": \"Run\",\r\n    \"JUnit.CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings.executor\": \"Run\",\r\n    \"JUnit.GameTest.executor\": \"Coverage\",\r\n    \"JUnit.HuntingTest.executor\": \"Run\",\r\n    \"JUnit.ShamanicRitualTest.executor\": \"Coverage\",\r\n    \"JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie.executor\": \"Run\",\r\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary\": \"JUnit5\",\r\n    \"com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5\": \"\",\r\n    \"git-widget-placeholder\": \"game-version2\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\r\n    \"settings.editor.selected.configurable\": \"copyright\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CreateTestDialog.Recents.Supers\">\r\n      <recent name=\"\" />\r\n    </key>\r\n    <key name=\"CreateTestDialog.RecentsKey\">\r\n      <recent name=\"it.polimi.ingsw.am22.event\" />\r\n      <recent name=\"it.polimi.ingsw.am22.character\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"JUnit.HuntingTest\">\r\n    <configuration name=\"CavePaintingsTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.event.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22.event\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.event.CavePaintingsTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.event.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22.event\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.event.CavePaintingsTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"testCavePaintingsEra3_EnoughArtists_WithBuildings\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"HuntingTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.event.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22.event\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.event.HuntingTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"ShamanicRitualTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.event.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22.event\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.event.ShamanicRitualTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.event.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22.event\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.event.ShamanicRitualTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"JUnit.HuntingTest\" />\r\n        <item itemvalue=\"JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie\" />\r\n        <item itemvalue=\"JUnit.ShamanicRitualTest\" />\r\n        <item itemvalue=\"JUnit.CavePaintingsTest\" />\r\n        <item itemvalue=\"JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"\" />\r\n      <created>1773411487475</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1773411487475</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589285100</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589285100</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589402689</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589402689</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589432607</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589432607</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Second version of Building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1774109302482</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1774109302482</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"last commit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775223396914</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775223396914</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"last commit 2\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775308970401</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775308970401</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"last commit 2\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775308975722</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775308975722</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"last commit 2\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775420955438</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775420955438</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00009\" summary=\"last commit 2\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775420960554</created>\r\n      <option name=\"number\" value=\"00009\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775420960554</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00010\" summary=\"last commit 2\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775421247371</created>\r\n      <option name=\"number\" value=\"00010\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775421247371</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00011\" summary=\"add a missed class\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775422275343</created>\r\n      <option name=\"number\" value=\"00011\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775422275343</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00012\" summary=\"new commit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775483048613</created>\r\n      <option name=\"number\" value=\"00012\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775483048613</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00013\" summary=\"no error now\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775488388504</created>\r\n      <option name=\"number\" value=\"00013\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00013\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775488388504</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00014\" summary=\"no error now\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775858377428</created>\r\n      <option name=\"number\" value=\"00014\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00014\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775858377428</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00015\" summary=\"no error now\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775860559998</created>\r\n      <option name=\"number\" value=\"00015\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00015\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775860559998</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00016\" summary=\"no error now\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775860788853</created>\r\n      <option name=\"number\" value=\"00016\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00016\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775860788853</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00017\" summary=\"no error now\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775896276391</created>\r\n      <option name=\"number\" value=\"00017\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00017\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775896276391</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00018\" summary=\"no error now\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775896761697</created>\r\n      <option name=\"number\" value=\"00018\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00018\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775896761697</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"19\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State>\r\n              <option name=\"FILTERS\">\r\n                <map>\r\n                  <entry key=\"branch\">\r\n                    <value>\r\n                      <list>\r\n                        <option value=\"game-version2\" />\r\n                      </list>\r\n                    </value>\r\n                  </entry>\r\n                </map>\r\n              </option>\r\n            </State>\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial version\" />\r\n    <MESSAGE value=\"Second version\" />\r\n    <MESSAGE value=\"Second version of Building\" />\r\n    <MESSAGE value=\"last commit\" />\r\n    <MESSAGE value=\"last commit 2\" />\r\n    <MESSAGE value=\"add a missed class\" />\r\n    <MESSAGE value=\"new commit\" />\r\n    <MESSAGE value=\"no error now\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"no error now\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/BuildingEffect.java</url>\r\n          <line>5</line>\r\n          <option name=\"timeStamp\" value=\"1\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>58</line>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>77</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>143</line>\r\n          <option name=\"timeStamp\" value=\"4\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>167</line>\r\n          <option name=\"timeStamp\" value=\"5\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>179</line>\r\n          <option name=\"timeStamp\" value=\"7\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>118</line>\r\n          <properties class=\"it.polimi.ingsw.am22.ShamanicModifierEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"8\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>219</line>\r\n          <properties class=\"it.polimi.ingsw.am22.EventYieldBonusEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"9\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/am22$CollectorTest.ic\" NAME=\"CollectorTest Coverage Results\" MODIFIED=\"1775858159929\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$GameTest.ic\" NAME=\"GameTest Coverage Results\" MODIFIED=\"1775858765732\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanTest_testShamanCreationGettersAndEffect.ic\" NAME=\"ShamanTest.testShamanCreationGettersAndEffect Coverage Results\" MODIFIED=\"1775854652620\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HuntingTest.ic\" NAME=\"HuntingTest Coverage Results\" MODIFIED=\"1775862886674\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CavePaintingsTest.ic\" NAME=\"CavePaintingsTest Coverage Results\" MODIFIED=\"1775862659809\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CavePaintingsTest_testCavePaintingsEra3_NotEnoughArtists_WithBuildings.ic\" NAME=\"CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings Coverage Results\" MODIFIED=\"1775862436854\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest_testAddToTribeWithoutBuildings.ic\" NAME=\"TribeCharacterTest.testAddToTribeWithoutBuildings Coverage Results\" MODIFIED=\"1775856302307\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ArtistTest.ic\" NAME=\"ArtistTest Coverage Results\" MODIFIED=\"1775858613631\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest_testAddToTribeWithBuildings.ic\" NAME=\"TribeCharacterTest.testAddToTribeWithBuildings Coverage Results\" MODIFIED=\"1775856424577\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest.ic\" NAME=\"TribeCharacterTest Coverage Results\" MODIFIED=\"1775858125675\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest_testHunterCreationAndNoIconEffect.ic\" NAME=\"HunterTest.testHunterCreationAndNoIconEffect Coverage Results\" MODIFIED=\"1775854103694\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest.ic\" NAME=\"HunterTest Coverage Results\" MODIFIED=\"1775858166142\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest_testHunterWithIconEffect.ic\" NAME=\"HunterTest.testHunterWithIconEffect Coverage Results\" MODIFIED=\"1775854094672\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$InventorTest.ic\" NAME=\"InventorTest Coverage Results\" MODIFIED=\"1775858174633\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanTest.ic\" NAME=\"ShamanTest Coverage Results\" MODIFIED=\"1775858214161\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanicRitualTest.ic\" NAME=\"ShamanicRitualTest Coverage Results\" MODIFIED=\"1775895411661\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$BuilderTest.ic\" NAME=\"BuilderTest Coverage Results\" MODIFIED=\"1775858153900\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision a8cc380b60b821670247af87050af9481af145a0)
++++ b/.idea/workspace.xml	(date 1775901702152)
+@@ -5,8 +5,13 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="no error now">
++      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TurnOrderTileTest.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/EventTest.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/sustenanceTest.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/Building.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/TurnOrderTile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/TurnOrderTile.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/event/CavePaintings.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/CavePaintingsTest.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/huntingTest.java" afterDir="false" />
+     </list>
+@@ -61,38 +66,48 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "JUnit.ArtistTest.executor": "Coverage",
+-    "JUnit.CavePaintingsTest.executor": "Coverage",
+-    "JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings.executor": "Run",
+-    "JUnit.CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings.executor": "Run",
+-    "JUnit.GameTest.executor": "Coverage",
+-    "JUnit.HuntingTest.executor": "Run",
+-    "JUnit.ShamanicRitualTest.executor": "Coverage",
+-    "JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie.executor": "Run",
+-    "ModuleVcsDetector.initialDetectionPerformed": "true",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+-    "RunOnceActivity.git.unshallow": "true",
+-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+-    "git-widget-placeholder": "game-version2",
+-    "kotlin-language-version-configured": "true",
+-    "node.js.selected.package.tslint": "(autodetect)",
+-    "settings.editor.selected.configurable": "copyright"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;JUnit.ArtistTest.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.CavePaintingsTest.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.EventTest.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.GameTest.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.HuntingTest.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.ShamanicRitualTest.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.ShamanicRitualTest.testShamanicRitualEra1_NormalWinAndLoss_WithNullTribe.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.TurnOrderTileTest.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.TurnOrderTileTest.testEdgeCases_EmptyTile.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.TurnOrderTileTest.testGetFirstAvailableSlot_AllFull.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.TurnOrderTileTest.testGetFirstAvailableSlot_PartiallyOccupied.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.TurnOrderTileTest.testGetTurnOrderAndOccupiedSlotsCount.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.it.polimi.ingsw.am22.event in am22.executor&quot;: &quot;Coverage&quot;,
++    &quot;JUnit.sustenanceTest.executor&quot;: &quot;Coverage&quot;,
++    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
++    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
++    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
++    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;settings.editor.selected.configurable&quot;: &quot;copyright&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="RecentsManager">
+     <key name="CreateTestDialog.Recents.Supers">
+       <recent name="" />
+     </key>
+     <key name="CreateTestDialog.RecentsKey">
++      <recent name="it.polimi.ingsw.am22" />
+       <recent name="it.polimi.ingsw.am22.event" />
+       <recent name="it.polimi.ingsw.am22.character" />
+     </key>
+   </component>
+-  <component name="RunManager" selected="JUnit.HuntingTest">
++  <component name="RunManager" selected="JUnit.EventTest">
+     <configuration name="CavePaintingsTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+@@ -108,7 +123,7 @@
+         <option name="Make" enabled="true" />
+       </method>
+     </configuration>
+-    <configuration name="CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++    <configuration name="EventTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+@@ -117,14 +132,13 @@
+         </pattern>
+       </extension>
+       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.CavePaintingsTest" />
+-      <option name="METHOD_NAME" value="testCavePaintingsEra3_EnoughArtists_WithBuildings" />
+-      <option name="TEST_OBJECT" value="method" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.EventTest" />
++      <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+     </configuration>
+-    <configuration name="HuntingTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++    <configuration name="ShamanicRitualTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+@@ -133,13 +147,13 @@
+         </pattern>
+       </extension>
+       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.HuntingTest" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.ShamanicRitualTest" />
+       <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+     </configuration>
+-    <configuration name="ShamanicRitualTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++    <configuration name="huntingTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+@@ -148,13 +162,13 @@
+         </pattern>
+       </extension>
+       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.ShamanicRitualTest" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.huntingTest" />
+       <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+     </configuration>
+-    <configuration name="ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++    <configuration name="sustenanceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+@@ -163,20 +177,19 @@
+         </pattern>
+       </extension>
+       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.event" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.ShamanicRitualTest" />
+-      <option name="METHOD_NAME" value="testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie" />
+-      <option name="TEST_OBJECT" value="method" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.event.sustenanceTest" />
++      <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+     </configuration>
+     <recent_temporary>
+       <list>
+-        <item itemvalue="JUnit.HuntingTest" />
+-        <item itemvalue="JUnit.ShamanicRitualTest.testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie" />
++        <item itemvalue="JUnit.EventTest" />
++        <item itemvalue="JUnit.huntingTest" />
+         <item itemvalue="JUnit.ShamanicRitualTest" />
++        <item itemvalue="JUnit.sustenanceTest" />
+         <item itemvalue="JUnit.CavePaintingsTest" />
+-        <item itemvalue="JUnit.CavePaintingsTest.testCavePaintingsEra3_EnoughArtists_WithBuildings" />
+       </list>
+     </recent_temporary>
+   </component>
+@@ -339,7 +352,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1775896761697</updated>
+     </task>
+-    <option name="localTasksCounter" value="19" />
++    <task id="LOCAL-00019" summary="no error now">
++      <option name="closed" value="true" />
++      <created>1775897861450</created>
++      <option name="number" value="00019" />
++      <option name="presentableId" value="LOCAL-00019" />
++      <option name="project" value="LOCAL" />
++      <updated>1775897861450</updated>
++    </task>
++    <option name="localTasksCounter" value="20" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -408,6 +429,11 @@
+           <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
+           <line>179</line>
+           <option name="timeStamp" value="7" />
++        </line-breakpoint>
++        <line-breakpoint enabled="true" type="java-line">
++          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TurnOrderTileTest.java</url>
++          <line>76</line>
++          <option name="timeStamp" value="16" />
+         </line-breakpoint>
+         <line-breakpoint enabled="true" type="java-method">
+           <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>
+@@ -427,6 +453,24 @@
+           </properties>
+           <option name="timeStamp" value="9" />
+         </line-breakpoint>
++        <line-breakpoint enabled="true" type="java-method">
++          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java</url>
++          <line>82</line>
++          <properties class="it.polimi.ingsw.am22.event.ShamanicRitualTest" method="testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie">
++            <option name="EMULATED" value="true" />
++            <option name="WATCH_EXIT" value="false" />
++          </properties>
++          <option name="timeStamp" value="15" />
++        </line-breakpoint>
++        <line-breakpoint enabled="true" type="java-method">
++          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TurnOrderTileTest.java</url>
++          <line>95</line>
++          <properties class="it.polimi.ingsw.am22.TurnOrderTileTest" method="testGetTurnOrderAndOccupiedSlotsCount">
++            <option name="EMULATED" value="true" />
++            <option name="WATCH_EXIT" value="false" />
++          </properties>
++          <option name="timeStamp" value="17" />
++        </line-breakpoint>
+       </breakpoints>
+     </breakpoint-manager>
+   </component>
+@@ -440,10 +484,16 @@
+     <SUITE FILE_PATH="coverage/am22$ShamanTest_testShamanCreationGettersAndEffect.ic" NAME="ShamanTest.testShamanCreationGettersAndEffect Coverage Results" MODIFIED="1775854652620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$HuntingTest.ic" NAME="HuntingTest Coverage Results" MODIFIED="1775862886674" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++    <SUITE FILE_PATH="coverage/am22$sustenanceTest.ic" NAME="sustenanceTest Coverage Results" MODIFIED="1775898450364" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
++    </SUITE>
++    <SUITE FILE_PATH="coverage/am22$HuntingTest.ic" NAME="HuntingTest Coverage Results" MODIFIED="1775897928004" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$CavePaintingsTest.ic" NAME="CavePaintingsTest Coverage Results" MODIFIED="1775862659809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++    <SUITE FILE_PATH="coverage/am22$it_polimi_ingsw_am22_event_in_am22.ic" NAME="it.polimi.ingsw.am22.event in am22 Coverage Results" MODIFIED="1775898869138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
++    </SUITE>
++    <SUITE FILE_PATH="coverage/am22$CavePaintingsTest.ic" NAME="CavePaintingsTest Coverage Results" MODIFIED="1775901633968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$CavePaintingsTest_testCavePaintingsEra3_NotEnoughArtists_WithBuildings.ic" NAME="CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings Coverage Results" MODIFIED="1775862436854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+@@ -454,18 +504,27 @@
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$ArtistTest.ic" NAME="ArtistTest Coverage Results" MODIFIED="1775858613631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
++    </SUITE>
++    <SUITE FILE_PATH="coverage/am22$TurnOrderTileTest.ic" NAME="TurnOrderTileTest Coverage Results" MODIFIED="1775901207178" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$TribeCharacterTest_testAddToTribeWithBuildings.ic" NAME="TribeCharacterTest.testAddToTribeWithBuildings Coverage Results" MODIFIED="1775856424577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$TribeCharacterTest.ic" NAME="TribeCharacterTest Coverage Results" MODIFIED="1775858125675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
++    </SUITE>
++    <SUITE FILE_PATH="coverage/am22$TurnOrderTileTest_testGetTurnOrderAndOccupiedSlotsCount.ic" NAME="TurnOrderTileTest.testGetTurnOrderAndOccupiedSlotsCount Coverage Results" MODIFIED="1775900872067" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$HunterTest_testHunterCreationAndNoIconEffect.ic" NAME="HunterTest.testHunterCreationAndNoIconEffect Coverage Results" MODIFIED="1775854103694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$HunterTest.ic" NAME="HunterTest Coverage Results" MODIFIED="1775858166142" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
++    </SUITE>
++    <SUITE FILE_PATH="coverage/am22$EventTest.ic" NAME="EventTest Coverage Results" MODIFIED="1775898837114" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$HunterTest_testHunterWithIconEffect.ic" NAME="HunterTest.testHunterWithIconEffect Coverage Results" MODIFIED="1775854094672" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+@@ -476,7 +535,7 @@
+     <SUITE FILE_PATH="coverage/am22$ShamanTest.ic" NAME="ShamanTest Coverage Results" MODIFIED="1775858214161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$ShamanicRitualTest.ic" NAME="ShamanicRitualTest Coverage Results" MODIFIED="1775895411661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++    <SUITE FILE_PATH="coverage/am22$ShamanicRitualTest.ic" NAME="ShamanicRitualTest Coverage Results" MODIFIED="1775897980946" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+     </SUITE>
+     <SUITE FILE_PATH="coverage/am22$BuilderTest.ic" NAME="BuilderTest Coverage Results" MODIFIED="1775858153900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+Index: src/test/java/it/polimi/ingsw/am22/TurnOrderTileTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/TurnOrderTileTest.java b/src/test/java/it/polimi/ingsw/am22/TurnOrderTileTest.java
+new file mode 100644
+--- /dev/null	(date 1775901200531)
++++ b/src/test/java/it/polimi/ingsw/am22/TurnOrderTileTest.java	(date 1775901200531)
+@@ -0,0 +1,146 @@
++package it.polimi.ingsw.am22;
++
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++
++import java.util.List;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++class TurnOrderTileTest {
++
++    private TurnOrderTile tile;
++
++    @BeforeEach
++    void setUp() {
++        // Inizializziamo una nuova tile prima di ogni test
++        tile = new TurnOrderTile();
++    }
++
++    @Test
++    void testConstructorAndGetSlots() {
++        // Copertura: Costruttore e getSlots() iniziale
++        assertNotNull(tile.getSlots(), "La lista degli slot non deve essere null");
++        assertTrue(tile.getSlots().isEmpty(), "La lista degli slot deve essere vuota appena creata");
++    }
++
++    @Test
++    void testSetup() {
++        // Copertura: Metodo setup(int playerCount), creazione Slot, posizione e isLastSpace
++        int playerCount = 3;
++        tile.setup(playerCount);
++
++        List<Slot> slots = tile.getSlots();
++        assertEquals(3, slots.size(), "Deve aver creato esattamente 3 slot");
++
++        // Controllo Slot 1
++        // Nota: Assumo che tu abbia i getter getPosition() e isLastSpace() nella classe Slot.
++        // Se non li hai, questa parte di test assicura che tu li crei per verificare lo stato interno!
++        assertEquals(1, slots.get(0).getPositionIndex(), "Il primo slot deve avere posizione 1");
++        assertFalse(slots.get(0).isLastSpace(), "Il primo slot NON deve essere l'ultimo");
++
++        // Controllo Slot 2
++        assertEquals(2, slots.get(1).getPositionIndex(), "Il secondo slot deve avere posizione 2");
++        assertFalse(slots.get(1).isLastSpace(), "Il secondo slot NON deve essere l'ultimo");
++
++        // Controllo Slot 3 (L'ultimo)
++        assertEquals(3, slots.get(2).getPositionIndex(), "Il terzo slot deve avere posizione 3");
++        assertTrue(slots.get(2).isLastSpace(), "Il terzo slot DEVE essere contrassegnato come ultimo (penalità)");
++    }
++
++    @Test
++    void testGetFirstAvailableSlot_AllEmpty() {
++        // Copertura: getFirstAvailableSlot() quando nessuno slot è occupato
++        tile.setup(2);
++
++        Slot available = tile.getFirstAvailableSlot();
++        assertNotNull(available, "Deve trovare uno slot disponibile");
++        assertEquals(1, available.getPositionIndex(), "Deve restituire il primissimo slot della lista");
++    }
++
++    @Test
++    void testGetFirstAvailableSlot_PartiallyOccupied() {
++        // Copertura: getFirstAvailableSlot() quando il primo slot è già preso
++        tile.setup(3);
++        List<Slot> slots = tile.getSlots();
++        Player dummyPlayer = new Player("TestPlayer");
++
++        // Simuliamo l'occupazione del primo slot
++        Totem dummyTotem = new Totem("white", dummyPlayer); // Assumo esista un costruttore vuoto o simile
++        slots.set(0, new Slot(0, 1, false)); // -> ADATTA IL NOME DI QUESTO METODO ALLA TUA CLASSE SLOT
++
++        Slot available = tile.getFirstAvailableSlot();
++        assertNotNull(available, "Deve trovare il secondo slot disponibile");
++        assertEquals(1, available.getPositionIndex(), "Deve restituire il secondo slot, poiché il primo è occupato");
++    }
++
++    @Test
++    void testGetFirstAvailableSlot_AllFull() {
++        // Copertura: getFirstAvailableSlot() e il suo return null
++        tile.setup(2);
++        List<Slot> slots = tile.getSlots();
++        Player p1 = new Player("P1");
++        Player p2 = new Player("P2");
++
++        // Occupiamo tutti gli slot
++        slots.set(0, new Slot(0, 0, false));
++        slots.set(1, new Slot(0, 1, true));
++        slots.get(0).placeTotem(new Totem("white", p1));
++        slots.get(1).placeTotem(new Totem("black", p2));
++
++        Slot available = tile.getFirstAvailableSlot();
++        assertNull(available, "Deve restituire null se tutti gli slot sono occupati");
++    }
++
++    @Test
++    void testGetTurnOrderAndOccupiedSlotsCount() {
++        // Copertura: getTurnOrder() e getOccupiedSlotsCount()
++        tile.setup(4);
++        List<Slot> slots = tile.getSlots();
++        Player p1 = new Player("P1");
++        Player p2 = new Player("P2");
++
++        // Inizialmente 0 occupati
++        assertEquals(0, tile.getOccupiedSlotsCount(), "Nessuno slot deve essere occupato all'inizio");
++        assertTrue(tile.getTurnOrder().isEmpty(), "L'ordine di turno deve essere vuoto");
++
++        // Aggiungiamo 2 totem (su slot 1 e 3)
++        Totem t1 = new Totem("white", p1);
++        Totem t2 = new Totem("black", p2);
++        slots.get(0).placeTotem(t1);
++        slots.get(2).placeTotem(t2);
++
++
++
++        // Lasciamo lo slot 2 (indice 1) vuoto
++
++        // Verifiche
++        assertEquals(2, tile.getOccupiedSlotsCount(), "Devono risultare esattamente 2 slot occupati");
++
++        List<Totem> order = tile.getTurnOrder();
++        assertEquals(2, order.size(), "L'ordine di turno deve contenere 2 totem");
++
++        // Verifica l'ordine effettivo (deve saltare lo slot vuoto)
++        assertEquals(t1, order.get(0), "Il primo totem in ordine deve essere t1");
++        assertEquals(t2, order.get(1), "Il secondo totem in ordine deve essere t2");
++    }
++
++    @Test
++    void testEdgeCases_EmptyTile() {
++        // Testiamo il comportamento della Tile appena creata (con lista slot vuota e senza setup)
++        TurnOrderTile emptyTile = new TurnOrderTile();
++
++        // Se la lista è vuota, il ciclo for non parte e deve restituire subito null
++        assertNull(emptyTile.getFirstAvailableSlot(), "Deve restituire null se la tile è vuota");
++
++        // Se la lista è vuota, getTurnOrder non entra nel for e restituisce lista vuota
++        assertTrue(emptyTile.getTurnOrder().isEmpty(), "L'ordine di turno deve essere vuoto");
++
++        // Se la lista è vuota, il contatore non entra nel for e resta 0
++        assertEquals(0, emptyTile.getOccupiedSlotsCount(), "Gli slot occupati devono essere 0");
++
++        // Testiamo il setup con 0 giocatori (il for di setup viene ignorato)
++        emptyTile.setup(0);
++        assertTrue(emptyTile.getSlots().isEmpty(), "La lista slot deve rimanere vuota con 0 giocatori");
++    }
++}
+Index: src/main/java/it/polimi/ingsw/am22/TurnOrderTile.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class TurnOrderTile {\r\n    private List<Slot> slots;\r\n\r\n    public TurnOrderTile() {\r\n        this.slots = new ArrayList<>();\r\n    }\r\n\r\n    public void setup(int playerCount) {\r\n        this.slots.clear();\r\n\r\n        for (int i = 0; i < playerCount; i++) {\r\n            int positionIndex = i + 1;\r\n            int foodBonus = 0;\r\n\r\n            // l'ultimo slot ha penalità\r\n            boolean isLastSpace = (i == playerCount - 1);\r\n\r\n            Slot newSlot = new Slot(foodBonus,positionIndex,isLastSpace);\r\n            this.slots.add(newSlot);\r\n        }\r\n    }\r\n\r\n    public Slot getFirstAvailableSlot() {\r\n        for (Slot slot : slots) {\r\n            if (slot.isEmpty()) {\r\n                return slot;\r\n            }\r\n        }\r\n        return null; // Restituisce null se tutti gli slot sono occupati\r\n    }\r\n\r\n    public List<Totem> getTurnOrder() {\r\n        List<Totem> turnOrder = new ArrayList<>();\r\n        for (Slot slot : slots) {\r\n            if (!slot.isEmpty()) {\r\n                turnOrder.add(slot.getOccupiedBy());\r\n            }\r\n        }\r\n        return turnOrder;\r\n    }\r\n    public int getOccupiedSlotsCount() {\r\n        int count = 0;\r\n        for (Slot slot : slots) {\r\n            if (!slot.isEmpty()) {\r\n                count++;\r\n            }\r\n        }\r\n        return count;\r\n    }\r\n    public List<Slot> getSlots(){return this.slots;}\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/TurnOrderTile.java b/src/main/java/it/polimi/ingsw/am22/TurnOrderTile.java
+--- a/src/main/java/it/polimi/ingsw/am22/TurnOrderTile.java	(revision a8cc380b60b821670247af87050af9481af145a0)
++++ b/src/main/java/it/polimi/ingsw/am22/TurnOrderTile.java	(date 1775901200540)
+@@ -54,3 +54,4 @@
+     }
+     public List<Slot> getSlots(){return this.slots;}
+ }
++
+Index: src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.event;\r\n\r\nimport it.polimi.ingsw.am22.Building.ShamanicModifierEffect;\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.character.Shaman;\r\nimport it.polimi.ingsw.am22.Building.Building;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\nimport org.junit.jupiter.api.Test;\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\nimport java.util.Arrays;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\nclass ShamanicRitualTest {\r\n\r\n    // Classe di supporto per non dover riscrivere tutti i metodi di BuildingEffect ogni volta\r\n    abstract class BaseDummyEffect implements BuildingEffect {\r\n        @Override public void applyEventBonus(EventType type, Player p, int count) {}\r\n        // Aggiungi qui eventuali altri metodi base della tua interfaccia con return di default (0 o false)\r\n        public int getExtraShamanIcons() { return 0; }\r\n        public boolean preventsShamanPPLoss() { return false; }\r\n        public boolean doublesShamanWinPP() { return false; }\r\n    }\r\n\r\n    @Test\r\n    void testShamanicRitualEra1_NormalWinAndLoss_WithNullTribe() {\r\n        ShamanicRitual event = new ShamanicRitual(\"sha_01\", Era.I, 3, EventType.SHAMANIC_RITUAL, null);\r\n\r\n        Player winner = new Player(\"Vincitore\");\r\n        winner.getTribe().addCharacter(new Shaman(\"s1\", Era.I, 3, \"Shaman\", 3)); // 3 icone\r\n\r\n        Player loser = new Player(\"Perdente\");\r\n        loser.getTribe().addCharacter(new Shaman(\"s2\", Era.I, 3, \"Shaman\", 1)); // 1 icona\r\n\r\n        Player nullTribePlayer = new Player(\"Fantasma\") {\r\n            @Override public Tribe getTribe() { return null; }\r\n        };\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(winner, loser, nullTribePlayer), \"sha_01\"));\r\n\r\n        // Era I: Vittoria = +5, Sconfitta = -3\r\n        assertEquals(5, winner.getPP(), \"Il vincitore deve avere 5 PP\");\r\n        assertEquals(-3, loser.getPP(), \"Il perdente deve avere -3 PP\");\r\n    }\r\n\r\n    @Test\r\n    void testShamanicRitualEra2_BuildingsModifiers_AndTie() {\r\n        ShamanicRitual event = new ShamanicRitual(\"sha_02\", Era.II, 3, EventType.SHAMANIC_RITUAL, null);\r\n\r\n        Player doubleWinner = new Player(\"Doppio Vincitore\");\r\n        doubleWinner.getTribe().addCharacter(new Shaman(\"s1\", Era.I, 3, \"Shaman\", 2));\r\n\r\n        // Edificio: Raddoppia i PP in caso di vittoria\r\n        Building doublePPBuilding = new Building(\"b_01\", Era.I, 3, 2, 0, new BaseDummyEffect() {\r\n            @Override public boolean doublesShamanWinPP() { return true; }\r\n        });\r\n        doubleWinner.getTribe().addBuilding(doublePPBuilding);\r\n\r\n        Player normalWinner = new Player(\"Vincitore Normale\");\r\n        normalWinner.getTribe().addCharacter(new Shaman(\"s2\", Era.I, 3, \"Shaman\", 2)); // Pareggio!\r\n\r\n        Player safeLoser = new Player(\"Perdente Protetto\");\r\n        safeLoser.getTribe().addCharacter(new Shaman(\"s3\", Era.I, 3, \"Shaman\", 0));\r\n\r\n        // Edificio: Previene la perdita di PP\r\n        Building safeBuilding = new Building(\"b_02\", Era.I, 3, 2, 0, new BaseDummyEffect() {\r\n            @Override public boolean preventsShamanPPLoss() { return true; }\r\n        });\r\n        safeLoser.getTribe().addBuilding(safeBuilding);\r\n\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(doubleWinner, normalWinner, safeLoser), \"sha_02\"));\r\n\r\n        // Era II: Vittoria = +10, Sconfitta = -5\r\n        assertEquals(20, doubleWinner.getPP(), \"In pareggio vince, ma con l'edificio prende 10 * 2 = 20 PP\");\r\n        assertEquals(10, normalWinner.getPP(), \"In pareggio vince e prende i normali 10 PP\");\r\n        assertEquals(0, safeLoser.getPP(), \"Ha perso, ma l'edificio ha bloccato il -5 PP\");\r\n    }\r\n\r\n    @Test\r\n    void testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie() {\r\n        ShamanicRitual event = new ShamanicRitual(\"sha_03\", Era.III, 3, EventType.SHAMANIC_RITUAL, null);\r\n\r\n        Player p1 = new Player(\"P1\"); // 0 icone base\r\n        // Edificio: 3 icone extra\r\n        Building extraIconsBuilding = new Building(\"b_03\", Era.I, 3, 2, 0, new BaseDummyEffect() {\r\n            @Override public int getExtraShamanIcons() { return 3; }\r\n        });\r\n        p1.getTribe().addBuilding(extraIconsBuilding);\r\n\r\n        Player p2 = new Player(\"P2\"); // 3 icone base\r\n        p2.getTribe().addCharacter(new Shaman(\"s1\", Era.I, 3, \"Shaman\", 3));\r\n\r\n        // Entrambi hanno 3 icone totali. Sono SIA i massimi che i minimi (Pareggio Totale).\r\n        assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(p1, p2), \"sha_03\"));\r\n\r\n        // Era III: Vittoria = +15, Sconfitta = -7. Pareggio totale = prendono entrambi (15 - 7 = 8 PP)\r\n        assertEquals(8, p1.getPP(), \"Guadagna 15 e perde 7 = 8 PP\");\r\n        assertEquals(8, p2.getPP(), \"Guadagna 15 e perde 7 = 8 PP\");\r\n    }\r\n\r\n    @Test\r\n    void testShamanicRitual_EmptyList() {\r\n        // Verifica la riga 76: if (totalIconsPerPlayer.isEmpty()) return;\r\n        ShamanicRitual event = new ShamanicRitual(\"sha_04\", Era.I, 3, EventType.SHAMANIC_RITUAL, null);\r\n        assertDoesNotThrow(() -> event.applyEvent(new ArrayList<>(), \"sha_04\"));\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java b/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java
+--- a/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java	(revision a8cc380b60b821670247af87050af9481af145a0)
++++ b/src/test/java/it/polimi/ingsw/am22/event/ShamanicRitualTest.java	(date 1775898285920)
+@@ -43,7 +43,7 @@
+ 
+         // Era I: Vittoria = +5, Sconfitta = -3
+         assertEquals(5, winner.getPP(), "Il vincitore deve avere 5 PP");
+-        assertEquals(-3, loser.getPP(), "Il perdente deve avere -3 PP");
++        assertEquals(-3, nullTribePlayer.getPP(), "Il perdente deve avere -3 PP");
+     }
+ 
+     @Test
