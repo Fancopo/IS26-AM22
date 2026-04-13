@@ -8,12 +8,12 @@ import it.polimi.ingsw.am22.character.CharacterType;
 
 import java.util.List;
 
-public class Hunting implements EventEffect {
+public class Hunting extends Event implements EventEffect {
 
     private Era era;
 
-    public Hunting(Era era) {
-        this.era = era;
+    public Hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+        super(id, era, minPlayers, EventType.HUNTING, eventEffect);
     }
 
     @Override

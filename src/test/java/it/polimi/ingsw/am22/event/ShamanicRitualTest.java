@@ -30,10 +30,10 @@ class ShamanicRitualTest {
         ShamanicRitual event = new ShamanicRitual("sha_01", Era.I, 3, EventType.SHAMANIC_RITUAL, null);
 
         Player winner = new Player("Vincitore");
-        winner.getTribe().addCharacter(new Shaman("s1", Era.I, 3, "Shaman", 3)); // 3 icone
+        winner.getTribe().addCharacter(new Shaman("s1", Era.I, 3, 3)); // 3 icone
 
         Player loser = new Player("Perdente");
-        loser.getTribe().addCharacter(new Shaman("s2", Era.I, 3, "Shaman", 1)); // 1 icona
+        loser.getTribe().addCharacter(new Shaman("s2", Era.I, 3, 1)); // 1 icona
 
         Player nullTribePlayer = new Player("Fantasma") {
             @Override public Tribe getTribe() { return null; }
@@ -51,7 +51,7 @@ class ShamanicRitualTest {
         ShamanicRitual event = new ShamanicRitual("sha_02", Era.II, 3, EventType.SHAMANIC_RITUAL, null);
 
         Player doubleWinner = new Player("Doppio Vincitore");
-        doubleWinner.getTribe().addCharacter(new Shaman("s1", Era.I, 3, "Shaman", 2));
+        doubleWinner.getTribe().addCharacter(new Shaman("s1", Era.I, 3, 2));
 
         // Edificio: Raddoppia i PP in caso di vittoria
         Building doublePPBuilding = new Building("b_01", Era.I, 3, 2, 0, new BaseDummyEffect() {
@@ -60,10 +60,10 @@ class ShamanicRitualTest {
         doubleWinner.getTribe().addBuilding(doublePPBuilding);
 
         Player normalWinner = new Player("Vincitore Normale");
-        normalWinner.getTribe().addCharacter(new Shaman("s2", Era.I, 3, "Shaman", 2)); // Pareggio!
+        normalWinner.getTribe().addCharacter(new Shaman("s2", Era.I, 3,  2)); // Pareggio!
 
         Player safeLoser = new Player("Perdente Protetto");
-        safeLoser.getTribe().addCharacter(new Shaman("s3", Era.I, 3, "Shaman", 0));
+        safeLoser.getTribe().addCharacter(new Shaman("s3", Era.I, 3, 0));
 
         // Edificio: Previene la perdita di PP
         Building safeBuilding = new Building("b_02", Era.I, 3, 2, 0, new BaseDummyEffect() {
@@ -91,8 +91,7 @@ class ShamanicRitualTest {
         p1.getTribe().addBuilding(extraIconsBuilding);
 
         Player p2 = new Player("P2"); // 3 icone base
-        p2.getTribe().addCharacter(new Shaman("s1", Era.I, 3, "Shaman", 3));
-
+        p2.getTribe().addCharacter(new Shaman("s1", Era.I, 3, 3));
         // Entrambi hanno 3 icone totali. Sono SIA i massimi che i minimi (Pareggio Totale).
         assertDoesNotThrow(() -> event.applyEvent(Arrays.asList(p1, p2), "sha_03"));
 

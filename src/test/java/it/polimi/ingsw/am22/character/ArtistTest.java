@@ -12,7 +12,7 @@ class ArtistTest {
     void testArtistCreationAndEffect() {
         // 1. Istanziamo l'oggetto Artist reale usando il tuo costruttore.
         // I parametri sono: id, era, minPlayers, characterType
-        Artist artist = new Artist();
+        Artist artist = new Artist("art_01", Era.I, 3);
 
         // Verifichiamo che l'istanza sia stata creata correttamente (copre il costruttore)
         assertNotNull(artist, "L'istanza di Artist non dovrebbe essere null");

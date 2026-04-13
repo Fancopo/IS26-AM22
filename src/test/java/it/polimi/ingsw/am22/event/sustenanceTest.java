@@ -51,9 +51,9 @@ class sustenanceTest {
         p1.addFood(5);
 
         // Aggiungiamo 3 personaggi normali (es. BUILDER, o qualsiasi cosa non sia COLLECTOR)
-        p1.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.BUILDER));
-        p1.getTribe().addCharacter(new TribeCharacter("c2", Era.I, 3, CharacterType.BUILDER));
-        p1.getTribe().addCharacter(new TribeCharacter("c3", Era.I, 3, CharacterType.BUILDER));
+        p1.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.BUILDER, null));
+        p1.getTribe().addCharacter(new TribeCharacter("c2", Era.I, 3, CharacterType.BUILDER, null));
+        p1.getTribe().addCharacter(new TribeCharacter("c3", Era.I, 3, CharacterType.BUILDER, null));
 
         event.applyEvent(List.of(p1), "sust_01");
 
@@ -72,9 +72,9 @@ class sustenanceTest {
         p2.addFood(1); // Ha solo 1 cibo
 
         // Aggiungiamo 6 personaggi totali, di cui 1 COLLECTOR
-        p2.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.COLLECTOR)); // Sconto di 3
+        p2.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.COLLECTOR, null)); // Sconto di 3
         for(int i=0; i<5; i++) {
-            p2.getTribe().addCharacter(new TribeCharacter("c" + (i+2), Era.I, 3, CharacterType.BUILDER));
+            p2.getTribe().addCharacter(new TribeCharacter("c" + (i+2), Era.I, 3, CharacterType.BUILDER, null));
         }
 
         // Totale personaggi: 6. Sconto: 3 (1 Collector). Cibo da pagare = 6 - 3 = 3.
@@ -95,8 +95,8 @@ class sustenanceTest {
         // Parte con 0 cibo di default (nessuna addFood chiamata)
 
         // Aggiungiamo 2 personaggi normali
-        p3.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.BUILDER));
-        p3.getTribe().addCharacter(new TribeCharacter("c2", Era.I, 3, CharacterType.BUILDER));
+        p3.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.BUILDER, null));
+        p3.getTribe().addCharacter(new TribeCharacter("c2", Era.I, 3, CharacterType.BUILDER, null));
 
         // Aggiungiamo un edificio che dà 1 di sconto sul cibo
         Building foodBuilding = new Building("b1", Era.I, 3, 0, 0, new DummyBuildingEffect() {
@@ -124,7 +124,7 @@ class sustenanceTest {
         p4.addFood(2);
 
         // 1 Solo personaggio, ma è un COLLECTOR (Sconto = 3)
-        p4.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.COLLECTOR));
+        p4.getTribe().addCharacter(new TribeCharacter("c1", Era.I, 3, CharacterType.COLLECTOR, null));
 
         // Cibo richiesto = max(0, 1 - 3) = 0. Non deve pagare nulla.
         event.applyEvent(List.of(p4), "sust_04");

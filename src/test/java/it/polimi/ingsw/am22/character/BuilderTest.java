@@ -12,7 +12,7 @@ class BuilderTest {
     void testBuilderCreationGettersAndEffect() {
         // 1. Istanziamo l'oggetto Builder.
         // Oltre ai parametri standard, passiamo uno sconto cibo (es. 2) e i PP (es. 3)
-        Builder builder = new Builder(2, 3);
+        Builder builder = new Builder("build_01", Era.I, 3, 2, 3);
 
         // Verifichiamo che l'istanza sia stata creata (copre il costruttore)
         assertNotNull(builder, "L'istanza di Builder non dovrebbe essere null");

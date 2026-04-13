@@ -123,7 +123,7 @@ public class CardJsonLoader {
             EventType eventType = EventType.valueOf(node.get("eventType").asText());
 
             return switch (eventType) {
-                case HUNTING -> new hunting(
+                case HUNTING -> new Hunting(
                         id,
                         era,
                         minPlayers,

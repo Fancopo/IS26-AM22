@@ -16,7 +16,7 @@ class huntingTest {
 
     @Test
     void testHuntingEra1_NoHunters_AndNullTribe() {
-        Hunting event = new Hunting(Era.I);
+        Hunting event = new Hunting("hunt_01", Era.I, 3, EventType.HUNTING, null);
 
         Player normalPlayer = new Player("Christian");
         // Non aggiungiamo Cacciatori. Si aspetta 0 Cibo e 0 PP.
@@ -36,12 +36,12 @@ class huntingTest {
 
     @Test
     void testHuntingEra2_WithHunters_AndBuildings() {
-        Hunting event = new Hunting(Era.II);
+        Hunting event = new Hunting("hunt_01", Era.II, 3, EventType.HUNTING, null);
         Player player = new Player("Christian");
 
         // Aggiungiamo 2 Cacciatori
-        player.getTribe().addCharacter(new Hunter("h1", Era.I, 3, "Hunter", false));
-        player.getTribe().addCharacter(new Hunter("h2", Era.I, 3, "Hunter", true));
+        player.getTribe().addCharacter(new Hunter("h1", Era.I, 3, false));
+        player.getTribe().addCharacter(new Hunter("h2", Era.I, 3, true));
 
         // Aggiungiamo un Edificio per testare il ciclo 'for' interno in sicurezza
         BuildingEffect dummyEffect = new BuildingEffect() {
@@ -61,13 +61,13 @@ class huntingTest {
 
     @Test
     void testHuntingEra3_CalculatesPPCorrectly() {
-        Hunting event = new Hunting(Era.III);
+        Hunting event = new Hunting("hunt_01", Era.III, 3, EventType.HUNTING, null);
         Player player = new Player("Christian");
 
         // Aggiungiamo 3 Cacciatori
-        player.getTribe().addCharacter(new Hunter("h1", Era.I, 3, "Hunter", false));
-        player.getTribe().addCharacter(new Hunter("h2", Era.I, 3, "Hunter", false));
-        player.getTribe().addCharacter(new Hunter("h3", Era.I, 3, "Hunter", false));
+        player.getTribe().addCharacter(new Hunter("h1", Era.I, 3, false));
+        player.getTribe().addCharacter(new Hunter("h2", Era.I, 3, false));
+        player.getTribe().addCharacter(new Hunter("h3", Era.I, 3, false));
 
         assertDoesNotThrow(() -> event.applyEvent(List.of(player), "hunt_03"));
 
