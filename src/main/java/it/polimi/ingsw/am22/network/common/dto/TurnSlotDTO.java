@@ -1,8 +1,8 @@
-package it.polimi.ingsw.am22.network.common.view;
+package it.polimi.ingsw.am22.network.common.dto;
 
 import java.io.Serializable;
 
-public record TurnSlotView(
+public record TurnSlotDTO(
         int positionIndex,
         int foodBonus,
         boolean lastSpace,
