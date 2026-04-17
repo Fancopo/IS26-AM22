@@ -15,7 +15,7 @@ import it.polimi.ingsw.am22.controller.GameController;
  * Architecture flow:
  * Game (Model) -> notifies -> GameController (Controller) -> updates -> GameView (View)
  */
-public class GameView implements GameObserver {
+/* public class GameView implements GameObserver {
     
     private final GameController controller;
     private GameController.GameSnapshot currentSnapshot;
@@ -119,3 +119,4 @@ public class GameView implements GameObserver {
         // In a real implementation, you'd track the listener reference
     }
 }
+/*
