@@ -1,19 +1,19 @@
-package it.polimi.ingsw.am22.network.common.view;
+package it.polimi.ingsw.am22.network.common.dto;
 
 import java.io.Serializable;
 import java.util.List;
 
-public record PlayerView(
+public record PlayerDTO(
         String nickname,
         String totemColor,
         int prestigePoints,
         int food,
         int projectedFinalPrestigePoints,
         boolean active,
-        List<CardView> tribeCharacters,
-        List<CardView> buildings
+        List<CardDTO> tribeCharacters,
+        List<CardDTO> buildings
 ) implements Serializable {
-    public PlayerView {
+    public PlayerDTO {
         tribeCharacters = tribeCharacters == null ? List.of() : List.copyOf(tribeCharacters);
         buildings = buildings == null ? List.of() : List.copyOf(buildings);
     }

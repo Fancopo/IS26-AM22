@@ -1,8 +1,8 @@
-package it.polimi.ingsw.am22.network.common.view;
+package it.polimi.ingsw.am22.network.common.dto;
 
 import java.io.Serializable;
 
-public record CardView(
+public record CardDTO(
         String id,
         String category,
         String detailType,
