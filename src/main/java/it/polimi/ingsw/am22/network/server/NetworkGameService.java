@@ -6,18 +6,18 @@ import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.response.*;
 import it.polimi.ingsw.am22.network.common.message.request.*;
-import it.polimi.ingsw.am22.network.common.view.GameStateView;
-import it.polimi.ingsw.am22.network.common.view.LobbyStateView;
+import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
+import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 
 public class NetworkGameService {
     private final GameController gameController;
     private final VirtualView virtualView;
-    private final ModelViewMapper mapper;
+    private final ModelDtoMapper mapper;
 
     public NetworkGameService(GameController gameController) {
         this.gameController = gameController;
         this.virtualView = new VirtualView();
-        this.mapper = new ModelViewMapper();
+        this.mapper = new ModelDtoMapper();
     }
 
     public VirtualView getVirtualView() {
@@ -137,7 +137,7 @@ public class NetworkGameService {
 
     private void publishStateChange(boolean wasStarted) {
         if (!wasStarted && gameController.hasStarted()) {
-            GameStateView state = mapper.toGameState(gameController.getGame());
+            GameStateDTO state = mapper.toGameState(gameController.getGame());
             virtualView.broadcast(new GameStartedMessage(state));
             virtualView.broadcast(new GameStateMessage(state));
             maybeBroadcastEndGame(state);
@@ -149,7 +149,7 @@ public class NetworkGameService {
     }
 
     private void broadcastLobbyState() {
-        LobbyStateView lobbyState = mapper.toLobbyState(gameController);
+        LobbyStateDTO lobbyState = mapper.toLobbyState(gameController);
         virtualView.broadcast(new LobbyStateMessage(lobbyState));
     }
 
@@ -157,12 +157,12 @@ public class NetworkGameService {
         if (!gameController.hasStarted()) {
             return;
         }
-        GameStateView state = mapper.toGameState(gameController.getGame());
+        GameStateDTO state = mapper.toGameState(gameController.getGame());
         virtualView.broadcast(new GameStateMessage(state));
         maybeBroadcastEndGame(state);
     }
 
-    private void maybeBroadcastEndGame(GameStateView state) {
+    private void maybeBroadcastEndGame(GameStateDTO state) {
         if (!gameController.getGame().isGameEnded()) {
             return;
         }
