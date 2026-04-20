@@ -37,14 +37,14 @@ public class ModelDtoMapper {
         Player activePlayer = game.getActivePlayer();
 
         List<PlayerDTO> players = game.getPlayers().stream()
-                .map(player -> toPlayerView(player, activePlayer))
+                .map(player -> toPlayerDTO(player, activePlayer))
                 .toList();
 
-        List<CardDTO> upperRow = board.getUpperRow().stream().map(this::toCardView).toList();
-        List<CardDTO> lowerRow = board.getLowerRow().stream().map(this::toCardView).toList();
-        List<OfferTileDTO> offerTrack = board.getOfferTrack().stream().map(this::toOfferTileView).toList();
+        List<CardDTO> upperRow = board.getUpperRow().stream().map(this::toCardDTO).toList();
+        List<CardDTO> lowerRow = board.getLowerRow().stream().map(this::toCardDTO).toList();
+        List<OfferTileDTO> offerTrack = board.getOfferTrack().stream().map(this::toOfferTileDTO).toList();
         List<TurnSlotDTO> turnOrder = board.getTurnOrderTile().getSlots().stream()
-                .map(this::toTurnSlotView)
+                .map(this::toTurnSlotDTO)
                 .sorted(Comparator.comparingInt(TurnSlotDTO::positionIndex))
                 .toList();
 
@@ -61,7 +61,7 @@ public class ModelDtoMapper {
         );
     }
 
-    public WinnerDTO toWinnerView(Player winner) {
+    public WinnerDTO toWinnerDTO(Player winner) {
         return new WinnerDTO(
                 winner.getNickname(),
                 Optional.ofNullable(winner.getTotem()).map(Totem::getColor).orElse(null),
@@ -70,7 +70,7 @@ public class ModelDtoMapper {
         );
     }
 
-    private PlayerDTO toPlayerView(Player player, Player activePlayer) {
+    private PlayerDTO toPlayerDTO(Player player, Player activePlayer) {
         Tribe tribe = player.getTribe();
 
         return new PlayerDTO(
@@ -80,12 +80,12 @@ public class ModelDtoMapper {
                 player.getFood(),
                 resolveFinalPP(player),
                 player == activePlayer,
-                tribe.getMembers().stream().map(this::toCardView).toList(),
-                tribe.getBuildings().stream().map(this::toCardView).toList()
+                tribe.getMembers().stream().map(this::toCardDTO).toList(),
+                tribe.getBuildings().stream().map(this::toCardDTO).toList()
         );
     }
 
-    private CardDTO toCardView(Card card) {
+    private CardDTO toCardDTO(Card card) {
         return new CardDTO(
                 card.getId(),
                 categoryOf(card),
@@ -96,7 +96,7 @@ public class ModelDtoMapper {
         );
     }
 
-    private OfferTileDTO toOfferTileView(OfferTile tile) {
+    private OfferTileDTO toOfferTileDTO(OfferTile tile) {
         return new OfferTileDTO(
                 tile.getLetter(),
                 tile.getUpperCardsToTake(),
@@ -106,7 +106,7 @@ public class ModelDtoMapper {
         );
     }
 
-    private TurnSlotDTO toTurnSlotView(Slot slot) {
+    private TurnSlotDTO toTurnSlotDTO(Slot slot) {
         return new TurnSlotDTO(
                 slot.getPositionIndex(),
                 slot.getFoodBonus(),
