@@ -5,7 +5,7 @@ import it.polimi.ingsw.am22.model.*;
 import it.polimi.ingsw.am22.model.Building.Building;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;
 import it.polimi.ingsw.am22.model.event.Event;
-import it.polimi.ingsw.am22.network.common.view.*;
+import it.polimi.ingsw.am22.network.common.dto.*;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-public class ModelViewMapper {
+public class ModelDtoMapper {
 
-    public LobbyStateView toLobbyState(GameController gameController) {
-        List<LobbyPlayerView> players = gameController.getLobbyPlayers().stream()
-                .map(player -> new LobbyPlayerView(
+    public LobbyStateDTO toLobbyState(GameController gameController) {
+        List<LobbyPlayerDTO> players = gameController.getLobbyPlayers().stream()
+                .map(player -> new LobbyPlayerDTO(
                         player.getNickname(),
                         Optional.ofNullable(player.getTotem()).map(Totem::getColor).orElse(null),
                         player.getNickname().equals(gameController.getHostNickname())
                 ))
                 .toList();
 
-        return new LobbyStateView(
+        return new LobbyStateDTO(
                 gameController.getHostNickname(),
                 gameController.getExpectedPlayers(),
                 gameController.hasStarted(),
@@ -32,23 +32,23 @@ public class ModelViewMapper {
         );
     }
 
-    public GameStateView toGameState(Game game) {
+    public GameStateDTO toGameState(Game game) {
         Board board = game.getBoard();
         Player activePlayer = game.getActivePlayer();
 
-        List<PlayerView> players = game.getPlayers().stream()
+        List<PlayerDTO> players = game.getPlayers().stream()
                 .map(player -> toPlayerView(player, activePlayer))
                 .toList();
 
-        List<CardView> upperRow = board.getUpperRow().stream().map(this::toCardView).toList();
-        List<CardView> lowerRow = board.getLowerRow().stream().map(this::toCardView).toList();
-        List<OfferTileView> offerTrack = board.getOfferTrack().stream().map(this::toOfferTileView).toList();
-        List<TurnSlotView> turnOrder = board.getTurnOrderTile().getSlots().stream()
+        List<CardDTO> upperRow = board.getUpperRow().stream().map(this::toCardView).toList();
+        List<CardDTO> lowerRow = board.getLowerRow().stream().map(this::toCardView).toList();
+        List<OfferTileDTO> offerTrack = board.getOfferTrack().stream().map(this::toOfferTileView).toList();
+        List<TurnSlotDTO> turnOrder = board.getTurnOrderTile().getSlots().stream()
                 .map(this::toTurnSlotView)
-                .sorted(Comparator.comparingInt(TurnSlotView::positionIndex))
+                .sorted(Comparator.comparingInt(TurnSlotDTO::positionIndex))
                 .toList();
 
-        return new GameStateView(
+        return new GameStateDTO(
                 game.getCurrentRound(),
                 String.valueOf(game.getCurrentEra()),
                 game.getCurrentPhaseName(),
@@ -61,8 +61,8 @@ public class ModelViewMapper {
         );
     }
 
-    public WinnerView toWinnerView(Player winner) {
-        return new WinnerView(
+    public WinnerDTO toWinnerView(Player winner) {
+        return new WinnerDTO(
                 winner.getNickname(),
                 Optional.ofNullable(winner.getTotem()).map(Totem::getColor).orElse(null),
                 resolveFinalPP(winner),
@@ -70,10 +70,10 @@ public class ModelViewMapper {
         );
     }
 
-    private PlayerView toPlayerView(Player player, Player activePlayer) {
+    private PlayerDTO toPlayerView(Player player, Player activePlayer) {
         Tribe tribe = player.getTribe();
 
-        return new PlayerView(
+        return new PlayerDTO(
                 player.getNickname(),
                 Optional.ofNullable(player.getTotem()).map(Totem::getColor).orElse(null),
                 player.getPP(),
@@ -85,8 +85,8 @@ public class ModelViewMapper {
         );
     }
 
-    private CardView toCardView(Card card) {
-        return new CardView(
+    private CardDTO toCardView(Card card) {
+        return new CardDTO(
                 card.getId(),
                 categoryOf(card),
                 detailTypeOf(card),
@@ -96,8 +96,8 @@ public class ModelViewMapper {
         );
     }
 
-    private OfferTileView toOfferTileView(OfferTile tile) {
-        return new OfferTileView(
+    private OfferTileDTO toOfferTileView(OfferTile tile) {
+        return new OfferTileDTO(
                 tile.getLetter(),
                 tile.getUpperCardsToTake(),
                 tile.getLowerCardsToTake(),
@@ -106,8 +106,8 @@ public class ModelViewMapper {
         );
     }
 
-    private TurnSlotView toTurnSlotView(Slot slot) {
-        return new TurnSlotView(
+    private TurnSlotDTO toTurnSlotView(Slot slot) {
+        return new TurnSlotDTO(
                 slot.getPositionIndex(),
                 slot.getFoodBonus(),
                 slot.isLastSpace(),

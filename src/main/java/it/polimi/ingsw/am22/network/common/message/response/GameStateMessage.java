@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.network.common.message.response;
 
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
-import it.polimi.ingsw.am22.network.common.view.GameStateView;
+import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 
-public record GameStateMessage(GameStateView gameState) implements ServerMessage {
+public record GameStateMessage(GameStateDTO gameState) implements ServerMessage {
 }
