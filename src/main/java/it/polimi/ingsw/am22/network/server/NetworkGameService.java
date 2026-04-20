@@ -167,7 +167,7 @@ public class NetworkGameService {
             return;
         }
         Player winner = gameController.determineWinner();
-        virtualView.broadcast(new EndGameMessage(mapper.toWinnerView(winner), state));
+        virtualView.broadcast(new EndGameMessage(mapper.toWinnerDTO(winner), state));
     }
 
     private void bindExistingNicknameIfPresent(String nickname, ClientChannel channel) {
