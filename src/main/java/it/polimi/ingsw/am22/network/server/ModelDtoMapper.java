@@ -13,8 +13,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+/**
+ * Converte le classi del model nei DTO serializzabili del package
+ * {@code network.common.dto}.
+ *
+ * È l'unico punto in cui il layer di rete "legge" il model: tutto il resto
+ * (handler, VirtualView, ecc.) lavora solo sui DTO, così il model non
+ * viaggia mai in rete e non deve essere {@link java.io.Serializable}.
+ */
 public class ModelDtoMapper {
 
+    /**
+     * Produce lo snapshot della lobby a partire dal {@link GameController}.
+     *
+     * @param gameController controller da cui leggere i dati di lobby
+     * @return DTO della lobby
+     */
     public LobbyStateDTO toLobbyState(GameController gameController) {
         List<LobbyPlayerDTO> players = gameController.getLobbyPlayers().stream()
                 .map(player -> new LobbyPlayerDTO(
@@ -32,6 +46,12 @@ public class ModelDtoMapper {
         );
     }
 
+    /**
+     * Produce lo snapshot di gioco a partire dallo stato corrente del {@link Game}.
+     *
+     * @param game partita corrente
+     * @return DTO con giocatori, board e ordine di turno
+     */
     public GameStateDTO toGameState(Game game) {
         Board board = game.getBoard();
         Player activePlayer = game.getActivePlayer();
@@ -61,6 +81,12 @@ public class ModelDtoMapper {
         );
     }
 
+    /**
+     * Produce il DTO del giocatore vincitore.
+     *
+     * @param winner giocatore vincitore
+     * @return DTO con nickname, colore, punti finali e cibo residuo
+     */
     public WinnerDTO toWinnerDTO(Player winner) {
         return new WinnerDTO(
                 winner.getNickname(),
@@ -70,6 +96,7 @@ public class ModelDtoMapper {
         );
     }
 
+    /** Costruisce un {@link PlayerDTO} segnalando se il giocatore è quello di turno. */
     private PlayerDTO toPlayerDTO(Player player, Player activePlayer) {
         Tribe tribe = player.getTribe();
 
@@ -85,6 +112,7 @@ public class ModelDtoMapper {
         );
     }
 
+    /** Estrae categoria, tipo specifico ed era da una {@link Card}. */
     private CardDTO toCardDTO(Card card) {
         return new CardDTO(
                 card.getId(),
@@ -96,6 +124,7 @@ public class ModelDtoMapper {
         );
     }
 
+    /** Mappa una tessera offerta; {@code occupiedBy} è il nickname di chi la occupa. */
     private OfferTileDTO toOfferTileDTO(OfferTile tile) {
         return new OfferTileDTO(
                 tile.getLetter(),
@@ -106,6 +135,7 @@ public class ModelDtoMapper {
         );
     }
 
+    /** Mappa uno slot del tracciato turno; {@code occupiedBy} è il nickname di chi lo occupa. */
     private TurnSlotDTO toTurnSlotDTO(Slot slot) {
         return new TurnSlotDTO(
                 slot.getPositionIndex(),
@@ -115,6 +145,7 @@ public class ModelDtoMapper {
         );
     }
 
+    /** Risolve i punti prestigio finali; se il calcolo fallisce torna ai PP correnti. */
     private int resolveFinalPP(Player player) {
         try {
             return player.finalPP();
@@ -123,6 +154,7 @@ public class ModelDtoMapper {
         return player.getPP();
     }
 
+    /** Determina la macro-categoria di una carta (CHARACTER, BUILDING, EVENT, ...). */
     private String categoryOf(Card card) {
         if (card instanceof TribeCharacter) return "CHARACTER";
         if (card instanceof Building) return "BUILDING";
@@ -130,6 +162,7 @@ public class ModelDtoMapper {
         return card.getClass().getSimpleName().toUpperCase(Locale.ROOT);
     }
 
+    /** Determina il tipo specifico di una carta all'interno della sua categoria. */
     private String detailTypeOf(Card card) {
         if (card instanceof Building) return "BUILDING";
         if (card instanceof TribeCharacter tc) return String.valueOf(tc.getCharacterType());
@@ -137,6 +170,11 @@ public class ModelDtoMapper {
         return card.getClass().getSimpleName().toUpperCase(Locale.ROOT);
     }
 
+    /**
+     * Estrae il costo in cibo di una carta.
+     * Per gli edifici usa il metodo dedicato; per gli altri tipi cerca via reflection
+     * un eventuale {@code getFoodCost()}, così da non forzare un'interfaccia comune nel model.
+     */
     private Integer foodCostOf(Card card) {
         if (card instanceof Building building) return building.getFoodPrice();
         try {

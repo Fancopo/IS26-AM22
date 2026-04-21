@@ -6,6 +6,14 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Server TCP che accetta connessioni dai client via socket.
+ *
+ * Avvia un thread daemon dedicato all'accept loop: per ogni connessione
+ * accettata crea un {@link SocketClientHandler} e lo esegue su un
+ * {@link ExecutorService} cached così che più client possano essere
+ * serviti in parallelo.
+ */
 public class SocketGameServer implements AutoCloseable {
     private final int port;
     private final NetworkGameService gameService;
@@ -14,6 +22,12 @@ public class SocketGameServer implements AutoCloseable {
     private Thread acceptThread;
     private volatile boolean running;
 
+    /**
+     * Crea il server (non avvia la listening: serve {@link #start()}).
+     *
+     * @param port        porta TCP su cui ascoltare
+     * @param gameService servizio a cui inoltrare le richieste dei client
+     */
     public SocketGameServer(int port, NetworkGameService gameService) {
         this.port = port;
         this.gameService = gameService;
@@ -23,6 +37,12 @@ public class SocketGameServer implements AutoCloseable {
         this.running = false;
     }
 
+    /**
+     * Apre il {@link ServerSocket} e avvia l'accept thread in background.
+     * Idempotente: se già avviato non fa nulla.
+     *
+     * @throws IOException se non è possibile aprire il socket server
+     */
     public void start() throws IOException {
         if (running) {
             return;
@@ -34,6 +54,10 @@ public class SocketGameServer implements AutoCloseable {
         this.acceptThread.start();
     }
 
+    /**
+     * Loop di accettazione eseguito nell'accept thread. Per ogni connessione
+     * crea un handler e lo sottomette al pool di esecuzione.
+     */
     private void acceptLoop() {
         while (running) {
             try {
@@ -48,6 +72,7 @@ public class SocketGameServer implements AutoCloseable {
         }
     }
 
+    /** Ferma il server: chiude il server socket e spegne il pool dei worker. */
     @Override
     public void close() {
         running = false;
