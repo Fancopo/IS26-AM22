@@ -22,3 +22,7 @@ public interface ObservableServerConnection extends ServerConnection, AutoClosea
     @Override
     void close();
 }
+
+/** Facendo ObservableServerConnection extends AutoCloseable, le SocketServerConnection
+e RmiServerConnection diventano utilizzabili con try-with-resources:
+*/
