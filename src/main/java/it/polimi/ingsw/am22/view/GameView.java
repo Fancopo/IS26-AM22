@@ -2,7 +2,6 @@ package it.polimi.ingsw.am22.view;
 
 import it.polimi.ingsw.am22.model.Game;
 import it.polimi.ingsw.am22.model.GameObserver;
-import it.polimi.ingsw.am22.controller.GameController;
 
 /**
  * Example view implementation demonstrating the Observer pattern in MVC.

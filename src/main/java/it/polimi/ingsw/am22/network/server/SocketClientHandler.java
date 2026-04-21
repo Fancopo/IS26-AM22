@@ -10,6 +10,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * Handler server-side per un singolo client connesso via socket.
+ *
+ * Agisce come {@link ClientChannel} (per l'invio dei messaggi verso il client)
+ * e come {@link Runnable} (per il loop di lettura delle richieste in arrivo).
+ * Viene eseguito nel pool di {@link SocketGameServer}: un'istanza per client.
+ * In caso di errore di I/O notifica il servizio tramite
+ * {@link NetworkGameService#handleTransportDrop(ClientChannel)}.
+ */
 public class SocketClientHandler implements ClientChannel, Runnable {
     private final Socket socket;
     private final NetworkGameService gameService;
@@ -18,6 +27,13 @@ public class SocketClientHandler implements ClientChannel, Runnable {
     private volatile String boundNickname;
     private volatile boolean closed;
 
+    /**
+     * Costruisce l'handler e inizializza gli stream di I/O sul socket.
+     *
+     * @param socket      socket già connesso al client
+     * @param gameService servizio a cui inoltrare le richieste
+     * @throws IOException se non è possibile inizializzare gli stream
+     */
     public SocketClientHandler(Socket socket, NetworkGameService gameService) throws IOException {
         this.socket = socket;
         this.gameService = gameService;
@@ -28,6 +44,11 @@ public class SocketClientHandler implements ClientChannel, Runnable {
         this.closed = false;
     }
 
+    /**
+     * Loop di lettura: riceve {@link ClientRequest} dal client e le inoltra al servizio.
+     * Un payload non riconosciuto produce un {@link ErrorMessage}.
+     * Errori di I/O causano la notifica di transport drop al servizio.
+     */
     @Override
     public void run() {
         try {
@@ -52,6 +73,13 @@ public class SocketClientHandler implements ClientChannel, Runnable {
         }
     }
 
+    /**
+     * Invia un messaggio al client. È {@code synchronized} per evitare scritture
+     * concorrenti sullo stream condiviso.
+     *
+     * @param message messaggio da inviare
+     * @throws IllegalStateException se l'invio fallisce
+     */
     @Override
     public synchronized void send(ServerMessage message) {
         if (closed) {
@@ -66,6 +94,7 @@ public class SocketClientHandler implements ClientChannel, Runnable {
         }
     }
 
+    /** Chiude il socket sottostante in modo idempotente. */
     @Override
     public void close() {
         if (closed) {
