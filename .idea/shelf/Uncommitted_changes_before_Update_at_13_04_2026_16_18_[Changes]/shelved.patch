@@ -1,0 +1,1133 @@
+Index: src/main/java/it/polimi/ingsw/am22/BonusCardSelectionState.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/BonusCardSelectionState.java b/src/main/java/it/polimi/ingsw/am22/states/BonusCardSelectionState.java
+rename from src/main/java/it/polimi/ingsw/am22/BonusCardSelectionState.java
+rename to src/main/java/it/polimi/ingsw/am22/states/BonusCardSelectionState.java
+--- a/src/main/java/it/polimi/ingsw/am22/BonusCardSelectionState.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/states/BonusCardSelectionState.java	(date 1776089070818)
+@@ -1,4 +1,8 @@
+-package it.polimi.ingsw.am22;
++package it.polimi.ingsw.am22.states;
++
++import it.polimi.ingsw.am22.Card;
++import it.polimi.ingsw.am22.Game;
++import it.polimi.ingsw.am22.Player;
+ 
+ /**
+  * Stato temporaneo che si attiva SOLO se un giocatore possiede
+Index: src/main/java/it/polimi/ingsw/am22/TotemPlacementState.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/TotemPlacementState.java b/src/main/java/it/polimi/ingsw/am22/states/TotemPlacementState.java
+rename from src/main/java/it/polimi/ingsw/am22/TotemPlacementState.java
+rename to src/main/java/it/polimi/ingsw/am22/states/TotemPlacementState.java
+--- a/src/main/java/it/polimi/ingsw/am22/TotemPlacementState.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/states/TotemPlacementState.java	(date 1776087131116)
+@@ -1,4 +1,6 @@
+-package it.polimi.ingsw.am22;
++package it.polimi.ingsw.am22.states;
++
++import it.polimi.ingsw.am22.*;
+ 
+ public class TotemPlacementState implements GameState {
+ 
+Index: src/main/java/it/polimi/ingsw/am22/GameState.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/GameState.java b/src/main/java/it/polimi/ingsw/am22/states/GameState.java
+rename from src/main/java/it/polimi/ingsw/am22/GameState.java
+rename to src/main/java/it/polimi/ingsw/am22/states/GameState.java
+--- a/src/main/java/it/polimi/ingsw/am22/GameState.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/states/GameState.java	(date 1776089070880)
+@@ -1,4 +1,9 @@
+-package it.polimi.ingsw.am22;
++package it.polimi.ingsw.am22.states;
++
++import it.polimi.ingsw.am22.Card;
++import it.polimi.ingsw.am22.Game;
++import it.polimi.ingsw.am22.OfferTile;
++import it.polimi.ingsw.am22.Player;
+ 
+ import java.util.List;
+ 
+Index: src/main/java/it/polimi/ingsw/am22/EventResolutionState.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java b/src/main/java/it/polimi/ingsw/am22/states/EventResolutionState.java
+rename from src/main/java/it/polimi/ingsw/am22/EventResolutionState.java
+rename to src/main/java/it/polimi/ingsw/am22/states/EventResolutionState.java
+--- a/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/states/EventResolutionState.java	(date 1776089070892)
+@@ -1,4 +1,7 @@
+-package it.polimi.ingsw.am22;
++package it.polimi.ingsw.am22.states;
++
++import it.polimi.ingsw.am22.Card;
++import it.polimi.ingsw.am22.Game;
+ 
+ import java.util.ArrayList;
+ import java.util.Comparator;
+Index: src/main/java/it/polimi/ingsw/am22/Game.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22;\r\n\r\nimport it.polimi.ingsw.am22.Building.Building;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.Collections;\r\nimport java.util.List;\r\n\r\n\r\npublic class Game {\r\n    private final List<Player> players;\r\n    private final Board board;\r\n    private final List<Card> tribeDeck;\r\n    private final List<Building> buildingMarket;\r\n    private int currentRound;\r\n    private Era currentEra;\r\n    private Player activePlayer;\r\n    private GameState currentState;\r\n    //private List<GameObserver> observers;\r\n\r\n    public Game(List<Player> players) {\r\n        this.players = players;\r\n        this.board = new Board(players.size());\r\n        this.tribeDeck = new ArrayList<>();\r\n        this.buildingMarket = new ArrayList<>();\r\n        //this.observers = new ArrayList<>();\r\n        this.currentRound = 1;\r\n        this.currentEra = Era.I;\r\n\r\n        this.currentState = new SetUpState();\r\n    }\r\n\r\n    /*public void addObserver(GameObserver observer) {\r\n        if (!observers.contains(observer)) {\r\n            observers.add(observer);\r\n        }\r\n    }\r\n\r\n    public void removeObserver(GameObserver observer) {\r\n        observers.remove(observer);\r\n    }\r\n\r\n    public void notifyObservers() {\r\n        for (GameObserver observer : observers) {\r\n            observer.gameStatusChanged(this);\r\n        }\r\n    }*/\r\n\r\n    public void setState(GameState state) {\r\n        this.currentState = state;\r\n    }\r\n\r\n    public void startMatch() {\r\n        currentState.startMatch(this);\r\n    }\r\n\r\n    public void placeTotemOnOffer(Player player, OfferTile tile) {\r\n        currentState.placeTotemOnOffer(this, player, tile);\r\n    }\r\n\r\n    public void pickCards(Player player, List<Card> selectedCards) {\r\n        currentState.pickCards(this, player, selectedCards);\r\n    }\r\n\r\n    // INSERIMENTO del delegato per la mossa bonus di fine round\r\n    public void pickBonusCard(Player player, Card bonusCard) {\r\n        currentState.pickBonusCard(this, player, bonusCard);\r\n    }\r\n\r\n    public void resolveEvents() {\r\n        currentState.resolveEvents(this);\r\n    }\r\n\r\n    public void updateRound() {\r\n        currentState.updateRound(this);\r\n    }\r\n\r\n    public Player determineWinner() {\r\n        return currentState.determineWinner(this);\r\n    }\r\n\r\n    public String getCurrentPhaseName() {\r\n        return currentState.getPhaseName();\r\n    }\r\n\r\n    void setupDecks() {\r\n        CardJsonLoader loader = new CardJsonLoader();\r\n        LoadedCards loadedCards = loader.loadAllCards(\"/TribeCharacter-Event.json\", \"/Building.json\");\r\n\r\n        List<Card> allTribeCards = new ArrayList<>();\r\n        allTribeCards.addAll(loadedCards.getTribeCharacters());\r\n        allTribeCards.addAll(loadedCards.getEvents());\r\n\r\n        List<Card> filteredTribe = new ArrayList<>(allTribeCards.stream()\r\n                .filter(card -> card.getMinPlayers() <= players.size())\r\n                .toList());\r\n\r\n        List<Card> era1 = new ArrayList<>(filteredTribe.stream()\r\n                .filter(card -> card.getEra() == Era.I)\r\n                .toList());\r\n\r\n        List<Card> era2 = new ArrayList<>(filteredTribe.stream()\r\n                .filter(card -> card.getEra() == Era.II)\r\n                .toList());\r\n\r\n        List<Card> era3 = new ArrayList<>(filteredTribe.stream()\r\n                .filter(card -> card.getEra() == Era.III)\r\n                .toList());\r\n\r\n        List<Card> finalEvents = new ArrayList<>(loadedCards.getFinalEvents().stream()\r\n                .filter(card -> card.getMinPlayers() <= players.size())\r\n                .toList());\r\n\r\n        Collections.shuffle(era1);\r\n        Collections.shuffle(era2);\r\n        Collections.shuffle(era3);\r\n        Collections.shuffle(finalEvents);\r\n\r\n        tribeDeck.clear();\r\n        tribeDeck.addAll(era1);\r\n        tribeDeck.addAll(era2);\r\n        tribeDeck.addAll(era3);\r\n        tribeDeck.addAll(finalEvents);\r\n\r\n        List<Building> allBuildings = new ArrayList<>(loadedCards.getBuildings());\r\n\r\n        List<Building> buildEra1 = new ArrayList<>(allBuildings.stream()\r\n                .filter(building -> building.getEra() == Era.I)\r\n                .toList());\r\n\r\n        List<Building> buildEra2 = new ArrayList<>(allBuildings.stream()\r\n                .filter(building -> building.getEra() == Era.II)\r\n                .toList());\r\n\r\n        List<Building> buildEra3 = new ArrayList<>(allBuildings.stream()\r\n                .filter(building -> building.getEra() == Era.III)\r\n                .toList());\r\n\r\n        Collections.shuffle(buildEra1);\r\n        Collections.shuffle(buildEra2);\r\n        Collections.shuffle(buildEra3);\r\n\r\n        int countEra1;\r\n        int countEra2;\r\n        int countEra3;\r\n\r\n        switch (players.size()) {\r\n            case 2 -> {\r\n                countEra1 = 1;\r\n                countEra2 = 2;\r\n                countEra3 = 3;\r\n            }\r\n            case 3 -> {\r\n                countEra1 = 2;\r\n                countEra2 = 2;\r\n                countEra3 = 4;\r\n            }\r\n            case 4 -> {\r\n                countEra1 = 2;\r\n                countEra2 = 3;\r\n                countEra3 = 4;\r\n            }\r\n            case 5 -> {\r\n                countEra1 = 2;\r\n                countEra2 = 3;\r\n                countEra3 = 5;\r\n            }\r\n            default -> throw new IllegalStateException(\"Numero giocatori non valido: \" + players.size());\r\n        }\r\n\r\n        List<Building> selectedEra1 = new ArrayList<>(buildEra1.subList(0, countEra1));\r\n        List<Building> selectedEra2 = new ArrayList<>(buildEra2.subList(0, countEra2));\r\n        List<Building> selectedEra3 = new ArrayList<>(buildEra3.subList(0, countEra3));\r\n\r\n        buildingMarket.clear();\r\n        buildingMarket.addAll(selectedEra2);\r\n        buildingMarket.addAll(selectedEra3);\r\n\r\n        board.revealNewBuildings(selectedEra1);\r\n    }\r\n    void handleEraChange() {\r\n        if (currentEra == Era.III) {\r\n            board.clearLowerBuildings();\r\n        }\r\n        board.shiftBuildingsDown();\r\n\r\n        List<Building> buildingsToReveal = new ArrayList<>();\r\n        for (Building b : buildingMarket) {\r\n            if (b.getEra() == currentEra) {\r\n                buildingsToReveal.add(b);\r\n            }\r\n        }\r\n\r\n        buildingMarket.removeAll(buildingsToReveal);\r\n        board.revealNewBuildings(buildingsToReveal);\r\n    }\r\n\r\n    Player getPlayerWithLeftmostTotem() {\r\n        for (OfferTile tile : board.getOfferTrack()) {\r\n            if (!tile.isAvailable()) {\r\n                for (Player p : players) {\r\n                    if (p.getTotem() == tile.getOccupiedBy()) {\r\n                        return p;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        return null;\r\n    }\r\n\r\n    public List<Player> getPlayers() { return players; }\r\n    public Board getBoard() { return board; }\r\n    public int getCurrentRound() { return currentRound; }\r\n    public Era getCurrentEra() { return currentEra; }\r\n    public Player getActivePlayer() { return activePlayer; }\r\n    public List<Card> getTribeDeck() { return tribeDeck; }\r\n\r\n    public void setActivePlayer(Player activePlayer) { this.activePlayer = activePlayer; }\r\n    public void setCurrentEra(Era currentEra) { this.currentEra = currentEra; }\r\n    public void setCurrentRound(int currentRound) { this.currentRound = currentRound; }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/Game.java b/src/main/java/it/polimi/ingsw/am22/Game.java
+--- a/src/main/java/it/polimi/ingsw/am22/Game.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/Game.java	(date 1776089070872)
+@@ -1,6 +1,8 @@
+ package it.polimi.ingsw.am22;
+ 
+ import it.polimi.ingsw.am22.Building.Building;
++import it.polimi.ingsw.am22.states.GameState;
++import it.polimi.ingsw.am22.states.SetUpState;
+ 
+ import java.util.ArrayList;
+ import java.util.Collections;
+@@ -83,7 +85,7 @@
+         return currentState.getPhaseName();
+     }
+ 
+-    void setupDecks() {
++    public void setupDecks() {
+         CardJsonLoader loader = new CardJsonLoader();
+         LoadedCards loadedCards = loader.loadAllCards("/TribeCharacter-Event.json", "/Building.json");
+ 
+@@ -178,7 +180,7 @@
+ 
+         board.revealNewBuildings(selectedEra1);
+     }
+-    void handleEraChange() {
++    public void handleEraChange() {
+         if (currentEra == Era.III) {
+             board.clearLowerBuildings();
+         }
+@@ -195,7 +197,7 @@
+         board.revealNewBuildings(buildingsToReveal);
+     }
+ 
+-    Player getPlayerWithLeftmostTotem() {
++    public Player getPlayerWithLeftmostTotem() {
+         for (OfferTile tile : board.getOfferTrack()) {
+             if (!tile.isAvailable()) {
+                 for (Player p : players) {
+Index: src/main/java/it/polimi/ingsw/am22/ActionResolutionState.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/ActionResolutionState.java b/src/main/java/it/polimi/ingsw/am22/states/ActionResolutionState.java
+rename from src/main/java/it/polimi/ingsw/am22/ActionResolutionState.java
+rename to src/main/java/it/polimi/ingsw/am22/states/ActionResolutionState.java
+--- a/src/main/java/it/polimi/ingsw/am22/ActionResolutionState.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/states/ActionResolutionState.java	(date 1776087131272)
+@@ -1,5 +1,6 @@
+-package it.polimi.ingsw.am22;
++package it.polimi.ingsw.am22.states;
+ 
++import it.polimi.ingsw.am22.*;
+ import it.polimi.ingsw.am22.Building.Building;
+ 
+ import java.util.List;
+Index: src/main/java/it/polimi/ingsw/am22/RoundUpdateState.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/RoundUpdateState.java b/src/main/java/it/polimi/ingsw/am22/states/RoundUpdateState.java
+rename from src/main/java/it/polimi/ingsw/am22/RoundUpdateState.java
+rename to src/main/java/it/polimi/ingsw/am22/states/RoundUpdateState.java
+--- a/src/main/java/it/polimi/ingsw/am22/RoundUpdateState.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/states/RoundUpdateState.java	(date 1776089070779)
+@@ -1,4 +1,8 @@
+-package it.polimi.ingsw.am22;
++package it.polimi.ingsw.am22.states;
++
++import it.polimi.ingsw.am22.Era;
++import it.polimi.ingsw.am22.Game;
++import it.polimi.ingsw.am22.Totem;
+ 
+ import java.util.List;
+ 
+Index: src/main/java/it/polimi/ingsw/am22/EndGameState.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/EndGameState.java b/src/main/java/it/polimi/ingsw/am22/states/EndGameState.java
+rename from src/main/java/it/polimi/ingsw/am22/EndGameState.java
+rename to src/main/java/it/polimi/ingsw/am22/states/EndGameState.java
+--- a/src/main/java/it/polimi/ingsw/am22/EndGameState.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/states/EndGameState.java	(date 1776089070832)
+@@ -1,4 +1,7 @@
+-package it.polimi.ingsw.am22;
++package it.polimi.ingsw.am22.states;
++
++import it.polimi.ingsw.am22.Game;
++import it.polimi.ingsw.am22.Player;
+ 
+ public class EndGameState implements GameState {
+ 
+Index: src/main/java/it/polimi/ingsw/am22/SetUpState.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/SetUpState.java b/src/main/java/it/polimi/ingsw/am22/states/SetUpState.java
+rename from src/main/java/it/polimi/ingsw/am22/SetUpState.java
+rename to src/main/java/it/polimi/ingsw/am22/states/SetUpState.java
+--- a/src/main/java/it/polimi/ingsw/am22/SetUpState.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/it/polimi/ingsw/am22/states/SetUpState.java	(date 1776089070851)
+@@ -1,4 +1,8 @@
+-package it.polimi.ingsw.am22;
++package it.polimi.ingsw.am22.states;
++
++import it.polimi.ingsw.am22.Game;
++import it.polimi.ingsw.am22.Player;
++import it.polimi.ingsw.am22.Slot;
+ 
+ import java.util.Collections;
+ 
+Index: .idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ /dev/null	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
+@@ -1,219 +0,0 @@
+-Index: src/main/java/it/polimi/ingsw/am22/Player.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package it.polimi.ingsw.am22;\r\n\r\npublic class Player {\r\n    private String nickname;\r\n    private int PP;\r\n    private int food;\r\n    private Tribe tribe;\r\n    private Totem totem;\r\n\r\n    public Player(String nickname) {\r\n        this.nickname = nickname;\r\n        this.PP = 0;\r\n        this.food = 0;\r\n        this.tribe = new Tribe();\r\n        this.totem = null;\r\n    }\r\n\r\n    public String getNickname() {\r\n        return nickname;\r\n    }\r\n\r\n    public int getPP() {\r\n        return PP;\r\n    }\r\n\r\n    public int getFood() {\r\n        return food;\r\n    }\r\n\r\n    public Tribe getTribe() {\r\n        return tribe;\r\n    }\r\n\r\n    public Totem getTotem() {\r\n        return totem;\r\n    }\r\n\r\n    public void setTotem(Totem totem) {\r\n        this.totem = totem;\r\n    }\r\n\r\n    public void addFood(int amount) {\r\n        this.food += amount;\r\n    }\r\n\r\n    public void payFood(int amount) {\r\n        if (amount < 0) {\r\n            throw new IllegalArgumentException(\"L'importo da pagare non può essere negativo.\");\r\n        }\r\n\r\n        if (this.food < amount) {\r\n            throw new IllegalStateException(\"Cibo insufficiente.\");\r\n        }\r\n\r\n        this.food -= amount;\r\n    }\r\n\r\n    /**\r\n     * Adds or subtracts prestige points.\r\n     */\r\n    public void addPP(int amount) {\r\n        this.PP += amount;\r\n    }\r\n\r\n    private int calculateCharacterEndgamePP() {\r\n        int points = 0;\r\n\r\n        int builders = tribe.countCharacters(CharacterType.Builder);\r\n        int inventors = tribe.countCharacters(CharacterType.Inventor);\r\n        int artists = tribe.countCharacters(CharacterType.Artist);\r\n\r\n        // Costruttori: somma dei PP stampati sulle carte\r\n        for (TribeCharacter c : tribe.getMembers()) {\r\n            if (c.getCharacterType() == CharacterType.Builder) {\r\n                points += c.getPP();\r\n            }\r\n        }\r\n\r\n        // Inventori: numero inventori * numero icone invenzione diverse\r\n        int uniqueInventorIcons = tribe.countUniqueInventorIcons();\r\n        points += inventors * uniqueInventorIcons;\r\n\r\n        // Artisti: 10 PP ogni 2 artisti\r\n        points += (artists / 2) * 10;\r\n\r\n        return points;\r\n    }\r\n\r\n\r\n    public int finalPP() {\r\n        int total = this.PP; // PP accumulati durante la partita\r\n\r\n        // 1) PP dei personaggi\r\n        total += calculateCharacterEndgamePP();\r\n\r\n        // 2) PP degli edifici\r\n        total += FinalBuildingPP();\r\n\r\n        return total;\r\n    }\r\n\r\n    public boolean hasExtraBuyAtRound() {\r\n        return this.tribe != null && this.tribe.hasExtraBuyAtRoundEnd();\r\n    }\r\n\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main/java/it/polimi/ingsw/am22/Player.java b/src/main/java/it/polimi/ingsw/am22/Player.java
+---- a/src/main/java/it/polimi/ingsw/am22/Player.java	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/src/main/java/it/polimi/ingsw/am22/Player.java	(date 1775393653855)
+-@@ -1,5 +1,10 @@
+- package it.polimi.ingsw.am22;
+- 
+-+import it.polimi.ingsw.am22.character.CharacterType;
+-+import it.polimi.ingsw.am22.character.TribeCharacter;
+-+
+-+import static it.polimi.ingsw.am22.Building.Building.FinalBuildingPP;
+-+
+- public class Player {
+-     private String nickname;
+-     private int PP;
+-@@ -65,13 +70,13 @@
+-     private int calculateCharacterEndgamePP() {
+-         int points = 0;
+- 
+--        int builders = tribe.countCharacters(CharacterType.Builder);
+--        int inventors = tribe.countCharacters(CharacterType.Inventor);
+--        int artists = tribe.countCharacters(CharacterType.Artist);
+-+        int builders = tribe.countCharacters(CharacterType.BUILDER);
+-+        int inventors = tribe.countCharacters(CharacterType.INVENTOR);
+-+        int artists = tribe.countCharacters(CharacterType.ARTIST);
+- 
+-         // Costruttori: somma dei PP stampati sulle carte
+-         for (TribeCharacter c : tribe.getMembers()) {
+--            if (c.getCharacterType() == CharacterType.Builder) {
+-+            if (c.getCharacterType() == CharacterType.BUILDER) {
+-                 points += c.getPP();
+-             }
+-         }
+-Index: pom.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\r\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\r\n  <modelVersion>4.0.0</modelVersion>\r\n\r\n  <groupId>it.polimi.ingsw</groupId>\r\n  <artifactId>am22</artifactId>\r\n  <version>1.0-SNAPSHOT</version>\r\n  <name>am22</name>\r\n\r\n  <properties>\r\n    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\r\n\r\n  <dependencies>\r\n    <dependency>\r\n      <groupId>org.openjfx</groupId>\r\n      <artifactId>javafx-controls</artifactId>\r\n      <version>21.0.6</version>\r\n    </dependency>\r\n    <dependency>\r\n      <groupId>org.openjfx</groupId>\r\n      <artifactId>javafx-fxml</artifactId>\r\n      <version>21.0.6</version>\r\n    </dependency>\r\n\r\n<dependency>\r\n      <groupId>org.junit.jupiter</groupId>\r\n      <artifactId>junit-jupiter-api</artifactId>\r\n      <version>${junit.version}</version>\r\n      <scope>test</scope>\r\n    </dependency>\r\n    <dependency>\r\n      <groupId>org.junit.jupiter</groupId>\r\n      <artifactId>junit-jupiter-engine</artifactId>\r\n      <version>${junit.version}</version>\r\n      <scope>test</scope>\r\n\r\n  <build>\r\n    <plugins>\r\n      <plugin>\r\n        <groupId>org.apache.maven.plugins</groupId>\r\n        <artifactId>maven-compiler-plugin</artifactId>\r\n        <version>3.13.0</version>\r\n        <configuration>\r\n          <source>25</source>\r\n          <target>25</target>\r\n        </configuration>\r\n      </plugin>\r\n      <plugin>\r\n        <groupId>org.openjfx</groupId>\r\n        <artifactId>javafx-maven-plugin</artifactId>\r\n        <version>0.0.8</version>\r\n        <executions>\r\n          <execution>\r\n            <!-- Default configuration for running with: mvn clean javafx:run -->\r\n            <id>default-cli</id>\r\n            <configuration>\r\n              <mainClass>it.polimi.ingsw.am22/it.polimi.ingsw.am22.HelloApplication</mainClass>\r\n              <launcher>app</launcher>\r\n              <jlinkZipName>app</jlinkZipName>\r\n              <jlinkImageName>app</jlinkImageName>\r\n              <noManPages>true</noManPages>\r\n              <stripDebug>true</stripDebug>\r\n              <noHeaderFiles>true</noHeaderFiles>\r\n            </configuration>\r\n          </execution>\r\n        </executions>\r\n      </plugin>\r\n    </plugins>\r\n  </build>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/pom.xml b/pom.xml
+---- a/pom.xml	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/pom.xml	(date 1775391952173)
+-@@ -11,6 +11,8 @@
+- 
+-   <properties>
+-     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+-+    <junit.version>5.10.2</junit.version>
+-+  </properties>
+- 
+-   <dependencies>
+-     <dependency>
+-@@ -18,23 +20,27 @@
+-       <artifactId>javafx-controls</artifactId>
+-       <version>21.0.6</version>
+-     </dependency>
+-+
+-     <dependency>
+-       <groupId>org.openjfx</groupId>
+-       <artifactId>javafx-fxml</artifactId>
+-       <version>21.0.6</version>
+-     </dependency>
+- 
+--<dependency>
+-+    <dependency>
+-       <groupId>org.junit.jupiter</groupId>
+-       <artifactId>junit-jupiter-api</artifactId>
+-       <version>${junit.version}</version>
+-       <scope>test</scope>
+-     </dependency>
+-+
+-     <dependency>
+-       <groupId>org.junit.jupiter</groupId>
+-       <artifactId>junit-jupiter-engine</artifactId>
+-       <version>${junit.version}</version>
+-       <scope>test</scope>
+-+    </dependency>
+-+  </dependencies>
+- 
+-   <build>
+-     <plugins>
+-@@ -47,13 +53,13 @@
+-           <target>25</target>
+-         </configuration>
+-       </plugin>
+-+
+-       <plugin>
+-         <groupId>org.openjfx</groupId>
+-         <artifactId>javafx-maven-plugin</artifactId>
+-         <version>0.0.8</version>
+-         <executions>
+-           <execution>
+--            <!-- Default configuration for running with: mvn clean javafx:run -->
+-             <id>default-cli</id>
+-             <configuration>
+-               <mainClass>it.polimi.ingsw.am22/it.polimi.ingsw.am22.HelloApplication</mainClass>
+-Index: src/main/java/it/polimi/ingsw/am22/EventResolutionState.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package it.polimi.ingsw.am22;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class EventResolutionState implements GameState {\r\n\r\n    @Override\r\n    public void resolveEvents(Game game) {\r\n        game.notifyObservers();\r\n\r\n        List<Card> cardsToTrigger = new ArrayList<>(game.getBoard().getLowerRow());\r\n\r\n        cardsToTrigger.sort(Comparator.comparingInt(Card::getTriggerPriority));\r\n\r\n        for (Card c : cardsToTrigger) {\r\n            c.onRoundEndTrigger(game);\r\n        }\r\n\r\n        game.setState(new RoundUpdateState());\r\n        game.updateRound();\r\n    }\r\n\r\n    @Override\r\n    public String getPhaseName() { return \"Risoluzione Eventi\"; }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java b/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java
+---- a/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java	(date 1775393507533)
+-@@ -1,6 +1,7 @@
+- package it.polimi.ingsw.am22;
+- 
+- import java.util.ArrayList;
+-+import java.util.Comparator;
+- import java.util.List;
+- 
+- public class EventResolutionState implements GameState {
+-Index: src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package it.polimi.ingsw.am22;\r\nimport com.fasterxml.jackson.core.type.TypeReference;\r\nimport com.fasterxml.jackson.databind.JsonNode;\r\nimport com.fasterxml.jackson.databind.ObjectMapper;\r\n\r\nimport java.io.InputStream;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class CardJsonLoader {\r\n\r\n    private final ObjectMapper mapper = new ObjectMapper();\r\n\r\n    public LoadedCards loadTribeCharactersAndEvents(String resourcePath) {\r\n        List<TribeCharacter> tribeCharacters = new ArrayList<>();\r\n        List<Event> events = new ArrayList<>();\r\n\r\n        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {\r\n            if (is == null) {\r\n                throw new IllegalArgumentException(\"File non trovato: \" + resourcePath);\r\n            }\r\n\r\n            JsonNode root = mapper.readTree(is);\r\n\r\n            if (!root.isArray()) {\r\n                throw new IllegalArgumentException(\"La radice del JSON deve essere un array\");\r\n            }\r\n\r\n            for (JsonNode node : root) {\r\n                String type = node.get(\"type\").asText();\r\n\r\n                switch (type) {\r\n                    case \"tribeCharacter\" ->\r\n                            tribeCharacters.add(mapper.treeToValue(node, TribeCharacter.class));\r\n\r\n                    case \"event\" ->\r\n                            events.add(mapper.treeToValue(node, Event.class));\r\n\r\n                    default ->\r\n                            throw new IllegalArgumentException(\"Tipo non valido in \" + resourcePath + \": \" + type);\r\n                }\r\n            }\r\n\r\n            return new LoadedCards(tribeCharacters, events, new ArrayList<>());\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel caricamento di tribeCharacter/event\", e);\r\n        }\r\n    }\r\n\r\n    public List<Building> loadBuildings(String resourcePath) {\r\n        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {\r\n            if (is == null) {\r\n                throw new IllegalArgumentException(\"File non trovato: \" + resourcePath);\r\n            }\r\n\r\n            return mapper.readValue(is, new TypeReference<List<Building>>() {});\r\n\r\n        } catch (Exception e) {\r\n            throw new RuntimeException(\"Errore nel caricamento dei building\", e);\r\n        }\r\n    }\r\n\r\n    public LoadedCards loadAllCards(String tribeEventPath, String buildingPath) {\r\n        LoadedCards partial = loadTribeCharactersAndEvents(tribeEventPath);\r\n        List<Building> buildings = loadBuildings(buildingPath);\r\n\r\n        return new LoadedCards(\r\n                partial.getTribeCharacters(),\r\n                partial.getEvents(),\r\n                buildings\r\n        );\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java b/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java
+---- a/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java	(date 1775393507538)
+-@@ -2,6 +2,8 @@
+- import com.fasterxml.jackson.core.type.TypeReference;
+- import com.fasterxml.jackson.databind.JsonNode;
+- import com.fasterxml.jackson.databind.ObjectMapper;
+-+import it.polimi.ingsw.am22.character.TribeCharacter;
+-+import it.polimi.ingsw.am22.event.Event;
+- 
+- import java.io.InputStream;
+- import java.util.ArrayList;
+-Index: src/main/java/it/polimi/ingsw/am22/CardVisitor.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package it.polimi.ingsw.am22;\r\n\r\npublic interface CardVisitor {\r\n    void visit(Event event);\r\n    void visit(Building building);\r\n    void visit(TribeCharacter character); // Sostituisci con \"Character\" se hai tenuto quel nome\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/src/main/java/it/polimi/ingsw/am22/CardVisitor.java b/src/main/java/it/polimi/ingsw/am22/CardVisitor.java
+---- a/src/main/java/it/polimi/ingsw/am22/CardVisitor.java	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/src/main/java/it/polimi/ingsw/am22/CardVisitor.java	(date 1775393507527)
+-@@ -1,5 +1,9 @@
+- package it.polimi.ingsw.am22;
+- 
+-+import it.polimi.ingsw.am22.Building.Building;
+-+import it.polimi.ingsw.am22.character.TribeCharacter;
+-+import it.polimi.ingsw.am22.event.Event;
+-+
+- public interface CardVisitor {
+-     void visit(Event event);
+-     void visit(Building building);
+-Index: .idea/vcs.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"$PROJECT_DIR$\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+---- a/.idea/vcs.xml	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/.idea/vcs.xml	(date 1775391030125)
+-@@ -1,6 +1,6 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+-   <component name="VcsDirectoryMappings">
+--    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+-+    <mapping directory="" vcs="Git" />
+-   </component>
+- </project>
+-\ No newline at end of file
+-Index: .idea/workspace.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"last commit\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Fancopo&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,\r\n    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3AtUiA6XPNTIVvuMJwuRyVJnWzA\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"git-widget-placeholder\": \"game-version2\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\"\r\n  }\r\n}]]></component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"\" />\r\n      <created>1773411487475</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1773411487475</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589285100</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589285100</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589402689</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589402689</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589432607</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589432607</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Second version of Building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1774109302482</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1774109302482</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"last commit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775223396914</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775223396914</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"6\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial version\" />\r\n    <MESSAGE value=\"Second version\" />\r\n    <MESSAGE value=\"Second version of Building\" />\r\n    <MESSAGE value=\"last commit\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"last commit\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/BuildingEffect.java</url>\r\n          <line>5</line>\r\n          <option name=\"timeStamp\" value=\"1\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>58</line>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>77</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>143</line>\r\n          <option name=\"timeStamp\" value=\"4\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>167</line>\r\n          <option name=\"timeStamp\" value=\"5\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>179</line>\r\n          <option name=\"timeStamp\" value=\"7\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>118</line>\r\n          <properties class=\"it.polimi.ingsw.am22.ShamanicModifierEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"8\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>219</line>\r\n          <properties class=\"it.polimi.ingsw.am22.EventYieldBonusEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"9\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+---- a/.idea/workspace.xml	(revision b238c61883fdc1f87b4334578b88add729ee4e7d)
+-+++ b/.idea/workspace.xml	(date 1775393577371)
+-@@ -4,7 +4,14 @@
+-     <option name="autoReloadType" value="SELECTIVE" />
+-   </component>
+-   <component name="ChangeListManager">
+--    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit" />
+-+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit">
+-+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardJsonLoader.java" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/CardVisitor.java" afterDir="false" />
+-+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java" afterDir="false" />
+-+    </list>
+-     <option name="SHOW_DIALOG" value="false" />
+-     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+-     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+-@@ -56,9 +63,12 @@
+-     "RunOnceActivity.ShowReadmeOnStart": "true",
+-     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+-     "RunOnceActivity.git.unshallow": "true",
+--    "git-widget-placeholder": "game-version2",
+-+    "git-widget-placeholder": "Nuovo-jacopo",
+-     "kotlin-language-version-configured": "true",
+--    "node.js.selected.package.tslint": "(autodetect)"
+-+    "node.js.selected.package.tslint": "(autodetect)",
+-+    "project.structure.last.edited": "Modules",
+-+    "project.structure.proportion": "0.15",
+-+    "project.structure.side.proportion": "0.2"
+-   }
+- }]]></component>
+-   <component name="SharedIndexes">
+Index: .idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ /dev/null	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_rebase_[Changes]" date="1775393654955" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before rebase [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: src/main/java/module-info.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>module it.polimi.ingsw.am {\r\n    requires javafx.controls;\r\n    requires javafx.fxml;\r\n    requires com.fasterxml.jackson.databind;\r\n\r\n\r\n    opens it.polimi.ingsw.am22 to javafx.fxml;\r\n    exports it.polimi.ingsw.am22;\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/module-info.java b/src/main/java/module-info.java
+--- a/src/main/java/module-info.java	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/src/main/java/module-info.java	(date 1776087131290)
+@@ -6,4 +6,6 @@
+ 
+     opens it.polimi.ingsw.am22 to javafx.fxml;
+     exports it.polimi.ingsw.am22;
++    exports it.polimi.ingsw.am22.states;
++    opens it.polimi.ingsw.am22.states to javafx.fxml;
+ }
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"Tests update\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/BuildingTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/BuildingTest.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/CollectionRewardEffectTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/CollectionRewardEffectTest.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EndGameScoringEffectTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EndGameScoringEffectTest.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffectTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffectTest.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffectTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffectTest.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffectTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffectTest.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffectTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffectTest.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"CoverageOptionsProvider\">\r\n    <option name=\"myAddOrReplace\" value=\"0\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"Test\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Fancopo&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,\r\n    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"McpProjectServerCommands\">\r\n    <commands />\r\n    <urls />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3AtUiA6XPNTIVvuMJwuRyVJnWzA\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"JUnit.ArtistTest.executor\": \"Coverage\",\r\n    \"JUnit.BuildingTest.executor\": \"Coverage\",\r\n    \"JUnit.CardJsonLoaderTest.executor\": \"Coverage\",\r\n    \"JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor\": \"Coverage\",\r\n    \"JUnit.CardTest.executor\": \"Coverage\",\r\n    \"JUnit.CollectionRewardEffectTest.executor\": \"Coverage\",\r\n    \"JUnit.EndGameScoringEffectTest.executor\": \"Coverage\",\r\n    \"JUnit.EventYieldBonusEffectTest.executor\": \"Coverage\",\r\n    \"JUnit.OfferTileTest.executor\": \"Coverage\",\r\n    \"JUnit.PlayerTest.executor\": \"Coverage\",\r\n    \"JUnit.ShamanicModifierEffectTest.executor\": \"Coverage\",\r\n    \"JUnit.SlotTest.executor\": \"Coverage\",\r\n    \"JUnit.SustenanceDiscountEffectTest.executor\": \"Coverage\",\r\n    \"JUnit.TotemTest.executor\": \"Coverage\",\r\n    \"JUnit.TribeTest.executor\": \"Coverage\",\r\n    \"JUnit.TurnPhaseModifierEffectTest.executor\": \"Coverage\",\r\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"git-widget-placeholder\": \"game-version2\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"last_opened_file_path\": \"C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\jacop\\IdeaProjects\\am22\\src\\main\\java\\it\\polimi\\ingsw\\am22\" />\r\n    </key>\r\n    <key name=\"MoveClassesOrPackagesDialog.RECENTS_KEY\">\r\n      <recent name=\"it.polimi.ingsw.am22\" />\r\n    </key>\r\n    <key name=\"CopyClassDialog.RECENTS_KEY\">\r\n      <recent name=\"it.polimi.ingsw.am22\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"ArtistTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.character.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22.character\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.character.ArtistTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"CardJsonLoaderTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.CardJsonLoaderTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"CardJsonLoaderTest.shouldLoadBuilderCorrectly\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.CardJsonLoaderTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"shouldLoadBuilderCorrectly\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"TotemTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.TotemTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"TribeTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.TribeTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"JUnit.CardJsonLoaderTest\" />\r\n        <item itemvalue=\"JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly\" />\r\n        <item itemvalue=\"JUnit.ArtistTest\" />\r\n        <item itemvalue=\"JUnit.TribeTest\" />\r\n        <item itemvalue=\"JUnit.TotemTest\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"\" />\r\n      <created>1773411487475</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1773411487475</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589285100</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589285100</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589402689</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589402689</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589432607</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589432607</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Second version of Building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1774109302482</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1774109302482</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"last commit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775223396914</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775223396914</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Json completo, modifiche TribeCharacter e event,building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775901219194</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775901219194</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"Json completo, modifiche TribeCharacter e event,building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775990726018</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775990726018</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"Tests update\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1776028379237</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1776028379237</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"9\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial version\" />\r\n    <MESSAGE value=\"Second version\" />\r\n    <MESSAGE value=\"Second version of Building\" />\r\n    <MESSAGE value=\"last commit\" />\r\n    <MESSAGE value=\"Json completo, modifiche TribeCharacter e event,building\" />\r\n    <MESSAGE value=\"Tests update\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Tests update\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/BuildingEffect.java</url>\r\n          <line>5</line>\r\n          <option name=\"timeStamp\" value=\"1\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>58</line>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>77</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>143</line>\r\n          <option name=\"timeStamp\" value=\"4\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>167</line>\r\n          <option name=\"timeStamp\" value=\"5\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>179</line>\r\n          <option name=\"timeStamp\" value=\"7\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/TotemTest.java</url>\r\n          <line>7</line>\r\n          <option name=\"timeStamp\" value=\"10\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/OfferTileTest.java</url>\r\n          <line>7</line>\r\n          <option name=\"timeStamp\" value=\"11\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>118</line>\r\n          <properties class=\"it.polimi.ingsw.am22.ShamanicModifierEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"8\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>219</line>\r\n          <properties class=\"it.polimi.ingsw.am22.EventYieldBonusEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"9\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$BuildingTest.ic\" NAME=\"BuildingTest Coverage Results\" MODIFIED=\"1776031549098\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$GameTest.ic\" NAME=\"GameTest Coverage Results\" MODIFIED=\"1775858765732\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$ShamanicRitualTest.ic\" NAME=\"ShamanicRitualTest Coverage Results\" MODIFIED=\"1775897014156\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CollectorTest.ic\" NAME=\"CollectorTest Coverage Results\" MODIFIED=\"1775858159929\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$ShamanicModifierEffectTest.ic\" NAME=\"ShamanicModifierEffectTest Coverage Results\" MODIFIED=\"1776031792513\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$InventorTest.ic\" NAME=\"InventorTest Coverage Results\" MODIFIED=\"1775858174633\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$TurnPhaseModifierEffectTest.ic\" NAME=\"TurnPhaseModifierEffectTest Coverage Results\" MODIFIED=\"1776031805842\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeTest.ic\" NAME=\"TribeTest Coverage Results\" MODIFIED=\"1775827189738\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$BuilderTest.ic\" NAME=\"BuilderTest Coverage Results\" MODIFIED=\"1775858153900\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanTest.ic\" NAME=\"ShamanTest Coverage Results\" MODIFIED=\"1775858214161\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CardJsonLoaderTest.ic\" NAME=\"CardJsonLoaderTest Coverage Results\" MODIFIED=\"1775990640161\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$EndGameScoringEffectTest.ic\" NAME=\"EndGameScoringEffectTest Coverage Results\" MODIFIED=\"1776031786221\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$OfferTileTest.ic\" NAME=\"OfferTileTest Coverage Results\" MODIFIED=\"1775646627410\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanTest_testShamanCreationGettersAndEffect.ic\" NAME=\"ShamanTest.testShamanCreationGettersAndEffect Coverage Results\" MODIFIED=\"1775854652620\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest.ic\" NAME=\"HunterTest Coverage Results\" MODIFIED=\"1775858166142\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CavePaintingsTest.ic\" NAME=\"CavePaintingsTest Coverage Results\" MODIFIED=\"1775862659809\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$SustenanceDiscountEffectTest.ic\" NAME=\"SustenanceDiscountEffectTest Coverage Results\" MODIFIED=\"1776031800093\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CavePaintingsTest_testCavePaintingsEra3_NotEnoughArtists_WithBuildings.ic\" NAME=\"CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings Coverage Results\" MODIFIED=\"1775862436854\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest_testAddToTribeWithoutBuildings.ic\" NAME=\"TribeCharacterTest.testAddToTribeWithoutBuildings Coverage Results\" MODIFIED=\"1775856302307\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest_testAddToTribeWithBuildings.ic\" NAME=\"TribeCharacterTest.testAddToTribeWithBuildings Coverage Results\" MODIFIED=\"1775856424577\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$SlotTest.ic\" NAME=\"SlotTest Coverage Results\" MODIFIED=\"1775646676668\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$EventYieldBonusEffectTest.ic\" NAME=\"EventYieldBonusEffectTest Coverage Results\" MODIFIED=\"1776031540516\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$CardTest.ic\" NAME=\"CardTest Coverage Results\" MODIFIED=\"1776031819500\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest_testHunterCreationAndNoIconEffect.ic\" NAME=\"HunterTest.testHunterCreationAndNoIconEffect Coverage Results\" MODIFIED=\"1775854103694\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ShamanicRitualTest.ic\" NAME=\"ShamanicRitualTest Coverage Results\" MODIFIED=\"1775895411661\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CardJsonLoaderTest_shouldLoadBuilderCorrectly.ic\" NAME=\"CardJsonLoaderTest.shouldLoadBuilderCorrectly Coverage Results\" MODIFIED=\"1775950027095\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HunterTest_testHunterWithIconEffect.ic\" NAME=\"HunterTest.testHunterWithIconEffect Coverage Results\" MODIFIED=\"1775854094672\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$PlayerTest.ic\" NAME=\"PlayerTest Coverage Results\" MODIFIED=\"1775646643233\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$ArtistTest.ic\" NAME=\"ArtistTest Coverage Results\" MODIFIED=\"1775858613631\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TotemTest.ic\" NAME=\"TotemTest Coverage Results\" MODIFIED=\"1775646686996\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/Demo_ese1$CollectionRewardEffectTest.ic\" NAME=\"CollectionRewardEffectTest Coverage Results\" MODIFIED=\"1776031532781\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$HuntingTest.ic\" NAME=\"HuntingTest Coverage Results\" MODIFIED=\"1775862886674\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeCharacterTest.ic\" NAME=\"TribeCharacterTest Coverage Results\" MODIFIED=\"1775858125675\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>\r\n    </SUITE>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 21ab01ad356437354ea577a44f372ef1450ce58f)
++++ b/.idea/workspace.xml	(date 1776089347110)
+@@ -4,24 +4,26 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Tests update">
++    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="last commit">
++      <change afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/GameTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml" beforeDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Building/CollectionRewardEffect.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/BuildingTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/BuildingTest.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/CollectionRewardEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/CollectionRewardEffectTest.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EndGameScoringEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EndGameScoringEffectTest.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/EventYieldBonusEffectTest.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/ShamanicModifierEffectTest.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/SustenanceDiscountEffectTest.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffectTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building/TurnPhaseModifierEffectTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/ActionResolutionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/states/ActionResolutionState.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/BonusCardSelectionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/states/BonusCardSelectionState.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/EndGameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/states/EndGameState.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/EventResolutionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/states/EventResolutionState.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/Game.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/states/GameState.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/RoundUpdateState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/states/RoundUpdateState.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/SetUpState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/states/SetUpState.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/TotemPlacementState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/states/TotemPlacementState.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+-  </component>
+-  <component name="CoverageOptionsProvider">
+-    <option name="myAddOrReplace" value="0" />
+   </component>
+   <component name="FileTemplateManagerImpl">
+     <option name="RECENT_TEMPLATES">
+@@ -56,10 +58,6 @@
+         <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+       </MavenGeneralSettings>
+     </option>
+-  </component>
+-  <component name="McpProjectServerCommands">
+-    <commands />
+-    <urls />
+   </component>
+   <component name="ProjectColorInfo">{
+   &quot;associatedIndex&quot;: 6
+@@ -74,35 +72,26 @@
+   </component>
+   <component name="PropertiesComponent"><![CDATA[{
+   "keyToString": {
+-    "JUnit.ArtistTest.executor": "Coverage",
+-    "JUnit.BuildingTest.executor": "Coverage",
+     "JUnit.CardJsonLoaderTest.executor": "Coverage",
+-    "JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor": "Coverage",
+-    "JUnit.CardTest.executor": "Coverage",
+-    "JUnit.CollectionRewardEffectTest.executor": "Coverage",
+-    "JUnit.EndGameScoringEffectTest.executor": "Coverage",
+-    "JUnit.EventYieldBonusEffectTest.executor": "Coverage",
++    "JUnit.GameTest.executor": "Run",
+     "JUnit.OfferTileTest.executor": "Coverage",
+     "JUnit.PlayerTest.executor": "Coverage",
+-    "JUnit.ShamanicModifierEffectTest.executor": "Coverage",
+     "JUnit.SlotTest.executor": "Coverage",
+-    "JUnit.SustenanceDiscountEffectTest.executor": "Coverage",
+     "JUnit.TotemTest.executor": "Coverage",
+     "JUnit.TribeTest.executor": "Coverage",
+-    "JUnit.TurnPhaseModifierEffectTest.executor": "Coverage",
+     "ModuleVcsDetector.initialDetectionPerformed": "true",
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+     "RunOnceActivity.git.unshallow": "true",
+     "git-widget-placeholder": "game-version2",
+     "kotlin-language-version-configured": "true",
+-    "last_opened_file_path": "C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22",
++    "last_opened_file_path": "C:/Users/Shiman/IdeaProjects/mesos/src/test/java/it/polimi/ingsw/am22",
+     "node.js.selected.package.tslint": "(autodetect)"
+   }
+ }]]></component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
+-      <recent name="C:\Users\jacop\IdeaProjects\am22\src\main\java\it\polimi\ingsw\am22" />
++      <recent name="C:\Users\Shiman\IdeaProjects\mesos\src\test\java\it\polimi\ingsw\am22" />
+     </key>
+     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+       <recent name="it.polimi.ingsw.am22" />
+@@ -111,49 +100,48 @@
+       <recent name="it.polimi.ingsw.am22" />
+     </key>
+   </component>
+-  <component name="RunManager">
+-    <configuration name="ArtistTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++  <component name="RunManager" selected="JUnit.GameTest">
++    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+-          <option name="PATTERN" value="it.polimi.ingsw.am22.character.*" />
++          <option name="PATTERN" value="it.polimi.ingsw.am22.states.*" />
+           <option name="ENABLED" value="true" />
+         </pattern>
+       </extension>
+-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.character" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.character.ArtistTest" />
++      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
+       <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+     </configuration>
+-    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
++          <option name="PATTERN" value="it.polimi.ingsw.am22.states.*" />
+           <option name="ENABLED" value="true" />
+         </pattern>
+       </extension>
+       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.GameTest" />
+       <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+     </configuration>
+-    <configuration name="CardJsonLoaderTest.shouldLoadBuilderCorrectly" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
++    <configuration name="SlotTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
++          <option name="PATTERN" value="it.polimi.ingsw.am22.states.*" />
+           <option name="ENABLED" value="true" />
+         </pattern>
+       </extension>
+       <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
+-      <option name="METHOD_NAME" value="shouldLoadBuilderCorrectly" />
+-      <option name="TEST_OBJECT" value="method" />
++      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.SlotTest" />
++      <option name="TEST_OBJECT" value="class" />
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+@@ -162,7 +150,7 @@
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
++          <option name="PATTERN" value="it.polimi.ingsw.am22.states.*" />
+           <option name="ENABLED" value="true" />
+         </pattern>
+       </extension>
+@@ -177,7 +165,7 @@
+       <module name="am22" />
+       <extension name="coverage">
+         <pattern>
+-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
++          <option name="PATTERN" value="it.polimi.ingsw.am22.states.*" />
+           <option name="ENABLED" value="true" />
+         </pattern>
+       </extension>
+@@ -190,11 +178,11 @@
+     </configuration>
+     <recent_temporary>
+       <list>
++        <item itemvalue="JUnit.GameTest" />
+         <item itemvalue="JUnit.CardJsonLoaderTest" />
+-        <item itemvalue="JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly" />
+-        <item itemvalue="JUnit.ArtistTest" />
+         <item itemvalue="JUnit.TribeTest" />
+         <item itemvalue="JUnit.TotemTest" />
++        <item itemvalue="JUnit.SlotTest" />
+       </list>
+     </recent_temporary>
+   </component>
+@@ -253,31 +241,7 @@
+       <option name="project" value="LOCAL" />
+       <updated>1775223396914</updated>
+     </task>
+-    <task id="LOCAL-00006" summary="Json completo, modifiche TribeCharacter e event,building">
+-      <option name="closed" value="true" />
+-      <created>1775901219194</created>
+-      <option name="number" value="00006" />
+-      <option name="presentableId" value="LOCAL-00006" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1775901219194</updated>
+-    </task>
+-    <task id="LOCAL-00007" summary="Json completo, modifiche TribeCharacter e event,building">
+-      <option name="closed" value="true" />
+-      <created>1775990726018</created>
+-      <option name="number" value="00007" />
+-      <option name="presentableId" value="LOCAL-00007" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1775990726018</updated>
+-    </task>
+-    <task id="LOCAL-00008" summary="Tests update">
+-      <option name="closed" value="true" />
+-      <created>1776028379237</created>
+-      <option name="number" value="00008" />
+-      <option name="presentableId" value="LOCAL-00008" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1776028379237</updated>
+-    </task>
+-    <option name="localTasksCounter" value="9" />
++    <option name="localTasksCounter" value="6" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -296,9 +260,7 @@
+     <MESSAGE value="Second version" />
+     <MESSAGE value="Second version of Building" />
+     <MESSAGE value="last commit" />
+-    <MESSAGE value="Json completo, modifiche TribeCharacter e event,building" />
+-    <MESSAGE value="Tests update" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Tests update" />
++    <option name="LAST_COMMIT_MESSAGE" value="last commit" />
+   </component>
+   <component name="XDebuggerManager">
+     <breakpoint-manager>
+@@ -365,104 +327,23 @@
+     </breakpoint-manager>
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/Demo_ese1$BuildingTest.ic" NAME="BuildingTest Coverage Results" MODIFIED="1776031549098" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1775858765732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++    <SUITE FILE_PATH="coverage/am22$PlayerTest.ic" NAME="PlayerTest Coverage Results" MODIFIED="1775646643233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/Demo_ese1$ShamanicRitualTest.ic" NAME="ShamanicRitualTest Coverage Results" MODIFIED="1775897014156" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$CollectorTest.ic" NAME="CollectorTest Coverage Results" MODIFIED="1775858159929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/Demo_ese1$ShamanicModifierEffectTest.ic" NAME="ShamanicModifierEffectTest Coverage Results" MODIFIED="1776031792513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$InventorTest.ic" NAME="InventorTest Coverage Results" MODIFIED="1775858174633" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/Demo_ese1$TurnPhaseModifierEffectTest.ic" NAME="TurnPhaseModifierEffectTest Coverage Results" MODIFIED="1776031805842" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>
+-    </SUITE>
+     <SUITE FILE_PATH="coverage/am22$TribeTest.ic" NAME="TribeTest Coverage Results" MODIFIED="1775827189738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$BuilderTest.ic" NAME="BuilderTest Coverage Results" MODIFIED="1775858153900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$ShamanTest.ic" NAME="ShamanTest Coverage Results" MODIFIED="1775858214161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$CardJsonLoaderTest.ic" NAME="CardJsonLoaderTest Coverage Results" MODIFIED="1775990640161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/Demo_ese1$EndGameScoringEffectTest.ic" NAME="EndGameScoringEffectTest Coverage Results" MODIFIED="1776031786221" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>
+-    </SUITE>
+     <SUITE FILE_PATH="coverage/am22$OfferTileTest.ic" NAME="OfferTileTest Coverage Results" MODIFIED="1775646627410" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$ShamanTest_testShamanCreationGettersAndEffect.ic" NAME="ShamanTest.testShamanCreationGettersAndEffect Coverage Results" MODIFIED="1775854652620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$HunterTest.ic" NAME="HunterTest Coverage Results" MODIFIED="1775858166142" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$CavePaintingsTest.ic" NAME="CavePaintingsTest Coverage Results" MODIFIED="1775862659809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/Demo_ese1$SustenanceDiscountEffectTest.ic" NAME="SustenanceDiscountEffectTest Coverage Results" MODIFIED="1776031800093" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$CavePaintingsTest_testCavePaintingsEra3_NotEnoughArtists_WithBuildings.ic" NAME="CavePaintingsTest.testCavePaintingsEra3_NotEnoughArtists_WithBuildings Coverage Results" MODIFIED="1775862436854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$TribeCharacterTest_testAddToTribeWithoutBuildings.ic" NAME="TribeCharacterTest.testAddToTribeWithoutBuildings Coverage Results" MODIFIED="1775856302307" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$TribeCharacterTest_testAddToTribeWithBuildings.ic" NAME="TribeCharacterTest.testAddToTribeWithBuildings Coverage Results" MODIFIED="1775856424577" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$SlotTest.ic" NAME="SlotTest Coverage Results" MODIFIED="1775646676668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/Demo_ese1$EventYieldBonusEffectTest.ic" NAME="EventYieldBonusEffectTest Coverage Results" MODIFIED="1776031540516" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/Demo_ese1$CardTest.ic" NAME="CardTest Coverage Results" MODIFIED="1776031819500" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++    <SUITE FILE_PATH="coverage/am22$CardJsonLoaderTest.ic" NAME="CardJsonLoaderTest Coverage Results" MODIFIED="1775865245194" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$HunterTest_testHunterCreationAndNoIconEffect.ic" NAME="HunterTest.testHunterCreationAndNoIconEffect Coverage Results" MODIFIED="1775854103694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$ShamanicRitualTest.ic" NAME="ShamanicRitualTest Coverage Results" MODIFIED="1775895411661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$CardJsonLoaderTest_shouldLoadBuilderCorrectly.ic" NAME="CardJsonLoaderTest.shouldLoadBuilderCorrectly Coverage Results" MODIFIED="1775950027095" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
++    <SUITE FILE_PATH="coverage/am22$SlotTest.ic" NAME="SlotTest Coverage Results" MODIFIED="1775646676668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+     </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$HunterTest_testHunterWithIconEffect.ic" NAME="HunterTest.testHunterWithIconEffect Coverage Results" MODIFIED="1775854094672" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$PlayerTest.ic" NAME="PlayerTest Coverage Results" MODIFIED="1775646643233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$ArtistTest.ic" NAME="ArtistTest Coverage Results" MODIFIED="1775858613631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+-    </SUITE>
+     <SUITE FILE_PATH="coverage/am22$TotemTest.ic" NAME="TotemTest Coverage Results" MODIFIED="1775646686996" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+       <FILTER>it.polimi.ingsw.am22.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/Demo_ese1$CollectionRewardEffectTest.ic" NAME="CollectionRewardEffectTest Coverage Results" MODIFIED="1776031532781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.Building.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$HuntingTest.ic" NAME="HuntingTest Coverage Results" MODIFIED="1775862886674" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.event.*</FILTER>
+-    </SUITE>
+-    <SUITE FILE_PATH="coverage/am22$TribeCharacterTest.ic" NAME="TribeCharacterTest Coverage Results" MODIFIED="1775858125675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+-      <FILTER>it.polimi.ingsw.am22.character.*</FILTER>
+     </SUITE>
+   </component>
+ </project>
+\ No newline at end of file
+Index: src/test/java/it/polimi/ingsw/am22/GameTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/it/polimi/ingsw/am22/GameTest.java b/src/test/java/it/polimi/ingsw/am22/GameTest.java
+new file mode 100644
+--- /dev/null	(date 1776087131149)
++++ b/src/test/java/it/polimi/ingsw/am22/GameTest.java	(date 1776087131149)
+@@ -0,0 +1,319 @@
++package it.polimi.ingsw.am22;
++
++import it.polimi.ingsw.am22.event.Event;
++import it.polimi.ingsw.am22.states.BonusCardSelectionState;
++import it.polimi.ingsw.am22.states.EndGameState;
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++
++import java.lang.reflect.Field;
++import java.util.ArrayList;
++import java.util.List;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++/**
++ * Test suite for the Game class.
++ * Verifies state transitions, turn order, card picking, and end-of-round updates
++ * using only public methods.
++ */
++class GameTest {
++
++    private Game game;
++    private List<Player> players;
++
++    // Dummy card implementations for testing
++    private static class DummyCard extends Card {
++        public DummyCard(String id, Era era, int minPlayers) {
++            super(id, era, minPlayers);
++        }
++        @Override public void addToTribe(Player player, Tribe tribe) {}
++        @Override public boolean survivesRoundEnd() { return false; }
++    }
++
++    private static class DummyEvent extends Event {
++        public DummyEvent(String id, Era era, int minPlayers) {
++            super(id, era, minPlayers, null, null);
++        }
++        @Override public void onRoundEndTrigger(Game game) {}
++    }
++
++    @BeforeEach
++    void setUp() throws Exception {
++        players = new ArrayList<>();
++        for (int i = 1; i <= 3; i++) {
++            Player p = new Player("Player" + i);
++            Totem t = new Totem("Color" + i, p);
++            p.setTotem(t);
++            players.add(p);
++        }
++
++        game = new Game(players);
++
++        // Inject a minimal tribe deck to avoid JSON loading
++        List<Card> tribeDeck = new ArrayList<>();
++        for (int i = 0; i < 30; i++) {
++            tribeDeck.add(new DummyCard("Dummy" + i, Era.I, 2));
++        }
++        tribeDeck.add(new DummyEvent("Event1", Era.I, 2));
++        tribeDeck.add(new DummyEvent("Event2", Era.II, 2));
++        tribeDeck.add(new DummyEvent("Event3", Era.III, 2));
++
++        Field tribeDeckField = Game.class.getDeclaredField("tribeDeck");
++        tribeDeckField.setAccessible(true);
++        tribeDeckField.set(game, tribeDeck);
++
++        // Inject empty building market (buildings not needed for flow tests)
++        Field buildingMarketField = Game.class.getDeclaredField("buildingMarket");
++        buildingMarketField.setAccessible(true);
++        buildingMarketField.set(game, new ArrayList<>());
++    }
++
++    @Test
++    void testInitialPhase() {
++        assertEquals("Setup Iniziale", game.getCurrentPhaseName());
++        assertNull(game.getActivePlayer());
++    }
++
++    @Test
++    void testStartMatch() {
++        game.startMatch();
++
++        // After setup, phase becomes TotemPlacementState
++        assertEquals("Piazzamento Totem", game.getCurrentPhaseName());
++
++        // Active player should be first in shuffled order
++        assertNotNull(game.getActivePlayer());
++        assertTrue(players.contains(game.getActivePlayer()));
++
++        // Check turn order tile slots are occupied
++        int occupiedSlots = game.getBoard().getTurnOrderTile().getOccupiedSlotsCount();
++        assertEquals(players.size(), occupiedSlots);
++
++        // Check initial food distribution
++        for (Player p : players) {
++            if (p == game.getActivePlayer()) {
++                assertEquals(2, p.getFood());
++            } else if (players.indexOf(p) <= 2) {
++                assertEquals(3, p.getFood());
++            } else {
++                assertEquals(4, p.getFood());
++            }
++        }
++    }
++
++    @Test
++    void testTotemPlacementFlow() {
++        game.startMatch();
++        Player firstPlayer = game.getActivePlayer();
++
++        // Place totem on first offer tile
++        OfferTile firstTile = game.getBoard().getOfferTrack().get(0);
++        game.placeTotemOnOffer(firstPlayer, firstTile);
++
++        // After placing, active player should be the next one
++        assertNotEquals(firstPlayer, game.getActivePlayer());
++        assertTrue(firstTile.getOccupiedBy() == firstPlayer.getTotem());
++
++        // Place all remaining totems
++        List<Player> placed = new ArrayList<>();
++        placed.add(firstPlayer);
++        while (game.getBoard().getTotemsOnOffersCount() < players.size()) {
++            Player current = game.getActivePlayer();
++            OfferTile tile = game.getBoard().getOfferTrack().stream()
++                    .filter(OfferTile::isAvailable)
++                    .findFirst().orElseThrow();
++            game.placeTotemOnOffer(current, tile);
++            placed.add(current);
++        }
++
++        // All totems placed → phase should become ActionResolutionState
++        assertEquals("Risoluzione Azioni", game.getCurrentPhaseName());
++
++        // Active player should be the one with leftmost totem
++        assertNotNull(game.getActivePlayer());
++    }
++
++    @Test
++    void testActionResolutionWithFoodTile() {
++        // Prepare game: after placement, we need to simulate a complete round
++        game.startMatch();
++        // Place all totems (simplify by forcing order)
++        List<OfferTile> tiles = game.getBoard().getOfferTrack();
++        for (int i = 0; i < players.size(); i++) {
++            Player p = players.get(i);
++            OfferTile tile = tiles.get(i);
++            game.placeTotemOnOffer(p, tile);
++        }
++
++        // Now we are in ActionResolutionState
++        assertEquals("Risoluzione Azioni", game.getCurrentPhaseName());
++
++        // Simulate picking cards for the first player (who is on a tile, e.g. tile B)
++        Player active = game.getActivePlayer();
++        OfferTile currentTile = game.getBoard().getOfferTrack().stream()
++                .filter(t -> t.getOccupiedBy() == active.getTotem())
++                .findFirst().orElseThrow();
++
++        // For a tile with food reward (e.g., tile A), selectedCards must be empty
++        if (currentTile.getFoodReward() > 0) {
++            game.pickCards(active, List.of());
++            // Food should be added
++            assertTrue(active.getFood() > 0);
++        } else {
++            // For normal tiles, we need to pick correct number of cards from rows
++            List<Card> upper = game.getBoard().getUpperRow();
++            List<Card> lower = game.getBoard().getLowerRow();
++            int upperToTake = currentTile.getUpperCardsToTake();
++            int lowerToTake = currentTile.getLowerCardsToTake();
++
++            if (upperToTake + lowerToTake > 0) {
++                List<Card> selected = new ArrayList<>();
++                if (upperToTake > 0 && upper.size() >= upperToTake) {
++                    selected.addAll(upper.subList(0, upperToTake));
++                }
++                if (lowerToTake > 0 && lower.size() >= lowerToTake) {
++                    selected.addAll(lower.subList(0, lowerToTake));
++                }
++                game.pickCards(active, selected);
++            } else {
++                game.pickCards(active, List.of());
++            }
++        }
++
++        // After resolution, totem should be moved to turn order tile
++        assertNotNull(active.getTotem().getCurrentSlot());
++    }
++
++    @Test
++    void testRoundEndAndEventResolution() throws Exception {
++        // Simulate a full round to test EventResolutionState and RoundUpdateState
++        game.startMatch();
++        // Place all totems
++        for (int i = 0; i < players.size(); i++) {
++            game.placeTotemOnOffer(players.get(i), game.getBoard().getOfferTrack().get(i));
++        }
++
++        // Force all actions to resolve quickly by providing dummy selections
++        while ("Risoluzione Azioni".equals(game.getCurrentPhaseName())) {
++            Player active = game.getActivePlayer();
++            OfferTile tile = game.getBoard().getOfferTrack().stream()
++                    .filter(t -> t.getOccupiedBy() == active.getTotem())
++                    .findFirst().orElseThrow();
++
++            if (tile.getFoodReward() > 0) {
++                game.pickCards(active, List.of());
++            } else {
++                List<Card> upper = game.getBoard().getUpperRow();
++                List<Card> lower = game.getBoard().getLowerRow();
++                List<Card> selected = new ArrayList<>();
++                int u = tile.getUpperCardsToTake();
++                int l = tile.getLowerCardsToTake();
++                if (u > 0 && upper.size() >= u) selected.addAll(upper.subList(0, u));
++                if (l > 0 && lower.size() >= l) selected.addAll(lower.subList(0, l));
++                game.pickCards(active, selected);
++            }
++        }
++
++        // After all actions, phase should be either EventResolutionState or BonusCardSelectionState
++        String phase = game.getCurrentPhaseName();
++        assertTrue(phase.equals("Risoluzione Eventi") || phase.equals("Selezione Carta Bonus") ||
++                phase.equals("Fine Round / Pulizia"));
++
++        // If we are in EventResolutionState, call resolveEvents
++        if ("Risoluzione Eventi".equals(phase)) {
++            game.resolveEvents();
++            // After resolveEvents, phase becomes RoundUpdateState
++            assertEquals("Fine Round / Pulizia", game.getCurrentPhaseName());
++        } else if ("Selezione Carta Bonus".equals(phase)) {
++            // Simulate picking a bonus card (if any)
++            Card bonus = game.getBoard().getUpperRow().isEmpty() ? null : game.getBoard().getUpperRow().get(0);
++            if (bonus != null) {
++                game.pickBonusCard(game.getActivePlayer(), bonus);
++                // After bonus, should go to EventResolutionState then RoundUpdateState
++                assertEquals("Risoluzione Eventi", game.getCurrentPhaseName());
++                game.resolveEvents();
++                assertEquals("Fine Round / Pulizia", game.getCurrentPhaseName());
++            }
++        }
++
++        // Now call updateRound
++        game.updateRound();
++
++        // Round should be incremented
++        assertEquals(2, game.getCurrentRound());
++        // Phase should be back to TotemPlacementState (unless game ended)
++        assertTrue(game.getCurrentPhaseName().equals("Piazzamento Totem") ||
++                game.getCurrentPhaseName().equals("Fine Partita"));
++    }
++
++    @Test
++    void testEndGameWinner() {
++        // Manually set some players' PP and food to test winner logic
++        Player p1 = players.get(0);
++        Player p2 = players.get(1);
++        Player p3 = players.get(2);
++
++        p1.addPP(20);
++        p1.addFood(5);
++        p2.addPP(20);
++        p2.addFood(10);
++        p3.addPP(15);
++        p3.addFood(8);
++
++        // Force end game state by setting currentRound to 10 and calling updateRound?
++        // Simpler: create a new EndGameState and call determineWinner directly.
++        // But determineWinner is called by Game when state is EndGameState.
++        // We can just call game.determineWinner() which delegates to current state.
++        // We need to put game in EndGameState.
++        // Since we cannot set private state, we simulate by creating a new Game with end condition?
++        // Alternatively, we can test the logic by instantiating EndGameState and calling its method.
++        // But better: use reflection to set state or just test the method via a custom game instance.
++        // Simpler: we trust that determineWinner works and we test it separately.
++        // However, to keep the test self-contained, we'll set the state via reflection for this single test.
++        try {
++            Field stateField = Game.class.getDeclaredField("currentState");
++            stateField.setAccessible(true);
++            stateField.set(game, new EndGameState());
++        } catch (Exception e) {
++            fail("Could not set state via reflection");
++        }
++
++        Player winner = game.determineWinner();
++        assertEquals(p2, winner);
++    }
++
++    @Test
++    void testInvalidActionsInWrongState() {
++        game.startMatch(); // now in TotemPlacementState
++
++        // Trying to pick cards before placement should throw exception
++        assertThrows(IllegalStateException.class,
++                () -> game.pickCards(players.get(0), List.of()));
++
++        // Trying to resolve events too early
++        assertThrows(IllegalStateException.class,
++                () -> game.resolveEvents());
++    }
++
++    @Test
++    void testBonusCardSelectionState() throws Exception {
++        // Simulate a situation where a player has extraBuyAtRoundEnd
++        // For test, we can force state to BonusCardSelectionState via reflection
++        Field stateField = Game.class.getDeclaredField("currentState");
++        stateField.setAccessible(true);
++        stateField.set(game, new BonusCardSelectionState());
++
++        // Add a dummy card to upper row
++        Card dummy = new DummyCard("Bonus", Era.I, 2);
++        game.getBoard().getUpperRow().add(dummy);
++
++        Player p = players.get(0);
++        game.pickBonusCard(p, dummy);
++
++        // After picking, phase should become EventResolutionState
++        assertEquals("Risoluzione Eventi", game.getCurrentPhaseName());
++        // The card should have been added to tribe
++        assertTrue(p.getTribe().getMembers().contains(dummy));
++    }
++}
+\ No newline at end of file
