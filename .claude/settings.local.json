@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/Shiman/IdeaProjects/mesos/src/main/java -name \"*.java\" -exec grep -l \"public static void main\" {} \\\\;)",
+      "Bash(xargs grep *)",
+      "Bash(xargs basename *)",
+      "Bash(grep -E \"\\\\.java$\")",
+      "Bash(mvn -q -DskipTests compile)",
+      "Bash(command -v mvn.cmd)",
+      "Read(//c/Users/Shiman/.m2/**)",
+      "Bash(where mvn *)",
+      "Bash(javac --version)",
+      "Read(//c/Program Files/Java/**)",
+      "Read(//c/Users/Shiman/.jdks/**)",
+      "Read(//c/Users/Shiman/**)",
+      "Bash(export JAVA_HOME=\"/c/Users/Shiman/.jdks/openjdk-25.0.2\")",
+      "Bash(export PATH=\"$JAVA_HOME/bin:$PATH\")",
+      "Bash(java -version)",
+      "Bash(./mvnw -q -DskipTests compile)",
+      "Bash(./mvnw -q test-compile)",
+      "Bash(./mvnw -q test)"
+    ]
+  }
+}
