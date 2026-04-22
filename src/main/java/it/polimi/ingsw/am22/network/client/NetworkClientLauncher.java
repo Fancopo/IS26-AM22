@@ -181,10 +181,11 @@ public final class NetworkClientLauncher {
                     default:
                         System.out.println("Unknown command: " + cmd + " (type 'help')");
                 }
+            } catch (NumberFormatException e) {
+                // More specific than IllegalArgumentException: keep it first.
+                System.err.println("  Invalid number: " + e.getMessage());
             } catch (IllegalStateException | IllegalArgumentException e) {
                 System.err.println("  " + e.getMessage());
-            } catch (NumberFormatException e) {
-                System.err.println("  Invalid number: " + e.getMessage());
             } catch (Exception e) {
                 System.err.println("  Command failed: " + e.getMessage());
             }
