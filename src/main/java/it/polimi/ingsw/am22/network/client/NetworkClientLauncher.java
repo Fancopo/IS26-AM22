@@ -66,12 +66,13 @@ public final class NetworkClientLauncher {
 
             System.out.println("Connected via " + transport + ". Type 'help' for commands.");
             runCommandLoop(in, controller);
-        } catch (IOException e) {
-            System.err.println("Socket connection failed: " + e.getMessage());
         } catch (NotBoundException e) {
             System.err.println("RMI binding not found: " + e.getMessage());
         } catch (RemoteException e) {
+            // More specific than IOException: keep it first.
             System.err.println("RMI error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Connection failed: " + e.getMessage());
         }
     }
 
