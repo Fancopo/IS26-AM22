@@ -2,15 +2,10 @@ package it.polimi.ingsw.am22.network.server;
 
 import it.polimi.ingsw.am22.controller.GameController;
 import it.polimi.ingsw.am22.model.*;
-import it.polimi.ingsw.am22.model.Building.Building;
-import it.polimi.ingsw.am22.model.character.TribeCharacter;
-import it.polimi.ingsw.am22.model.event.Event;
 import it.polimi.ingsw.am22.network.common.dto.*;
 
-import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -154,35 +149,19 @@ public class ModelDtoMapper {
         return player.getPP();
     }
 
-    /** Determina la macro-categoria di una carta (CHARACTER, BUILDING, EVENT, ...). */
+    /** Macro-categoria della carta delegata alla carta stessa. */
     private String categoryOf(Card card) {
-        if (card instanceof TribeCharacter) return "CHARACTER";
-        if (card instanceof Building) return "BUILDING";
-        if (card instanceof Event) return "EVENT";
-        return card.getClass().getSimpleName().toUpperCase(Locale.ROOT);
+        return card.cardCategory();
     }
 
-    /** Determina il tipo specifico di una carta all'interno della sua categoria. */
+    /** Tipo specifico della carta delegato alla carta stessa. */
     private String detailTypeOf(Card card) {
-        if (card instanceof Building) return "BUILDING";
-        if (card instanceof TribeCharacter tc) return String.valueOf(tc.getCharacterType());
-        if (card instanceof Event ev) return String.valueOf(ev.getEventType());
-        return card.getClass().getSimpleName().toUpperCase(Locale.ROOT);
+        return card.cardDetailType();
     }
 
-    /**
-     * Estrae il costo in cibo di una carta.
-     * Per gli edifici usa il metodo dedicato; per gli altri tipi cerca via reflection
-     * un eventuale {@code getFoodCost()}, così da non forzare un'interfaccia comune nel model.
-     */
+    /** Costo in cibo della carta; restituisce null se zero (carta senza costo). */
     private Integer foodCostOf(Card card) {
-        if (card instanceof Building building) return building.getFoodPrice();
-        try {
-            Method method = card.getClass().getMethod("getFoodCost");
-            Object value = method.invoke(card);
-            if (value instanceof Number number) return number.intValue();
-        } catch (Exception ignored) {
-        }
-        return null;
+        int cost = card.getFoodCost();
+        return cost > 0 ? cost : null;
     }
 }

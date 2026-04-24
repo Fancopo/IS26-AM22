@@ -6,10 +6,14 @@ import it.polimi.ingsw.am22.network.common.dto.OfferTileDTO;
 import it.polimi.ingsw.am22.network.common.dto.PlayerDTO;
 import it.polimi.ingsw.am22.network.common.dto.TurnSlotDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
+import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
+import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -95,16 +99,15 @@ public final class GameScreen implements GuiScreen {
 
     @Override
     public void onServerMessage(ServerMessage message) {
-        // Rendering dello stato di gioco arrivato dal server; info/errori vanno nella status bar.
-        if (message instanceof GameStateMessage s) {
-            render(s.gameState());
-        } else if (message instanceof GameStartedMessage s) {
-            render(s.initialGameState());
-        } else if (message instanceof ErrorMessage err) {
-            statusLabel.setText("Error: " + err.message());
-        } else if (message instanceof InfoMessage info) {
-            statusLabel.setText(info.message());
-        }
+        message.accept(new ServerMessageVisitor() {
+            @Override public void visit(GameStateMessage m) { render(m.gameState()); }
+            @Override public void visit(GameStartedMessage m) { render(m.initialGameState()); }
+            @Override public void visit(ErrorMessage m) { statusLabel.setText("Error: " + m.message()); }
+            @Override public void visit(InfoMessage m) { statusLabel.setText(m.message()); }
+            @Override public void visit(LobbyStateMessage m) {}
+            @Override public void visit(EndGameMessage m) {}
+            @Override public void visit(MatchClosedMessage m) {}
+        });
     }
 
     // -------------------- costruzione layout --------------------

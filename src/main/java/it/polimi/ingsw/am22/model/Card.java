@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22.model;
 
+import java.util.Locale;
+
 public abstract class Card {
     private String id;
     private Era era;
@@ -25,6 +27,12 @@ public abstract class Card {
 
     public boolean isDestroyedOnEraIII() {return false;} // Definisce se la carta viene distrutta al cambio verso l'Era III.
 
+
+    /** Macro-categoria della carta per il DTO di rete (es. "CHARACTER", "BUILDING", "EVENT"). */
+    public String cardCategory() { return getClass().getSimpleName().toUpperCase(Locale.ROOT); }
+
+    /** Tipo specifico all'interno della categoria (es. CharacterType, EventType, "BUILDING"). */
+    public String cardDetailType() { return getClass().getSimpleName().toUpperCase(Locale.ROOT); }
 
     public String getId() {return id;}
     public Era getEra() {return era;}

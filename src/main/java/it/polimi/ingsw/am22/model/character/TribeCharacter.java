@@ -37,6 +37,12 @@ public class TribeCharacter extends Card {
             }
         }
     }
+    @Override
+    public String cardCategory() { return "CHARACTER"; }
+
+    @Override
+    public String cardDetailType() { return String.valueOf(characterType); }
+
     public int getNumStars(){ return 0;}
 
     public char getIconPerInventor(){return '0';}

@@ -1,10 +1,11 @@
 package it.polimi.ingsw.am22.network.common.message;
 
 /**
- * Marker interface per tutti i messaggi che il server invia al client.
+ * Interfaccia base per tutti i messaggi che il server invia al client.
  *
- * Comprende sia notifiche di stato (lobby, gioco, fine partita)
- * sia messaggi informativi o di errore.
+ * Ogni implementazione accetta un {@link ServerMessageVisitor} per consentire
+ * il dispatch polimorfo senza instanceof.
  */
 public interface ServerMessage extends NetworkMessage {
+    void accept(ServerMessageVisitor visitor);
 }
