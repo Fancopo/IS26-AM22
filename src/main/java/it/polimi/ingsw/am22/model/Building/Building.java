@@ -170,6 +170,15 @@ public class Building extends Card {
         return this.effect != null && this.effect.hasExtraBuyAtRoundEnd();
     }
 
+    @Override
+    public String cardCategory() { return "BUILDING"; }
+
+    @Override
+    public String cardDetailType() { return "BUILDING"; }
+
+    @Override
+    public int getFoodCost() { return foodPrice; }
+
     public int getFoodPrice() { return foodPrice; }
     public int getFinalPP() { return finalPP; }
     public BuildingEffect getEffect() { return effect; }

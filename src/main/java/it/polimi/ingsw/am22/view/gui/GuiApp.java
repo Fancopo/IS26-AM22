@@ -8,6 +8,7 @@ import it.polimi.ingsw.am22.network.client.ObservableServerConnection;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.WinnerDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
@@ -162,51 +163,45 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
 
     /** Dispatch eseguito sempre sul JavaFX thread. */
     private void dispatchOnFxThread(ServerMessage message) {
-        // Navigazione automatica guidata dai messaggi chiave:
-        // - GameStartedMessage: passa dalla lobby alla schermata di gioco;
-        // - EndGameMessage: passa alla schermata di fine partita;
-        // - MatchClosedMessage: torna alla schermata di connessione con un avviso.
-        if (message instanceof GameStartedMessage && !(currentScreen instanceof GameScreen)) {
-            showGameScreen();
-        } else if (message instanceof EndGameMessage end) {
-            showEndGameScreen(end.winner(), end.finalGameState());
-        } else if (message instanceof MatchClosedMessage closed) {
-            showError("Match closed: " + closed.reason());
-            if (session != null) {
-                session.close(false);
-                session = null;
+        // Navigazione automatica guidata dai messaggi chiave.
+        message.accept(new ServerMessageVisitor() {
+            @Override public void visit(GameStartedMessage m) {
+                if (!(currentScreen instanceof GameScreen)) showGameScreen();
             }
-            showConnectionScreen();
-            return;
-        } else if (message instanceof ErrorMessage err) {
-            showError(err.message());
-        } else if (message instanceof InfoMessage info) {
-            // Messaggi informativi non bloccanti: li gestirà la schermata corrente
-            // per visualizzarli ad esempio in una status bar.
-            // (qui potremmo anche mostrarli come tooltip).
-            // Non facciamo show/hide del dialog per evitare popup a ripetizione.
-            // ignoriamo a livello globale; la schermata li riceve comunque sotto.
-            System.out.println("[INFO] " + info.message());
-        }
+            @Override public void visit(EndGameMessage m) {
+                showEndGameScreen(m.winner(), m.finalGameState());
+            }
+            @Override public void visit(MatchClosedMessage m) {
+                showError("Match closed: " + m.reason());
+                if (session != null) { session.close(false); session = null; }
+                showConnectionScreen();
+            }
+            @Override public void visit(ErrorMessage m) { showError(m.message()); }
+            @Override public void visit(InfoMessage m) { System.out.println("[INFO] " + m.message()); }
+            @Override public void visit(LobbyStateMessage m) {}
+            @Override public void visit(GameStateMessage m) {}
+        });
 
-        // In ogni caso inoltriamo alla schermata attiva, così può aggiornare
-        // il proprio stato (es. Lobby aggiorna la lista giocatori).
+        // Inoltriamo alla schermata attiva (ConnectionScreen ignora MatchClosedMessage via default).
         GuiScreen screen = currentScreen;
         if (screen != null) {
             screen.onServerMessage(message);
         }
 
-        // Navigazione dopo l'invio: se siamo in NicknameScreen e arriva un
-        // LobbyStateMessage valido (= join accettato), passiamo alla lobby.
-        if (message instanceof LobbyStateMessage
-                && currentScreen instanceof NicknameScreen nicknameScreen
-                && nicknameScreen.hasPendingJoin()) {
-            showLobbyScreen();
-        } else if (message instanceof GameStateMessage && !(currentScreen instanceof GameScreen)
-                && session != null && session.isGameStarted()) {
-            // Robustezza: se siamo ancora in lobby ma arriva uno stato di gioco, aggiorniamo.
-            showGameScreen();
-        }
+        // Navigazione post-inoltro basata sul tipo di messaggio e sullo stato corrente.
+        message.accept(new ServerMessageVisitor() {
+            @Override public void visit(LobbyStateMessage m) {
+                if (currentScreen instanceof NicknameScreen ns && ns.hasPendingJoin()) showLobbyScreen();
+            }
+            @Override public void visit(GameStateMessage m) {
+                if (!(currentScreen instanceof GameScreen) && session != null && session.isGameStarted()) showGameScreen();
+            }
+            @Override public void visit(GameStartedMessage m) {}
+            @Override public void visit(EndGameMessage m) {}
+            @Override public void visit(MatchClosedMessage m) {}
+            @Override public void visit(ErrorMessage m) {}
+            @Override public void visit(InfoMessage m) {}
+        });
     }
 
     /**

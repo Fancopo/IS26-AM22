@@ -1,8 +1,14 @@
 package it.polimi.ingsw.am22.view.gui;
 
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
+import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
+import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
+import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -60,14 +66,21 @@ public final class NicknameScreen implements GuiScreen {
 
     @Override
     public void onServerMessage(ServerMessage message) {
-        if (message instanceof ErrorMessage err && pendingJoin) {
-            pendingJoin = false;
-            statusLabel.setText(err.message());
-            joinButton.setDisable(false);
-        } else if (message instanceof LobbyStateMessage) {
-            // La navigazione alla lobby la fa GuiApp; qui resettiamo il flag.
-            pendingJoin = false;
-        }
+        message.accept(new ServerMessageVisitor() {
+            @Override public void visit(ErrorMessage m) {
+                if (pendingJoin) {
+                    pendingJoin = false;
+                    statusLabel.setText(m.message());
+                    joinButton.setDisable(false);
+                }
+            }
+            @Override public void visit(LobbyStateMessage m) { pendingJoin = false; }
+            @Override public void visit(GameStartedMessage m) {}
+            @Override public void visit(GameStateMessage m) {}
+            @Override public void visit(EndGameMessage m) {}
+            @Override public void visit(MatchClosedMessage m) {}
+            @Override public void visit(InfoMessage m) {}
+        });
     }
 
     private StackPane buildUi() {

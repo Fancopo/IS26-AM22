@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am22.network.common.message.request;
 
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
+import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public record PickCardsRequest(String playerNickname, List<String> selectedCardI
     public PickCardsRequest {
         selectedCardIds = selectedCardIds == null ? List.of() : List.copyOf(selectedCardIds);
     }
+
+    @Override
+    public void accept(ClientRequestVisitor visitor) { visitor.visit(this); }
 }

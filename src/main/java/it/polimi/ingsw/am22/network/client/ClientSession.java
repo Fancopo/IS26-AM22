@@ -3,10 +3,14 @@ package it.polimi.ingsw.am22.network.client;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
+import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
+import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 
 import java.util.Objects;
 
@@ -132,17 +136,16 @@ public final class ClientSession {
 
         @Override
         public void onServerMessage(ServerMessage message) {
-            // Aggiornamento snapshot prima di inoltrare.
-            if (message instanceof LobbyStateMessage lobby) {
-                latestLobbyState = lobby.lobbyState();
-            } else if (message instanceof GameStartedMessage started) {
-                gameStarted = true;
-                latestGameState = started.initialGameState();
-            } else if (message instanceof GameStateMessage state) {
-                latestGameState = state.gameState();
-            } else if (message instanceof EndGameMessage end) {
-                latestGameState = end.finalGameState();
-            }
+            // Aggiornamento snapshot prima di inoltrare: dispatch polimorfo via visitor.
+            message.accept(new ServerMessageVisitor() {
+                @Override public void visit(LobbyStateMessage m) { latestLobbyState = m.lobbyState(); }
+                @Override public void visit(GameStartedMessage m) { gameStarted = true; latestGameState = m.initialGameState(); }
+                @Override public void visit(GameStateMessage m) { latestGameState = m.gameState(); }
+                @Override public void visit(EndGameMessage m) { latestGameState = m.finalGameState(); }
+                @Override public void visit(MatchClosedMessage m) {}
+                @Override public void visit(ErrorMessage m) {}
+                @Override public void visit(InfoMessage m) {}
+            });
             ClientUpdateHandler handler = currentHandler;
             if (handler != null) {
                 handler.onServerMessage(message);

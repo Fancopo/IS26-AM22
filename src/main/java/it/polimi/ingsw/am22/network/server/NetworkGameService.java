@@ -4,6 +4,7 @@ import it.polimi.ingsw.am22.controller.GameController;
 import it.polimi.ingsw.am22.model.Game;
 import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
+import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 import it.polimi.ingsw.am22.network.common.message.response.*;
 import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
@@ -51,35 +52,22 @@ public class NetworkGameService {
      */
     public synchronized void handleRequest(ClientRequest request, ClientChannel channel) {
         try {
-            if (request instanceof AddPlayerToLobbyRequest addRequest) {
-                handleAddPlayer(addRequest, channel);
-                return;
-            }
-            if (request instanceof SetExpectedPlayersRequest expectedPlayersRequest) {
-                handleSetExpectedPlayers(expectedPlayersRequest, channel);
-                return;
-            }
-            if (request instanceof RemovePlayerFromLobbyRequest removeRequest) {
-                handleRemoveFromLobby(removeRequest, channel);
-                return;
-            }
-            if (request instanceof PlaceTotemRequest placeRequest) {
-                handlePlaceTotem(placeRequest, channel);
-                return;
-            }
-            if (request instanceof PickCardsRequest pickCardsRequest) {
-                handlePickCards(pickCardsRequest, channel);
-                return;
-            }
-            if (request instanceof PickBonusCardRequest pickBonusCardRequest) {
-                handlePickBonusCard(pickBonusCardRequest, channel);
-                return;
-            }
-            if (request instanceof DisconnectPlayerRequest disconnectRequest) {
-                handleDisconnect(disconnectRequest.nickname(), channel, false);
-                return;
-            }
-            channel.send(new ErrorMessage("Unsupported request type."));
+            request.accept(new ClientRequestVisitor() {
+                @Override
+                public void visit(AddPlayerToLobbyRequest r) { handleAddPlayer(r, channel); }
+                @Override
+                public void visit(SetExpectedPlayersRequest r) { handleSetExpectedPlayers(r, channel); }
+                @Override
+                public void visit(RemovePlayerFromLobbyRequest r) { handleRemoveFromLobby(r, channel); }
+                @Override
+                public void visit(PlaceTotemRequest r) { handlePlaceTotem(r, channel); }
+                @Override
+                public void visit(PickCardsRequest r) { handlePickCards(r, channel); }
+                @Override
+                public void visit(PickBonusCardRequest r) { handlePickBonusCard(r, channel); }
+                @Override
+                public void visit(DisconnectPlayerRequest r) { handleDisconnect(r.nickname(), channel, false); }
+            });
         } catch (Exception e) {
             String message = e.getMessage() == null || e.getMessage().isBlank()
                     ? "Unexpected network-server error."

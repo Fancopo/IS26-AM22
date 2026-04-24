@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am22.network.common.message.response;
 
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 
 /**
@@ -12,4 +13,6 @@ import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
  * @param lobbyState snapshot dello stato della lobby
  */
 public record LobbyStateMessage(LobbyStateDTO lobbyState) implements ServerMessage {
+    @Override
+    public void accept(ServerMessageVisitor visitor) { visitor.visit(this); }
 }

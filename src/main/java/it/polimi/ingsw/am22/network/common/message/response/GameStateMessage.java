@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am22.network.common.message.response;
 
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 
 /**
@@ -11,4 +12,6 @@ import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
  * @param gameState snapshot aggiornato dello stato di gioco
  */
 public record GameStateMessage(GameStateDTO gameState) implements ServerMessage {
+    @Override
+    public void accept(ServerMessageVisitor visitor) { visitor.visit(this); }
 }

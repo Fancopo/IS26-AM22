@@ -13,9 +13,13 @@ public class Event extends Card {
         this.effect = effect;
     }
 
-    public EventType getEventType() {
-        return eventType;
-    }
+    public EventType getEventType() { return eventType; }
+
+    @Override
+    public String cardCategory() { return "EVENT"; }
+
+    @Override
+    public String cardDetailType() { return String.valueOf(eventType); }
     public void applyEvent(List<Player> players, String id){}
 
 
