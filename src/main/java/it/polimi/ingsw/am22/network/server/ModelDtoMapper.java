@@ -31,6 +31,7 @@ public class ModelDtoMapper {
                 .toList();
 
         return new LobbyStateDTO(
+                gameController.getMatchId(),
                 gameController.getHostNickname(),
                 gameController.getExpectedPlayers(),
                 gameController.hasStarted(),

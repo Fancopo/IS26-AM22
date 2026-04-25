@@ -22,6 +22,9 @@ public class GameController {
     private static final List<String> DEFAULT_TOTEM_COLORS =
             List.of("Red", "Blue", "White", "Yellow", "Black");
 
+    /** Identificativo univoco della partita gestita da questo controller. */
+    private final String matchId;
+
     /** Lista dei giocatori attualmente presenti nella lobby. */
     private final List<Player> lobbyPlayers;
 
@@ -37,12 +40,27 @@ public class GameController {
     /**
      * Costruisce un controller inizialmente vuoto.
      * La lobby è aperta e nessuna partita è ancora iniziata.
+     *
+     * @param matchId identificativo del match gestito da questo controller
      */
-    public GameController() {
+    public GameController(String matchId) {
+        if (matchId == null || matchId.isBlank()) {
+            throw new IllegalArgumentException("matchId cannot be null or blank.");
+        }
+        this.matchId = matchId;
         this.lobbyPlayers = new ArrayList<>();
         this.game = null;
         this.hostNickname = null;
         this.expectedPlayers = 0;
+    }
+
+    /**
+     * Restituisce l'identificativo del match gestito da questo controller.
+     *
+     * @return matchId univoco
+     */
+    public String getMatchId() {
+        return matchId;
     }
 
     /**

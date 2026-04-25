@@ -34,4 +34,12 @@ public interface ClientChannel {
      * @param nickname nickname da associare, oppure {@code null} per rimuovere l'associazione
      */
     void setBoundNickname(String nickname);
+
+    /**
+     * Match a cui questo canale è attualmente associato, oppure null se il
+     * client non è ancora entrato in nessuna partita.
+     */
+    String getBoundMatchId();
+
+    void setBoundMatchId(String matchId);
 }

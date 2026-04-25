@@ -16,6 +16,7 @@ import java.rmi.RemoteException;
 public class RmiClientChannel implements ClientChannel {
     private final RemoteClientView remoteClientView;
     private volatile String boundNickname;
+    private volatile String boundMatchId;
 
     /**
      * @param remoteClientView callback esportato dal client a cui recapitare i messaggi
@@ -23,6 +24,7 @@ public class RmiClientChannel implements ClientChannel {
     public RmiClientChannel(RemoteClientView remoteClientView) {
         this.remoteClientView = remoteClientView;
         this.boundNickname = null;
+        this.boundMatchId = null;
     }
 
     /**
@@ -54,5 +56,15 @@ public class RmiClientChannel implements ClientChannel {
     @Override
     public void setBoundNickname(String nickname) {
         this.boundNickname = nickname;
+    }
+
+    @Override
+    public String getBoundMatchId() {
+        return boundMatchId;
+    }
+
+    @Override
+    public void setBoundMatchId(String matchId) {
+        this.boundMatchId = matchId;
     }
 }

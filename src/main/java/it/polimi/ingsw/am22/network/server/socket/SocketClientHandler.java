@@ -23,6 +23,7 @@ public class SocketClientHandler implements ClientChannel, Runnable {
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
     private volatile String boundNickname;
+    private volatile String boundMatchId;
     private volatile boolean closed;
 
     /**
@@ -39,6 +40,7 @@ public class SocketClientHandler implements ClientChannel, Runnable {
         this.outputStream.flush();
         this.inputStream = new ObjectInputStream(socket.getInputStream());
         this.boundNickname = null;
+        this.boundMatchId = null;
         this.closed = false;
     }
 
@@ -113,5 +115,15 @@ public class SocketClientHandler implements ClientChannel, Runnable {
     @Override
     public void setBoundNickname(String nickname) {
         this.boundNickname = nickname;
+    }
+
+    @Override
+    public String getBoundMatchId() {
+        return boundMatchId;
+    }
+
+    @Override
+    public void setBoundMatchId(String matchId) {
+        this.boundMatchId = matchId;
     }
 }

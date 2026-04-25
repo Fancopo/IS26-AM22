@@ -54,38 +54,48 @@ public class SocketServerConnection implements ObservableServerConnection {
     }
 
     @Override
-    public void addPlayerToLobby(String nickname) {
-        send(new AddPlayerToLobbyRequest(nickname));
+    public void listMatches() {
+        send(new ListMatchesRequest());
     }
 
     @Override
-    public void setExpectedPlayers(String requesterNickname, int expectedPlayers) {
-        send(new SetExpectedPlayersRequest(requesterNickname, expectedPlayers));
+    public void createMatch(String hostNickname, int expectedPlayers) {
+        send(new CreateMatchRequest(hostNickname, expectedPlayers));
     }
 
     @Override
-    public void removePlayerFromLobby(String nickname) {
-        send(new RemovePlayerFromLobbyRequest(nickname));
+    public void addPlayerToLobby(String matchId, String nickname) {
+        send(new AddPlayerToLobbyRequest(matchId, nickname));
     }
 
     @Override
-    public void placeTotem(String playerNickname, char offerLetter) {
-        send(new PlaceTotemRequest(playerNickname, offerLetter));
+    public void setExpectedPlayers(String matchId, String requesterNickname, int expectedPlayers) {
+        send(new SetExpectedPlayersRequest(matchId, requesterNickname, expectedPlayers));
     }
 
     @Override
-    public void pickCards(String playerNickname, List<String> selectedCardIds) {
-        send(new PickCardsRequest(playerNickname, selectedCardIds));
+    public void removePlayerFromLobby(String matchId, String nickname) {
+        send(new RemovePlayerFromLobbyRequest(matchId, nickname));
     }
 
     @Override
-    public void pickBonusCard(String playerNickname, String bonusCardId) {
-        send(new PickBonusCardRequest(playerNickname, bonusCardId));
+    public void placeTotem(String matchId, String playerNickname, char offerLetter) {
+        send(new PlaceTotemRequest(matchId, playerNickname, offerLetter));
     }
 
     @Override
-    public void disconnectPlayer(String nickname) {
-        send(new DisconnectPlayerRequest(nickname));
+    public void pickCards(String matchId, String playerNickname, List<String> selectedCardIds) {
+        send(new PickCardsRequest(matchId, playerNickname, selectedCardIds));
+    }
+
+    @Override
+    public void pickBonusCard(String matchId, String playerNickname, String bonusCardId) {
+        send(new PickBonusCardRequest(matchId, playerNickname, bonusCardId));
+    }
+
+    @Override
+    public void disconnectPlayer(String matchId, String nickname) {
+        send(new DisconnectPlayerRequest(matchId, nickname));
     }
 
     /**

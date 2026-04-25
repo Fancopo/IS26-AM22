@@ -9,15 +9,23 @@ import java.util.Objects;
  * Questa classe fa da ponte tra la view del client e l'oggetto di connessione
  * verso il server. La view chiama i metodi di questo controller e il controller
  * inoltra le richieste al server aggiungendo automaticamente il nickname locale
- * del giocatore quando necessario.
+ * e il matchId della partita a cui il client è iscritto.
+ *
+ * Il matchId viene impostato:
+ * - automaticamente dopo che il server conferma la creazione ({@code createMatch})
+ *   o l'ingresso ({@code joinMatch}) tramite {@link #bindMatch(String, String)},
+ *   che va invocato dall'update handler appena arriva un {@code MatchJoinedMessage}.
  */
 public class ClientController {
 
     /** Connessione astratta verso il server. */
     private final ServerConnection serverConnection;
 
-    /** Nickname del giocatore locale, salvato dopo il join in lobby. */
+    /** Nickname del giocatore locale, salvato dopo l'ingresso in un match. */
     private String nickname;
+
+    /** Identificativo della partita a cui il client è attualmente iscritto. */
+    private String matchId;
 
     /**
      * Costruisce il controller client.
@@ -27,6 +35,7 @@ public class ClientController {
     public ClientController(ServerConnection serverConnection) {
         this.serverConnection = Objects.requireNonNull(serverConnection, "serverConnection cannot be null");
         this.nickname = null;
+        this.matchId = null;
     }
 
     /**
@@ -39,25 +48,73 @@ public class ClientController {
     }
 
     /**
-     * Indica se il client ha già effettuato il join nella lobby.
+     * Restituisce l'identificativo della partita a cui il client è iscritto.
      *
-     * @return true se il nickname locale è stato impostato
+     * @return matchId, oppure null se non si è ancora iscritto a nessuna partita
      */
-    public boolean hasJoinedLobby() {
-        return nickname != null && !nickname.isBlank();
+    public String getMatchId() {
+        return matchId;
     }
 
     /**
-     * Invia al server la richiesta di ingresso nella lobby.
+     * Indica se il client ha già effettuato il join in una partita.
      *
-     * Il nickname viene anche memorizzato localmente per le richieste successive.
+     * @return true se nickname e matchId locali sono stati impostati
+     */
+    public boolean hasJoinedLobby() {
+        return nickname != null && !nickname.isBlank()
+                && matchId != null && !matchId.isBlank();
+    }
+
+    /**
+     * Chiede al server la lista delle partite aperte.
      *
+     * La risposta arriva in modo asincrono tramite {@code MatchesListMessage}
+     * e dovrà essere gestita dall'update handler del client.
+     */
+    public void listMatches() {
+        serverConnection.listMatches();
+    }
+
+    /**
+     * Invia al server la richiesta di creazione di una nuova partita.
+     *
+     * Il nickname viene memorizzato localmente; il matchId sarà noto solo dopo la
+     * risposta del server (vedi {@link #bindMatch(String, String)}).
+     *
+     * @param hostNickname nickname del creatore
+     * @param expectedPlayers numero di giocatori attesi (2-5)
+     */
+    public void createMatch(String hostNickname, int expectedPlayers) {
+        String cleanNickname = requireText(hostNickname, "hostNickname");
+        this.nickname = cleanNickname;
+        serverConnection.createMatch(cleanNickname, expectedPlayers);
+    }
+
+    /**
+     * Invia al server la richiesta di ingresso in una lobby esistente.
+     *
+     * @param matchId identificativo della partita a cui unirsi
      * @param nickname nickname scelto dal giocatore
      */
-    public void addPlayerToLobby(String nickname) {
+    public void addPlayerToLobby(String matchId, String nickname) {
+        String cleanMatchId = requireText(matchId, "matchId");
         String cleanNickname = requireText(nickname, "nickname");
         this.nickname = cleanNickname;
-        serverConnection.addPlayerToLobby(cleanNickname);
+        serverConnection.addPlayerToLobby(cleanMatchId, cleanNickname);
+    }
+
+    /**
+     * Memorizza i riferimenti alla partita a cui il client si è appena iscritto.
+     *
+     * Va invocato dall'update handler quando arriva un {@code MatchJoinedMessage}.
+     *
+     * @param matchId identificativo della partita
+     * @param nickname nickname confermato dal server
+     */
+    public void bindMatch(String matchId, String nickname) {
+        this.matchId = requireText(matchId, "matchId");
+        this.nickname = requireText(nickname, "nickname");
     }
 
     /**
@@ -69,16 +126,17 @@ public class ClientController {
      */
     public void setExpectedPlayers(int expectedPlayers) {
         requireJoined();
-        serverConnection.setExpectedPlayers(nickname, expectedPlayers);
+        serverConnection.setExpectedPlayers(matchId, nickname, expectedPlayers);
     }
 
     /**
-     * Rimuove il giocatore locale dalla lobby e cancella il nickname salvato.
+     * Rimuove il giocatore locale dalla lobby e cancella lo stato locale.
      */
     public void removePlayerFromLobby() {
         requireJoined();
-        serverConnection.removePlayerFromLobby(nickname);
+        serverConnection.removePlayerFromLobby(matchId, nickname);
         this.nickname = null;
+        this.matchId = null;
     }
 
     /**
@@ -88,19 +146,17 @@ public class ClientController {
      */
     public void placeTotem(char offerLetter) {
         requireJoined();
-        serverConnection.placeTotem(nickname, offerLetter);
+        serverConnection.placeTotem(matchId, nickname, offerLetter);
     }
 
     /**
      * Invia al server la lista delle carte selezionate dal giocatore locale.
      *
-     * Se la lista ricevuta è null, viene trasformata in una lista vuota.
-     *
      * @param selectedCardIds lista degli id delle carte selezionate
      */
     public void pickCards(List<String> selectedCardIds) {
         requireJoined();
-        serverConnection.pickCards(nickname, selectedCardIds == null ? List.of() : selectedCardIds);
+        serverConnection.pickCards(matchId, nickname, selectedCardIds == null ? List.of() : selectedCardIds);
     }
 
     /**
@@ -110,36 +166,25 @@ public class ClientController {
      */
     public void pickBonusCard(String bonusCardId) {
         requireJoined();
-        serverConnection.pickBonusCard(nickname, requireText(bonusCardId, "bonusCardId"));
+        serverConnection.pickBonusCard(matchId, nickname, requireText(bonusCardId, "bonusCardId"));
     }
 
     /**
      * Notifica al server la disconnessione del giocatore locale.
-     *
-     * Dopo la disconnessione il nickname locale viene cancellato.
      */
     public void disconnect() {
         requireJoined();
-        serverConnection.disconnectPlayer(nickname);
+        serverConnection.disconnectPlayer(matchId, nickname);
         this.nickname = null;
+        this.matchId = null;
     }
 
-    /**
-     * Verifica che il client abbia già effettuato il join in lobby.
-     */
     private void requireJoined() {
         if (!hasJoinedLobby()) {
-            throw new IllegalStateException("You must join the lobby before sending actions.");
+            throw new IllegalStateException("You must join a match before sending actions.");
         }
     }
 
-    /**
-     * Controlla che una stringa non sia null o vuota.
-     *
-     * @param value valore da verificare
-     * @param fieldName nome logico del campo, usato nel messaggio di errore
-     * @return la stringa stessa se valida
-     */
     private String requireText(String value, String fieldName) {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(fieldName + " cannot be null or blank.");

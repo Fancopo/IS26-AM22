@@ -16,6 +16,7 @@ import java.util.List;
  * @param players         lista dei giocatori attualmente in lobby
  */
 public record LobbyStateDTO(
+        String matchId,
         String hostNickname,
         int expectedPlayers,
         boolean started,
