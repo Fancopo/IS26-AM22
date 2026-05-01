@@ -1,14 +1,11 @@
 package it.polimi.ingsw.am22.network.server;
 
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.server.rmi.RmiClientChannel;
+import it.polimi.ingsw.am22.network.server.socket.SocketClientHandler;
 
 /**
- * Astrazione del canale di comunicazione verso un singolo client.
- *
- * Permette a {@link NetworkGameService} e {@link VirtualView} di inviare
- * messaggi e gestire disconnessioni senza conoscere il trasporto sottostante
- * (socket oppure callback RMI). Le due implementazioni concrete sono
- * {@link SocketClientHandler} e {@link RmiClientChannel}.
+ * interfaccia astratta del singolo destinatario (send/close/bound nickname).
  */
 public interface ClientChannel {
 

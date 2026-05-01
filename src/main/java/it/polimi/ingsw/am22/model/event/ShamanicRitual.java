@@ -1,6 +1,6 @@
-package it.polimi.ingsw.am22.model.event;
-import it.polimi.ingsw.am22.model.Building.Building;
-import it.polimi.ingsw.am22.model.Building.BuildingEffect;
+﻿package it.polimi.ingsw.am22.model.event;
+import it.polimi.ingsw.am22.model.building.Building;
+import it.polimi.ingsw.am22.model.building.BuildingEffect;
 import it.polimi.ingsw.am22.model.Tribe;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;
 import it.polimi.ingsw.am22.model.Era;
@@ -104,3 +104,4 @@ public class ShamanicRitual extends Event implements EventEffect {
 
 
 }
+

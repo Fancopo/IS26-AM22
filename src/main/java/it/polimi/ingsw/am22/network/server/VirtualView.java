@@ -7,15 +7,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Gestore centralizzato dei canali verso i client connessi.
- *
- * Mantiene una mappa {@code nickname → ClientChannel} thread-safe e offre
- * operazioni per invio singolo e broadcast. La variante "safe" degli invii
- * cattura eventuali eccezioni e rimuove automaticamente i canali rotti,
- * evitando che un singolo client fallito blocchi il broadcast agli altri.
- *
- * I nickname sono normalizzati (trim + lowercase) prima di essere usati come
- * chiavi della mappa, così da rendere i confronti case-insensitive.
+ * registro nickname → ClientChannel con ConcurrentHashMap.
+ * Offre broadcast, sendTo, bindOrReplace, invio fault-tolerant (rimuove canali rotti).
  */
 public class VirtualView {
     private final Map<String, ClientChannel> channelsByNickname;
@@ -28,9 +21,6 @@ public class VirtualView {
     /**
      * Associa un canale a un nickname; se esisteva già un canale per quel
      * nickname (es. riconnessione) viene sostituito.
-     *
-     * @param nickname nickname del giocatore
-     * @param channel  canale da associare
      */
     public void bindOrReplace(String nickname, ClientChannel channel) {
         if (nickname == null || nickname.isBlank() || channel == null) {

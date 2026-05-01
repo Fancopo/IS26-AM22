@@ -2,8 +2,8 @@ package it.polimi.ingsw.am22.network.client;
 
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.request.*;
-import it.polimi.ingsw.am22.network.server.RemoteClientView;
-import it.polimi.ingsw.am22.network.server.RemoteGameServer;
+import it.polimi.ingsw.am22.network.server.rmi.RemoteClientView;
+import it.polimi.ingsw.am22.network.server.rmi.RemoteGameServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

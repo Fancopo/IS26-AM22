@@ -18,7 +18,13 @@
       "Bash(java -version)",
       "Bash(./mvnw -q -DskipTests compile)",
       "Bash(./mvnw -q test-compile)",
-      "Bash(./mvnw -q test)"
+      "Bash(./mvnw -q test)",
+      "Bash(git mv *)",
+      "Bash(cd /c/Users/Shiman/IdeaProjects/mesos grep -r \"model\\\\.Building\" src/)",
+      "Bash(grep -v \".class\" echo \"---\" grep -r \"class sustenance\\\\|new sustenance\\\\|huntingTest\\\\|sustenanceTest\" src/)",
+      "Bash(pdftotext -v)",
+      "Bash(pdftotext -layout \"C:/Users/Shiman/IdeaProjects/mesos/Rules_ITA.pdf\" /tmp/rules.txt)",
+      "Read(//tmp/**)"
     ]
   }
 }

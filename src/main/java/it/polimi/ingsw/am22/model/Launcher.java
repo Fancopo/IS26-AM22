@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.model;
 
-import it.polimi.ingsw.am22.ClientApp;
+import it.polimi.ingsw.am22.network.client.ClientApp;
 
 /**
  * Launcher storico mantenuto per compatibilità con eventuali run

@@ -9,12 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Converte le classi del model nei DTO serializzabili del package
- * {@code network.common.dto}.
- *
- * È l'unico punto in cui il layer di rete "legge" il model: tutto il resto
- * (handler, VirtualView, ecc.) lavora solo sui DTO, così il model non
- * viaggia mai in rete e non deve essere {@link java.io.Serializable}.
+ * Unico punto in cui il network "vede" il model.
+ * Costruisce GameStateDTO/LobbyStateDTO/WinnerDTO/PlayerDTO/CardDTO/OfferTileDTO/TurnSlotDTO
+ * dagli oggetti di Game e GameController.
  */
 public class ModelDtoMapper {
 

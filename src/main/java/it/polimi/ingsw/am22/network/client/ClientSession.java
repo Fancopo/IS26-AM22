@@ -15,19 +15,15 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import java.util.Objects;
 
 /**
- * Sessione client: tiene insieme {@link ObservableServerConnection} e
- * {@link ClientController}, gestisce un unico {@link ClientUpdateHandler}
- * corrente (la view attiva) e memorizza lo "snapshot" più recente di lobby
- * e gioco ricevuti dal server.
- *
- * <p>Motivazione dello snapshot: i messaggi possono arrivare sul reader thread
- * (socket) o sul thread RMI prima che la view abbia avuto il tempo di
- * registrarsi. Tenendo l'ultimo {@code LobbyStateDTO}/{@code GameStateDTO}
- * possiamo "replay"are l'ultimo stato quando la nuova view si attacca.
- *
- * <p>Pattern MVC: questa classe è un elemento del lato Controller del client
- * (insieme a {@link ClientController}). La View vi si registra come
- * {@link ClientUpdateHandler}; il Model remoto è rappresentato dai DTO.
+ Aggrega ObservableServerConnection + ClientController.
+ Snapshot replay:
+ registra un InternalDispatcher sempre attivo che intercetta ogni ServerMessage,
+ salva latestLobbyState/latestGameState/gameStarted, e poi inoltra alla view corrente.
+
+ Quando una nuova schermata si registra (setHandler), riceve subito un replay dell'ultimo stato
+ — risolve la race condition "messaggio arrivato prima che la view fosse pronta".
+
+ Switch di view: la GUI cambia schermata e la nuova handler riparte sincronizzata.
  */
 public final class ClientSession {
 
@@ -48,11 +44,8 @@ public final class ClientSession {
 
     /**
      * Crea la sessione e registra internamente un dispatcher che:
-     * <ul>
-     *     <li>aggiorna gli snapshot;</li>
-     *     <li>inoltra il messaggio all'handler corrente (se presente).</li>
-     * </ul>
-     *
+     * 1. aggiorna gli snapshot;
+     * 2. inoltra il messaggio all'handler corrente (se presente).
      * @param connection connessione già aperta verso il server
      */
     public ClientSession(ObservableServerConnection connection) {

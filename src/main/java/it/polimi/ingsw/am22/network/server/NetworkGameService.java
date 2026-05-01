@@ -1,7 +1,6 @@
 package it.polimi.ingsw.am22.network.server;
 
 import it.polimi.ingsw.am22.controller.GameController;
-import it.polimi.ingsw.am22.model.Game;
 import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
@@ -9,16 +8,14 @@ import it.polimi.ingsw.am22.network.common.message.response.*;
 import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
+import it.polimi.ingsw.am22.network.server.socket.SocketClientHandler;
 
 /**
  * Cuore del layer di rete lato server.
- *
- * Riceve le {@link ClientRequest} (indipendentemente dal trasporto Socket o RMI),
- * le dispatcha ai metodi del {@link GameController} e ritrasmette
- * tramite {@link VirtualView} gli aggiornamenti di stato a tutti i client.
- * Tutti i metodi pubblici che modificano lo stato sono {@code synchronized}
- * per serializzare richieste concorrenti provenienti da thread diversi
- * (worker socket + thread RMI).
+ * Riceve ClientRequest da qualunque trasporto,
+ * spedisce(dispatch) via *ClientRequestVisitor*, delega a *GameController*, fa broadcast via *VirtualView*.
+ * Tutto synchronized.
+ * Gestisce handleTransportDrop per cadute non volontarie.
  */
 public class NetworkGameService {
     private final GameController gameController;
