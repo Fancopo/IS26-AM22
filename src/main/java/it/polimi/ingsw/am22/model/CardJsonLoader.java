@@ -1,10 +1,10 @@
-package it.polimi.ingsw.am22.model;
+﻿package it.polimi.ingsw.am22.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.ingsw.am22.model.Building.*;
-import it.polimi.ingsw.am22.model.Building.BuildingEffect;
-import it.polimi.ingsw.am22.model.Building.CollectionCondition;
+import it.polimi.ingsw.am22.model.building.*;
+import it.polimi.ingsw.am22.model.building.BuildingEffect;
+import it.polimi.ingsw.am22.model.building.CollectionCondition;
 import it.polimi.ingsw.am22.model.character.*;
 import it.polimi.ingsw.am22.model.event.*;
 import java.io.InputStream;
@@ -192,7 +192,7 @@ public class CardJsonLoader {
                         null
                 );
 
-                case SUSTENANCE -> new sustenance(
+                case SUSTENANCE -> new Sustenance(
                         id,
                         era,
                         minPlayers,
@@ -377,3 +377,4 @@ public class CardJsonLoader {
         );
     }
 }
+

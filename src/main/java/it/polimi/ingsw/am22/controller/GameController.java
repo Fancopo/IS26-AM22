@@ -8,13 +8,11 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * Controller principale lato server per la gestione della lobby e della partita.
- *
- * Questa classe:
- * - gestisce i giocatori prima dell'inizio del match
- * - memorizza host e numero atteso di partecipanti
- * - avvia automaticamente la partita quando la lobby è completa
- * - inoltra al model le azioni di gioco ricevute dalla rete
+ * Controller server unico.
+ * Gestisce lobby (addPlayerToLobby, setExpectedPlayers, removePlayerFromLobby),
+ * avvia il Game quando la lobby è completa,
+ * espone azioni di partita (placeTotem, pickCards, pickBonusCard, determineWinner).
+ * Risolve id stringa → oggetti del model e valida il giocatore attivo.
  */
 public class GameController {
 

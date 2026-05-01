@@ -1,7 +1,7 @@
-package it.polimi.ingsw.am22.model.states;
+﻿package it.polimi.ingsw.am22.model.states;
 
 import it.polimi.ingsw.am22.model.*;
-import it.polimi.ingsw.am22.model.Building.Building;
+import it.polimi.ingsw.am22.model.building.Building;
 
 import java.util.List;
 

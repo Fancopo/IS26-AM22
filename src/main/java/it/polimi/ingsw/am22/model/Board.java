@@ -1,6 +1,6 @@
-package it.polimi.ingsw.am22.model;
+﻿package it.polimi.ingsw.am22.model;
 
-import it.polimi.ingsw.am22.model.Building.Building;
+import it.polimi.ingsw.am22.model.building.Building;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,3 +120,4 @@ public class Board {
         return count;
     }
 }
+

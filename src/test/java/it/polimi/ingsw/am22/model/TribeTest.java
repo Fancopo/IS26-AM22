@@ -1,6 +1,6 @@
-package it.polimi.ingsw.am22.model;
+﻿package it.polimi.ingsw.am22.model;
 
-import it.polimi.ingsw.am22.model.Building.Building;
+import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.character.CharacterType;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;
 import org.junit.jupiter.api.Test;
@@ -220,3 +220,4 @@ public class TribeTest {
                 () -> tribe.getBuildings().add(mock(Building.class)));
     }
 }
+

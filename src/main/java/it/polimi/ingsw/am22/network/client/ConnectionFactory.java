@@ -8,13 +8,11 @@ import java.rmi.RemoteException;
  * Fabbrica centralizzata per costruire una {@link ObservableServerConnection}
  * partendo dalla scelta di trasporto fatta dall'utente.
  *
- * <p>Passaggi chiave:
- * <ol>
- *     <li>l'utente sceglie Socket o RMI nella schermata di avvio;</li>
- *     <li>il launcher (TUI o GUI) chiama {@link #open(Transport, String, int)};</li>
- *     <li>la factory restituisce l'implementazione concreta già pronta a
- *         inviare richieste e ricevere {@code ServerMessage}.</li>
- * </ol>
+ * Passaggi chiave:
+ *     l'utente sceglie Socket o RMI nella schermata di avvio;
+ *     il launcher (TUI o GUI) chiama {@link #open(Transport, String, int)};
+ *     la factory restituisce l'implementazione concreta già pronta a
+ *         inviare richieste e ricevere {@code ServerMessage}.
  *
  * In questo modo il resto del client lavora solo contro l'interfaccia
  * {@link ObservableServerConnection}, senza dipendere dal trasporto scelto.

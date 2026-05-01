@@ -1,6 +1,6 @@
-package it.polimi.ingsw.am22.model;
+﻿package it.polimi.ingsw.am22.model;
 
-import it.polimi.ingsw.am22.model.Building.Building;
+import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.character.*;
 import it.polimi.ingsw.am22.model.event.*;
 import org.junit.jupiter.api.Test;
@@ -292,12 +292,12 @@ public class CardJsonLoaderTest {
         CardJsonLoader loader = new CardJsonLoader();
         List<Building> buildings = loader.loadBuildings("/Building.json");
 
-        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.Building.CollectionRewardEffect));
-        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.Building.SustenanceDiscountEffect));
-        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.Building.ShamanicModifierEffect));
-        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.Building.EventYieldBonusEffect));
-        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.Building.EndGameScoringEffect));
-        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.Building.TurnPhaseModifierEffect));
+        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.building.CollectionRewardEffect));
+        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.building.SustenanceDiscountEffect));
+        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.building.ShamanicModifierEffect));
+        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.building.EventYieldBonusEffect));
+        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.building.EndGameScoringEffect));
+        assertTrue(buildings.stream().anyMatch(b -> b.getEffect() instanceof it.polimi.ingsw.am22.model.building.TurnPhaseModifierEffect));
     }
     @Test
     void allBuildingsShouldHaveMinPlayersTwo() {

@@ -1,11 +1,11 @@
-package it.polimi.ingsw.am22.model.event;
+﻿package it.polimi.ingsw.am22.model.event;
 
-import it.polimi.ingsw.am22.model.Building.EventYieldBonusEffect;
+import it.polimi.ingsw.am22.model.building.EventYieldBonusEffect;
 import it.polimi.ingsw.am22.model.Era;
 import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.model.Tribe;
 import it.polimi.ingsw.am22.model.character.Artist;
-import it.polimi.ingsw.am22.model.Building.Building;
+import it.polimi.ingsw.am22.model.building.Building;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -91,3 +91,4 @@ class CavePaintingsTest {
         assertEquals(9, player.getPP(), "normalPlayer subisce -2 PP");
     }
 }
+

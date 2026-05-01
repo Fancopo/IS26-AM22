@@ -1,0 +1,11 @@
+﻿package it.polimi.ingsw.am22.model.building;
+
+public enum BuildingEffectType {
+    ENDGAME_SCORING_EFFECT,
+    SHAMANIC_MODIFIER_EFFECT,
+    SUSTENANCE_DISCOUNT_EFFECT,
+    COLLECTION_REWARD_EFFECT,
+    EVENT_YIELD_BONUS_EFFECT,
+    TURN_PHASE_MODIFIER_EFFECT
+}
+

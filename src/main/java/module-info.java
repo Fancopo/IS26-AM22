@@ -22,4 +22,6 @@ module it.polimi.ingsw.am {
 
     // View TUI: normale export (non serve reflection da JavaFX).
     exports it.polimi.ingsw.am22.view.tui;
+    exports it.polimi.ingsw.am22.network.client;
+    opens it.polimi.ingsw.am22.network.client to javafx.fxml, javafx.graphics;
 }
