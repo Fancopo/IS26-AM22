@@ -1,13 +1,14 @@
 package it.polimi.ingsw.am22.model.character;
 
-import it.polimi.ingsw.am22.model.Player;
-import it.polimi.ingsw.am22.model.Tribe;
 
-
+/**
+ * Polymorphic attributes that each {@link TribeCharacter} subclass exposes.
+ * Default values are provided by {@link TribeCharacter} so callers can read
+ * them uniformly without type-checking the concrete subclass.
+ */
 public interface CharacterEffect {
-    void applyImmediateEffect(Player player, Tribe tribe);
-    public int getNumStars();
-    public char getIconPerInventor();
-    public int getDiscountFood();
-    public int getPP();
+    int getNumStars();
+    char getIconPerInventor();
+    int getDiscountFood();
+    int getPP();
 }

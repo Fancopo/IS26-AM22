@@ -36,7 +36,14 @@ public class TribeCharacter extends Card {
                 b.getEffect().onCharacterAdded(player, this);
             }
         }
+        onAddedToTribe(player);
     }
+
+    /**
+     * Hook invoked after the character has joined the tribe. Subclasses override
+     * to apply immediate per-character effects (e.g. Hunter food bonus).
+     */
+    protected void onAddedToTribe(Player player) { }
     @Override
     public String cardCategory() { return "CHARACTER"; }
 

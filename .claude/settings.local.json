@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -i \"\\\\.java$\")",
+      "Bash(./mvnw -q compile)",
+      "Bash(where pdftoppm *)",
+      "Bash(pdftotext -layout -f 1 -l 8 \"D:\\\\edge_download\\\\Rules_ITA.pdf\" -)",
+      "Bash(mvn -q -DskipTests compile)",
+      "PowerShell($env:JAVA_HOME)"
+    ]
+  }
+}

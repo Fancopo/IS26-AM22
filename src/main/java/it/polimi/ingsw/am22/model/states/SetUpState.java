@@ -37,4 +37,7 @@ public class SetUpState implements GameState {
 
     @Override
     public String getPhaseName() { return "Setup Iniziale"; }
+
+    @Override
+    public boolean isSetupPhase() { return true; }
 }

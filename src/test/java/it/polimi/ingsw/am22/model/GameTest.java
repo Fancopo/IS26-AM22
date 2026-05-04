@@ -276,10 +276,10 @@ public class GameTest {
     }
 
     @Test
-    void getCurrentTurnPlayerShouldReturnActivePlayer() {
+    void getActivePlayerShouldReturnActivePlayer() {
         Player player = players.get(0);
         game.setActivePlayer(player);
-        assertEquals(player, game.getCurrentTurnPlayer());
+        assertEquals(player, game.getActivePlayer());
     }
 
     // ==================== INTEGRATION & EDGE CASE TESTS ====================

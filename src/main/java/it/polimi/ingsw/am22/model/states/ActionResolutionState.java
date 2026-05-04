@@ -19,29 +19,42 @@ public class ActionResolutionState implements GameState {
         if (currentTile.getFoodReward() > 0 && selectedCards.isEmpty()) {
             player.addFood(currentTile.getFoodReward());
         }
-        // 2. GESTIONE CARTE E VALIDAZIONE
+        // 2. GESTIONE CARTE: pattern transazionale "validate-then-commit".
+        //    Ogni controllo che può fallire (vincoli tessera, carte non prendibili come gli Event,
+        //    cibo insufficiente per gli edifici) deve avvenire PRIMA di qualsiasi mutazione su
+        //    player/tribe/board. In caso contrario, una selezione mista valida+invalida lascerebbe
+        //    la carta valida già aggiunta alla tribe, e una successiva ri-selezione la duplicherebbe.
         else {
+            // --- FASE 1: VALIDAZIONE (nessuna mutazione consentita qui) ---
+
+            // 1a. Vincoli tessera (numero di carte upper/lower)
             long upperSelected = selectedCards.stream().filter(c -> game.getBoard().getUpperRow().contains(c)).count();
             long lowerSelected = selectedCards.stream().filter(c -> game.getBoard().getLowerRow().contains(c)).count();
-
-            // Validazione vincoli tessera
             if (upperSelected != currentTile.getUpperCardsToTake() || lowerSelected != currentTile.getLowerCardsToTake()) {
                 throw new IllegalArgumentException("Selezione carte non valida per la tessera corrente!");
             }
 
-            // Pagamento Edifici con sconto
-            int totalFoodCost = 0;
+            // 1b. Validazione polimorfica per-carta: ogni carta dichiara da sé se è prendibile
+            //     (es. Event lancia eccezione, TribeCharacter/Building accettano).
+            for (Card card : selectedCards) {
+                card.validatePickable();
+            }
+
+            // 1c. Calcolo costo totale e verifica cibo sufficiente, SENZA dedurlo.
             int builderDiscount = player.getTribe().getBuilderDiscount();
-            //prezzo scontato
+            int totalFoodCost = 0;
             for (Card card : selectedCards) {
                 int baseCost = card.getFoodCost();
                 if (baseCost > 0) {
                     totalFoodCost += Math.max(0, baseCost - builderDiscount);
                 }
             }
-            player.payFood(totalFoodCost); // Lancia eccezione se il cibo non basta
+            if (player.getFood() < totalFoodCost) {
+                throw new IllegalStateException("Cibo insufficiente per acquistare le carte selezionate.");
+            }
 
-            // Aggiunta carte e pulizia plancia
+            // --- FASE 2: COMMIT (tutte le validazioni sono passate, è sicuro mutare) ---
+            player.payFood(totalFoodCost);
             for (Card card : selectedCards) {
                 player.getTribe().addCard(player, card);
             }

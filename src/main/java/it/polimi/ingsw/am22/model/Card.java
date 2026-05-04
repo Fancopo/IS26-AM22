@@ -15,6 +15,15 @@ public abstract class Card {
 
     public abstract void addToTribe(Player player, Tribe tribe);
 
+    /**
+     * Pre-flight check invoked before mutating any game state during a pick action.
+     * Subclasses that cannot legally be taken into a player's tribe must override this
+     * method and throw, so that an invalid selection is rejected as a whole and no
+     * partial mutation (such as adding a sibling card to the tribe) occurs.
+     * Default behavior: cards are pickable.
+     */
+    public void validatePickable() {}
+
     public int getFoodCost() {return 0;} // Di default le carte non costano cibo
 
     public void onRoundEndTrigger(Game game) {} // Nessun comportamento di default
@@ -26,6 +35,9 @@ public abstract class Card {
     // Di base, le carte (Personaggi, Eventi) vengono scartate.
 
     public boolean isDestroyedOnEraIII() {return false;} // Definisce se la carta viene distrutta al cambio verso l'Era III.
+
+    /** Defines whether the card is an Event. Used during setup to route Events to the upper row. */
+    public boolean isEvent() {return false;}
 
 
     /** Macro-categoria della carta per il DTO di rete (es. "CHARACTER", "BUILDING", "EVENT"). */

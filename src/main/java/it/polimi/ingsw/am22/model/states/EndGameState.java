@@ -30,4 +30,7 @@ public class EndGameState implements GameState {
 
     @Override
     public String getPhaseName() { return "Fine Partita"; }
+
+    @Override
+    public boolean isEndGame() { return true; }
 }

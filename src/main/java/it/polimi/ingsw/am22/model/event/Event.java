@@ -25,6 +25,9 @@ public class Event extends Card {
     }
 
     @Override
+    public boolean isEvent() { return true; }
+
+    @Override
     public String cardCategory() { return "EVENT"; }
 
     @Override
@@ -45,6 +48,11 @@ public class Event extends Card {
     @Override
     public void addToTribe(Player player, Tribe tribe) {
         throw new UnsupportedOperationException("An event cannot be added to the tribe");
+    }
+
+    @Override
+    public void validatePickable() {
+        throw new IllegalArgumentException("An event card cannot be picked into the tribe");
     }
 }
 

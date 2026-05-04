@@ -234,7 +234,6 @@ public class Game {
     public Player getActivePlayer() { return activePlayer; }
     public List<Card> getTribeDeck() { return tribeDeck; }
     public GameState getCurrentState() {return currentState;}
-    public Player getCurrentTurnPlayer() {return activePlayer;}
 
     public void setActivePlayer(Player activePlayer) {
         this.activePlayer = activePlayer;
@@ -263,7 +262,7 @@ public class Game {
      * @return true if the game is in progress
      */
     public boolean isGameStarted() {
-        return !(currentState instanceof SetUpState);
+        return !currentState.isSetupPhase();
     }
 
     /**
@@ -272,6 +271,6 @@ public class Game {
      * @return true if the game is in the end game state
      */
     public boolean isGameEnded() {
-        return currentState.getClass().getSimpleName().contains("EndGame");
+        return currentState.isEndGame();
     }
 }

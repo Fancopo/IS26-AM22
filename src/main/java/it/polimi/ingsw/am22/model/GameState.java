@@ -27,4 +27,10 @@ public interface GameState {
         throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
     }
     String getPhaseName();
+
+    /** True only for the initial setup phase. */
+    default boolean isSetupPhase() { return false; }
+
+    /** True only for the end-game phase. */
+    default boolean isEndGame() { return false; }
 }

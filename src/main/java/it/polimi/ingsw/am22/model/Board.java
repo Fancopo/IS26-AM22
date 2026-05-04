@@ -3,6 +3,7 @@ package it.polimi.ingsw.am22.model;
 import it.polimi.ingsw.am22.model.building.Building;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Board {
@@ -38,20 +39,30 @@ public class Board {
         if (numPlayers == 5) {
             offerTrack.add(new OfferTile('A',0,0,3));
         }
+
+        // Ordiniamo le tessere offerta in ordine alfabetico crescente per lettera
+        offerTrack.sort(Comparator.comparingInt(OfferTile::getLetter));
     }
     public void dealInitialCards(List<Card> tribeDeck, int numPlayers) {
-        // Regola del manuale: Fila inferiore = numero giocatori + 1
-        for (int i = 0; i < numPlayers + 1; i++) {
-            if (!tribeDeck.isEmpty()) {
-                lowerRow.add(tribeDeck.remove(0));
+        // Fila inferiore = numero giocatori + 1.
+        // Se si pesca una carta Evento, va spostata nella fila superiore
+        // e si continua a pescare fino a completare la fila inferiore.
+        int lowerTarget = numPlayers + 1;
+        while (lowerRow.size() < lowerTarget && !tribeDeck.isEmpty()) {
+            Card drawn = tribeDeck.removeFirst();
+            if (drawn.isEvent()) {
+                upperRow.add(drawn);
+            } else {
+                lowerRow.add(drawn);
             }
         }
 
-        // Regola del manuale: Fila superiore = numero giocatori + 4
-        for (int i = 0; i < numPlayers + 4; i++) {
-            if (!tribeDeck.isEmpty()) {
-                upperRow.add(tribeDeck.remove(0));
-            }
+        // Regola del manuale (passo 5): Fila superiore = numero giocatori + 4.
+        // Se ci sono già Event spostati dal passo precedente, si pesca solo
+        // il numero di carte necessario per completare la fila.
+        int upperTarget = numPlayers + 4;
+        while (upperRow.size() < upperTarget && !tribeDeck.isEmpty()) {
+            upperRow.add(tribeDeck.removeFirst());
         }
     }
     public void clearLowerRow() {

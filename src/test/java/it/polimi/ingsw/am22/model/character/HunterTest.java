@@ -8,39 +8,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class HunterTest {
 
     @Test
-    void testHunterCreationAndNoIconEffect() {
-        // 1. Creiamo un Hunter SENZA icona cibo (parametro booleano = false)
+    void hunterWithoutFoodIconShouldNotGrantFood() {
         Hunter hunterNoIcon = new Hunter("hunt_01", Era.I, 3, false);
-        assertNotNull(hunterNoIcon, "L'istanza non dovrebbe essere null");
-        assertFalse(hunterNoIcon.hasFoodIcon(), "hunterNoIcon non dovrebbe contenere FoodIcon");
+        assertFalse(hunterNoIcon.hasFoodIcon());
 
         Player dummyPlayer = new Player("Christian");
+        hunterNoIcon.addToTribe(dummyPlayer, dummyPlayer.getTribe());
 
-
-        // 2. Eseguiamo l'effetto. Essendo false, l'if viene saltato.
-        assertDoesNotThrow(() -> hunterNoIcon.applyImmediateEffect(dummyPlayer, dummyPlayer.getTribe()),
-                "applyImmediateEffect non deve lanciare eccezioni");
-
-        // (Opzionale) Se hai un metodo getFood(), puoi verificare che il cibo sia rimasto invariato
-        assertEquals(0, dummyPlayer.getFood(), "Il cibo non deve aumentare se l'Hunter non ha l'icona");
+        assertEquals(0, dummyPlayer.getFood(), "Hunter senza icona cibo non deve aggiungere cibo");
     }
 
     @Test
-    void testHunterWithIconEffect() {
-        // 1. Creiamo un Hunter CON icona cibo (parametro booleano = true)
-        Hunter hunterWithIcon = new Hunter("hunt_01", Era.I, 3, true);
-        assertNotNull(hunterWithIcon);
+    void hunterWithFoodIconShouldGrantFoodEqualToHuntersInTribe() {
+        Hunter first = new Hunter("hunt_01", Era.I, 3, false);
+        Hunter triggering = new Hunter("hunt_02", Era.I, 3, true);
 
         Player dummyPlayer = new Player("Christian");
+        first.addToTribe(dummyPlayer, dummyPlayer.getTribe());
+        triggering.addToTribe(dummyPlayer, dummyPlayer.getTribe());
 
-        dummyPlayer.getTribe().addCharacter(hunterWithIcon);
-
-        // 2. Eseguiamo l'effetto. Questa volta entrerà nell'if!
-        assertDoesNotThrow(() -> hunterWithIcon.applyImmediateEffect(dummyPlayer, dummyPlayer.getTribe()),
-                "L'aggiunta del cibo non deve lanciare eccezioni");
-
-        // (Opzionale) Verifica effettiva che il cibo sia stato aggiunto!
-        // Se l'Hunter è stato aggiunto alla tribù, countCharacters dovrebbe restituire almeno 1.
-        assertTrue(dummyPlayer.getFood() > 0, "Il giocatore dovrebbe aver ricevuto cibo");
+        assertEquals(2, dummyPlayer.getFood(),
+                "Hunter con icona cibo deve aggiungere cibo pari al numero di cacciatori nella tribe");
     }
 }
