@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.building;
+package it.polimi.ingsw.am22.model.building;
 
 public enum BuildingEffectType {
     ENDGAME_SCORING_EFFECT,

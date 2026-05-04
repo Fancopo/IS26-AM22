@@ -44,12 +44,14 @@ public final class ClientApp {
         System.out.println("  1) TUI (text)");
         System.out.println("  2) GUI (JavaFX)");
         System.out.print("Selection [1/2] (default 2): ");
-        try (Scanner in = new Scanner(System.in)) {
-            if (in.hasNextLine()) {
-                String line = in.nextLine().trim();
-                if (line.equals("1") || line.equalsIgnoreCase("tui") || line.equalsIgnoreCase("t")) {
-                    return Mode.TUI;
-                }
+        // NB: non usiamo try-with-resources perché chiudere uno Scanner su
+        // System.in chiude lo stream condiviso: TuiRunner non riuscirebbe
+        // più a leggere input. Il GC penserà allo Scanner alla terminazione.
+        Scanner in = new Scanner(System.in);
+        if (in.hasNextLine()) {
+            String line = in.nextLine().trim();
+            if (line.equals("1") || line.equalsIgnoreCase("tui") || line.equalsIgnoreCase("t")) {
+                return Mode.TUI;
             }
         }
         return Mode.GUI;

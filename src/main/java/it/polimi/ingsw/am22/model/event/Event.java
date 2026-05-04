@@ -15,6 +15,15 @@ public class Event extends Card {
 
     public EventType getEventType() { return eventType; }
 
+    /**
+     * Permette alle sottoclassi (Hunting, Sustenance, ecc.) di registrare
+     * se stesse come effetto dopo la chiamata a {@code super(...)}.
+     * Stesso pattern usato da TribeCharacter.setEffect(this).
+     */
+    protected void setEffect(EventEffect effect) {
+        this.effect = effect;
+    }
+
     @Override
     public String cardCategory() { return "EVENT"; }
 

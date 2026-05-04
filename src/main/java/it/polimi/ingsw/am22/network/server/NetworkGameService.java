@@ -8,7 +8,6 @@ import it.polimi.ingsw.am22.network.common.message.response.*;
 import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
-import it.polimi.ingsw.am22.network.server.socket.SocketClientHandler;
 
 /**
  * Cuore del layer di rete lato server.
@@ -22,19 +21,12 @@ public class NetworkGameService {
     private final VirtualView virtualView;
     private final ModelDtoMapper mapper;
 
-    /**
-     * Crea il servizio di rete collegato a uno specifico {@link GameController}.
-     * Inizializza internamente una {@link VirtualView} vuota e un mapper per i DTO.
-     *
-     * @param gameController controller di gioco
-     */
     public NetworkGameService(GameController gameController) {
         this.gameController = gameController;
-        this.virtualView = new VirtualView();
         this.mapper = new ModelDtoMapper();
+        this.virtualView = new VirtualView(mapper);
     }
 
-    /** @return la VirtualView usata per il broadcast dei messaggi. */
     public VirtualView getVirtualView() {
         return virtualView;
     }
@@ -43,28 +35,18 @@ public class NetworkGameService {
      * Gestisce una richiesta proveniente da un client dispatchandola al
      * metodo specifico in base al tipo. Eventuali eccezioni vengono
      * convertite in {@link ErrorMessage} inviati al solo mittente.
-     *
-     * @param request richiesta da elaborare
-     * @param channel canale del client che ha inviato la richiesta
      */
     public synchronized void handleRequest(ClientRequest request, ClientChannel channel) {
+        if (request == null) {
+            channel.send(new ErrorMessage("Null request."));
+            return;
+        }
         try {
-            request.accept(new ClientRequestVisitor() {
-                @Override
-                public void visit(AddPlayerToLobbyRequest r) { handleAddPlayer(r, channel); }
-                @Override
-                public void visit(SetExpectedPlayersRequest r) { handleSetExpectedPlayers(r, channel); }
-                @Override
-                public void visit(RemovePlayerFromLobbyRequest r) { handleRemoveFromLobby(r, channel); }
-                @Override
-                public void visit(PlaceTotemRequest r) { handlePlaceTotem(r, channel); }
-                @Override
-                public void visit(PickCardsRequest r) { handlePickCards(r, channel); }
-                @Override
-                public void visit(PickBonusCardRequest r) { handlePickBonusCard(r, channel); }
-                @Override
-                public void visit(DisconnectPlayerRequest r) { handleDisconnect(r.nickname(), channel, false); }
-            });
+            // Double-dispatch: la richiesta concreta invoca l'overload corretto
+            // di ClientRequestVisitor.visit(...) sul Dispatcher. Niente instanceof
+            // e aggiungere un nuovo tipo di richiesta diventa un obbligo a
+            // compile-time.
+            request.accept(new Dispatcher(channel));
         } catch (Exception e) {
             String message = e.getMessage() == null || e.getMessage().isBlank()
                     ? "Unexpected network-server error."
@@ -74,10 +56,56 @@ public class NetworkGameService {
     }
 
     /**
+     * Visitor che lega ogni richiesta in arrivo al metodo handle... corretto
+     * sul service esterno, passando il {@link ClientChannel} originario
+     * catturato in costruttore.
+     */
+    private final class Dispatcher implements ClientRequestVisitor {
+        private final ClientChannel channel;
+
+        private Dispatcher(ClientChannel channel) {
+            this.channel = channel;
+        }
+
+        @Override
+        public void visit(AddPlayerToLobbyRequest request) {
+            handleAddPlayer(request, channel);
+        }
+
+        @Override
+        public void visit(SetExpectedPlayersRequest request) {
+            handleSetExpectedPlayers(request, channel);
+        }
+
+        @Override
+        public void visit(RemovePlayerFromLobbyRequest request) {
+            handleRemoveFromLobby(request, channel);
+        }
+
+        @Override
+        public void visit(PlaceTotemRequest request) {
+            handlePlaceTotem(request, channel);
+        }
+
+        @Override
+        public void visit(PickCardsRequest request) {
+            handlePickCards(request, channel);
+        }
+
+        @Override
+        public void visit(PickBonusCardRequest request) {
+            handlePickBonusCard(request, channel);
+        }
+
+        @Override
+        public void visit(DisconnectPlayerRequest request) {
+            handleDisconnect(request.nickname(), channel, false);
+        }
+    }
+
+    /**
      * Gestisce una caduta di trasporto (disconnessione non richiesta).
-     * Invocato da {@link SocketClientHandler} quando lo stream chiude con errore.
-     *
-     * @param channel canale che ha perso il collegamento
+     * Invocato dal SocketClientHandler quando lo stream chiude con errore.
      */
     public synchronized void handleTransportDrop(ClientChannel channel) {
         String nickname = channel.getBoundNickname();

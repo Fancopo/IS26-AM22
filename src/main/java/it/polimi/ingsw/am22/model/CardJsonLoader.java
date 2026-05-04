@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model;
+package it.polimi.ingsw.am22.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

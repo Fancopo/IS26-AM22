@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.event;
+package it.polimi.ingsw.am22.model.event;
 
 import it.polimi.ingsw.am22.model.Era;
 import it.polimi.ingsw.am22.model.Player;

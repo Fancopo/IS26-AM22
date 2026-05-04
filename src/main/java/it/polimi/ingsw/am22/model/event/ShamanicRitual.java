@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.event;
+package it.polimi.ingsw.am22.model.event;
 import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.building.BuildingEffect;
 import it.polimi.ingsw.am22.model.Tribe;
@@ -15,6 +15,7 @@ public class ShamanicRitual extends Event implements EventEffect {
 
     public ShamanicRitual(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.SHAMANIC_RITUAL, eventEffect);
+        setEffect(this);
     }
 
     @Override

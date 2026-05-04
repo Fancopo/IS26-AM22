@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.character;
+package it.polimi.ingsw.am22.model.character;
 
 import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.Card;

@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.building;
+package it.polimi.ingsw.am22.model.building;
 
 import it.polimi.ingsw.am22.model.Player;
 import org.junit.jupiter.api.BeforeEach;

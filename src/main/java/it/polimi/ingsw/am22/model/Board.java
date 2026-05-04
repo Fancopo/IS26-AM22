@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model;
+package it.polimi.ingsw.am22.model;
 
 import it.polimi.ingsw.am22.model.building.Building;
 
@@ -92,16 +92,17 @@ public class Board {
 
     public Era refillUpperRow(List<Card> tribeDeck, Era currentEra) {
         int cardsNeeded = turnOrderTile.getSlots().size() + 4;
+        Era newEra = currentEra;
         for (int i = 0; i < cardsNeeded; i++) {
             if (!tribeDeck.isEmpty()) {
-                upperRow.add(tribeDeck.removeFirst());
+                Card drawn = tribeDeck.removeFirst();
+                upperRow.add(drawn);
+                if (drawn.getEra().ordinal() > newEra.ordinal()) {
+                    newEra = drawn.getEra();
+                }
             }
         }
-
-        if (!upperRow.isEmpty() && upperRow.getFirst().getEra() != currentEra) {
-            return upperRow.getFirst().getEra();
-        }
-        return currentEra;
+        return newEra;
     }
 
     public void revealNewBuildings(List<Building> newBuildings) {

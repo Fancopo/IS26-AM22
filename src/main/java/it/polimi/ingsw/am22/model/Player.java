@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model;
+package it.polimi.ingsw.am22.model;
 
 import it.polimi.ingsw.am22.model.character.CharacterType;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;

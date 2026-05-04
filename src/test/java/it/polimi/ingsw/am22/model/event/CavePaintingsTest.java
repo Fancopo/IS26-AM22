@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.event;
+package it.polimi.ingsw.am22.model.event;
 
 import it.polimi.ingsw.am22.model.building.EventYieldBonusEffect;
 import it.polimi.ingsw.am22.model.Era;
