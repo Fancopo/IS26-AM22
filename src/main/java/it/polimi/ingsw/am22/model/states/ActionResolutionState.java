@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.states;
+package it.polimi.ingsw.am22.model.states;
 
 import it.polimi.ingsw.am22.model.*;
 import it.polimi.ingsw.am22.model.building.Building;
@@ -51,8 +51,6 @@ public class ActionResolutionState implements GameState {
 
         // 3. SPOSTAMENTO TOTEM SULL'ORDINE DI TURNO
         Slot nextSlot = game.getBoard().getTurnOrderTile().getFirstAvailableSlot();
-        currentTile.clear();
-        nextSlot.placeTotem(player.getTotem());
         player.getTotem().moveToTurnOrder(nextSlot);
 
         // Bonus/Malus Ordine di Turno

@@ -1,0 +1,16 @@
+Index: src/main/java/it/polimi/ingsw/am22/Building/Building.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.Building;\r\n\r\n\r\nimport it.polimi.ingsw.am22.Era;\r\nimport it.polimi.ingsw.am22.Player;\r\nimport it.polimi.ingsw.am22.Tribe;\r\nimport it.polimi.ingsw.am22.Card;\r\nimport it.polimi.ingsw.am22.Building.BuildingEffect;\r\n\r\npublic class Building extends Card {\r\n    private int foodPrice;\r\n    private int finalPP;\r\n    private BuildingEffect effect;\r\n\r\n    public Building(String id, Era era, int minPlayers, int foodPrice, int finalPP, BuildingEffect effect) {\r\n        super(id, era, minPlayers);\r\n        this.foodPrice = foodPrice;\r\n        this.finalPP = finalPP;\r\n        this.effect = effect;\r\n    }\r\n\r\n    // Sum base PP + Effect PP\r\n    public static int FinalBuildingPP(Tribe tribe) {\r\n        int totalSum = 0;\r\n\r\n        for (Building b : tribe.getBuildings()) {\r\n\r\n            // 1. Add the flat points printed on the building card\r\n            totalSum += b.getFinalPP();\r\n\r\n            // 2. Add the bonus points from the effect.\r\n            totalSum += b.getEffect().calculateEndGame(tribe);\r\n\r\n        }\r\n\r\n        return totalSum;\r\n    }\r\n\r\n    @Override\r\n    public void addToTribe(Player player, Tribe tribe) {\r\n        // La carta aggiunge se stessa alla lista degli edifici della tribù\r\n        tribe.addBuilding(this);\r\n    }\r\n\r\n\r\n    // Gli Edifici sopravvivono al reset di fine round\r\n    @Override\r\n    public boolean survivesRoundEnd() {\r\n        return true;\r\n    }\r\n\r\n    // Gli Edifici nella riga inferiore vengono distrutti all'Era III\r\n    @Override\r\n    public boolean isDestroyedOnEraIII() {\r\n        return true;\r\n    }\r\n\r\n    public void applyOnTotemPlaced(Player owner) {\r\n        if (this.effect != null) {\r\n            this.effect.onTotemPlaced(owner);\r\n        }\r\n    }\r\n\r\n    // Controlla se questo specifico edificio fornisce l'acquisto extra.\r\n    public boolean grantsExtraBuyAtRoundEnd() {\r\n        return this.effect != null && this.effect.hasExtraBuyAtRoundEnd();\r\n    }\r\n\r\n    public int getFoodPrice() { return foodPrice; }\r\n    public int getFinalPP() { return finalPP; }\r\n    public BuildingEffect getEffect() { return effect; }\r\n    public void applyOnFoodSlotPlaced(Player player) {}\r\n}
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/Building/Building.java b/src/main/java/it/polimi/ingsw/am22/Building/Building.java
+--- a/src/main/java/it/polimi/ingsw/am22/Building/Building.java	(revision 4d24b1e7fab5da8d3f16cd8a0174e41ac75ccf78)
++++ b/src/main/java/it/polimi/ingsw/am22/Building/Building.java	(date 1775991620681)
+@@ -5,7 +5,6 @@
+ import it.polimi.ingsw.am22.Player;
+ import it.polimi.ingsw.am22.Tribe;
+ import it.polimi.ingsw.am22.Card;
+-import it.polimi.ingsw.am22.Building.BuildingEffect;
+ 
+ public class Building extends Card {
+     private int foodPrice;

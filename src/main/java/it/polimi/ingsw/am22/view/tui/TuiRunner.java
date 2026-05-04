@@ -38,7 +38,7 @@ public final class TuiRunner {
         Scanner in = new Scanner(System.in);
 
         // 1) Setup connessione.
-        System.out.println("== MESOS client (TUI) ==");
+        printBanner();
         Transport transport = askTransport(in);
         String host = ask(in, "Server host [127.0.0.1]: ", "127.0.0.1");
         int defaultPort = transport == Transport.SOCKET
@@ -100,6 +100,7 @@ public final class TuiRunner {
                 switch (cmd) {
                     case "help", "?" -> printHelp();
                     case "state"     -> printCachedState(session);
+                    case "who", "me" -> printWho(session);
                     case "players"   -> {
                         // host imposta il numero di giocatori attesi
                         requireArgs(parts, 2, "players <N>");
@@ -127,6 +128,12 @@ public final class TuiRunner {
                         controller.removePlayerFromLobby();
                         view.requestStop();
                     }
+                    case "disconnect" -> {
+                        // Volontario: pre-partita = uguale a leave;
+                        // mid-game = chiude il match per tutti.
+                        controller.disconnect();
+                        view.requestStop();
+                    }
                     case "quit", "exit" -> view.requestStop();
                     default -> System.out.println("Unknown command. Type 'help'.");
                 }
@@ -141,11 +148,13 @@ public final class TuiRunner {
         System.out.println("Available commands:");
         System.out.println("  help                     show this help");
         System.out.println("  state                    print last known game/lobby state");
+        System.out.println("  who | me                 show your nickname and active player");
         System.out.println("  players <N>              (host only) set expected players");
         System.out.println("  place <letter>           place totem on offer tile <letter>");
         System.out.println("  pick <id1> [id2 ...]     pick cards from the board");
         System.out.println("  bonus <cardId>           select bonus card");
-        System.out.println("  leave                    leave the lobby / disconnect");
+        System.out.println("  leave                    leave the lobby (pre-game only)");
+        System.out.println("  disconnect               disconnect (pre-game = leave; mid-game = aborts match)");
         System.out.println("  quit                     quit the client");
         System.out.println();
     }
@@ -179,11 +188,18 @@ public final class TuiRunner {
     }
 
     private static String ask(Scanner in, String prompt, String defaultValue) {
-        System.out.print(prompt);
-        String line = in.hasNextLine() ? in.nextLine().trim() : "";
-        if (line.isEmpty() && defaultValue != null) return defaultValue;
-        if (line.isEmpty()) return ask(in, prompt, null);
-        return line;
+        while (true) {
+            System.out.print(prompt);
+            if (!in.hasNextLine()) {
+                // Stdin chiuso (EOF / Ctrl+D): se c'è un default usalo, altrimenti
+                // ritorna stringa vuota per evitare loop infiniti.
+                return defaultValue != null ? defaultValue : "";
+            }
+            String line = in.nextLine().trim();
+            if (!line.isEmpty()) return line;
+            if (defaultValue != null) return defaultValue;
+            // Input vuoto e nessun default: ritenta (loop, non ricorsione).
+        }
     }
 
     private static int askInt(Scanner in, String prompt, int defaultValue) {
@@ -200,6 +216,32 @@ public final class TuiRunner {
     private static void requireArgs(String[] parts, int expected, String usage) {
         if (parts.length < expected) {
             throw new IllegalArgumentException("usage: " + usage);
+        }
+    }
+
+    /** Banner ASCII di benvenuto, stampato una volta all'avvio. */
+    private static void printBanner() {
+        System.out.println(Ansi.cyan(
+                "  __  __ _____ ____   ___  ____  \n" +
+                " |  \\/  | ____/ ___| / _ \\/ ___| \n" +
+                " | |\\/| |  _| \\___ \\| | | \\___ \\ \n" +
+                " | |  | | |___ ___) | |_| |___) |\n" +
+                " |_|  |_|_____|____/ \\___/|____/ "));
+        System.out.println(Ansi.dim("                Mesolithic Tribes — TUI client\n"));
+    }
+
+    /**
+     * Stampa nickname locale + active player + se sei tu. Comando 'who' / 'me'.
+     * Utile in test multi-client per non confondere le finestre.
+     */
+    private static void printWho(ClientSession session) {
+        String nick = session.getLocalNickname();
+        System.out.println("You: " + (nick == null ? "(not joined)" : Ansi.bold(nick)));
+        if (session.getLatestGameState() != null) {
+            String active = session.getLatestGameState().activePlayer();
+            String mark   = (active != null && active.equalsIgnoreCase(nick))
+                    ? Ansi.green("  ← that's you!") : "";
+            System.out.println("Active player: " + Ansi.bold(active) + mark);
         }
     }
 }

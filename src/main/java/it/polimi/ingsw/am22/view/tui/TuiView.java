@@ -74,11 +74,11 @@ public final class TuiView implements ClientUpdateHandler {
             case GameStateMessage state        -> renderGameState(state.gameState());
             case EndGameMessage end            -> renderEndGame(end.winner(), end.finalGameState());
             case MatchClosedMessage closed     -> {
-                println("[MATCH CLOSED] " + closed.reason());
+                println(Ansi.red(Ansi.BOLD + "[MATCH CLOSED] " + Ansi.RESET) + closed.reason());
                 requestStop();
             }
-            case ErrorMessage err              -> println("[ERROR] " + err.message());
-            case InfoMessage info              -> println("[INFO] " + info.message());
+            case ErrorMessage err              -> println(Ansi.red("[ERROR] ") + err.message());
+            case InfoMessage info              -> println(Ansi.yellow("[INFO]  ") + info.message());
             default                            -> println("[?] " + message);
         }
     }
@@ -129,8 +129,8 @@ public final class TuiView implements ClientUpdateHandler {
 
     private void renderGameState(GameStateDTO state) {
         synchronized (printLock) {
-            System.out.println();
-            System.out.println("=== GAME STATE ===");
+            System.out.print(Ansi.CLEAR_SCREEN);
+            System.out.println(Ansi.bold("=== GAME STATE ==="));
             System.out.println("Round: " + state.currentRound()
                     + " | Era: " + state.currentEra()
                     + " | Phase: " + state.currentPhase());
@@ -176,8 +176,10 @@ public final class TuiView implements ClientUpdateHandler {
             // Se è il mio turno, suggerimento contestuale di comando.
             String me = session.getLocalNickname();
             if (me != null && me.equalsIgnoreCase(state.activePlayer())) {
-                System.out.println("(Your turn. Phase: " + state.currentPhase() + ".)");
-                System.out.println("  Commands: place <letter> | pick <id...> | bonus <id>");
+                System.out.println();
+                System.out.println(Ansi.green(Ansi.BOLD + "*** YOUR TURN — phase: " + state.currentPhase() + " ***"));
+                System.out.println(Ansi.green("    Commands: place <letter> | pick <id...> | bonus <id>"));
+                System.out.print(Ansi.BELL); // beep / flash della finestra
             }
         }
     }

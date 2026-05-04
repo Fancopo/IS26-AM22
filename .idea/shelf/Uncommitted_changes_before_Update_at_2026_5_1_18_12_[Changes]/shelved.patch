@@ -1,0 +1,410 @@
+Index: src/main/java/it/polimi/ingsw/am22/network/client/ObservableServerConnection.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.network.client;\r\n\r\npublic interface ObservableServerConnection extends ServerConnection, AutoCloseable {\r\n    void setClientUpdateHandler(ClientUpdateHandler handler);\r\n\r\n    @Override\r\n    void close();\r\n}\r\n\r\n/** Facendo ObservableServerConnection extends AutoCloseable, le SocketServerConnection\r\ne RmiServerConnection diventano utilizzabili con try-with-resources:\r\n*/
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/network/client/ObservableServerConnection.java b/src/main/java/it/polimi/ingsw/am22/network/client/ObservableServerConnection.java
+--- a/src/main/java/it/polimi/ingsw/am22/network/client/ObservableServerConnection.java	(revision 6865caf8cd5d60fd8efce1b351c89d8d2c546f82)
++++ b/src/main/java/it/polimi/ingsw/am22/network/client/ObservableServerConnection.java	(date 1777651956466)
+@@ -1,12 +1,29 @@
+ package it.polimi.ingsw.am22.network.client;
+ 
++/**
++ * A {@link ServerConnection} that can be observed for incoming server messages
++ * and released deterministically.
++ *
++ * <p>Extending {@link AutoCloseable} lets concrete implementations such as
++ * {@code SocketServerConnection} and {@code RmiServerConnection} be used in
++ * a {@code try-with-resources} block, so the transport is always released
++ * even when an exception escapes the client loop.
++ */
+ public interface ObservableServerConnection extends ServerConnection, AutoCloseable {
++
++    /**
++     * Installs the handler that will be notified whenever the server pushes
++     * a message (or the connection is closed). May be {@code null} to clear
++     * a previously installed handler.
++     *
++     * @param handler the handler to install, or {@code null} to detach
++     */
+     void setClientUpdateHandler(ClientUpdateHandler handler);
+ 
++    /**
++     * Releases the underlying transport. Idempotent: repeated calls are
++     * safe and do not throw.
++     */
+     @Override
+     void close();
+ }
+-
+-/** Facendo ObservableServerConnection extends AutoCloseable, le SocketServerConnection
+-e RmiServerConnection diventano utilizzabili con try-with-resources:
+-*/
+\ No newline at end of file
+Index: src/main/java/it/polimi/ingsw/am22/network/client/ServerConnection.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.network.client;\r\n\r\nimport java.util.List;\r\n\r\n/**\r\n * Interfaccia che rappresenta i comandi che il client può inviare al server.\r\n *\r\n * Lo scopo di questa interfaccia è separare il controller client\r\n * dal tipo concreto di connessione usata sotto (per esempio socket o RMI).\r\n */\r\npublic interface ServerConnection {\r\n\r\n    /**\r\n     * Richiede al server di aggiungere un giocatore alla lobby.\r\n     *\r\n     * @param nickname nickname del giocatore che entra nella lobby\r\n     */\r\n    void addPlayerToLobby(String nickname);\r\n\r\n    /**\r\n     * Richiede al server di impostare il numero totale di giocatori attesi.\r\n     *\r\n     * @param requesterNickname nickname di chi fa la richiesta\r\n     * @param expectedPlayers numero totale di giocatori desiderato\r\n     */\r\n    void setExpectedPlayers(String requesterNickname, int expectedPlayers);\r\n\r\n    /**\r\n     * Richiede al server di rimuovere un giocatore dalla lobby.\r\n     *\r\n     * @param nickname nickname del giocatore da rimuovere\r\n     */\r\n    void removePlayerFromLobby(String nickname);\r\n\r\n    /**\r\n     * Invia al server il comando di piazzamento del totem.\r\n     *\r\n     * @param playerNickname nickname del giocatore che compie l'azione\r\n     * @param offerLetter lettera della tessera scelta\r\n     */\r\n    void placeTotem(String playerNickname, char offerLetter);\r\n\r\n    /**\r\n     * Invia al server il comando di scelta delle carte.\r\n     *\r\n     * @param playerNickname nickname del giocatore che compie l'azione\r\n     * @param selectedCardIds lista degli id delle carte selezionate\r\n     */\r\n    void pickCards(String playerNickname, List<String> selectedCardIds);\r\n\r\n    /**\r\n     * Invia al server il comando di scelta della carta bonus.\r\n     *\r\n     * @param playerNickname nickname del giocatore che compie l'azione\r\n     * @param bonusCardId id della carta bonus scelta\r\n     */\r\n    void pickBonusCard(String playerNickname, String bonusCardId);\r\n\r\n    /**\r\n     * Notifica al server la disconnessione di un giocatore.\r\n     *\r\n     * @param nickname nickname del giocatore disconnesso\r\n     */\r\n    void disconnectPlayer(String nickname);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/network/client/ServerConnection.java b/src/main/java/it/polimi/ingsw/am22/network/client/ServerConnection.java
+--- a/src/main/java/it/polimi/ingsw/am22/network/client/ServerConnection.java	(revision 6865caf8cd5d60fd8efce1b351c89d8d2c546f82)
++++ b/src/main/java/it/polimi/ingsw/am22/network/client/ServerConnection.java	(date 1777651956482)
+@@ -3,63 +3,63 @@
+ import java.util.List;
+ 
+ /**
+- * Interfaccia che rappresenta i comandi che il client può inviare al server.
++ * Interface representing the commands a client can send to the server.
+  *
+- * Lo scopo di questa interfaccia è separare il controller client
+- * dal tipo concreto di connessione usata sotto (per esempio socket o RMI).
++ * <p>Its purpose is to decouple the client-side controller from the
++ * concrete transport used underneath (for example socket or RMI).
+  */
+ public interface ServerConnection {
+ 
+     /**
+-     * Richiede al server di aggiungere un giocatore alla lobby.
++     * Asks the server to add a player to the lobby.
+      *
+-     * @param nickname nickname del giocatore che entra nella lobby
++     * @param nickname nickname of the player joining the lobby
+      */
+     void addPlayerToLobby(String nickname);
+ 
+     /**
+-     * Richiede al server di impostare il numero totale di giocatori attesi.
++     * Asks the server to set the total number of expected players.
+      *
+-     * @param requesterNickname nickname di chi fa la richiesta
+-     * @param expectedPlayers numero totale di giocatori desiderato
++     * @param requesterNickname nickname of the player issuing the request
++     * @param expectedPlayers   desired total number of players
+      */
+     void setExpectedPlayers(String requesterNickname, int expectedPlayers);
+ 
+     /**
+-     * Richiede al server di rimuovere un giocatore dalla lobby.
++     * Asks the server to remove a player from the lobby.
+      *
+-     * @param nickname nickname del giocatore da rimuovere
++     * @param nickname nickname of the player to remove
+      */
+     void removePlayerFromLobby(String nickname);
+ 
+     /**
+-     * Invia al server il comando di piazzamento del totem.
++     * Sends the totem-placement command to the server.
+      *
+-     * @param playerNickname nickname del giocatore che compie l'azione
+-     * @param offerLetter lettera della tessera scelta
++     * @param playerNickname nickname of the acting player
++     * @param offerLetter    letter of the chosen offer tile
+      */
+     void placeTotem(String playerNickname, char offerLetter);
+ 
+     /**
+-     * Invia al server il comando di scelta delle carte.
++     * Sends the card-selection command to the server.
+      *
+-     * @param playerNickname nickname del giocatore che compie l'azione
+-     * @param selectedCardIds lista degli id delle carte selezionate
++     * @param playerNickname  nickname of the acting player
++     * @param selectedCardIds ids of the selected cards
+      */
+     void pickCards(String playerNickname, List<String> selectedCardIds);
+ 
+     /**
+-     * Invia al server il comando di scelta della carta bonus.
++     * Sends the bonus-card selection to the server.
+      *
+-     * @param playerNickname nickname del giocatore che compie l'azione
+-     * @param bonusCardId id della carta bonus scelta
++     * @param playerNickname nickname of the acting player
++     * @param bonusCardId    id of the chosen bonus card
+      */
+     void pickBonusCard(String playerNickname, String bonusCardId);
+ 
+     /**
+-     * Notifica al server la disconnessione di un giocatore.
++     * Notifies the server that a player has disconnected.
+      *
+-     * @param nickname nickname del giocatore disconnesso
++     * @param nickname nickname of the disconnected player
+      */
+     void disconnectPlayer(String nickname);
+ }
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"modifiche reti\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_04_2026_11_28_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_04_2026_11_28__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_04_2026_11_54_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_04_2026_11_54__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_04_2026_15_07_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_04_2026_15_07__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_10_23_58_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_10_23_58__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_11_10_30_[Changes]1/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_11_10_30__Changes_1.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_11_11_36_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_11_11_36__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_13_15_39_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_13_15_39__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]1/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_1.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"Test\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Fancopo&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,\r\n    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3AtUiA6XPNTIVvuMJwuRyVJnWzA\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;JUnit.ArtistTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,\r\n    &quot;JUnit.java in am22.executor&quot;: &quot;Run&quot;,\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,\r\n    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\jacop\\IdeaProjects\\am22\\src\\main\\java\\it\\polimi\\ingsw\\am22\" />\r\n    </key>\r\n    <key name=\"MoveClassesOrPackagesDialog.RECENTS_KEY\">\r\n      <recent name=\"it.polimi.ingsw.am22\" />\r\n    </key>\r\n    <key name=\"CopyClassDialog.RECENTS_KEY\">\r\n      <recent name=\"it.polimi.ingsw.am22\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"JUnit.java in am22\">\r\n    <configuration name=\"ArtistTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.character.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22.character\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.character.ArtistTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"CardJsonLoaderTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.CardJsonLoaderTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"CardJsonLoaderTest.shouldLoadBuilderCorrectly\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.CardJsonLoaderTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"shouldLoadBuilderCorrectly\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"TribeTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"it.polimi.ingsw.am22.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <option name=\"PACKAGE_NAME\" value=\"it.polimi.ingsw.am22\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"it.polimi.ingsw.am22.TribeTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"java in am22\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"am22\" />\r\n      <option name=\"TEST_OBJECT\" value=\"directory\" />\r\n      <dir value=\"$PROJECT_DIR$/src/test/java\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"JUnit.java in am22\" />\r\n        <item itemvalue=\"JUnit.CardJsonLoaderTest\" />\r\n        <item itemvalue=\"JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly\" />\r\n        <item itemvalue=\"JUnit.ArtistTest\" />\r\n        <item itemvalue=\"JUnit.TribeTest\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"d4eadf74-407e-49cc-9299-af7b87a1c856\" name=\"Changes\" comment=\"\" />\r\n      <created>1773411487475</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1773411487475</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initial version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589285100</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589285100</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589402689</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589402689</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Second version\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1773589432607</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1773589432607</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Second version of Building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1774109302482</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1774109302482</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"last commit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775223396914</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775223396914</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Json completo, modifiche TribeCharacter e event,building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775901219194</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775901219194</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"Json completo, modifiche TribeCharacter e event,building\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1775990726018</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1775990726018</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"Nuovo GameController.java e aggiunto nel network.client il ClientController e ServerConnection. Piccola modifica su id di Building.json\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1776432862800</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1776432862800</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00009\" summary=\"modifiche reti\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1776437527710</created>\r\n      <option name=\"number\" value=\"00009\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1776437527710</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"10\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initial version\" />\r\n    <MESSAGE value=\"Second version\" />\r\n    <MESSAGE value=\"Second version of Building\" />\r\n    <MESSAGE value=\"last commit\" />\r\n    <MESSAGE value=\"Json completo, modifiche TribeCharacter e event,building\" />\r\n    <MESSAGE value=\"Nuovo GameController.java e aggiunto nel network.client il ClientController e ServerConnection. Piccola modifica su id di Building.json\" />\r\n    <MESSAGE value=\"modifiche reti\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"modifiche reti\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/BuildingEffect.java</url>\r\n          <line>5</line>\r\n          <option name=\"timeStamp\" value=\"1\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>58</line>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>77</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>143</line>\r\n          <option name=\"timeStamp\" value=\"4\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>167</line>\r\n          <option name=\"timeStamp\" value=\"5\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>179</line>\r\n          <option name=\"timeStamp\" value=\"7\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>118</line>\r\n          <properties class=\"it.polimi.ingsw.am22.ShamanicModifierEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"8\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"java-method\">\r\n          <url>file://$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/Building.java</url>\r\n          <line>219</line>\r\n          <properties class=\"it.polimi.ingsw.am22.EventYieldBonusEffect\">\r\n            <option name=\"EMULATED\" value=\"true\" />\r\n            <option name=\"WATCH_EXIT\" value=\"false\" />\r\n          </properties>\r\n          <option name=\"timeStamp\" value=\"9\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/am22$PlayerTest.ic\" NAME=\"PlayerTest Coverage Results\" MODIFIED=\"1775646643233\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CardJsonLoaderTest_shouldLoadBuilderCorrectly.ic\" NAME=\"CardJsonLoaderTest.shouldLoadBuilderCorrectly Coverage Results\" MODIFIED=\"1775950027095\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TribeTest.ic\" NAME=\"TribeTest Coverage Results\" MODIFIED=\"1775827189738\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$OfferTileTest.ic\" NAME=\"OfferTileTest Coverage Results\" MODIFIED=\"1775646627410\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$CardJsonLoaderTest.ic\" NAME=\"CardJsonLoaderTest Coverage Results\" MODIFIED=\"1775990640161\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$SlotTest.ic\" NAME=\"SlotTest Coverage Results\" MODIFIED=\"1775646676668\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n    <SUITE FILE_PATH=\"coverage/am22$TotemTest.ic\" NAME=\"TotemTest Coverage Results\" MODIFIED=\"1775646686996\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"true\">\r\n      <FILTER>it.polimi.ingsw.am22.*</FILTER>\r\n    </SUITE>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 6865caf8cd5d60fd8efce1b351c89d8d2c546f82)
++++ b/.idea/workspace.xml	(date 1777651971574)
+@@ -4,24 +4,11 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="modifiche reti">
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_04_2026_11_28_[Changes]/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_04_2026_11_28__Changes_.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_04_2026_11_54_[Changes]/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_04_2026_11_54__Changes_.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_04_2026_15_07_[Changes]/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_04_2026_15_07__Changes_.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_10_23_58_[Changes]/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_10_23_58__Changes_.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_11_10_30_[Changes]1/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_11_10_30__Changes_1.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_11_11_36_[Changes]/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_11_11_36__Changes_.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_13_15_39_[Changes]/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_13_15_39__Changes_.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]1/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_1.xml" beforeDir="false" />
++    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="modifiche tutti i nome all'interno di reti da view a dto">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ClientController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ClientController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ObservableServerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ObservableServerConnection.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ServerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ServerConnection.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -272,7 +259,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1776437527710</updated>
+     </task>
+-    <option name="localTasksCounter" value="10" />
++    <task id="LOCAL-00010" summary="modifiche tutti i nome all'interno di reti da view a dto">
++      <option name="closed" value="true" />
++      <created>1776718065726</created>
++      <option name="number" value="00010" />
++      <option name="presentableId" value="LOCAL-00010" />
++      <option name="project" value="LOCAL" />
++      <updated>1776718065726</updated>
++    </task>
++    <option name="localTasksCounter" value="11" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -280,7 +275,19 @@
+       <map>
+         <entry key="MAIN">
+           <value>
+-            <State />
++            <State>
++              <option name="FILTERS">
++                <map>
++                  <entry key="branch">
++                    <value>
++                      <list>
++                        <option value="origin/Card-Building-BuildingEffect" />
++                      </list>
++                    </value>
++                  </entry>
++                </map>
++              </option>
++            </State>
+           </value>
+         </entry>
+       </map>
+@@ -294,7 +301,8 @@
+     <MESSAGE value="Json completo, modifiche TribeCharacter e event,building" />
+     <MESSAGE value="Nuovo GameController.java e aggiunto nel network.client il ClientController e ServerConnection. Piccola modifica su id di Building.json" />
+     <MESSAGE value="modifiche reti" />
+-    <option name="LAST_COMMIT_MESSAGE" value="modifiche reti" />
++    <MESSAGE value="modifiche tutti i nome all'interno di reti da view a dto" />
++    <option name="LAST_COMMIT_MESSAGE" value="modifiche tutti i nome all'interno di reti da view a dto" />
+   </component>
+   <component name="XDebuggerManager">
+     <breakpoint-manager>
+Index: src/main/java/it/polimi/ingsw/am22/network/client/ClientController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package it.polimi.ingsw.am22.network.client;\r\n\r\nimport java.util.List;\r\nimport java.util.Objects;\r\n\r\n/**\r\n * Controller lato client.\r\n *\r\n * Questa classe fa da ponte tra la view del client e l'oggetto di connessione\r\n * verso il server. La view chiama i metodi di questo controller e il controller\r\n * inoltra le richieste al server aggiungendo automaticamente il nickname locale\r\n * del giocatore quando necessario.\r\n */\r\npublic class ClientController {\r\n\r\n    /** Connessione astratta verso il server. */\r\n    private final ServerConnection serverConnection;\r\n\r\n    /** Nickname del giocatore locale, salvato dopo il join in lobby. */\r\n    private String nickname;\r\n\r\n    /**\r\n     * Costruisce il controller client.\r\n     *\r\n     * @param serverConnection implementazione concreta della connessione al server\r\n     */\r\n    public ClientController(ServerConnection serverConnection) {\r\n        this.serverConnection = Objects.requireNonNull(serverConnection, \"serverConnection cannot be null\");\r\n        this.nickname = null;\r\n    }\r\n\r\n    /**\r\n     * Restituisce il nickname locale del client.\r\n     *\r\n     * @return nickname del giocatore, oppure null se non ha ancora fatto join\r\n     */\r\n    public String getNickname() {\r\n        return nickname;\r\n    }\r\n\r\n    /**\r\n     * Indica se il client ha già effettuato il join nella lobby.\r\n     *\r\n     * @return true se il nickname locale è stato impostato\r\n     */\r\n    public boolean hasJoinedLobby() {\r\n        return nickname != null && !nickname.isBlank();\r\n    }\r\n\r\n    /**\r\n     * Invia al server la richiesta di ingresso nella lobby.\r\n     *\r\n     * Il nickname viene anche memorizzato localmente per le richieste successive.\r\n     *\r\n     * @param nickname nickname scelto dal giocatore\r\n     */\r\n    public void addPlayerToLobby(String nickname) {\r\n        String cleanNickname = requireText(nickname, \"nickname\");\r\n        this.nickname = cleanNickname;\r\n        serverConnection.addPlayerToLobby(cleanNickname);\r\n    }\r\n\r\n    /**\r\n     * Chiede al server di impostare il numero di giocatori attesi.\r\n     *\r\n     * Questo metodo può essere usato solo dopo essere entrati in lobby.\r\n     *\r\n     * @param expectedPlayers numero di giocatori scelto\r\n     */\r\n    public void setExpectedPlayers(int expectedPlayers) {\r\n        requireJoined();\r\n        serverConnection.setExpectedPlayers(nickname, expectedPlayers);\r\n    }\r\n\r\n    /**\r\n     * Rimuove il giocatore locale dalla lobby e cancella il nickname salvato.\r\n     */\r\n    public void removePlayerFromLobby() {\r\n        requireJoined();\r\n        serverConnection.removePlayerFromLobby(nickname);\r\n        this.nickname = null;\r\n    }\r\n\r\n    /**\r\n     * Invia al server la mossa di piazzamento del totem.\r\n     *\r\n     * @param offerLetter lettera della tessera scelta\r\n     */\r\n    public void placeTotem(char offerLetter) {\r\n        requireJoined();\r\n        serverConnection.placeTotem(nickname, offerLetter);\r\n    }\r\n\r\n    /**\r\n     * Invia al server la lista delle carte selezionate dal giocatore locale.\r\n     *\r\n     * Se la lista ricevuta è null, viene trasformata in una lista vuota.\r\n     *\r\n     * @param selectedCardIds lista degli id delle carte selezionate\r\n     */\r\n    public void pickCards(List<String> selectedCardIds) {\r\n        requireJoined();\r\n        serverConnection.pickCards(nickname, selectedCardIds == null ? List.of() : selectedCardIds);\r\n    }\r\n\r\n    /**\r\n     * Invia al server la scelta della carta bonus.\r\n     *\r\n     * @param bonusCardId id della carta bonus scelta\r\n     */\r\n    public void pickBonusCard(String bonusCardId) {\r\n        requireJoined();\r\n        serverConnection.pickBonusCard(nickname, requireText(bonusCardId, \"bonusCardId\"));\r\n    }\r\n\r\n    /**\r\n     * Notifica al server la disconnessione del giocatore locale.\r\n     *\r\n     * Dopo la disconnessione il nickname locale viene cancellato.\r\n     */\r\n    public void disconnect() {\r\n        requireJoined();\r\n        serverConnection.disconnectPlayer(nickname);\r\n        this.nickname = null;\r\n    }\r\n\r\n    /**\r\n     * Verifica che il client abbia già effettuato il join in lobby.\r\n     */\r\n    private void requireJoined() {\r\n        if (!hasJoinedLobby()) {\r\n            throw new IllegalStateException(\"You must join the lobby before sending actions.\");\r\n        }\r\n    }\r\n\r\n    /**\r\n     * Controlla che una stringa non sia null o vuota.\r\n     *\r\n     * @param value valore da verificare\r\n     * @param fieldName nome logico del campo, usato nel messaggio di errore\r\n     * @return la stringa stessa se valida\r\n     */\r\n    private String requireText(String value, String fieldName) {\r\n        if (value == null || value.isBlank()) {\r\n            throw new IllegalArgumentException(fieldName + \" cannot be null or blank.\");\r\n        }\r\n        return value;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/it/polimi/ingsw/am22/network/client/ClientController.java b/src/main/java/it/polimi/ingsw/am22/network/client/ClientController.java
+--- a/src/main/java/it/polimi/ingsw/am22/network/client/ClientController.java	(revision 6865caf8cd5d60fd8efce1b351c89d8d2c546f82)
++++ b/src/main/java/it/polimi/ingsw/am22/network/client/ClientController.java	(date 1777651956512)
+@@ -4,25 +4,25 @@
+ import java.util.Objects;
+ 
+ /**
+- * Controller lato client.
++ * Client-side controller.
+  *
+- * Questa classe fa da ponte tra la view del client e l'oggetto di connessione
+- * verso il server. La view chiama i metodi di questo controller e il controller
+- * inoltra le richieste al server aggiungendo automaticamente il nickname locale
+- * del giocatore quando necessario.
++ * <p>This class bridges the client view and the underlying {@link ServerConnection}:
++ * the view calls the controller's methods and the controller forwards the requests
++ * to the server, automatically injecting the local player's nickname whenever the
++ * server request requires it.
+  */
+ public class ClientController {
+ 
+-    /** Connessione astratta verso il server. */
++    /** Abstract connection to the server. */
+     private final ServerConnection serverConnection;
+ 
+-    /** Nickname del giocatore locale, salvato dopo il join in lobby. */
++    /** Local player's nickname, stored after joining the lobby. */
+     private String nickname;
+ 
+     /**
+-     * Costruisce il controller client.
++     * Builds the client controller.
+      *
+-     * @param serverConnection implementazione concreta della connessione al server
++     * @param serverConnection concrete implementation of the server connection
+      */
+     public ClientController(ServerConnection serverConnection) {
+         this.serverConnection = Objects.requireNonNull(serverConnection, "serverConnection cannot be null");
+@@ -30,29 +30,29 @@
+     }
+ 
+     /**
+-     * Restituisce il nickname locale del client.
++     * Returns the local client's nickname.
+      *
+-     * @return nickname del giocatore, oppure null se non ha ancora fatto join
++     * @return the player's nickname, or {@code null} if not yet joined
+      */
+     public String getNickname() {
+         return nickname;
+     }
+ 
+     /**
+-     * Indica se il client ha già effettuato il join nella lobby.
++     * Reports whether the client has already joined the lobby.
+      *
+-     * @return true se il nickname locale è stato impostato
++     * @return {@code true} if the local nickname has been set
+      */
+     public boolean hasJoinedLobby() {
+         return nickname != null && !nickname.isBlank();
+     }
+ 
+     /**
+-     * Invia al server la richiesta di ingresso nella lobby.
++     * Sends the server the request to join the lobby.
+      *
+-     * Il nickname viene anche memorizzato localmente per le richieste successive.
++     * <p>The nickname is also stored locally so subsequent actions can reference it.
+      *
+-     * @param nickname nickname scelto dal giocatore
++     * @param nickname nickname chosen by the player
+      */
+     public void addPlayerToLobby(String nickname) {
+         String cleanNickname = requireText(nickname, "nickname");
+@@ -61,11 +61,11 @@
+     }
+ 
+     /**
+-     * Chiede al server di impostare il numero di giocatori attesi.
++     * Asks the server to set the number of expected players.
+      *
+-     * Questo metodo può essere usato solo dopo essere entrati in lobby.
++     * <p>Can only be invoked after having joined the lobby.
+      *
+-     * @param expectedPlayers numero di giocatori scelto
++     * @param expectedPlayers desired number of players
+      */
+     public void setExpectedPlayers(int expectedPlayers) {
+         requireJoined();
+@@ -73,7 +73,7 @@
+     }
+ 
+     /**
+-     * Rimuove il giocatore locale dalla lobby e cancella il nickname salvato.
++     * Removes the local player from the lobby and clears the stored nickname.
+      */
+     public void removePlayerFromLobby() {
+         requireJoined();
+@@ -82,9 +82,9 @@
+     }
+ 
+     /**
+-     * Invia al server la mossa di piazzamento del totem.
++     * Sends the totem-placement action to the server.
+      *
+-     * @param offerLetter lettera della tessera scelta
++     * @param offerLetter letter of the chosen offer tile
+      */
+     public void placeTotem(char offerLetter) {
+         requireJoined();
+@@ -92,11 +92,12 @@
+     }
+ 
+     /**
+-     * Invia al server la lista delle carte selezionate dal giocatore locale.
++     * Sends the list of cards selected by the local player to the server.
+      *
+-     * Se la lista ricevuta è null, viene trasformata in una lista vuota.
++     * <p>A {@code null} list is coerced to an empty list so the request is never
++     * rejected for a missing collection.
+      *
+-     * @param selectedCardIds lista degli id delle carte selezionate
++     * @param selectedCardIds ids of the selected cards
+      */
+     public void pickCards(List<String> selectedCardIds) {
+         requireJoined();
+@@ -104,9 +105,9 @@
+     }
+ 
+     /**
+-     * Invia al server la scelta della carta bonus.
++     * Sends the bonus-card selection to the server.
+      *
+-     * @param bonusCardId id della carta bonus scelta
++     * @param bonusCardId id of the chosen bonus card
+      */
+     public void pickBonusCard(String bonusCardId) {
+         requireJoined();
+@@ -114,9 +115,9 @@
+     }
+ 
+     /**
+-     * Notifica al server la disconnessione del giocatore locale.
++     * Notifies the server that the local player is disconnecting.
+      *
+-     * Dopo la disconnessione il nickname locale viene cancellato.
++     * <p>The local nickname is cleared after the request has been sent.
+      */
+     public void disconnect() {
+         requireJoined();
+@@ -125,7 +126,7 @@
+     }
+ 
+     /**
+-     * Verifica che il client abbia già effettuato il join in lobby.
++     * Verifies that the client has already joined the lobby.
+      */
+     private void requireJoined() {
+         if (!hasJoinedLobby()) {
+@@ -134,11 +135,11 @@
+     }
+ 
+     /**
+-     * Controlla che una stringa non sia null o vuota.
++     * Checks that a string is not {@code null} nor blank.
+      *
+-     * @param value valore da verificare
+-     * @param fieldName nome logico del campo, usato nel messaggio di errore
+-     * @return la stringa stessa se valida
++     * @param value     value to validate
++     * @param fieldName logical field name, used in the error message
++     * @return the string itself if valid
+      */
+     private String requireText(String value, String fieldName) {
+         if (value == null || value.isBlank()) {

@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.event;
+package it.polimi.ingsw.am22.model.event;
 import it.polimi.ingsw.am22.model.building.Building;
 
 import it.polimi.ingsw.am22.model.Era;
@@ -12,6 +12,7 @@ public class CavePaintings extends Event implements EventEffect {
 
     public CavePaintings(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.CAVE_PAINTING, eventEffect);
+        setEffect(this);
     }
 
     @Override

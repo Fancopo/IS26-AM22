@@ -6,13 +6,7 @@ public class TotemPlacementState implements GameState {
 
     @Override
     public void placeTotemOnOffer(Game game, Player player, OfferTile tile) {
-        for (Slot slot : game.getBoard().getTurnOrderTile().getSlots()) {
-            if (slot.getOccupiedBy() == player.getTotem()) {
-                slot.removeTotem();
-                break;
-            }
-        }
-        tile.placeTotem(player.getTotem());
+        player.getTotem().moveToOffer(tile);
 
         if (game.getBoard().getTotemsOnOffersCount() == game.getPlayers().size()) {
             // Transizione di Stato!

@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model;
+package it.polimi.ingsw.am22.model;
 
 import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.character.*;
@@ -157,7 +157,7 @@ public class CardJsonLoaderTest {
 
         assertNotNull(event);
         assertEquals(EventType.SUSTENANCE, event.getEventType());
-        assertInstanceOf(sustenance.class, event);
+        assertInstanceOf(Sustenance.class, event);
         assertEquals(1, event.getTriggerPriority());
     }
 

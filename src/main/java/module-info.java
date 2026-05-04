@@ -4,24 +4,54 @@ module it.polimi.ingsw.am {
     requires com.fasterxml.jackson.databind;
     requires java.rmi;
 
-    // Package principali: esportati e aperti ai moduli JavaFX per consentire
-    // la reflection che Application.launch e FXMLLoader eseguono sulle classi
-    // pubbliche (es. ClientApp, GuiApp e schermate).
-    exports it.polimi.ingsw.am22;
-    opens it.polimi.ingsw.am22 to javafx.fxml, javafx.graphics;
-
+    // ----------------------------------------------------------------------
+    // Model
+    // ----------------------------------------------------------------------
     exports it.polimi.ingsw.am22.model;
     opens it.polimi.ingsw.am22.model to javafx.fxml, javafx.graphics;
 
     exports it.polimi.ingsw.am22.model.states;
     opens it.polimi.ingsw.am22.model.states to javafx.fxml;
 
-    // View JavaFX: aperta a javafx.graphics per la launch della Application.
+    // ----------------------------------------------------------------------
+    // View
+    // ----------------------------------------------------------------------
     exports it.polimi.ingsw.am22.view.gui;
     opens it.polimi.ingsw.am22.view.gui to javafx.graphics, javafx.fxml;
 
-    // View TUI: normale export (non serve reflection da JavaFX).
     exports it.polimi.ingsw.am22.view.tui;
+
+    // ----------------------------------------------------------------------
+    // Network — client side
+    // ----------------------------------------------------------------------
     exports it.polimi.ingsw.am22.network.client;
-    opens it.polimi.ingsw.am22.network.client to javafx.fxml, javafx.graphics;
+    opens it.polimi.ingsw.am22.network.client to javafx.fxml, javafx.graphics, java.rmi;
+
+    // ----------------------------------------------------------------------
+    // Network — server side
+    // RMI ha bisogno di "vedere" e fare reflection sulle interfacce Remote
+    // e sulle implementazioni che le esportano (UnicastRemoteObject).
+    // ----------------------------------------------------------------------
+    exports it.polimi.ingsw.am22.network.server;
+    exports it.polimi.ingsw.am22.network.server.rmi;
+    opens it.polimi.ingsw.am22.network.server.rmi to java.rmi;
+
+    exports it.polimi.ingsw.am22.network.server.socket;
+
+    // ----------------------------------------------------------------------
+    // Network — common (DTO + messaggi)
+    // I record/DTO viaggiano serializzati: java.rmi deve poterli istanziare
+    // tramite reflection.
+    // ----------------------------------------------------------------------
+    exports it.polimi.ingsw.am22.network.common.message;
+    opens it.polimi.ingsw.am22.network.common.message to java.rmi;
+
+    exports it.polimi.ingsw.am22.network.common.message.request;
+    opens it.polimi.ingsw.am22.network.common.message.request to java.rmi;
+
+    exports it.polimi.ingsw.am22.network.common.message.response;
+    opens it.polimi.ingsw.am22.network.common.message.response to java.rmi;
+
+    exports it.polimi.ingsw.am22.network.common.dto;
+    opens it.polimi.ingsw.am22.network.common.dto to java.rmi;
 }

@@ -1,4 +1,4 @@
-﻿package it.polimi.ingsw.am22.model.event;
+package it.polimi.ingsw.am22.model.event;
 import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.building.BuildingEffect;
 import it.polimi.ingsw.am22.model.Era;
@@ -14,6 +14,7 @@ public class Sustenance extends Event implements EventEffect {
 
     public Sustenance(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.SUSTENANCE, eventEffect);
+        setEffect(this);
     }
 
     @Override

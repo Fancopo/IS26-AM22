@@ -5,6 +5,7 @@ import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.server.rmi.RemoteClientView;
 import it.polimi.ingsw.am22.network.server.rmi.RemoteGameServer;
 
+import java.io.Serial;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -125,6 +126,9 @@ public class RmiServerConnection implements ObservableServerConnection {
      * al client locale. I messaggi vengono inoltrati all'{@link ClientUpdateHandler}.
      */
     private final class ClientCallback extends UnicastRemoteObject implements RemoteClientView {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         private ClientCallback() throws RemoteException {
             super();
         }
