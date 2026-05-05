@@ -81,6 +81,8 @@ public final class LobbyScreen implements GuiScreen {
             @Override public void visit(MatchClosedMessage m) {}
             @Override public void visit(ErrorMessage m) {}
             @Override public void visit(InfoMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
         });
     }
 

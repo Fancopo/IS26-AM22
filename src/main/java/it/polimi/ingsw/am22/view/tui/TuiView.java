@@ -6,6 +6,7 @@ import it.polimi.ingsw.am22.network.common.dto.CardDTO;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyPlayerDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
+import it.polimi.ingsw.am22.network.common.dto.MatchInfoDTO;
 import it.polimi.ingsw.am22.network.common.dto.OfferTileDTO;
 import it.polimi.ingsw.am22.network.common.dto.PlayerDTO;
 import it.polimi.ingsw.am22.network.common.dto.TurnSlotDTO;
@@ -18,6 +19,8 @@ import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 
 import java.util.List;
 import java.util.Objects;
@@ -69,6 +72,8 @@ public final class TuiView implements ClientUpdateHandler {
     public void onServerMessage(ServerMessage message) {
         // Ogni tipo di messaggio ha un rendering dedicato.
         switch (message) {
+            case MatchesListMessage list       -> renderMatchesList(list.matches());
+            case MatchJoinedMessage joined     -> renderMatchJoined(joined);
             case LobbyStateMessage lobby       -> renderLobby(lobby.lobbyState());
             case GameStartedMessage started    -> renderGameStarted(started.initialGameState());
             case GameStateMessage state        -> renderGameState(state.gameState());
@@ -96,10 +101,37 @@ public final class TuiView implements ClientUpdateHandler {
 
     // -------------------- Rendering --------------------
 
+    private void renderMatchesList(List<MatchInfoDTO> matches) {
+        synchronized (printLock) {
+            System.out.println();
+            System.out.println("=== OPEN MATCHES ===");
+            if (matches.isEmpty()) {
+                System.out.println("(no open matches — use 'create <expectedPlayers> <nickname>' to start one)");
+            } else {
+                for (MatchInfoDTO info : matches) {
+                    System.out.println(String.format("  %s  host=%s  %d/%s  %s",
+                            info.matchId(),
+                            info.hostNickname(),
+                            info.currentPlayers(),
+                            info.expectedPlayers() > 0 ? String.valueOf(info.expectedPlayers()) : "?",
+                            info.started() ? "(started)" : "(open)"));
+                }
+                System.out.println("Use 'join <matchId> <nickname>' to enter one.");
+            }
+            System.out.println("====================");
+        }
+    }
+
+    private void renderMatchJoined(MatchJoinedMessage joined) {
+        println(Ansi.green(Ansi.BOLD + "[JOINED] " + Ansi.RESET)
+                + "match " + joined.matchId() + " as " + joined.nickname());
+    }
+
     private void renderLobby(LobbyStateDTO lobby) {
         synchronized (printLock) {
             System.out.println();
             System.out.println("=== LOBBY ===");
+            System.out.println("Match id        : " + lobby.matchId());
             System.out.println("Host            : " + lobby.hostNickname());
             System.out.println("Expected players: " + (lobby.expectedPlayers() > 0
                     ? lobby.expectedPlayers()

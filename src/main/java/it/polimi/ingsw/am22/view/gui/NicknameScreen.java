@@ -80,6 +80,8 @@ public final class NicknameScreen implements GuiScreen {
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}
             @Override public void visit(InfoMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) { pendingJoin = false; }
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
         });
     }
 
@@ -96,7 +98,10 @@ public final class NicknameScreen implements GuiScreen {
             joinButton.setDisable(true);
             pendingJoin = true;
             try {
-                app.getSession().getClientController().addPlayerToLobby(nickname);
+                // GUI non ancora adattata alla scelta esplicita del match: per
+                // restare funzionante crea una nuova partita a 2 giocatori e
+                // diventa host. Per il flusso completo multipartita usare la TUI.
+                app.getSession().getClientController().createMatch(nickname, 2);
             } catch (RuntimeException ex) {
                 pendingJoin = false;
                 statusLabel.setText("Join failed: " + ex.getMessage());

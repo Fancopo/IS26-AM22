@@ -180,6 +180,8 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(InfoMessage m) { System.out.println("[INFO] " + m.message()); }
             @Override public void visit(LobbyStateMessage m) {}
             @Override public void visit(GameStateMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
         });
 
         // Inoltriamo alla schermata attiva (ConnectionScreen ignora MatchClosedMessage via default).
@@ -201,6 +203,8 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(MatchClosedMessage m) {}
             @Override public void visit(ErrorMessage m) {}
             @Override public void visit(InfoMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
         });
     }
 

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am22.controller;
 
 import it.polimi.ingsw.am22.network.common.dto.MatchInfoDTO;
+import it.polimi.ingsw.am22.network.server.ModelDtoMapper;
 import it.polimi.ingsw.am22.network.server.VirtualView;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class MatchManager {
 
         String matchId = generateMatchId();
         GameController controller = new GameController(matchId);
-        VirtualView view = new VirtualView();
+        VirtualView view = new VirtualView(new ModelDtoMapper());
         MatchHandle handle = new MatchHandle(controller, view);
         matches.put(matchId, handle);
 

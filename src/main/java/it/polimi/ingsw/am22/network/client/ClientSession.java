@@ -11,6 +11,8 @@ import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 
 import java.util.Objects;
 
@@ -131,6 +133,12 @@ public final class ClientSession {
         public void onServerMessage(ServerMessage message) {
             // Aggiornamento snapshot prima di inoltrare: dispatch polimorfo via visitor.
             message.accept(new ServerMessageVisitor() {
+                @Override public void visit(MatchesListMessage m) {}
+                @Override public void visit(MatchJoinedMessage m) {
+                    // Memorizza il matchId locale così che le richieste successive
+                    // (placeTotem, pickCards, ecc.) vengano instradate alla partita giusta.
+                    clientController.bindMatch(m.matchId(), m.nickname());
+                }
                 @Override public void visit(LobbyStateMessage m) { latestLobbyState = m.lobbyState(); }
                 @Override public void visit(GameStartedMessage m) { gameStarted = true; latestGameState = m.initialGameState(); }
                 @Override public void visit(GameStateMessage m) { latestGameState = m.gameState(); }

@@ -11,10 +11,11 @@ import java.util.List;
  * Il costruttore compatto rende la lista immutabile e sostituisce
  * {@code null} con una lista vuota, evitando controlli lato ricevente.
  *
+ * @param matchId         identificativo della partita
  * @param playerNickname  nickname del giocatore che compie l'azione
  * @param selectedCardIds lista (immutabile) degli id delle carte scelte
  */
-public record PickCardsRequest(String playerNickname, List<String> selectedCardIds) implements ClientRequest {
+public record PickCardsRequest(String matchId, String playerNickname, List<String> selectedCardIds) implements ClientRequest {
     public PickCardsRequest {
         selectedCardIds = selectedCardIds == null ? List.of() : List.copyOf(selectedCardIds);
     }

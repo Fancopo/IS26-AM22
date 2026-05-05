@@ -11,19 +11,20 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Entry point della modalità TUI.
+ * Entry point della modalità TUI in versione multipartita.
  *
  * <p>Flusso eseguito in {@link #run()}:
  * <ol>
- *     <li>chiede trasporto (Socket/RMI), host, porta e nickname;</li>
+ *     <li>chiede trasporto (Socket/RMI), host e porta;</li>
  *     <li>apre la {@link ObservableServerConnection} tramite {@link ConnectionFactory};</li>
  *     <li>crea la {@link ClientSession} e collega la {@link TuiView};</li>
- *     <li>manda {@code addPlayerToLobby(nickname)} e poi entra nel loop comandi.</li>
+ *     <li>entra nel loop comandi: prima del join sono disponibili
+ *         {@code list}, {@code create}, {@code join}; una volta dentro a una
+ *         partita si abilitano i comandi di lobby/gioco.</li>
  * </ol>
  *
- * <p>Il loop comandi legge righe da stdin e le interpreta. I messaggi del
- * server vengono stampati in modo asincrono dalla TuiView: qui non dobbiamo
- * farci niente oltre a gestire la sincronizzazione con {@code printLock}.
+ * <p>I messaggi del server vengono stampati in modo asincrono dalla TuiView
+ * (replay automatico al cambio di stato gestito da {@link ClientSession}).
  */
 public final class TuiRunner {
 
@@ -37,7 +38,6 @@ public final class TuiRunner {
     public static void run() {
         Scanner in = new Scanner(System.in);
 
-        // 1) Setup connessione.
         printBanner();
         Transport transport = askTransport(in);
         String host = ask(in, "Server host [127.0.0.1]: ", "127.0.0.1");
@@ -57,39 +57,22 @@ public final class TuiRunner {
 
         ClientSession session = new ClientSession(connection);
         TuiView view = new TuiView(session);
-        // Registra la view come handler: d'ora in poi i messaggi dal server
-        // vengono renderizzati a schermo automaticamente.
         session.setHandler(view);
 
-        // 2) Join lobby.
-        String nickname = ask(in, "Nickname: ", null);
-        try {
-            session.getClientController().addPlayerToLobby(nickname);
-        } catch (RuntimeException e) {
-            System.err.println("Join failed: " + e.getMessage());
-            session.close(false);
-            return;
-        }
-
-        // 3) Loop comandi: continua finché la view non chiede lo stop
-        //    (quit, game over, disconnect server...).
+        // Loop comandi: parte in modalità "fuori da una partita". Una volta
+        // dentro a una lobby si sbloccano i comandi specifici.
         printHelp();
         commandLoop(in, session, view);
 
-        // 4) Cleanup: chiudiamo la connessione notificando il server se possibile.
+        // Cleanup: notifica il server solo se non è già caduta la connessione.
         session.close(!view.isStopRequested());
         System.out.println("Bye.");
     }
 
-    /**
-     * Loop principale: legge una riga alla volta e la interpreta come comando.
-     * Gli errori locali vengono stampati a video ma non interrompono il loop.
-     */
     private static void commandLoop(Scanner in, ClientSession session, TuiView view) {
         ClientController controller = session.getClientController();
         while (!view.isStopRequested()) {
             if (!in.hasNextLine()) {
-                // stdin chiuso: esci.
                 break;
             }
             String raw = in.nextLine().trim();
@@ -101,36 +84,47 @@ public final class TuiRunner {
                     case "help", "?" -> printHelp();
                     case "state"     -> printCachedState(session);
                     case "who", "me" -> printWho(session);
-                    case "players"   -> {
-                        // host imposta il numero di giocatori attesi
+
+                    // ---- Pre-lobby (multipartita) ----
+                    case "list" -> controller.listMatches();
+                    case "create" -> {
+                        // create <expectedPlayers> <nickname>
+                        requireArgs(parts, 3, "create <expectedPlayers> <nickname>");
+                        int expected = Integer.parseInt(parts[1]);
+                        controller.createMatch(parts[2], expected);
+                    }
+                    case "join" -> {
+                        // join <matchId> <nickname>
+                        requireArgs(parts, 3, "join <matchId> <nickname>");
+                        controller.addPlayerToLobby(parts[1], parts[2]);
+                    }
+
+                    // ---- Comandi che richiedono di essere già in una partita ----
+                    case "players" -> {
                         requireArgs(parts, 2, "players <N>");
                         controller.setExpectedPlayers(Integer.parseInt(parts[1]));
                     }
-                    case "place"     -> {
-                        // piazzamento totem sulla tessera offerta indicata dalla lettera
+                    case "place" -> {
                         requireArgs(parts, 2, "place <letter>");
                         if (parts[1].length() != 1) {
                             throw new IllegalArgumentException("offer letter must be a single character");
                         }
                         controller.placeTotem(parts[1].charAt(0));
                     }
-                    case "pick"      -> {
-                        // selezione carte dalla board (lista di id)
+                    case "pick" -> {
                         List<String> ids = new ArrayList<>(parts.length - 1);
                         for (int i = 1; i < parts.length; i++) ids.add(parts[i]);
                         controller.pickCards(ids);
                     }
-                    case "bonus"     -> {
+                    case "bonus" -> {
                         requireArgs(parts, 2, "bonus <cardId>");
                         controller.pickBonusCard(parts[1]);
                     }
-                    case "leave"     -> {
+                    case "leave" -> {
                         controller.removePlayerFromLobby();
                         view.requestStop();
                     }
                     case "disconnect" -> {
-                        // Volontario: pre-partita = uguale a leave;
-                        // mid-game = chiude il match per tutti.
                         controller.disconnect();
                         view.requestStop();
                     }
@@ -146,22 +140,28 @@ public final class TuiRunner {
     private static void printHelp() {
         System.out.println();
         System.out.println("Available commands:");
-        System.out.println("  help                     show this help");
-        System.out.println("  state                    print last known game/lobby state");
-        System.out.println("  who | me                 show your nickname and active player");
-        System.out.println("  players <N>              (host only) set expected players");
-        System.out.println("  place <letter>           place totem on offer tile <letter>");
-        System.out.println("  pick <id1> [id2 ...]     pick cards from the board");
-        System.out.println("  bonus <cardId>           select bonus card");
-        System.out.println("  leave                    leave the lobby (pre-game only)");
-        System.out.println("  disconnect               disconnect (pre-game = leave; mid-game = aborts match)");
-        System.out.println("  quit                     quit the client");
+        System.out.println("  help                              show this help");
+        System.out.println("  state                             print last known game/lobby state");
+        System.out.println("  who | me                          show your nickname and active player");
+        System.out.println();
+        System.out.println("  Pre-lobby (multipartita):");
+        System.out.println("    list                            list open matches");
+        System.out.println("    create <expectedPlayers> <nick> create a new match and join as host");
+        System.out.println("    join <matchId> <nick>           join an existing open match");
+        System.out.println();
+        System.out.println("  In a match:");
+        System.out.println("    players <N>                     (host only) update expected players");
+        System.out.println("    place <letter>                  place totem on offer tile <letter>");
+        System.out.println("    pick <id1> [id2 ...]            pick cards from the board");
+        System.out.println("    bonus <cardId>                  select bonus card");
+        System.out.println("    leave                           leave the current lobby (pre-game only)");
+        System.out.println("    disconnect                      disconnect (pre-game = leave; mid-game = aborts match)");
+        System.out.println("    quit                            quit the client");
         System.out.println();
     }
 
     private static void printCachedState(ClientSession session) {
         if (session.getLatestGameState() != null) {
-            // Simuliamo un "refresh" rieseguendo il render dell'ultimo stato noto.
             new TuiView(session).onServerMessage(
                     new it.polimi.ingsw.am22.network.common.message.response.GameStateMessage(
                             session.getLatestGameState()));
@@ -170,7 +170,7 @@ public final class TuiRunner {
                     new it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage(
                             session.getLatestLobbyState()));
         } else {
-            System.out.println("(no state received yet)");
+            System.out.println("(no state received yet — try 'list' or 'create')");
         }
     }
 
@@ -191,14 +191,11 @@ public final class TuiRunner {
         while (true) {
             System.out.print(prompt);
             if (!in.hasNextLine()) {
-                // Stdin chiuso (EOF / Ctrl+D): se c'è un default usalo, altrimenti
-                // ritorna stringa vuota per evitare loop infiniti.
                 return defaultValue != null ? defaultValue : "";
             }
             String line = in.nextLine().trim();
             if (!line.isEmpty()) return line;
             if (defaultValue != null) return defaultValue;
-            // Input vuoto e nessun default: ritenta (loop, non ricorsione).
         }
     }
 
@@ -227,16 +224,19 @@ public final class TuiRunner {
                 " | |\\/| |  _| \\___ \\| | | \\___ \\ \n" +
                 " | |  | | |___ ___) | |_| |___) |\n" +
                 " |_|  |_|_____|____/ \\___/|____/ "));
-        System.out.println(Ansi.dim("                Mesolithic Tribes — TUI client\n"));
+        System.out.println(Ansi.dim("                Mesolithic Tribes — TUI client (multipartita)\n"));
     }
 
     /**
-     * Stampa nickname locale + active player + se sei tu. Comando 'who' / 'me'.
+     * Stampa nickname locale + matchId + active player. Comando 'who' / 'me'.
      * Utile in test multi-client per non confondere le finestre.
      */
     private static void printWho(ClientSession session) {
-        String nick = session.getLocalNickname();
-        System.out.println("You: " + (nick == null ? "(not joined)" : Ansi.bold(nick)));
+        ClientController controller = session.getClientController();
+        String nick = controller.getNickname();
+        String matchId = controller.getMatchId();
+        System.out.println("You: " + (nick == null ? "(not joined)" : Ansi.bold(nick))
+                + (matchId == null ? "" : "   match=" + Ansi.bold(matchId)));
         if (session.getLatestGameState() != null) {
             String active = session.getLatestGameState().activePlayer();
             String mark   = (active != null && active.equalsIgnoreCase(nick))

@@ -8,10 +8,11 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
  *
  * Al raggiungimento di questo numero la partita viene avviata dal server.
  *
+ * @param matchId           identificativo della partita
  * @param requesterNickname nickname di chi fa la richiesta
  * @param expectedPlayers   numero totale di giocatori desiderato
  */
-public record SetExpectedPlayersRequest(String requesterNickname, int expectedPlayers) implements ClientRequest {
+public record SetExpectedPlayersRequest(String matchId, String requesterNickname, int expectedPlayers) implements ClientRequest {
     @Override
     public void accept(ClientRequestVisitor visitor) { visitor.visit(this); }
 }

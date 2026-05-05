@@ -1,13 +1,13 @@
 package it.polimi.ingsw.am22.network.server;
 
-import it.polimi.ingsw.am22.controller.GameController;
 import it.polimi.ingsw.am22.network.server.rmi.RmiGameServer;
 import it.polimi.ingsw.am22.network.server.socket.SocketGameServer;
 
 /**
  * Main del server.
- * Crea un singolo GameController + NetworkGameService,
- * avvia SocketGameServer (12345) e RmiGameServer.publish (registry 1099, binding MESOS_SERVER).
+ * Crea un singolo {@link NetworkGameService} multipartita,
+ * avvia {@link SocketGameServer} (12345) e {@link RmiGameServer#publish}
+ * (registry 1099, binding {@code MESOS_SERVER}).
  */
 public final class NetworkServerLauncher {
 
@@ -18,15 +18,14 @@ public final class NetworkServerLauncher {
         int rmiPort = 1099;
         String bindingName = "MESOS_SERVER";
 
-        GameController gameController = new GameController();
-        NetworkGameService gameService = new NetworkGameService(gameController);
+        NetworkGameService gameService = new NetworkGameService();
 
         SocketGameServer socketServer = new SocketGameServer(socketPort, gameService);
         socketServer.start();
 
         RmiGameServer.publish(rmiPort, bindingName, gameService);
 
-        System.out.println("MESOS server online.");
+        System.out.println("MESOS server online (multipartita).");
         System.out.println("Socket port: " + socketPort);
         System.out.println("RMI port: " + rmiPort + " | binding: " + bindingName);
     }

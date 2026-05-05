@@ -1,7 +1,9 @@
 package it.polimi.ingsw.am22.network.common.message;
 
 import it.polimi.ingsw.am22.network.common.message.request.AddPlayerToLobbyRequest;
+import it.polimi.ingsw.am22.network.common.message.request.CreateMatchRequest;
 import it.polimi.ingsw.am22.network.common.message.request.DisconnectPlayerRequest;
+import it.polimi.ingsw.am22.network.common.message.request.ListMatchesRequest;
 import it.polimi.ingsw.am22.network.common.message.request.PickBonusCardRequest;
 import it.polimi.ingsw.am22.network.common.message.request.PickCardsRequest;
 import it.polimi.ingsw.am22.network.common.message.request.PlaceTotemRequest;
@@ -16,6 +18,8 @@ import it.polimi.ingsw.am22.network.common.message.request.SetExpectedPlayersReq
  * senza usare instanceof.
  */
 public interface ClientRequestVisitor {
+    void visit(CreateMatchRequest request);
+    void visit(ListMatchesRequest request);
     void visit(AddPlayerToLobbyRequest request);
     void visit(SetExpectedPlayersRequest request);
     void visit(RemovePlayerFromLobbyRequest request);

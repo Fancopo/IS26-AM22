@@ -7,6 +7,8 @@ import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 
 /**
  * Visitor per i messaggi inviati dal server al client.
@@ -16,6 +18,8 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
  * senza usare instanceof.
  */
 public interface ServerMessageVisitor {
+    void visit(MatchesListMessage message);
+    void visit(MatchJoinedMessage message);
     void visit(LobbyStateMessage message);
     void visit(GameStartedMessage message);
     void visit(GameStateMessage message);
