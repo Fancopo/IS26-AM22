@@ -45,11 +45,11 @@ public class Hunting extends Event implements EventEffect {
                 player.addFood(totalFoodToAdd);
                 player.addPP(totalPPToAdd);
 
-                System.out.println(player.getNickname() + " ha " + huntersCount +
-                        " Cacciatori. Ottiene " + totalFoodToAdd +
-                        " Cibo e " + totalPPToAdd + " PP dalla Caccia!");
+                System.out.println(player.getNickname() + " has " + huntersCount +
+                        " Hunters. Gains " + totalFoodToAdd +
+                        " Food and " + totalPPToAdd + " PP from the Hunt!");
             } else {
-                System.out.println(player.getNickname() + " non ha Cacciatori e non ottiene nulla.");
+                System.out.println(player.getNickname() + " has no Hunters and gains nothing.");
             }
         }
     }

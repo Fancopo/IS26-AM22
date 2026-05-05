@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -41,6 +44,24 @@ public class NetworkGameService {
 
     /** Generatore monotono di matchId leggibili (es. {@code M-1}, {@code M-2}, ...). */
     private final AtomicLong matchIdSeq;
+
+    /**
+     * Scheduler used to defer the close of client channels after the end of a match.
+     * Closing immediately after broadcasting {@link EndGameMessage} can race with the
+     * client's read loop: the underlying socket is torn down before the EndGameMessage
+     * has been fully consumed, and the client surfaces an EOFException instead of the
+     * winner screen. Deferring the close gives every client time to read and render
+     * the message; if a client disconnects sooner on its own that is fine, the close
+     * is idempotent.
+     */
+    private final ScheduledExecutorService endGameCloser = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "endgame-closer");
+        t.setDaemon(true);
+        return t;
+    });
+
+    /** Grace period between the EndGameMessage broadcast and the channel close. */
+    private static final long END_GAME_CLOSE_DELAY_MS = 3000;
 
     public NetworkGameService() {
         this.mapper = new ModelDtoMapper();
@@ -338,8 +359,11 @@ public class NetworkGameService {
             }
             Player winner = gameController.determineWinner();
             virtualView.broadcast(new EndGameMessage(mapper.toWinnerDTO(winner), state));
-            virtualView.closeAll();
+            // Drop the match from the registry right away so no further requests can be
+            // routed to it, but defer the channel close: see endGameCloser javadoc.
             matchesById.remove(gameController.getMatchId());
+            VirtualView viewToClose = virtualView;
+            endGameCloser.schedule(viewToClose::closeAll, END_GAME_CLOSE_DELAY_MS, TimeUnit.MILLISECONDS);
         }
 
         /** Lega il canale al nickname e al matchId di questa sessione. */

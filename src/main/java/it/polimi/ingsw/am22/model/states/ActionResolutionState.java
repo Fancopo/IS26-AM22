@@ -6,49 +6,66 @@ import it.polimi.ingsw.am22.model.building.Building;
 import java.util.List;
 
 public class ActionResolutionState implements GameState {
-    // Unico metodo che il Controller chiamerà.
-    // Se il giocatore è sulla tessera A (solo cibo), selectedCards sarà una lista vuota.
+    // The only method the Controller will invoke.
+    // If the player is on tile A (food only), selectedCards will be an empty list.
     @Override
     public void pickCards(Game game, Player player, List<Card> selectedCards) {
         OfferTile currentTile = game.getBoard().getOfferTrack().stream()
                 .filter(t -> t.getOccupiedBy() == player.getTotem())
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Il giocatore non è sul tracciato offerte!"));
+                .orElseThrow(() -> new IllegalStateException("Player is not on the offer track!"));
 
-        // 1. GESTIONE CIBO (es. Tessera A)
+        // 1. FOOD HANDLING (e.g. tile A)
         if (currentTile.getFoodReward() > 0 && selectedCards.isEmpty()) {
             player.addFood(currentTile.getFoodReward());
         }
-        // 2. GESTIONE CARTE: pattern transazionale "validate-then-commit".
-        //    Ogni controllo che può fallire (vincoli tessera, carte non prendibili come gli Event,
-        //    cibo insufficiente per gli edifici) deve avvenire PRIMA di qualsiasi mutazione su
-        //    player/tribe/board. In caso contrario, una selezione mista valida+invalida lascerebbe
-        //    la carta valida già aggiunta alla tribe, e una successiva ri-selezione la duplicherebbe.
+        // 2. CARD HANDLING: transactional "validate-then-commit" pattern.
+        //    Every check that may fail (tile constraints, unpickable cards such as Events,
+        //    insufficient food for buildings) must happen BEFORE any mutation on
+        //    player/tribe/board. Otherwise a mixed valid+invalid selection would leave the
+        //    valid card already added to the tribe, and a subsequent re-selection would
+        //    duplicate it.
         else {
-            // --- FASE 1: VALIDAZIONE (nessuna mutazione consentita qui) ---
+            // --- PHASE 1: VALIDATION (no mutation allowed here) ---
 
-            // 1a. Vincoli tessera (numero di carte upper/lower).
-            //     Se in una riga ci sono carte non prendibili (es. Event), la tessera non
-            //     può comunque essere soddisfatta a pieno: il requisito viene quindi limitato
-            //     al numero di carte effettivamente prendibili presenti nella riga, altrimenti
-            //     il giocatore resterebbe bloccato senza alcuna selezione legale.
-            long upperSelected = selectedCards.stream().filter(c -> game.getBoard().getUpperRow().contains(c)).count();
-            long lowerSelected = selectedCards.stream().filter(c -> game.getBoard().getLowerRow().contains(c)).count();
-            long upperPickableAvailable = game.getBoard().getUpperRow().stream().filter(Card::isPickable).count();
-            long lowerPickableAvailable = game.getBoard().getLowerRow().stream().filter(Card::isPickable).count();
-            long upperRequired = Math.min(currentTile.getUpperCardsToTake(), upperPickableAvailable);
-            long lowerRequired = Math.min(currentTile.getLowerCardsToTake(), lowerPickableAvailable);
-            if (upperSelected != upperRequired || lowerSelected != lowerRequired) {
-                throw new IllegalArgumentException("Selezione carte non valida per la tessera corrente!");
-            }
-
-            // 1b. Validazione polimorfica per-carta: ogni carta dichiara da sé se è prendibile
-            //     (es. Event lancia eccezione, TribeCharacter/Building accettano).
+            // 1a. Per-card polymorphic validation: each card declares itself whether it is
+            //     pickable (e.g. Event throws, TribeCharacter/Building accept). This runs
+            //     BEFORE the count check: this way, when the user selects an unpickable
+            //     card they immediately get the specific reason ("event card cannot be
+            //     picked") instead of the generic count error.
             for (Card card : selectedCards) {
                 card.validatePickable();
             }
 
-            // 1c. Calcolo costo totale e verifica cibo sufficiente, SENZA dedurlo.
+            // 1b. Tile constraints (number of upper/lower cards).
+            //     Cards fall into three categories:
+            //       - unpickable (Event)             -> never selectable
+            //       - optional purchases (Building)  -> the player decides whether to buy
+            //                                           them, so they must never be forced
+            //                                           into a selection just to satisfy the
+            //                                           tile's count requirement
+            //       - mandatory (Character)          -> must be taken until the tile
+            //                                           requirement is filled
+            //     From this, for each row we derive a valid [min, max] range of cards to take:
+            //       min = min(tile.required, mandatory_available_count)   -> "at least these"
+            //       max = min(tile.required, pickable_available_count)    -> "no more than this"
+            //     The player can then choose how many buildings to add between min and max.
+            int upperSelected = (int) selectedCards.stream().filter(c -> game.getBoard().getUpperRow().contains(c)).count();
+            int lowerSelected = (int) selectedCards.stream().filter(c -> game.getBoard().getLowerRow().contains(c)).count();
+            int[] upperRange = computeRequiredRange(game.getBoard().getUpperRow(), currentTile.getUpperCardsToTake());
+            int[] lowerRange = computeRequiredRange(game.getBoard().getLowerRow(), currentTile.getLowerCardsToTake());
+            if (upperSelected < upperRange[0] || upperSelected > upperRange[1]
+                    || lowerSelected < lowerRange[0] || lowerSelected > lowerRange[1]) {
+                throw new IllegalArgumentException(
+                        "Invalid card selection for the current tile! Required: "
+                                + describeRange(upperRange) + " upper, "
+                                + describeRange(lowerRange) + " lower"
+                                + ((upperRange[1] == 0 && lowerRange[1] == 0)
+                                        ? " (no pickable card available: use `pick` with no arguments to pass)"
+                                        : ""));
+            }
+
+            // 1c. Compute total cost and verify sufficient food, WITHOUT deducting it yet.
             int builderDiscount = player.getTribe().getBuilderDiscount();
             int totalFoodCost = 0;
             for (Card card : selectedCards) {
@@ -58,10 +75,10 @@ public class ActionResolutionState implements GameState {
                 }
             }
             if (player.getFood() < totalFoodCost) {
-                throw new IllegalStateException("Cibo insufficiente per acquistare le carte selezionate.");
+                throw new IllegalStateException("Insufficient food to purchase the selected cards.");
             }
 
-            // --- FASE 2: COMMIT (tutte le validazioni sono passate, è sicuro mutare) ---
+            // --- PHASE 2: COMMIT (all validations passed, safe to mutate) ---
             player.payFood(totalFoodCost);
             for (Card card : selectedCards) {
                 player.getTribe().addCard(player, card);
@@ -70,17 +87,16 @@ public class ActionResolutionState implements GameState {
             game.getBoard().getLowerRow().removeAll(selectedCards);
         }
 
-        // 3. SPOSTAMENTO TOTEM SULL'ORDINE DI TURNO
+        // 3. MOVE TOTEM TO TURN-ORDER TRACK
         Slot nextSlot = game.getBoard().getTurnOrderTile().getFirstAvailableSlot();
         player.getTotem().moveToTurnOrder(nextSlot);
 
-        // Bonus/Malus Ordine di Turno
+        // Turn-order bonus/malus
         if (nextSlot.getFoodBonus() > 0) {
-            // 1. Il giocatore prende il cibo base dello slot
+            // 1. The player gets the slot's base food
             player.addFood(nextSlot.getFoodBonus());
 
-            // 2. IL TRIGGER: Svegliamo tutti gli edifici del giocatore!
-            // Questo è il momento esatto che hai descritto.
+            // 2. THE TRIGGER: wake up all of the player's buildings.
             if (player.getTribe() != null) {
                 for (Building b : player.getTribe().getBuildings()) {
                     b.applyOnFoodSlotPlaced(player);
@@ -96,11 +112,11 @@ public class ActionResolutionState implements GameState {
         }
 
         // ==========================================
-        // CONTROLLO FINE FASE E PESCATA BONUS EXTRA
+        // END-OF-PHASE CHECK AND EXTRA BONUS DRAW
         // ==========================================
         if (game.getBoard().getTurnOrderTile().getOccupiedSlotsCount() == game.getPlayers().size()) {
 
-            // Tutti i totem sono tornati. Controlliamo il flag `extraBuyAtRoundEnd`.
+            // All totems are back. Check the `extraBuyAtRoundEnd` flag.
             Player bonusPlayer = null;
             for (Player p : game.getPlayers()) {
                 if (p.hasExtraBuyAtRoundEnd()) {
@@ -110,11 +126,11 @@ public class ActionResolutionState implements GameState {
             }
 
             if (bonusPlayer != null) {
-                // IL GIOCATORE HA L'EDIFICIO: Mettiamo in pausa e andiamo nello stato bonus
+                // PLAYER HAS THE BUILDING: pause and switch to the bonus state
                 game.setActivePlayer(bonusPlayer);
                 game.setState(new BonusCardSelectionState());
             } else {
-                // NESSUN BONUS: Procediamo normalmente con gli eventi
+                // NO BONUS: proceed normally with the events
                 game.setState(new EventResolutionState());
                 game.resolveEvents();
             }
@@ -125,5 +141,23 @@ public class ActionResolutionState implements GameState {
     }
 
     @Override
-    public String getPhaseName() { return "Risoluzione Azioni"; }
+    public String getPhaseName() { return "Action Resolution"; }
+
+    /**
+     * [min, max] range of cards to take from a row, given the tile requirement:
+     *   min = how many mandatory cards (pickable && !optional) are present, capped at the requirement
+     *   max = how many pickable cards in total are present, capped at the requirement
+     * Buildings (optional) sit between min and max: the player chooses whether to buy them.
+     */
+    private int[] computeRequiredRange(List<Card> row, int tileRequirement) {
+        long mandatoryAvailable = row.stream().filter(c -> c.isPickable() && !c.isOptionalPurchase()).count();
+        long pickableAvailable = row.stream().filter(Card::isPickable).count();
+        int min = (int) Math.min(tileRequirement, mandatoryAvailable);
+        int max = (int) Math.min(tileRequirement, pickableAvailable);
+        return new int[] { min, max };
+    }
+
+    private String describeRange(int[] range) {
+        return range[0] == range[1] ? Integer.toString(range[0]) : range[0] + "-" + range[1];
+    }
 }

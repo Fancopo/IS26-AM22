@@ -21,7 +21,7 @@ public class Sustenance extends Event implements EventEffect {
     public void applyEvent(List<Player> players, String id) {
         int PPLose = 0;
 
-        // Valori di penalità basati sull'Era corrente
+        // Penalty values based on the current Era
         if (this.getEra() == Era.I) {
             PPLose = -1;
         } else if (this.getEra() == Era.II) {
@@ -34,44 +34,44 @@ public class Sustenance extends Event implements EventEffect {
             Tribe tribe = player.getTribe();
             if (tribe == null) continue;
 
-            // 1. Calcola quanti personaggi ci sono (1 cibo per personaggio)
+            // 1. Count characters (1 food per character)
             int totalCharacters = tribe.getMembers().size();
 
-            // 2. Calcola lo sconto base dei Raccoglitori (3 cibo per ogni raccoglitore)
+            // 2. Compute the base Collector discount (3 food per collector)
             int collectorsCount = tribe.countCharacters(CharacterType.COLLECTOR);
             int totalDiscount = collectorsCount * 3;
 
-            // 3. Calcola eventuali sconti forniti dagli Edifici
+            // 3. Add any discounts granted by Buildings
             for (Building building : tribe.getBuildings()) {
                      BuildingEffect effect = building.getEffect();
-                    // L'edificio calcola da solo quanto sconto applicare in base alla tribù
+                    // The building computes its own discount based on the tribe
                     totalDiscount += effect.getSustenanceDiscount(tribe);
             }
 
-            // 4. Calcola il costo finale in Cibo (non può essere minore di 0)
+            // 4. Final food cost (cannot be negative)
             int foodToPay = Math.max(0, totalCharacters - totalDiscount);
 
-            // 5. Risoluzione del pagamento
+            // 5. Resolve the payment
             if (player.getFood() >= foodToPay) {
-                // Ha abbastanza cibo per sfamare tutti
-                player.addFood(-foodToPay); // Sottrae il cibo dal totale del giocatore
-                System.out.println(player.getNickname() + " paga " + foodToPay + " cibo e sfama tutta la tribù.");
+                // Has enough food to feed the whole tribe
+                player.addFood(-foodToPay); // Subtract from the player's food total
+                System.out.println(player.getNickname() + " pays " + foodToPay + " food and feeds the whole tribe.");
 
             } else {
-                // Non ha abbastanza cibo: deve pagare tutto quello che ha
+                // Not enough food: pays everything available
                 int foodAvailable = player.getFood();
                 int unfedCharacters = foodToPay - foodAvailable;
 
-                // Azzera il cibo del giocatore (paga tutto quello che possiede)
+                // Drain the player's food (pays everything owned)
                 player.addFood(-foodAvailable);
 
-                // Calcola e applica la penalità (PPLose è già negativo)
+                // Compute and apply the penalty (PPLose is already negative)
                 int totalPenalty = PPLose * unfedCharacters;
                 player.addPP(totalPenalty);
 
-                System.out.println(player.getNickname() + " ha solo " + foodAvailable +
-                        " cibo. Non riesce a sfamare " + unfedCharacters +
-                        " personaggi e subisce " + totalPenalty + " PP di penalità.");
+                System.out.println(player.getNickname() + " only has " + foodAvailable +
+                        " food. Cannot feed " + unfedCharacters +
+                        " characters and suffers " + totalPenalty + " PP penalty.");
             }
         }
     }

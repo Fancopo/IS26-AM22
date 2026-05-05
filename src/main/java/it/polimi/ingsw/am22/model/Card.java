@@ -32,26 +32,34 @@ public abstract class Card {
      */
     public boolean isPickable() { return true; }
 
-    public int getFoodCost() {return 0;} // Di default le carte non costano cibo
+    /**
+     * Whether picking this card is an optional purchase rather than a mandatory pickup.
+     * Buildings cost food and the player chooses whether to buy them, so they should
+     * never be forced into a selection just to satisfy a tile's card-count requirement.
+     * Characters are mandatory pickups by default.
+     */
+    public boolean isOptionalPurchase() { return false; }
 
-    public void onRoundEndTrigger(Game game) {} // Nessun comportamento di default
+    public int getFoodCost() {return 0;} // By default, cards have no food cost
 
-    public int getTriggerPriority() {return 0;} // Determina l'ordine di risoluzione (0 = normale, 1 = ritardato).
-    // Serve per far scattare il Sostentamento per ultimo.
+    public void onRoundEndTrigger(Game game) {} // No default behavior
 
-    public boolean survivesRoundEnd() {return false;}  // Definisce se la carta rimane sulla plancia a fine round.
-    // Di base, le carte (Personaggi, Eventi) vengono scartate.
+    public int getTriggerPriority() {return 0;} // Determines resolution order (0 = normal, 1 = deferred).
+    // Used so that Sustenance triggers last.
 
-    public boolean isDestroyedOnEraIII() {return false;} // Definisce se la carta viene distrutta al cambio verso l'Era III.
+    public boolean survivesRoundEnd() {return false;}  // Whether the card stays on the board at round end.
+    // By default, cards (Characters, Events) are discarded.
+
+    public boolean isDestroyedOnEraIII() {return false;} // Whether the card is destroyed when transitioning to Era III.
 
     /** Defines whether the card is an Event. Used during setup to route Events to the upper row. */
     public boolean isEvent() {return false;}
 
 
-    /** Macro-categoria della carta per il DTO di rete (es. "CHARACTER", "BUILDING", "EVENT"). */
+    /** Card macro-category for the network DTO (e.g. "CHARACTER", "BUILDING", "EVENT"). */
     public String cardCategory() { return getClass().getSimpleName().toUpperCase(Locale.ROOT); }
 
-    /** Tipo specifico all'interno della categoria (es. CharacterType, EventType, "BUILDING"). */
+    /** Specific type within the category (e.g. CharacterType, EventType, "BUILDING"). */
     public String cardDetailType() { return getClass().getSimpleName().toUpperCase(Locale.ROOT); }
 
     public String getId() {return id;}

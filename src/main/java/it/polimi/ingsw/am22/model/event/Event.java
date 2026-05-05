@@ -16,9 +16,9 @@ public class Event extends Card {
     public EventType getEventType() { return eventType; }
 
     /**
-     * Permette alle sottoclassi (Hunting, Sustenance, ecc.) di registrare
-     * se stesse come effetto dopo la chiamata a {@code super(...)}.
-     * Stesso pattern usato da TribeCharacter.setEffect(this).
+     * Allows subclasses (Hunting, Sustenance, etc.) to register themselves
+     * as the effect after the {@code super(...)} call.
+     * Same pattern used by TribeCharacter.setEffect(this).
      */
     protected void setEffect(EventEffect effect) {
         this.effect = effect;

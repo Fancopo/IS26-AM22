@@ -142,18 +142,18 @@ public class Building extends Card {
 */
     @Override
     public void addToTribe(Player player, Tribe tribe) {
-        // La carta aggiunge se stessa alla lista degli edifici della tribù
+        // The card adds itself to the tribe's list of buildings
         tribe.addBuilding(this);
     }
 
 
-    // Gli Edifici sopravvivono al reset di fine round
+    // Buildings survive the end-of-round reset
     @Override
     public boolean survivesRoundEnd() {
         return true;
     }
 
-    // Gli Edifici nella riga inferiore vengono distrutti all'Era III
+    // Buildings in the lower row are destroyed at Era III
     @Override
     public boolean isDestroyedOnEraIII() {
         return true;
@@ -165,10 +165,13 @@ public class Building extends Card {
         }
     }
 
-    // Controlla se questo specifico edificio fornisce l'acquisto extra.
+    // Checks whether this specific building grants the extra purchase.
     public boolean grantsExtraBuyAtRoundEnd() {
         return this.effect != null && this.effect.hasExtraBuyAtRoundEnd();
     }
+
+    @Override
+    public boolean isOptionalPurchase() { return true; }
 
     @Override
     public String cardCategory() { return "BUILDING"; }
