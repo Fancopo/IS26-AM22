@@ -54,6 +54,9 @@ public class Event extends Card {
     public void validatePickable() {
         throw new IllegalArgumentException("An event card cannot be picked into the tribe");
     }
+
+    @Override
+    public boolean isPickable() { return false; }
 }
 
 

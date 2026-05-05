@@ -27,10 +27,18 @@ public class ActionResolutionState implements GameState {
         else {
             // --- FASE 1: VALIDAZIONE (nessuna mutazione consentita qui) ---
 
-            // 1a. Vincoli tessera (numero di carte upper/lower)
+            // 1a. Vincoli tessera (numero di carte upper/lower).
+            //     Se in una riga ci sono carte non prendibili (es. Event), la tessera non
+            //     può comunque essere soddisfatta a pieno: il requisito viene quindi limitato
+            //     al numero di carte effettivamente prendibili presenti nella riga, altrimenti
+            //     il giocatore resterebbe bloccato senza alcuna selezione legale.
             long upperSelected = selectedCards.stream().filter(c -> game.getBoard().getUpperRow().contains(c)).count();
             long lowerSelected = selectedCards.stream().filter(c -> game.getBoard().getLowerRow().contains(c)).count();
-            if (upperSelected != currentTile.getUpperCardsToTake() || lowerSelected != currentTile.getLowerCardsToTake()) {
+            long upperPickableAvailable = game.getBoard().getUpperRow().stream().filter(Card::isPickable).count();
+            long lowerPickableAvailable = game.getBoard().getLowerRow().stream().filter(Card::isPickable).count();
+            long upperRequired = Math.min(currentTile.getUpperCardsToTake(), upperPickableAvailable);
+            long lowerRequired = Math.min(currentTile.getLowerCardsToTake(), lowerPickableAvailable);
+            if (upperSelected != upperRequired || lowerSelected != lowerRequired) {
                 throw new IllegalArgumentException("Selezione carte non valida per la tessera corrente!");
             }
 

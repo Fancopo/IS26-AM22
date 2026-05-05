@@ -24,6 +24,14 @@ public abstract class Card {
      */
     public void validatePickable() {}
 
+    /**
+     * Whether this card can be taken into a tribe. Mirrors {@link #validatePickable()}
+     * but as a non-throwing predicate, so the action-resolution logic can count how
+     * many pickable cards are available in a row (e.g. when an Event blocks a slot,
+     * a tile requiring N cards must be satisfiable with fewer if fewer are pickable).
+     */
+    public boolean isPickable() { return true; }
+
     public int getFoodCost() {return 0;} // Di default le carte non costano cibo
 
     public void onRoundEndTrigger(Game game) {} // Nessun comportamento di default
