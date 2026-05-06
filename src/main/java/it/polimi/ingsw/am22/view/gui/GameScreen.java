@@ -4,7 +4,6 @@ import it.polimi.ingsw.am22.network.common.dto.CardDTO;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.OfferTileDTO;
 import it.polimi.ingsw.am22.network.common.dto.PlayerDTO;
-import it.polimi.ingsw.am22.network.common.dto.TurnSlotDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
@@ -24,8 +23,9 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -42,29 +42,32 @@ import java.util.Set;
  *
  * <p>Layout (BorderPane) ispirato allo screenshot BGA del gioco Mesos:
  * <ul>
- *     <li>top: header con titolo della fase corrente, round, era;</li>
- *     <li>center: board centrale → riga superiore, tessere offerta + tracciato
- *         turni, riga inferiore;</li>
- *     <li>right: pannelli giocatori (avversari) impilati verticalmente, con
- *         totem, PP, e icone risorsa;</li>
- *     <li>bottom: barra del giocatore locale (lo schienale giallo nello screenshot)
- *         con avatar e tutte le proprie risorse;</li>
- *     <li>(status bar nascosta in fondo alla barra locale).</li>
+ *     <li><b>top</b>: header con titolo della fase corrente, round, era;</li>
+ *     <li><b>center</b>: board centrale → riga superiore di carte, sezione
+ *         tessere offerta (immagine numplayer_N + tessere su una sola riga),
+ *         riga inferiore di carte;</li>
+ *     <li><b>right</b>: pannelli giocatori (TUTTI, incluso quello locale)
+ *         impilati verticalmente con totem, PP, e griglia 4×3 di icone
+ *         risorsa/personaggio;</li>
+ *     <li><b>bottom</b>: status bar per messaggi info/errore.</li>
  * </ul>
  *
  * <p>Tutti i nodi grafici (carte, tessere, totem, icone) sono caricati via
  * {@link ImageCache}: se il PNG corrispondente esiste nei resources, viene
- * mostrato; altrimenti si vede un placeholder colorato con etichetta. Per
- * sostituire i placeholder è sufficiente droppare i file in
- * {@code src/main/resources/images/...} con il naming convention attesa
- * (vedi {@link ImageCache}).
+ * mostrato; altrimenti si vede un placeholder colorato con etichetta. Drop-in
+ * dei file PNG in {@code src/main/resources/images/...} → la UI si aggiorna
+ * automaticamente al riavvio.
  *
  * <p>Le azioni disponibili dipendono dalla fase, individuata per substring
- * sul campo {@code currentPhase} del DTO:
+ * sul campo {@code currentPhase} del DTO. La detection è bilingue
+ * (italiano/inglese):
  * <ul>
- *     <li>"Totem" → click su una tessera offerta libera per piazzare il totem;</li>
- *     <li>"Action" / "Resolution" → selezione carte dalle due righe + Conferma;</li>
- *     <li>"Bonus" → selezione di una sola carta tra quelle proposte + Conferma.</li>
+ *     <li>"Piazzamento Totem" / "Totem" → click su una tessera offerta libera
+ *         per piazzare il totem;</li>
+ *     <li>"Risoluzione Azioni" / "Action" → selezione carte dalle due righe +
+ *         Conferma;</li>
+ *     <li>"Selezione Carta Bonus" / "Bonus" → selezione di una sola carta tra
+ *         quelle proposte + Conferma.</li>
  * </ul>
  * I controlli sono attivi solo se {@code activePlayer} coincide col nickname locale.
  */
@@ -73,8 +76,12 @@ public final class GameScreen implements GuiScreen {
     // Dimensioni di display (raddoppiate nei PNG → vedi linee guida asset).
     private static final double CARD_W = 110;
     private static final double CARD_H = 150;
+    // Tessere offerta: stessa dimensione delle carte per uniformità visiva.
     private static final double TILE_W = 110;
-    private static final double TILE_H = 90;
+    private static final double TILE_H = 150;
+    // Immagine "board" (numplayer_N) affiancata alle tessere offerta.
+    private static final double BOARD_W = 110;
+    private static final double BOARD_H = 150;
     private static final double TOTEM_S = 32;
     private static final double ICON_S = 22;
 
@@ -87,17 +94,18 @@ public final class GameScreen implements GuiScreen {
     private final Label eraLabel = new Label();
     private final Label phaseLabel = new Label();
 
-    // Board centrale
-    private final FlowPane upperRowBox = new FlowPane(8, 8);
-    private final FlowPane lowerRowBox = new FlowPane(8, 8);
-    private final FlowPane offerTilesBox = new FlowPane(8, 8);
-    private final HBox turnTrackBox = new HBox(4);
+    // Board centrale: HBox (NON FlowPane) → niente wrap su 2 righe.
+    private final HBox upperRowBox = new HBox(8);
+    private final HBox lowerRowBox = new HBox(8);
+    private final HBox offerTilesBox = new HBox(8);
+    /**
+     * Sezione tessere offerta: immagine numplayer_N a sinistra + tessere a destra.
+     * Ricostruita ad ogni render perché l'immagine cambia col numero di giocatori.
+     */
+    private final HBox offerSectionBox = new HBox(12);
 
-    // Right column: lista pannelli avversari
+    // Right column: TUTTI i giocatori (incluso il locale, evidenziato).
     private final VBox playersBox = new VBox(10);
-
-    // Bottom: pannello giocatore locale
-    private final BorderPane localBar = new BorderPane();
 
     // Action panel (dentro la colonna destra, in basso)
     private final VBox actionBox = new VBox(8);
@@ -144,11 +152,50 @@ public final class GameScreen implements GuiScreen {
 
     private void buildUi() {
         root.getStyleClass().add("game-root");
+        applyBackgroundImage();
 
         root.setTop(buildHeader());
         root.setCenter(buildCenter());
         root.setRight(buildRightColumn());
         root.setBottom(buildBottom());
+    }
+
+    /**
+     * Imposta lo sfondo del BorderPane radice tutto in Java.
+     *
+     * <p>Tentiamo prima di caricare l'immagine {@code mesos-loading.png}; se
+     * disponibile, viene applicata in modalità "cover". Se non si carica,
+     * cadiamo su un gradiente rosso analogo a quello del CSS.
+     *
+     * <p>NOTA TECNICA: il CSS della classe {@code .game-root} è volutamente
+     * vuoto. Se contenesse {@code -fx-background-color}, il CSS verrebbe
+     * applicato DOPO questo metodo e sovrascriverebbe l'immagine.
+     */
+    private void applyBackgroundImage() {
+        Image bg = ImageCache.load("/images/background/mesos-loading.png");
+        if (bg != null) {
+            javafx.scene.layout.BackgroundImage bgImage = new javafx.scene.layout.BackgroundImage(
+                    bg,
+                    javafx.scene.layout.BackgroundRepeat.NO_REPEAT,
+                    javafx.scene.layout.BackgroundRepeat.NO_REPEAT,
+                    javafx.scene.layout.BackgroundPosition.CENTER,
+                    new javafx.scene.layout.BackgroundSize(
+                            javafx.scene.layout.BackgroundSize.AUTO,
+                            javafx.scene.layout.BackgroundSize.AUTO,
+                            true, true, false, true /* cover */));
+            root.setBackground(new javafx.scene.layout.Background(bgImage));
+            return;
+        }
+        // Fallback: gradiente rosso (se l'immagine manca, vediamo questo).
+        javafx.scene.paint.LinearGradient grad = new javafx.scene.paint.LinearGradient(
+                0, 0, 0, 1, true, javafx.scene.paint.CycleMethod.NO_CYCLE,
+                new javafx.scene.paint.Stop(0.0,  Color.web("#5a0f1a")),
+                new javafx.scene.paint.Stop(0.45, Color.web("#8a1c20")),
+                new javafx.scene.paint.Stop(1.0,  Color.web("#c43a1f")));
+        root.setBackground(new javafx.scene.layout.Background(
+                new javafx.scene.layout.BackgroundFill(grad,
+                        javafx.scene.layout.CornerRadii.EMPTY,
+                        javafx.geometry.Insets.EMPTY)));
     }
 
     private Node buildHeader() {
@@ -170,31 +217,37 @@ public final class GameScreen implements GuiScreen {
         upperRowBox.setAlignment(Pos.CENTER);
         lowerRowBox.setAlignment(Pos.CENTER);
         offerTilesBox.setAlignment(Pos.CENTER);
+        offerSectionBox.setAlignment(Pos.CENTER);
         upperRowBox.getStyleClass().add("board-row");
         lowerRowBox.getStyleClass().add("board-row");
-        offerTilesBox.getStyleClass().add("board-row");
-
-        turnTrackBox.setAlignment(Pos.CENTER);
-        turnTrackBox.getStyleClass().add("turn-track");
+        offerSectionBox.getStyleClass().add("board-row");
 
         Label upLbl = new Label("Riga superiore");
         Label lowLbl = new Label("Riga inferiore");
         Label tileLbl = new Label("Tessere offerta");
-        Label trackLbl = new Label("Tracciato turni");
-        for (Label l : new Label[]{upLbl, lowLbl, tileLbl, trackLbl}) {
+        for (Label l : new Label[]{upLbl, lowLbl, tileLbl}) {
             l.getStyleClass().add("board-section-label");
         }
 
+        // VBox interna che impila le sezioni con allineamento centrato.
+        // Il "tracciato turni" è stato rimosso dalla GUI: l'informazione resta
+        // nel DTO (state.turnOrder()) ed è ancora mostrata dal TUI.
         VBox center = new VBox(10,
                 upLbl, upperRowBox,
-                tileLbl, offerTilesBox,
-                trackLbl, turnTrackBox,
+                tileLbl, offerSectionBox,
                 lowLbl, lowerRowBox);
         center.setPadding(new Insets(14));
         center.setAlignment(Pos.TOP_CENTER);
+        center.setFillWidth(false);
 
-        ScrollPane scroll = new ScrollPane(center);
+        // Wrapper che centra orizzontalmente E verticalmente la VBox.
+        StackPane centerWrap = new StackPane(center);
+        StackPane.setAlignment(center, Pos.CENTER);
+        centerWrap.setStyle("-fx-background-color: transparent;");
+
+        ScrollPane scroll = new ScrollPane(centerWrap);
         scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
         scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         return scroll;
     }
@@ -225,10 +278,9 @@ public final class GameScreen implements GuiScreen {
     }
 
     private Node buildBottom() {
-        localBar.getStyleClass().add("local-bar");
+        // Solo la status bar in basso: tutti i pannelli giocatore sono a destra.
         statusLabel.getStyleClass().add("status-bar");
-        VBox v = new VBox(localBar, statusLabel);
-        return v;
+        return statusLabel;
     }
 
     // =====================================================================
@@ -250,9 +302,7 @@ public final class GameScreen implements GuiScreen {
         renderUpperRow(state);
         renderLowerRow(state);
         renderOfferTiles(state);
-        renderTurnTrack(state.turnOrder());
-        renderOpponents(state);
-        renderLocalBar(state);
+        renderPlayers(state);
         renderActionPanel(state);
     }
 
@@ -288,8 +338,7 @@ public final class GameScreen implements GuiScreen {
 
     /**
      * Costruisce un nodo "carta": ToggleButton con un'immagine (o placeholder).
-     * Il path atteso è {@code /images/cards/{id}.png} → quando il PNG verrà
-     * fornito, sostituirà automaticamente il placeholder.
+     * Path atteso: {@code /images/cards/card_{id}.png}.
      */
     private ToggleButton buildCardNode(CardDTO c, boolean clickable, String fallbackLabel) {
         Color color = colorForCardCategory(c.category());
@@ -321,19 +370,32 @@ public final class GameScreen implements GuiScreen {
         };
     }
 
-    // ------ offer tiles ------
+    // ------ offer tiles + numplayer board ------
 
     private void renderOfferTiles(GameStateDTO state) {
+        // (1) Riempie l'HBox interno delle tessere.
         offerTilesBox.getChildren().clear();
         boolean myTurn = isMyTurn(state);
         boolean totemPhase = isTotemPhase(state.currentPhase());
         for (OfferTileDTO t : state.offerTrack()) {
             offerTilesBox.getChildren().add(buildOfferTileNode(t, state, myTurn && totemPhase));
         }
+
+        // (2) Compone la sezione: a sinistra l'immagine numplayer_N, a destra
+        // le tessere. L'immagine cambia solo col numero di giocatori; provia-
+        // mo prima .png poi .jpg perché le risorse hanno entrambe le estensioni
+        // (es. numplayer_4.jpg).
+        offerSectionBox.getChildren().clear();
+        int n = state.players() == null ? 0 : state.players().size();
+        Node board = ImageCache.nodeFirst(BOARD_W, BOARD_H,
+                "Board " + n + "p", Color.web("#5a2a2a"),
+                "/images/board/numplayer_" + n + ".png",
+                "/images/board/numplayer_" + n + ".jpg");
+        offerSectionBox.getChildren().addAll(board, offerTilesBox);
     }
 
     /**
-     * Costruisce una tessera offerta cliccabile. Il PNG atteso è
+     * Costruisce una tessera offerta cliccabile. PNG atteso:
      * {@code /images/tiles/tile_X.png}. Se la tessera è occupata, sopra
      * l'immagine appare il totem del giocatore corrispondente.
      */
@@ -370,109 +432,152 @@ public final class GameScreen implements GuiScreen {
         return b;
     }
 
-    // ------ turn track ------
-
-    private void renderTurnTrack(List<TurnSlotDTO> slots) {
-        turnTrackBox.getChildren().clear();
-        for (TurnSlotDTO slot : slots) {
-            VBox cell = new VBox(2);
-            cell.setAlignment(Pos.CENTER);
-            cell.getStyleClass().add("turn-slot");
-            if (slot.lastSpace()) cell.getStyleClass().add("turn-slot-last");
-
-            Label idx = new Label("#" + slot.positionIndex());
-            Label food = new Label("+" + slot.foodBonus() + " 🍖");
-            cell.getChildren().addAll(idx, food);
-            if (slot.occupiedBy() != null) {
-                cell.getChildren().add(new Label(slot.occupiedBy()));
-            }
-            turnTrackBox.getChildren().add(cell);
-        }
-    }
-
     // ------ players (right column) ------
 
-    private void renderOpponents(GameStateDTO state) {
+    /**
+     * Renderizza TUTTI i giocatori nella colonna destra, uno sotto l'altro.
+     * Il giocatore locale viene messo per primo e marcato con {@code local=true}:
+     * eredita lo stile {@code .local-player-panel} (sfondo distintivo, ma
+     * SENZA glow dorato). Il glow appare solo per il giocatore di turno
+     * tramite la classe {@code .player-panel-active}.
+     */
+    private void renderPlayers(GameStateDTO state) {
         playersBox.getChildren().clear();
         String me = app.getSession().getLocalNickname();
+
+        PlayerDTO local = null;
+        List<PlayerDTO> others = new ArrayList<>();
         for (PlayerDTO p : state.players()) {
-            if (me != null && me.equalsIgnoreCase(p.nickname())) continue;
+            if (me != null && me.equalsIgnoreCase(p.nickname())) local = p;
+            else others.add(p);
+        }
+        if (local != null) playersBox.getChildren().add(buildPlayerPanel(local, true));
+        for (PlayerDTO p : others) {
             playersBox.getChildren().add(buildPlayerPanel(p, false));
         }
     }
 
     private Node buildPlayerPanel(PlayerDTO p, boolean local) {
         VBox box = new VBox(6);
-        box.getStyleClass().add(local ? "local-bar" : "player-panel");
+        // Tutti i pannelli usano lo stesso stile base. .local-player-panel
+        // distingue il pannello locale (sfondo caldo + bordo crema sottile,
+        // niente glow). .player-panel-active aggiunge il glow dorato SOLO
+        // quando è il turno di quel giocatore.
+        box.getStyleClass().add("player-panel");
+        if (local) box.getStyleClass().add("local-player-panel");
         if (p.active()) box.getStyleClass().add("player-panel-active");
 
         Node totem = ImageCache.icon(ImageCache.totemPath(p.totemColor()), TOTEM_S,
                 initialOf(p.nickname()), ImageCache.colorFromName(p.totemColor()));
 
-        Label name = new Label(p.nickname());
-        name.getStyleClass().add(local ? "local-bar-name" : "player-name");
+        Label name = new Label(p.nickname() + (local ? " (tu)" : ""));
+        name.getStyleClass().add("player-name");
         Label pp = new Label(p.prestigePoints() + " ★");
         pp.getStyleClass().add("player-pp");
 
         HBox header = new HBox(8, totem, name, spacer(), pp);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        FlowPane resources = new FlowPane(6, 4);
-        resources.getChildren().addAll(
-                resourceCell("food",   p.food(),                          "Cibo"),
-                resourceCell("stone",  countByDetail(p.tribeCharacters(), "STONE"), "Pietra"),
-                resourceCell("arrow",  countByDetail(p.tribeCharacters(), "ARROW"), "Frecce"),
-                resourceCell("hand",   countByDetail(p.tribeCharacters(), "HAND"),  "Mano"),
-                resourceCell("eye",    countByDetail(p.tribeCharacters(), "EYE"),   "Occhio"),
-                resourceCell("star",   countByDetail(p.tribeCharacters(), "STAR"),  "Stella"),
-                resourceCell("building", p.buildings().size(),            "Edifici")
-        );
-        box.getChildren().addAll(header, resources);
+        box.getChildren().addAll(header, buildResourceGrid(p));
         return box;
     }
 
-    private Node resourceCell(String iconName, int count, String tooltip) {
-        Node icon = ImageCache.icon(ImageCache.iconPath(iconName), ICON_S,
-                iconName.substring(0, 1).toUpperCase(), placeholderColorForIcon(iconName));
-        Label countLbl = new Label(String.valueOf(count));
+    /**
+     * Griglia 4×3 di icone risorsa/personaggio. La mappatura icona → conteggio
+     * è centralizzata nell'array {@code specs}: per cambiare ordine o significato
+     * di una cella basta editare quell'array.
+     *
+     * <p>Naming convention: per ogni {@code iconName}, il path atteso è
+     * {@code /images/icons/icon_{iconName}.png} (vedi {@link ImageCache#iconPath}).
+     */
+    private Node buildResourceGrid(PlayerDTO p) {
+        ResourceSpec[] specs = new ResourceSpec[] {
+                // Riga 1: risorse generali
+                new ResourceSpec("food",                p.food(),                         "Cibo"),
+                new ResourceSpec("star",                p.prestigePoints(),               "Punti Prestigio"),
+                new ResourceSpec("characters_count",    p.tribeCharacters().size(),       "Personaggi totali"),
+
+                // Riga 2: bonus / sconti / icone uniche
+                // Note: building_discount e gatherer_discount NON sono esposti dal
+                // PlayerDTO, quindi mostrano 0. Per popolarli serve estendere il DTO.
+                new ResourceSpec("building_discount",   0,                                "Sconto edifici (Builder)"),
+                new ResourceSpec("gatherer_discount",   0,                                "Sconto Gatherer"),
+                new ResourceSpec("inventor_icons",      countUniqueInventorIcons(p),      "Icone uniche Inventor"),
+
+                // Riga 3: personaggi tribù — gruppo 1
+                new ResourceSpec("artist",   countByDetail(p.tribeCharacters(), "ARTIST"),    "Artisti"),
+                new ResourceSpec("builder",  countByDetail(p.tribeCharacters(), "BUILDER"),   "Costruttori"),
+                new ResourceSpec("hunter",   countByDetail(p.tribeCharacters(), "HUNTER"),    "Cacciatori"),
+
+                // Riga 4: personaggi tribù — gruppo 2
+                new ResourceSpec("inventor", countByDetail(p.tribeCharacters(), "INVENTOR"),  "Inventori"),
+                new ResourceSpec("shaman",   countByDetail(p.tribeCharacters(), "SHAMAN"),    "Sciamani"),
+                new ResourceSpec("gatherer", countByDetail(p.tribeCharacters(), "COLLECTOR"), "Raccoglitori"),
+        };
+
+        GridPane grid = new GridPane();
+        grid.setHgap(8);
+        grid.setVgap(4);
+        grid.getStyleClass().add("resource-grid");
+        for (int i = 0; i < specs.length; i++) {
+            int col = i % 3;
+            int row = i / 3;
+            grid.add(resourceCell(specs[i]), col, row);
+        }
+        return grid;
+    }
+
+    /** Spec di una cella della griglia risorse. */
+    private record ResourceSpec(String iconName, int count, String tooltip) {}
+
+    private Node resourceCell(ResourceSpec s) {
+        Node icon = ImageCache.icon(ImageCache.iconPath(s.iconName()), ICON_S,
+                s.iconName().substring(0, 1).toUpperCase(),
+                placeholderColorForIcon(s.iconName()));
+        Label countLbl = new Label(String.valueOf(s.count()));
         countLbl.getStyleClass().add("resource-count");
-        HBox cell = new HBox(3, icon, countLbl);
+        HBox cell = new HBox(4, icon, countLbl);
         cell.setAlignment(Pos.CENTER_LEFT);
         cell.getStyleClass().add("resource-cell");
-        if (tooltip != null && !tooltip.isBlank()) {
-            javafx.scene.control.Tooltip.install(cell, new javafx.scene.control.Tooltip(tooltip));
+        if (s.tooltip() != null && !s.tooltip().isBlank()) {
+            javafx.scene.control.Tooltip.install(cell, new javafx.scene.control.Tooltip(s.tooltip()));
         }
         return cell;
     }
 
-    private Color placeholderColorForIcon(String iconName) {
-        return switch (iconName.toLowerCase()) {
-            case "food"     -> Color.web("#e07b3a");
-            case "stone"    -> Color.web("#7a5538");
-            case "arrow"    -> Color.web("#c0392b");
-            case "hand"     -> Color.web("#46a3a3");
-            case "eye"      -> Color.web("#5d3f8a");
-            case "star"     -> Color.web("#d4a73a");
-            case "building" -> Color.web("#8a6a3f");
-            default         -> Color.web("#888888");
-        };
-    }
-
-    // ------ local bar (bottom) ------
-
-    private void renderLocalBar(GameStateDTO state) {
-        String me = app.getSession().getLocalNickname();
-        PlayerDTO local = null;
-        if (me != null) {
-            for (PlayerDTO p : state.players()) {
-                if (me.equalsIgnoreCase(p.nickname())) { local = p; break; }
+    /**
+     * Conta le icone uniche degli Inventor della tribù, basandosi sulla
+     * convenzione {@code "INVENTOR-X"} usata da {@code Inventor#cardDetailType()}.
+     * Replica la logica di {@code Tribe#countUniqueInventorIcons()} sul DTO.
+     */
+    private int countUniqueInventorIcons(PlayerDTO p) {
+        if (p.tribeCharacters() == null) return 0;
+        java.util.Set<String> set = new java.util.HashSet<>();
+        for (CardDTO c : p.tribeCharacters()) {
+            String d = c.detailType();
+            if (d != null && d.toUpperCase().startsWith("INVENTOR-") && d.length() > "INVENTOR-".length()) {
+                set.add(d.substring("INVENTOR-".length()));
             }
         }
-        if (local == null) {
-            localBar.setCenter(new Label("(spettatore)"));
-            return;
-        }
-        localBar.setCenter(buildPlayerPanel(local, true));
+        return set.size();
+    }
+
+    private Color placeholderColorForIcon(String iconName) {
+        return switch (iconName.toLowerCase()) {
+            case "food"               -> Color.web("#e07b3a");
+            case "star"               -> Color.web("#d4a73a");
+            case "characters_count"   -> Color.web("#7a5538");
+            case "building_discount"  -> Color.web("#8a6a3f");
+            case "gatherer_discount"  -> Color.web("#7a8a3f");
+            case "inventor_icons"     -> Color.web("#46a3a3");
+            case "artist"             -> Color.web("#5d3f8a");
+            case "builder"            -> Color.web("#9b6d3f");
+            case "hunter"             -> Color.web("#c0392b");
+            case "inventor"           -> Color.web("#3a82b0");
+            case "shaman"             -> Color.web("#d44a8b");
+            case "gatherer"           -> Color.web("#3a9b5d");
+            default                   -> Color.web("#888888");
+        };
     }
 
     // ------ action panel ------
@@ -545,7 +650,7 @@ public final class GameScreen implements GuiScreen {
 
     // Detection delle fasi tollerante alla lingua: i nomi reali del modello
     // sono in italiano (vedi *State.getPhaseName()): "Piazzamento Totem",
-    // "Risoluzione Azioni", "Selezione Carta Bonus", "Risoluzione Eventi", ...
+    // "Risoluzione Azioni", "Selezione Carta Bonus", "Risoluzione Eventi".
     // Manteniamo anche le parole inglesi nel caso vengano rinominate.
 
     private boolean isTotemPhase(String phase) {

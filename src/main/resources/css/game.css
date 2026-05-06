@@ -1,11 +1,12 @@
 /* ===== Game screen — palette ispirata allo screenshot BGA ===== */
 
+/*
+ * Lo sfondo del game-root viene impostato programmaticamente in
+ * GameScreen.applyBackgroundImage() (immagine + fallback gradient).
+ * NON definire qui -fx-background-color, altrimenti il CSS lo applica
+ * DOPO il setter Java e sovrascrive l'immagine.
+ */
 .game-root {
-    -fx-background-color: linear-gradient(to bottom, #5a0f1a 0%, #8a1c20 45%, #c43a1f 100%);
-    /* Quando la risorsa /images/board/bg.jpg esisterà, decommenta:
-       -fx-background-image: url("/images/board/bg.jpg");
-       -fx-background-size: cover;
-    */
 }
 
 .game-header {
@@ -35,10 +36,28 @@
     -fx-border-width: 1;
 }
 
+/*
+ * Giocatore locale: sfondo distintivo (gradiente caldo) ma SENZA luce
+ * dorata. Il bordo è sottile e color crema, solo per identificarlo a
+ * colpo d'occhio. La luce dorata arriva solo quando è il SUO turno.
+ */
+.local-player-panel {
+    -fx-background-color: linear-gradient(to bottom right,
+                                          rgba(110, 65, 30, 0.92),
+                                          rgba(140, 95, 40, 0.92));
+    -fx-border-color: rgba(255, 230, 180, 0.45);
+    -fx-border-width: 1;
+}
+
+/*
+ * Giocatore di turno: bordo dorato + alone luminoso. È l'UNICA classe
+ * che produce il glow, applicata sia al locale sia agli avversari quando
+ * è il loro turno.
+ */
 .player-panel-active {
     -fx-border-color: gold;
     -fx-border-width: 2;
-    -fx-effect: dropshadow(gaussian, gold, 12, 0.4, 0, 0);
+    -fx-effect: dropshadow(gaussian, gold, 12, 0.5, 0, 0);
 }
 
 .player-panel .label {
@@ -51,28 +70,14 @@
     -fx-text-fill: #ffffff;
 }
 
+.local-player-panel .player-name {
+    -fx-text-fill: #fff7d2;
+}
+
 .player-pp {
     -fx-text-fill: gold;
     -fx-font-weight: bold;
     -fx-font-size: 13px;
-}
-
-/* ----- Barra inferiore: giocatore locale ----- */
-.local-bar {
-    -fx-background-color: linear-gradient(to bottom, rgba(255, 200, 80, 0.95), rgba(220, 150, 50, 0.95));
-    -fx-padding: 10 16 10 16;
-    -fx-border-color: rgba(120, 60, 20, 0.7);
-    -fx-border-width: 2 0 0 0;
-}
-
-.local-bar .label {
-    -fx-text-fill: #2a1a05;
-    -fx-font-weight: bold;
-}
-
-.local-bar-name {
-    -fx-font-size: 14px;
-    -fx-text-fill: #2a1a05;
 }
 
 /* ----- Carte (toggle button) ----- */
@@ -122,24 +127,6 @@
 
 .offer-tile:disabled {
     -fx-opacity: 0.6;
-}
-
-/* ----- Tracciato turni ----- */
-.turn-track {
-    -fx-background-color: rgba(40, 20, 10, 0.6);
-    -fx-background-radius: 8;
-    -fx-padding: 6;
-}
-
-.turn-slot {
-    -fx-background-color: rgba(180, 120, 60, 0.7);
-    -fx-background-radius: 6;
-    -fx-padding: 4 6 4 6;
-    -fx-text-fill: white;
-}
-
-.turn-slot-last {
-    -fx-background-color: rgba(220, 80, 40, 0.85);
 }
 
 /* ----- Action panel ----- */
@@ -203,9 +190,19 @@
     -fx-background-radius: 8;
 }
 
-/* ----- Mini-icone risorsa nei pannelli ----- */
+/* ----- Griglia 4×3 di icone risorsa nei pannelli ----- */
+.resource-grid {
+    -fx-padding: 4 0 0 0;
+}
+
 .resource-cell {
-    -fx-padding: 2 4 2 4;
+    -fx-padding: 3 6 3 6;
+    -fx-background-color: rgba(0, 0, 0, 0.18);
+    -fx-background-radius: 6;
+}
+
+.local-player-panel .resource-cell {
+    -fx-background-color: rgba(0, 0, 0, 0.25);
 }
 
 .resource-count {
