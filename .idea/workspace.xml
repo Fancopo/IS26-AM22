@@ -4,61 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="fixing bug on pick card">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="con la parte di multipartita (incompleta)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/.claude/settings.local.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/.claude/worktrees/elegant-albattani-2ab219" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/CardJsonLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/CardJsonLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/GameState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Launcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Launcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/TurnOrderTile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/TurnOrderTile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/TurnPhaseModifierEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/TurnPhaseModifierEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/character/Hunter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/character/Hunter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/character/Inventor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/character/Inventor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/event/CavePaintings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/event/CavePaintings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/event/ShamanicRitual.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/event/ShamanicRitual.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/BonusCardSelectionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/BonusCardSelectionState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/EndGameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/EndGameState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/EventResolutionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/EventResolutionState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/RoundUpdateState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/RoundUpdateState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/SetUpState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/SetUpState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/TotemPlacementState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/TotemPlacementState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/CardDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/CardDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/GameStateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/GameStateDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/LobbyPlayerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/LobbyPlayerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/LobbyStateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/LobbyStateDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/MatchInfoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/MatchInfoDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/OfferTileDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/OfferTileDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/PlayerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/PlayerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/TurnSlotDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/TurnSlotDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/WinnerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/WinnerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/ClientRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/ClientRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/NetworkMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/NetworkMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/ServerMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/ServerMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/AddPlayerToLobbyRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/AddPlayerToLobbyRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/CreateMatchRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/CreateMatchRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/DisconnectPlayerRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/DisconnectPlayerRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/ListMatchesRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/ListMatchesRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PickBonusCardRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PickBonusCardRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PickCardsRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PickCardsRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PlaceTotemRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PlaceTotemRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/RemovePlayerFromLobbyRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/RemovePlayerFromLobbyRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/SetExpectedPlayersRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/SetExpectedPlayersRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/EndGameMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/EndGameMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/ErrorMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/ErrorMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/GameStartedMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/GameStartedMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/GameStateMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/GameStateMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/InfoMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/InfoMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/LobbyStateMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/LobbyStateMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchClosedMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchClosedMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchJoinedMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchJoinedMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchesListMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchesListMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/NetworkGameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/NetworkGameService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/Ansi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/Ansi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/.claude/settings.local.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/TribeCharacter-Event.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/TribeCharacter-Event.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,7 +41,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,
-    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;
+    &quot;accountId&quot;: &quot;3ada8e8c-3288-46a2-9893-85f519bff785&quot;
   }
 }</component>
   <component name="MavenImportPreferences">
@@ -116,22 +66,18 @@
   &quot;keyToString&quot;: {
     &quot;Application.Client TUI A.executor&quot;: &quot;Run&quot;,
     &quot;Application.Client TUI B.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Client TUI C.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Client TUI D.executor&quot;: &quot;Run&quot;,
     &quot;Application.ClientApp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.GuiApp.executor&quot;: &quot;Run&quot;,
     &quot;Application.NetworkServerLauncher.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ArtistTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ArtistTest.executor&quot;: &quot;Coverage&quot;,
     &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
     &quot;JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.GameTest.executor&quot;: &quot;Run&quot;,
     &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
     &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.ShamanTest.executor&quot;: &quot;Run&quot;,
     &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,
     &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,
     &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,
     &quot;JUnit.java in am22.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.model in am22.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
@@ -139,10 +85,7 @@
     &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -160,6 +103,12 @@
     <configuration name="Client TUI A" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
       <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -177,25 +126,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Client TUI C" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
+    <configuration name="GuiApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.view.gui.GuiApp" />
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Client TUI D" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
-      <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.view.gui.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -216,47 +152,33 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ArtistTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.model.character.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.model.character" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.model.character.ArtistTest" />
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="CardJsonLoaderTest.shouldLoadBuilderCorrectly" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.model.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.model" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.model.GameTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ShamanTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.model.character.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.model.character" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.model.character.ShamanTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
+      <option name="METHOD_NAME" value="shouldLoadBuilderCorrectly" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -270,23 +192,21 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.Client TUI B" />
-      <item itemvalue="Application.Client TUI C" />
       <item itemvalue="Application.Client TUI A" />
-      <item itemvalue="Application.Client TUI D" />
+      <item itemvalue="Application.Client TUI B" />
+      <item itemvalue="Application.GuiApp" />
       <item itemvalue="Application.NetworkServerLauncher" />
-      <item itemvalue="JUnit.ArtistTest" />
-      <item itemvalue="JUnit.GameTest" />
-      <item itemvalue="JUnit.ShamanTest" />
       <item itemvalue="JUnit.java in am22" />
+      <item itemvalue="JUnit.CardJsonLoaderTest" />
+      <item itemvalue="JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.NetworkServerLauncher" />
-        <item itemvalue="JUnit.ShamanTest" />
-        <item itemvalue="JUnit.GameTest" />
-        <item itemvalue="JUnit.ArtistTest" />
+        <item itemvalue="Application.GuiApp" />
         <item itemvalue="JUnit.java in am22" />
+        <item itemvalue="JUnit.CardJsonLoaderTest" />
+        <item itemvalue="JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly" />
       </list>
     </recent_temporary>
   </component>
@@ -385,31 +305,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777903548872</updated>
     </task>
-    <task id="LOCAL-00011" summary="Latest version ansi">
+    <task id="LOCAL-00011" summary="con la parte di multipartita (incompleta)">
       <option name="closed" value="true" />
-      <created>1777904761292</created>
+      <created>1777990246882</created>
       <option name="number" value="00011" />
       <option name="presentableId" value="LOCAL-00011" />
       <option name="project" value="LOCAL" />
-      <updated>1777904761292</updated>
+      <updated>1777990246882</updated>
     </task>
-    <task id="LOCAL-00012" summary="fixing bug about the choice of picking card">
-      <option name="closed" value="true" />
-      <created>1777991382942</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1777991382942</updated>
-    </task>
-    <task id="LOCAL-00013" summary="fixing bug on pick card">
-      <option name="closed" value="true" />
-      <created>1778002478838</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1778002478838</updated>
-    </task>
-    <option name="localTasksCounter" value="14" />
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -423,7 +327,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="game-version2" />
+                        <option value="origin/main" />
                       </list>
                     </value>
                   </entry>
@@ -444,10 +348,8 @@
     <MESSAGE value="Nuovo GameController.java e aggiunto nel network.client il ClientController e ServerConnection. Piccola modifica su id di Building.json" />
     <MESSAGE value="modifiche reti" />
     <MESSAGE value="piccole modifiche tui e fixing dei bug nel model" />
-    <MESSAGE value="Latest version ansi" />
-    <MESSAGE value="fixing bug about the choice of picking card" />
-    <MESSAGE value="fixing bug on pick card" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixing bug on pick card" />
+    <MESSAGE value="con la parte di multipartita (incompleta)" />
+    <option name="LAST_COMMIT_MESSAGE" value="con la parte di multipartita (incompleta)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
