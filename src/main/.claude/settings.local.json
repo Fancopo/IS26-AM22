@@ -6,7 +6,14 @@
       "Read(//c/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22/**)",
       "Read(//c/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22/out/**)",
       "Bash(powershell.exe -Command \"where.exe magick 2>nul; where.exe ffmpeg 2>nul; where.exe dwebp 2>nul\")",
-      "PowerShell($src = \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\src\\\\main\\\\resources\\\\images\\\\icons\"; $tmp = \"$src\\\\_test_convert\"; New-Item -ItemType Directory -Path $tmp -Force | Out-Null; Add-Type -AssemblyName PresentationCore; try { $stream = [IO.File]::OpenRead\\(\"$src\\\\icon_food.png\"\\); $dec = [System.Windows.Media.Imaging.BitmapDecoder]::Create\\($stream, [System.Windows.Media.Imaging.BitmapCreateOptions]::PreservePixelFormat, [System.Windows.Media.Imaging.BitmapCacheOption]::Default\\); $frame = $dec.Frames[0]; $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add\\([System.Windows.Media.Imaging.BitmapFrame]::Create\\($frame\\)\\); $out = [IO.File]::OpenWrite\\(\"$tmp\\\\icon_food.png\"\\); $enc.Save\\($out\\); $out.Close\\(\\); $stream.Close\\(\\); Write-Host \"OK\"; Get-Item \"$tmp\\\\icon_food.png\" | Format-List Length,Name } catch { Write-Host \"ERROR: $_\" })"
+      "PowerShell($src = \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\src\\\\main\\\\resources\\\\images\\\\icons\"; $tmp = \"$src\\\\_test_convert\"; New-Item -ItemType Directory -Path $tmp -Force | Out-Null; Add-Type -AssemblyName PresentationCore; try { $stream = [IO.File]::OpenRead\\(\"$src\\\\icon_food.png\"\\); $dec = [System.Windows.Media.Imaging.BitmapDecoder]::Create\\($stream, [System.Windows.Media.Imaging.BitmapCreateOptions]::PreservePixelFormat, [System.Windows.Media.Imaging.BitmapCacheOption]::Default\\); $frame = $dec.Frames[0]; $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder; $enc.Frames.Add\\([System.Windows.Media.Imaging.BitmapFrame]::Create\\($frame\\)\\); $out = [IO.File]::OpenWrite\\(\"$tmp\\\\icon_food.png\"\\); $enc.Save\\($out\\); $out.Close\\(\\); $stream.Close\\(\\); Write-Host \"OK\"; Get-Item \"$tmp\\\\icon_food.png\" | Format-List Length,Name } catch { Write-Host \"ERROR: $_\" })",
+      "Bash(magick -version)",
+      "Bash(python -c \"from PIL import Image; print\\('ok', Image.__version__ if hasattr\\(Image,'__version__'\\) else ''\\)\")",
+      "Bash(python -c \"from PIL import Image; print\\(Image.MIME\\)\")",
+      "Bash(python3 -c \"from PIL import Image; print\\('ok'\\)\")",
+      "Bash(py --version)",
+      "PowerShell(python --version)",
+      "PowerShell(python -c \"from PIL import Image; print\\('PIL ok'\\)\")"
     ]
   }
 }

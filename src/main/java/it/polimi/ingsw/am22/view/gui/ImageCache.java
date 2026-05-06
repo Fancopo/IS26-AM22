@@ -129,9 +129,9 @@ public final class ImageCache {
 
     // -------------------- helper di alto livello --------------------
 
-    /** Path della carta: {@code /images/cards/{id}.png}. */
+    /** Path della carta: {@code /images/cards/card_{id}.png}. */
     public static String cardPath(String cardId) {
-        return "/images/cards/" + cardId + ".png";
+        return "/images/cards/card_" + cardId + ".png";
     }
 
     /** Path della tessera offerta: {@code /images/tiles/tile_X.png}. */
@@ -139,14 +139,35 @@ public final class ImageCache {
         return "/images/tiles/tile_" + Character.toUpperCase(letter) + ".png";
     }
 
-    /** Path icona generica: {@code /images/icons/{name}.png}. */
+    /** Path icona generica: {@code /images/icons/icon_{name}.png}. */
     public static String iconPath(String name) {
-        return "/images/icons/" + name.toLowerCase() + ".png";
+        return "/images/icons/icon_" + name.toLowerCase() + ".png";
     }
 
     /** Path icona totem giocatore: {@code /images/icons/totem_{color}.png}. */
     public static String totemPath(String color) {
         return "/images/icons/totem_" + (color == null ? "gray" : color.toLowerCase()) + ".png";
+    }
+
+    /**
+     * Variante di {@link #node} che prova più path in ordine: il primo che
+     * carica vince. Utile per asset che possono essere {@code .png} o
+     * {@code .jpg} (es. {@code numplayer_4.jpg}).
+     */
+    public static Node nodeFirst(double w, double h, String fallbackLabel,
+                                 Color fallbackColor, String... resourcePaths) {
+        for (String p : resourcePaths) {
+            Image img = load(p);
+            if (img != null) {
+                ImageView iv = new ImageView(img);
+                iv.setFitWidth(w);
+                iv.setFitHeight(h);
+                iv.setPreserveRatio(true);
+                iv.setSmooth(true);
+                return iv;
+            }
+        }
+        return placeholder(w, h, fallbackLabel, fallbackColor);
     }
 
     /** Colore di placeholder a partire da una stringa colore (es. "yellow"). */
