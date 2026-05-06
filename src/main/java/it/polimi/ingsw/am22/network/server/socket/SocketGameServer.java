@@ -54,16 +54,34 @@ public class SocketGameServer implements AutoCloseable {
     /**
      * Loop di accettazione eseguito nell'accept thread. Per ogni connessione
      * crea un handler e lo sottomette al pool di esecuzione.
+     *
+     * <p>Per-client failures (such as a peer that opens the TCP socket and
+     * immediately closes it without sending the {@code ObjectOutputStream}
+     * stream header — port scanners, health checks, the client-side
+     * {@code ServerWatchdog}) are isolated from the accept thread: they only
+     * skip that one connection. Only failures of {@link ServerSocket#accept()}
+     * itself (the listening socket is broken) tear the server down.
      */
     private void acceptLoop() {
         while (running) {
+            Socket clientSocket;
             try {
-                Socket clientSocket = serverSocket.accept();
-                SocketClientHandler handler = new SocketClientHandler(clientSocket, gameService);
-                clientExecutor.submit(handler);
+                clientSocket = serverSocket.accept();
             } catch (IOException e) {
                 if (running) {
                     throw new IllegalStateException("Unable to accept a socket client connection.", e);
+                }
+                return;
+            }
+            try {
+                SocketClientHandler handler = new SocketClientHandler(clientSocket, gameService);
+                clientExecutor.submit(handler);
+            } catch (IOException e) {
+                // Drive-by connection (peer disconnected before sending the
+                // ObjectStream header): drop it silently and keep accepting.
+                try {
+                    clientSocket.close();
+                } catch (IOException ignored) {
                 }
             }
         }

@@ -50,6 +50,14 @@ public final class TuiView implements ClientUpdateHandler {
     /** Segnale usato da {@link TuiRunner} per uscire dal loop comandi. */
     private volatile boolean stopRequested;
 
+    /**
+     * True when the client is shutting down because the server connection was
+     * lost (vs. a user-initiated {@code quit}/{@code disconnect}). Used by
+     * {@link TuiRunner} to pick the right exit code: 1 when the server dropped
+     * us, 0 for a clean user-initiated shutdown.
+     */
+    private volatile boolean disconnectedByServer;
+
     public TuiView(ClientSession session) {
         this.session = Objects.requireNonNull(session, "session cannot be null");
     }
@@ -59,6 +67,11 @@ public final class TuiView implements ClientUpdateHandler {
      */
     public boolean isStopRequested() {
         return stopRequested;
+    }
+
+    /** @return {@code true} when the shutdown was caused by losing the server connection. */
+    public boolean wasDisconnectedByServer() {
+        return disconnectedByServer;
     }
 
     /** Forza la richiesta di uscita (es. dopo comando {@code quit}). */
@@ -90,12 +103,12 @@ public final class TuiView implements ClientUpdateHandler {
 
     @Override
     public void onConnectionClosed(Throwable cause) {
-        if (cause == null) {
-            println("[CONN] connection closed by the server.");
-        } else {
-            println("[CONN] connection lost: " + cause.getClass().getSimpleName()
-                    + (cause.getMessage() == null ? "" : " - " + cause.getMessage()));
-        }
+        // Unified disconnect message: same string is also used by ServerWatchdog
+        // when the server's TCP listener stops responding (RMI sessions). The
+        // exception details are intentionally omitted: they're noise for the
+        // player. If a developer needs them they can add a verbose flag.
+        println(Ansi.red("[CONN] Server connection lost  closing client."));
+        disconnectedByServer = true;
         requestStop();
     }
 
