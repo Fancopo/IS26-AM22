@@ -14,7 +14,6 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -38,7 +37,7 @@ import javafx.scene.layout.VBox;
  */
 public final class LobbyScreen implements GuiScreen {
 
-    private static final Integer[] EXPECTED_PLAYERS_OPTIONS = {2, 3, 4};
+    private static final Integer[] EXPECTED_PLAYERS_OPTIONS = {2, 3, 4, 5};
 
     private final GuiApp app;
     private final StackPane root;
@@ -98,12 +97,13 @@ public final class LobbyScreen implements GuiScreen {
                 leaveButton,
                 statusLabel);
         center.setAlignment(Pos.TOP_CENTER);
-        center.setPadding(new Insets(30));
+        Backgrounds.stylePanel(center);
+        center.setMaxWidth(620);
+        center.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
 
-        // GRAPHIC PLACEHOLDER: questo StackPane è il contenitore su cui
-        // si potrà sovrapporre lo sfondo della lobby.
         StackPane container = new StackPane(center);
         container.setId("lobby-root");
+        Backgrounds.install(container);
         return container;
     }
 
@@ -119,13 +119,11 @@ public final class LobbyScreen implements GuiScreen {
             }
         });
         leaveButton.setOnAction(e -> {
-            try {
-                app.getSession().getClientController().removePlayerFromLobby();
-            } catch (RuntimeException ignored) {
-                // la connection potrebbe essere già giù; procediamo comunque
-            }
-            app.getSession().close(false);
-            app.showConnectionScreen();
+            // Conserviamo il nickname locale prima del leave: il server chiuderà
+            // il canale e GuiApp aprirà una nuova connessione tornando alla
+            // schermata di selezione partita con lo stesso nickname.
+            String me = app.getSession().getLocalNickname();
+            app.leaveLobbyAndShowMatches(me);
         });
     }
 

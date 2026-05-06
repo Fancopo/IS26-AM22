@@ -6,7 +6,15 @@
       "Bash(where pdftoppm *)",
       "Bash(pdftotext -layout -f 1 -l 8 \"D:\\\\edge_download\\\\Rules_ITA.pdf\" -)",
       "Bash(mvn -q -DskipTests compile)",
-      "PowerShell($env:JAVA_HOME)"
+      "PowerShell($env:JAVA_HOME)",
+      "Bash(xargs wc *)",
+      "Bash(./mvnw -q -DskipTests compile)",
+      "Read(//c/Program Files/Java/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files/Common Files/Oracle/**)",
+      "Bash(mvn -q -o compile)",
+      "Bash(./mvnw.cmd -q -o compile -pl .)"
     ]
   }
 }

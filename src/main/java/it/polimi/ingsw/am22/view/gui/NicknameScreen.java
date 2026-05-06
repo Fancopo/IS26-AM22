@@ -10,7 +10,6 @@ import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -40,14 +39,11 @@ public final class NicknameScreen implements GuiScreen {
     private final Label statusLabel;
     private final Button joinButton;
 
-    /** {@code true} dopo che l'utente ha premuto Join, finché non arriva lobby/errore. */
-    private boolean pendingJoin;
-
     public NicknameScreen(GuiApp app) {
         this.app = app;
         this.nicknameField = new TextField();
         this.statusLabel = new Label();
-        this.joinButton = new Button("Join");
+        this.joinButton = new Button("Continue");
         this.root = buildUi();
     }
 
@@ -56,31 +52,17 @@ public final class NicknameScreen implements GuiScreen {
         return root;
     }
 
-    /**
-     * Segnala a {@link GuiApp} se la prossima {@link LobbyStateMessage} che
-     * arriva deve triggerare la navigazione automatica verso la lobby.
-     */
-    public boolean hasPendingJoin() {
-        return pendingJoin;
-    }
-
     @Override
     public void onServerMessage(ServerMessage message) {
         message.accept(new ServerMessageVisitor() {
-            @Override public void visit(ErrorMessage m) {
-                if (pendingJoin) {
-                    pendingJoin = false;
-                    statusLabel.setText(m.message());
-                    joinButton.setDisable(false);
-                }
-            }
-            @Override public void visit(LobbyStateMessage m) { pendingJoin = false; }
+            @Override public void visit(ErrorMessage m) { statusLabel.setText(m.message()); }
+            @Override public void visit(LobbyStateMessage m) {}
             @Override public void visit(GameStartedMessage m) {}
             @Override public void visit(GameStateMessage m) {}
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}
             @Override public void visit(InfoMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) { pendingJoin = false; }
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {}
             @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
         });
     }
@@ -94,32 +76,35 @@ public final class NicknameScreen implements GuiScreen {
                 statusLabel.setText("Nickname cannot be empty.");
                 return;
             }
-            statusLabel.setText("Joining lobby...");
-            joinButton.setDisable(true);
-            pendingJoin = true;
-            try {
-                // GUI non ancora adattata alla scelta esplicita del match: per
-                // restare funzionante crea una nuova partita a 2 giocatori e
-                // diventa host. Per il flusso completo multipartita usare la TUI.
-                app.getSession().getClientController().createMatch(nickname, 2);
-            } catch (RuntimeException ex) {
-                pendingJoin = false;
-                statusLabel.setText("Join failed: " + ex.getMessage());
-                joinButton.setDisable(false);
+            // Il nickname verrà associato al server solo quando l'utente sceglierà
+            // (o creerà) un match nella schermata successiva.
+            app.showMatchesScreen(nickname);
+        });
+
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            // Tornando alla schermata di connessione chiudiamo la sessione
+            // attuale: l'utente potrà sceglierne una nuova.
+            if (app.getSession() != null) {
+                app.getSession().close(false);
             }
+            app.showConnectionScreen();
         });
 
         VBox box = new VBox(14,
                 new Label("Choose your nickname"),
                 nicknameField,
                 joinButton,
+                backButton,
                 statusLabel);
         box.setAlignment(Pos.CENTER);
-        box.setPadding(new Insets(40));
+        Backgrounds.stylePanel(box);
+        box.setMaxWidth(420);
+        box.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
 
-        // GRAPHIC PLACEHOLDER: sfondo da sostituire/aggiungere.
         StackPane container = new StackPane(box);
         container.setId("nickname-root");
+        Backgrounds.install(container);
         return container;
     }
 }

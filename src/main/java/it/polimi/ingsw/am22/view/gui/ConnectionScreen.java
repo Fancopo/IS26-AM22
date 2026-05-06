@@ -99,12 +99,13 @@ public final class ConnectionScreen implements GuiScreen {
                 connectButton,
                 statusLabel);
         box.setAlignment(Pos.CENTER);
-        box.setPadding(new Insets(40));
+        Backgrounds.stylePanel(box);
+        box.setMaxWidth(420);
+        box.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
 
-        // GRAPHIC PLACEHOLDER: questo StackPane è il punto su cui applicare lo
-        // sfondo: basta aggiungere un ImageView come primo figlio o un CSS.
         StackPane container = new StackPane(box);
         container.setId("connection-root");
+        Backgrounds.install(container);
         return container;
     }
 }
