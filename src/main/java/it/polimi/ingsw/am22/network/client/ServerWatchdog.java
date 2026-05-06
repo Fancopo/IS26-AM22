@@ -19,11 +19,11 @@ import java.net.Socket;
  *     <li>Probes are {@link Socket#connect(java.net.SocketAddress, int) connect-with-timeout}
  *         calls (500 ms), then immediately closed. They do not exchange any
  *         payload, so they don't disturb the server.</li>
- *     <li>The watchdog only kills the JVM <strong>after</strong> the server has
- *         been seen alive at least once. This way, if the server is down from
- *         the very start, we leave the door open to the regular
- *         {@code ConnectionFactory.open(...)} error path (or to the initial
- *         fail-fast probe in {@code ClientApp}); we don't override it.</li>
+ *     <li>The watchdog kills the JVM as soon as a probe fails, even if the
+ *         server has never been seen alive. This way the user gets immediate
+ *         feedback when the server is down at startup, instead of having to
+ *         finish all the launch prompts before the regular
+ *         {@code ConnectionFactory.open(...)} error path fires.</li>
  *     <li>Daemon thread, so it never blocks JVM shutdown on its own.</li>
  * </ul>
  *
@@ -48,7 +48,6 @@ public final class ServerWatchdog {
     private final int port;
 
     private volatile boolean stopped = false;
-    private volatile boolean sawServer = false;
     private Thread thread;
 
     public ServerWatchdog(String host, int port) {
@@ -78,15 +77,11 @@ public final class ServerWatchdog {
 
     private void loop() {
         while (!stopped) {
-            boolean reachable = probe();
-            if (reachable) {
-                sawServer = true;
-            } else if (sawServer) {
-                // The server was up at some point during this client's life and
-                // now it isn't anymore. Fail-fast so the user notices immediately
-                // even if they're stuck on a blocking Scanner.nextLine().
-                // Same message and exit code used by TuiView.onConnectionClosed
-                // so the TCP and RMI paths look identical to the user.
+            if (!probe()) {
+                // Fail-fast so the user notices immediately even if they're stuck
+                // on a blocking Scanner.nextLine(). Same message and exit code
+                // used by TuiView.onConnectionClosed so the TCP and RMI paths
+                // look identical to the user.
                 System.out.println(ANSI_RED + "[CONN] Server connection lost  closing client." + ANSI_RESET);
                 System.out.println("Bye.");
                 System.exit(1);
