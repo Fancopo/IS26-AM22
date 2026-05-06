@@ -3,12 +3,12 @@ package it.polimi.ingsw.am22.network.common.dto;
 import java.io.Serializable;
 
 /**
- * DTO serializzabile che rappresenta uno slot del tracciato dell'ordine di turno.
+ * Serializable DTO representing a slot on the turn-order track.
  *
- * @param positionIndex indice della posizione nello slot
- * @param foodBonus     bonus di cibo associato alla posizione
- * @param lastSpace     {@code true} se è l'ultimo spazio del tracciato
- * @param occupiedBy    nickname del giocatore che occupa lo slot ({@code null} se libero)
+ * @param positionIndex slot position index
+ * @param foodBonus     food bonus tied to the position
+ * @param lastSpace     {@code true} if this is the last space of the track
+ * @param occupiedBy    nickname of the player occupying the slot ({@code null} if free)
  */
 public record TurnSlotDTO(
         int positionIndex,

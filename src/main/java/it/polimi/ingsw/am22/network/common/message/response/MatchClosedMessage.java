@@ -4,13 +4,13 @@ import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 
 /**
- * Messaggio broadcast inviato quando la partita viene chiusa in modo anomalo.
+ * Broadcast message sent when the match is closed abnormally.
  *
- * Tipicamente conseguenza della disconnessione di un giocatore mentre la
- * partita è in corso: la partita non può proseguire e tutti i client
- * vengono avvisati con una motivazione testuale.
+ * Typically caused by a player disconnecting while the match
+ * is running: the match cannot continue and all clients
+ * are notified with a textual reason.
  *
- * @param reason motivazione della chiusura della partita
+ * @param reason reason the match was closed
  */
 public record MatchClosedMessage(String reason) implements ServerMessage {
     @Override

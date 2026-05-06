@@ -24,4 +24,15 @@ public class Hunter extends TribeCharacter implements CharacterEffect {
             player.addFood(foodToAdd);
         }
     }
+
+    /**
+     * Hunters come in two variants. The food-icon variant is shown as
+     * {@code HUNTER*} so the user can tell at a glance which copies trigger
+     * the on-add food bonus. The starred form is for display only — it is
+     * never parsed back.
+     */
+    @Override
+    public String cardDetailType() {
+        return hasFoodIcon ? "HUNTER*" : "HUNTER";
+    }
 }

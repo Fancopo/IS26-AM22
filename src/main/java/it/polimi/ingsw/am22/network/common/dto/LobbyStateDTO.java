@@ -4,16 +4,16 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Snapshot serializzabile dello stato della lobby.
+ * Serializable snapshot of the lobby state.
  *
- * Trasmesso ad ogni variazione della lobby (ingressi, uscite, configurazione).
- * Il costruttore compatto garantisce che la lista dei giocatori sia
- * immutabile e mai {@code null}.
+ * Broadcast on every lobby change (joins, leaves, configuration).
+ * The compact constructor guarantees the player list is
+ * immutable and never {@code null}.
  *
- * @param hostNickname    nickname dell'host
- * @param expectedPlayers numero di giocatori attesi per avviare la partita
- * @param started         {@code true} se la partita è iniziata
- * @param players         lista dei giocatori attualmente in lobby
+ * @param hostNickname    host's nickname
+ * @param expectedPlayers number of players required to start the match
+ * @param started         {@code true} if the match has started
+ * @param players         players currently in the lobby
  */
 public record LobbyStateDTO(
         String matchId,

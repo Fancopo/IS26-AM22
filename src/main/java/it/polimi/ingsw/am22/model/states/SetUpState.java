@@ -14,7 +14,7 @@ public class SetUpState implements GameState {
         game.getBoard().getTurnOrderTile().setup(game.getPlayers().size());
         game.getBoard().initTrack(game.getPlayers().size());
 
-        // Chiama il metodo package-private di Game
+        // Calls Game's package-private method
         game.setupDecks();
 
         game.getBoard().dealInitialCards(game.getTribeDeck(), game.getPlayers().size());
@@ -31,12 +31,12 @@ public class SetUpState implements GameState {
             else if (i == 3 || i == 4) p.addFood(4);
         }
 
-        // Transizione di Stato!
+        // State transition
         game.setState(new TotemPlacementState());
     }
 
     @Override
-    public String getPhaseName() { return "Setup Iniziale"; }
+    public String getPhaseName() { return "Initial Setup"; }
 
     @Override
     public boolean isSetupPhase() { return true; }

@@ -4,11 +4,11 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 
 /**
- * Richiesta di creazione di una nuova partita.
+ * Request to create a new match.
  *
- * Il client fornisce il nickname del creatore (che diventerà host) e il numero
- * di giocatori attesi (2-5). Il server risponde con un {@code MatchJoinedMessage}
- * contenente il matchId appena generato, da usare per le richieste successive.
+ * The client provides the creator's nickname (who becomes host) and the expected
+ * number of players (2-5). The server replies with a {@code MatchJoinedMessage}
+ * carrying the freshly generated matchId, to be used for subsequent requests.
  */
 public record CreateMatchRequest(String hostNickname, int expectedPlayers) implements ClientRequest {
     @Override

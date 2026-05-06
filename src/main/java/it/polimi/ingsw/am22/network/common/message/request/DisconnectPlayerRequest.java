@@ -4,10 +4,10 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 
 /**
- * Richiesta di disconnessione esplicita da parte del giocatore.
+ * Explicit disconnection request from the player.
  *
- * @param matchId  identificativo della partita
- * @param nickname nickname del giocatore che si disconnette
+ * @param matchId  match identifier
+ * @param nickname nickname of the disconnecting player
  */
 public record DisconnectPlayerRequest(String matchId, String nickname) implements ClientRequest {
     @Override

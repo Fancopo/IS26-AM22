@@ -15,8 +15,8 @@ public class TurnPhaseModifierEffect implements BuildingEffect {
 
     @Override
     public void onTotemPlaced(Player owner){
-        // Se l'edificio ha questo flag attivo, dà il bonus(+1 cibo)
-        // Viene chiamato dal GameState solo quando il totem va su uno slot cibo
+        // If this flag is active on the building, grant the bonus (+1 food)
+        // Called by GameState only when the totem lands on a food slot
         if(extraFoodOnTurnOrderBonus){
         owner.addFood(1);
         }
@@ -24,7 +24,7 @@ public class TurnPhaseModifierEffect implements BuildingEffect {
 
     @Override
     public boolean hasExtraBuyAtRoundEnd(){
-        // Espone il flag alla macchina a stati
+        // Expose the flag to the state machine
         return this.extraBuyAtRoundEnd;
     }
 }

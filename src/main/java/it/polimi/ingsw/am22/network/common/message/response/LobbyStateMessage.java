@@ -5,12 +5,12 @@ import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 
 /**
- * Messaggio broadcast con lo stato aggiornato della lobby.
+ * Broadcast message with the updated lobby state.
  *
- * Inviato ad ogni ingresso/uscita dalla lobby o cambio di configurazione
- * (es. numero di giocatori attesi) prima dell'inizio della partita.
+ * Sent on every join/leave or configuration change
+ * (e.g. expected player count) before the match starts.
  *
- * @param lobbyState snapshot dello stato della lobby
+ * @param lobbyState lobby-state snapshot
  */
 public record LobbyStateMessage(LobbyStateDTO lobbyState) implements ServerMessage {
     @Override

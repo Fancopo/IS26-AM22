@@ -9,7 +9,7 @@ public class TotemPlacementState implements GameState {
         player.getTotem().moveToOffer(tile);
 
         if (game.getBoard().getTotemsOnOffersCount() == game.getPlayers().size()) {
-            // Transizione di Stato!
+            // State transition
             game.setState(new ActionResolutionState());
             game.setActivePlayer(game.getPlayerWithLeftmostTotem());
         } else {
@@ -19,5 +19,5 @@ public class TotemPlacementState implements GameState {
     }
 
     @Override
-    public String getPhaseName() { return "Piazzamento Totem"; }
+    public String getPhaseName() { return "Totem Placement"; }
 }

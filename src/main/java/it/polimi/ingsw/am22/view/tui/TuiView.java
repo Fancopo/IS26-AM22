@@ -162,20 +162,21 @@ public final class TuiView implements ClientUpdateHandler {
     private void renderGameState(GameStateDTO state) {
         synchronized (printLock) {
             System.out.print(Ansi.CLEAR_SCREEN);
-            System.out.println(Ansi.bold("=== GAME STATE ==="));
-            System.out.println("Round: " + state.currentRound()
-                    + " | Era: " + state.currentEra()
-                    + " | Phase: " + state.currentPhase());
-            System.out.println("Active player: " + state.activePlayer());
-            System.out.println("-- Players --");
+            System.out.println(Ansi.magenta(Ansi.BOLD + "=== GAME STATE ==="));
+            System.out.println("Round: " + Ansi.bold(String.valueOf(state.currentRound()))
+                    + " | Era: " + Ansi.bold(state.currentEra())
+                    + " | Phase: " + Ansi.bold(state.currentPhase()));
+            System.out.println("Active player: " + Ansi.yellow(Ansi.BOLD + state.activePlayer()));
+            System.out.println(sectionHeader("Players"));
             for (PlayerDTO p : state.players()) {
-                System.out.println(String.format("  %s%s [%s]  PP=%d (proj %d)  food=%d",
+                String line = String.format("  %s%s [%s]  PP=%d (proj %d)  food=%d",
                         p.active() ? "> " : "  ",
                         p.nickname(),
                         p.totemColor(),
                         p.prestigePoints(),
                         p.projectedFinalPrestigePoints(),
-                        p.food()));
+                        p.food());
+                System.out.println(p.active() ? Ansi.bold(line) : line);
                 if (!p.tribeCharacters().isEmpty()) {
                     System.out.println("      tribe    : " + summarizeCards(p.tribeCharacters()));
                 }
@@ -183,37 +184,46 @@ public final class TuiView implements ClientUpdateHandler {
                     System.out.println("      buildings: " + summarizeCards(p.buildings()));
                 }
             }
-            System.out.println("-- Offer tiles --");
+            System.out.println(sectionHeader("Offer tiles"));
             for (OfferTileDTO t : state.offerTrack()) {
+                String status = t.occupiedBy() == null
+                        ? Ansi.dim("(free)")
+                        : "occupied by " + t.occupiedBy();
                 System.out.println(String.format("  %c  upper=%d lower=%d food=%d  %s",
                         t.letter(),
                         t.upperCardsToTake(),
                         t.lowerCardsToTake(),
                         t.foodReward(),
-                        t.occupiedBy() == null ? "(free)" : "occupied by " + t.occupiedBy()));
+                        status));
             }
-            System.out.println("-- Upper row --");
+            System.out.println(sectionHeader("Upper row"));
             System.out.println("  " + summarizeCards(state.upperRow()));
-            System.out.println("-- Lower row --");
+            System.out.println(sectionHeader("Lower row"));
             System.out.println("  " + summarizeCards(state.lowerRow()));
-            System.out.println("-- Turn order --");
+            System.out.println(sectionHeader("Turn order"));
             for (TurnSlotDTO slot : state.turnOrder()) {
+                String lastSpace = slot.lastSpace() ? Ansi.red(" (last)") : "";
                 System.out.println(String.format("  pos=%d food=%d%s %s",
                         slot.positionIndex(),
                         slot.foodBonus(),
-                        slot.lastSpace() ? " (last)" : "",
+                        lastSpace,
                         slot.occupiedBy() == null ? "" : "-> " + slot.occupiedBy()));
             }
-            System.out.println("==================");
-            // Se è il mio turno, suggerimento contestuale di comando.
+            System.out.println(Ansi.magenta(Ansi.BOLD + "=================="));
+            // If it's my turn, contextual command hint.
             String me = session.getLocalNickname();
             if (me != null && me.equalsIgnoreCase(state.activePlayer())) {
                 System.out.println();
                 System.out.println(Ansi.green(Ansi.BOLD + "*** YOUR TURN — phase: " + state.currentPhase() + " ***"));
-                System.out.println(Ansi.green("    Commands: place <letter> | pick <id...> | bonus <id>"));
+                System.out.println(Ansi.dim("    Commands: place <letter> | pick <id...> | bonus <id>"));
                 System.out.print(Ansi.BELL); // beep / flash della finestra
             }
         }
+    }
+
+    /** Magenta-bold section header used to break the game-state output into blocks. */
+    private String sectionHeader(String label) {
+        return Ansi.magenta(Ansi.BOLD + "-- " + label + " --");
     }
 
     private void renderEndGame(WinnerDTO winner, GameStateDTO finalState) {
@@ -231,12 +241,41 @@ public final class TuiView implements ClientUpdateHandler {
     }
 
     private String summarizeCards(List<CardDTO> cards) {
-        if (cards == null || cards.isEmpty()) return "(none)";
+        if (cards == null || cards.isEmpty()) return Ansi.dim("(none)");
+        // Build the joined string with a single space between tokens, WITHOUT a trailing
+        // separator. We must not call .trim() on the result: each colored token begins
+        // with the ESC byte (, 0x1B), and String.trim() strips every character
+        // with code <= 0x20 (space) — including ESC. That would erase the leading
+        // ANSI escape from the first card and the terminal would print "[33m..." raw
+        // instead of coloring the token.
         StringBuilder sb = new StringBuilder();
-        for (CardDTO c : cards) {
-            sb.append(c.id()).append('(').append(c.detailType()).append(") ");
+        for (int i = 0; i < cards.size(); i++) {
+            if (i > 0) sb.append(' ');
+            CardDTO c = cards.get(i);
+            String token = c.id() + "(" + c.detailType() + ")";
+            sb.append(colorizeCard(c, token));
         }
-        return sb.toString().trim();
+        return sb.toString();
+    }
+
+    /**
+     * Colors a card token by category so the player can tell at a glance what is on
+     * the board: characters in blue (the engine you're building), buildings in yellow
+     * (cost food, attention), events in red (hostile / unpickable). The food-icon
+     * Hunter (detail type {@code HUNTER*}) is also bolded so it stands out from
+     * the regular Hunter.
+     */
+    private String colorizeCard(CardDTO c, String token) {
+        String category = c.category() == null ? "" : c.category();
+        String detail = c.detailType() == null ? "" : c.detailType();
+        return switch (category) {
+            case "BUILDING" -> Ansi.yellow(token);
+            case "EVENT"    -> Ansi.red(token);
+            case "CHARACTER" -> detail.endsWith("*")
+                    ? Ansi.blue(Ansi.BOLD + token)
+                    : Ansi.blue(token);
+            default -> token;
+        };
     }
 
     private void println(String line) {

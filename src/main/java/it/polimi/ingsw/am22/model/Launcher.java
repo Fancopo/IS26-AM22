@@ -3,11 +3,11 @@ package it.polimi.ingsw.am22.model;
 import it.polimi.ingsw.am22.network.client.ClientApp;
 
 /**
- * Launcher storico mantenuto per compatibilità con eventuali run
- * configuration che puntano a {@code it.polimi.ingsw.am22.model.Launcher}.
+ * Legacy launcher kept for compatibility with run
+ * configurations pointing to {@code it.polimi.ingsw.am22.model.Launcher}.
  *
- * <p>Delega al vero entry point del client ({@link ClientApp}) che gestisce
- * la scelta TUI/GUI e l'intero flusso di connessione.
+ * <p>Delegates to the real client entry point ({@link ClientApp}) which handles
+ * the TUI/GUI choice and the full connection flow.
  */
 public class Launcher {
     public static void main(String[] args) {

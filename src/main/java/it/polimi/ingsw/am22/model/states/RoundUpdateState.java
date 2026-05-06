@@ -41,5 +41,5 @@ public class RoundUpdateState implements GameState {
     }
 
     @Override
-    public String getPhaseName() { return "Fine Round / Pulizia"; }
+    public String getPhaseName() { return "End of Round / Cleanup"; }
 }

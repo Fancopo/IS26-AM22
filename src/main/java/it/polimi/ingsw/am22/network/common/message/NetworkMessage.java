@@ -3,10 +3,10 @@ package it.polimi.ingsw.am22.network.common.message;
 import java.io.Serializable;
 
 /**
- * Marker interface per tutti i messaggi che viaggiano sulla rete tra client e server.
+ * Marker interface for all messages exchanged between client and server.
  *
- * Estende Serializable perché ogni messaggio deve poter essere trasmesso
- * sia via socket (tramite {@code ObjectOutputStream}) sia via RMI.
+ * Extends Serializable because every message must travel both via
+ * socket (through {@code ObjectOutputStream}) and via RMI.
  */
 public interface NetworkMessage extends Serializable {
 }

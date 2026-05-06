@@ -50,11 +50,11 @@ public class Player {
 
     public void payFood(int amount) {
         if (amount < 0) {
-            throw new IllegalArgumentException("L'importo da pagare non può essere negativo.");
+            throw new IllegalArgumentException("Amount to pay cannot be negative.");
         }
 
         if (this.food < amount) {
-            throw new IllegalStateException("Cibo insufficiente.");
+            throw new IllegalStateException("Insufficient food.");
         }
 
         this.food -= amount;
@@ -74,18 +74,18 @@ public class Player {
         int inventors = tribe.countCharacters(CharacterType.INVENTOR);
         int artists = tribe.countCharacters(CharacterType.ARTIST);
 
-        // Costruttori: somma dei PP stampati sulle carte
+        // Builders: sum of PP printed on cards
         for (TribeCharacter c : tribe.getMembers()) {
             if (c.getCharacterType() == CharacterType.BUILDER) {
                 points += c.getPP();
             }
         }
 
-        // Inventori: numero inventori * numero icone invenzione diverse
+        // Inventors: number of inventors * number of distinct invention icons
         int uniqueInventorIcons = tribe.countUniqueInventorIcons();
         points += inventors * uniqueInventorIcons;
 
-        // Artisti: 10 PP ogni 2 artisti
+        // Artists: 10 PP for every 2 artists
         points += (artists / 2) * 10;
 
         return points;
@@ -93,12 +93,12 @@ public class Player {
 
 
     public int finalPP() {
-        int total = this.PP; // PP accumulati durante la partita
+        int total = this.PP; // PP accumulated during the match
 
-        // 1) PP dei personaggi
+        // 1) Character PP
         total += calculateCharacterEndgamePP();
 
-        // 2) PP degli edifici
+        // 2) Building PP
         total += FinalBuildingPP(this.tribe);
 
         return total;

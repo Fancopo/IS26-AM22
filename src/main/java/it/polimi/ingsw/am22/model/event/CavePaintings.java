@@ -18,10 +18,10 @@ public class CavePaintings extends Event implements EventEffect {
     @Override
     public void applyEvent(List<Player> players, String id) {
         int minArtistsRequired = 0;
-        int PPtoLose = -2; // Come da tuo snippet, la penalità è sempre -2
+        int PPtoLose = -2; // Penalty is always -2
         int PPperArtist = 0;
 
-        // 1. Impostazione delle soglie e dei premi in base all'Era
+        // 1. Set thresholds and rewards based on the Era
         if (this.getEra() == Era.I) {
             minArtistsRequired = 1;
             PPperArtist = 1;
@@ -33,33 +33,33 @@ public class CavePaintings extends Event implements EventEffect {
             PPperArtist = 3;
         }
 
-        // 2. Risoluzione dell'evento per ogni giocatore
+        // 2. Resolve the event for each player
         for (Player player : players) {
             Tribe tribe = player.getTribe();
             if (tribe == null) continue;
 
-            // Conta il numero di Artisti
+            // Count Artists
             int artistCount = tribe.countCharacters(CharacterType.ARTIST);
 
-            // Controllo per gli Edifici (c'è un edificio che dà 1 Cibo per ogni Artista durante questo evento)
+            // Building bonus check (one building grants 1 Food per Artist during this event)
             for (Building building : player.getTribe().getBuildings()){
                 building.getEffect().applyEventBonus(EventType.CAVE_PAINTING,player,artistCount);
             }
 
-            // 3. Calcolo e Assegnazione dei Punti Prestigio
+            // 3. Compute and assign Prestige Points
             if (artistCount >= minArtistsRequired) {
-                // Il giocatore ha abbastanza Artisti: guadagna PP per ogni Artista
+                // Player has enough Artists: gains PP per Artist
                 int earnedPP = artistCount * PPperArtist;
                 player.addPP(earnedPP);
-                System.out.println(player.getNickname() + " ha " + artistCount +
-                        " Artisti (minimo richiesto: " + minArtistsRequired +
-                        "). Guadagna " + earnedPP + " PP!");
+                System.out.println(player.getNickname() + " has " + artistCount +
+                        " Artists (minimum required: " + minArtistsRequired +
+                        "). Gains " + earnedPP + " PP!");
             } else {
-                // Il giocatore non ha abbastanza Artisti: subisce la penalità
-                player.addPP(PPtoLose); // PPtoLose è già negativo (-2)
-                System.out.println(player.getNickname() + " ha solo " + artistCount +
-                        " Artisti (minimo richiesto: " + minArtistsRequired +
-                        "). Subisce " + PPtoLose + " PP.");
+                // Not enough Artists: takes the penalty
+                player.addPP(PPtoLose); // PPtoLose is already negative (-2)
+                System.out.println(player.getNickname() + " only has " + artistCount +
+                        " Artists (minimum required: " + minArtistsRequired +
+                        "). Loses " + PPtoLose + " PP.");
             }
         }
     }

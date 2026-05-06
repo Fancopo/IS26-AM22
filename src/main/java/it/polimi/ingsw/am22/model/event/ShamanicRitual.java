@@ -38,7 +38,7 @@ public class ShamanicRitual extends Event implements EventEffect {
         Map<Player, Boolean> preventLoss = new HashMap<>();
         Map<Player, Boolean> doubleWin = new HashMap<>();
 
-        // 1. CALCOLO ICONE E MODIFICATORI EDIFICI
+        // 1. ICON COUNT AND BUILDING MODIFIERS
         for (Player player : players) {
             int baseIcons = 0;
             int extraIcons = 0;
@@ -47,19 +47,19 @@ public class ShamanicRitual extends Event implements EventEffect {
 
             Tribe tribe = player.getTribe();
             if (tribe != null) {
-                // Conta icone base degli Sciamani
+                // Count base Shaman icons
                 for (TribeCharacter character : tribe.getMembers()) {
                         baseIcons += character.getNumStars();
                 }
 
-                // Applica effetti degli Edifici per il Rituale Sciamanico
+                // Apply Building modifiers for the Shamanic Ritual
                 for (Building building : tribe.getBuildings()) {
                     BuildingEffect effect = building.getEffect();
-                        // Modificatore: 3 icone aggiuntive
+                        // Modifier: 3 extra icons
                         extraIcons += effect.getExtraShamanIcons();
-                        // Modificatore: Non perdete Punti Prestigio
+                        // Modifier: do not lose Prestige Points
                         if (effect.preventsShamanPPLoss()) noLoss = true;
-                        // Modificatore: Guadagnate il doppio dei Punti Prestigio
+                        // Modifier: double the gained Prestige Points
                         if (effect.doublesShamanWinPP()) doublePP = true;
                     }
                 }
@@ -72,31 +72,31 @@ public class ShamanicRitual extends Event implements EventEffect {
 
         if (totalIconsPerPlayer.isEmpty()) return;
 
-        // 2. TROVA IL MASSIMO E IL MINIMO
+        // 2. FIND THE MAX AND MIN
         int maxIcons = Collections.max(totalIconsPerPlayer.values());
         int minIcons = Collections.min(totalIconsPerPlayer.values());
 
-        // 3. ASSEGNAZIONE PREMI E PENALITÀ
+        // 3. ASSIGN REWARDS AND PENALTIES
         for (Player player : players) {
             int icons = totalIconsPerPlayer.get(player);
 
-            // Vittoria: Il giocatore con più icone nella propria tribù, guadagna i Punti Prestigio indicati
-            // In caso di parità, tutti i giocatori in parità ottengono i Punti Prestigio indicati
+            // Win: the player with the most icons in their tribe gains the listed PP.
+            // In case of a tie, all tied players get the PP.
             if (icons == maxIcons) {
                 int earnedPP = doubleWin.get(player) ? PPtoAdd * 2 : PPtoAdd;
                 player.addPP(earnedPP);
-                System.out.println(player.getNickname() + " vince il rito e ottiene " + earnedPP + " PP!");
+                System.out.println(player.getNickname() + " wins the ritual and gains " + earnedPP + " PP!");
             }
 
-            // Sconfitta: Il giocatore con meno icone nella propria tribù, perde i Punti Prestigio indicati
-            // Anche in questo caso si applica la regola della parità
+            // Lose: the player with the fewest icons loses the listed PP.
+            // The same tie rule applies.
             if (icons == minIcons) {
                 if (preventLoss.get(player)) {
-                    System.out.println(player.getNickname() + " ha meno icone, ma l'Edificio lo protegge dalla perdita di PP!");
+                    System.out.println(player.getNickname() + " has the fewest icons, but a Building protects them from PP loss!");
                 } else {
-                    // Nota: PPtoLose è già un numero negativo, quindi usiamo addPP o un metodo equivalente
+                    // Note: PPtoLose is already negative
                     player.addPP(PPtoLose);
-                    System.out.println(player.getNickname() + " perde il rito e subisce " + PPtoLose + " PP.");
+                    System.out.println(player.getNickname() + " loses the ritual and suffers " + PPtoLose + " PP.");
                 }
             }
         }

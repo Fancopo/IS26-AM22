@@ -16,4 +16,15 @@ public class Inventor extends TribeCharacter implements CharacterEffect {
     public char getIconPerInventor() {
         return iconPerInventor;
     }
+
+    /**
+     * Each Inventor card has a unique icon (A, B, C, ...) used by collection
+     * effects (Builder pair, set-of-N, etc.). The icon is appended to the
+     * detail type so it shows up in the TUI as {@code INVENTOR-A},
+     * {@code INVENTOR-B}, ... — display only, never parsed back.
+     */
+    @Override
+    public String cardDetailType() {
+        return "INVENTOR-" + iconPerInventor;
+    }
 }

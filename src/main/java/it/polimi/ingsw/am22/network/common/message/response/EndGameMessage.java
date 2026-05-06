@@ -6,12 +6,12 @@ import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.WinnerDTO;
 
 /**
- * Messaggio broadcast inviato quando la partita termina.
+ * Broadcast message sent when the match ends.
  *
- * Contiene i dati del vincitore e lo snapshot finale dello stato di gioco.
+ * Carries the winner's data and the final game-state snapshot.
  *
- * @param winner         dati del giocatore vincitore
- * @param finalGameState stato finale della partita
+ * @param winner         winning player data
+ * @param finalGameState final match state
  */
 public record EndGameMessage(WinnerDTO winner, GameStateDTO finalGameState) implements ServerMessage {
     @Override

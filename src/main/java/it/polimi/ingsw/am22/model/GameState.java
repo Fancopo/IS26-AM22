@@ -4,27 +4,27 @@ import java.util.List;
 
 public interface GameState {
 
-    // Se uno stato non sovrascrive il metodo, scatterà in automatico l'eccezione!
+    // If a state does not override the method, the exception fires automatically.
     default void startMatch(Game game) {
-        throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
+        throw new IllegalStateException("Action not allowed in: " + getPhaseName());
     }
     default void placeTotemOnOffer(Game game, Player player, OfferTile tile) {
-        throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
+        throw new IllegalStateException("Action not allowed in: " + getPhaseName());
     }
     default void pickCards(Game game, Player player, List<Card> selectedCards) {
-        throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
+        throw new IllegalStateException("Action not allowed in: " + getPhaseName());
     }
     default void pickBonusCard(Game game, Player player, Card bonusCard) {
-        throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
+        throw new IllegalStateException("Action not allowed in: " + getPhaseName());
     }
     default void resolveEvents(Game game) {
-        throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
+        throw new IllegalStateException("Action not allowed in: " + getPhaseName());
     }
     default void updateRound(Game game) {
-        throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
+        throw new IllegalStateException("Action not allowed in: " + getPhaseName());
     }
     default Player determineWinner(Game game) {
-        throw new IllegalStateException("Azione non permessa in: " + getPhaseName());
+        throw new IllegalStateException("Action not allowed in: " + getPhaseName());
     }
     String getPhaseName();
 

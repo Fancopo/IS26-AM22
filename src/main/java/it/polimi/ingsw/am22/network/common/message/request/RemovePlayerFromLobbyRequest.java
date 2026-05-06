@@ -4,10 +4,10 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 
 /**
- * Richiesta di rimozione di un giocatore dalla lobby (uscita volontaria).
+ * Request to remove a player from the lobby (voluntary leave).
  *
- * @param matchId  identificativo della partita
- * @param nickname nickname del giocatore da rimuovere
+ * @param matchId  match identifier
+ * @param nickname nickname of the player to remove
  */
 public record RemovePlayerFromLobbyRequest(String matchId, String nickname) implements ClientRequest {
     @Override

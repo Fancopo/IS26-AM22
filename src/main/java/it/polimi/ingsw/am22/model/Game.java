@@ -76,7 +76,7 @@ public class Game {
         notifyObservers();
     }
 
-    // INSERIMENTO del delegato per la mossa bonus di fine round
+    // Delegate for the end-of-round bonus move
     public void pickBonusCard(Player player, Card bonusCard) {
         currentState.pickBonusCard(this, player, bonusCard);
         notifyObservers();
@@ -184,7 +184,7 @@ public class Game {
                 countEra2 = 3;
                 countEra3 = 5;
             }
-            default -> throw new IllegalStateException("Numero giocatori non valido: " + players.size());
+            default -> throw new IllegalStateException("Invalid number of players: " + players.size());
         }
 
         List<Building> selectedEra1 = new ArrayList<>(buildEra1.subList(0, countEra1));

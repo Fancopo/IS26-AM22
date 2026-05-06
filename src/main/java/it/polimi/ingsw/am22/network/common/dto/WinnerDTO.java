@@ -3,14 +3,14 @@ package it.polimi.ingsw.am22.network.common.dto;
 import java.io.Serializable;
 
 /**
- * DTO serializzabile con i dati del giocatore vincitore.
+ * Serializable DTO with the winning player's data.
  *
- * Allegato all'{@code EndGameMessage} al termine della partita.
+ * Attached to {@code EndGameMessage} at the end of a match.
  *
- * @param nickname             nickname del vincitore
- * @param totemColor           colore del totem
- * @param finalPrestigePoints  punti prestigio finali
- * @param remainingFood        cibo rimanente a fine partita
+ * @param nickname             winner's nickname
+ * @param totemColor           totem color
+ * @param finalPrestigePoints  final prestige points
+ * @param remainingFood        food left at end of match
  */
 public record WinnerDTO(
         String nickname,

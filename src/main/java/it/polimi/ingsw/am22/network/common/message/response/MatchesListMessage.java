@@ -7,7 +7,7 @@ import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import java.util.List;
 
 /**
- * Risposta del server con la lista delle partite aperte e non ancora iniziate.
+ * Server response listing matches that are open and not yet started.
  */
 public record MatchesListMessage(List<MatchInfoDTO> matches) implements ServerMessage {
     public MatchesListMessage {

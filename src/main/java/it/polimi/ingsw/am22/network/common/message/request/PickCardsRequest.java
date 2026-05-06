@@ -6,14 +6,14 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 import java.util.List;
 
 /**
- * Richiesta di raccolta di una o più carte dalla board.
+ * Request to pick one or more cards from the board.
  *
- * Il costruttore compatto rende la lista immutabile e sostituisce
- * {@code null} con una lista vuota, evitando controlli lato ricevente.
+ * The compact constructor makes the list immutable and replaces
+ * {@code null} with an empty list, removing receiver-side checks.
  *
- * @param matchId         identificativo della partita
- * @param playerNickname  nickname del giocatore che compie l'azione
- * @param selectedCardIds lista (immutabile) degli id delle carte scelte
+ * @param matchId         match identifier
+ * @param playerNickname  nickname of the acting player
+ * @param selectedCardIds (immutable) list of selected card ids
  */
 public record PickCardsRequest(String matchId, String playerNickname, List<String> selectedCardIds) implements ClientRequest {
     public PickCardsRequest {

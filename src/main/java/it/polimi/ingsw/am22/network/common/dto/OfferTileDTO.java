@@ -3,13 +3,13 @@ package it.polimi.ingsw.am22.network.common.dto;
 import java.io.Serializable;
 
 /**
- * DTO serializzabile che rappresenta una tessera offerta sulla board.
+ * Serializable DTO representing an offer tile on the board.
  *
- * @param letter            lettera identificativa della tessera
- * @param upperCardsToTake  numero di carte da pescare dalla riga superiore
- * @param lowerCardsToTake  numero di carte da pescare dalla riga inferiore
- * @param foodReward        quantità di cibo ottenuta scegliendo la tessera
- * @param occupiedBy        nickname del giocatore che occupa la tessera ({@code null} se libera)
+ * @param letter            tile identifier letter
+ * @param upperCardsToTake  number of cards to draw from the upper row
+ * @param lowerCardsToTake  number of cards to draw from the lower row
+ * @param foodReward        food gained when picking this tile
+ * @param occupiedBy        nickname of the player occupying the tile ({@code null} if free)
  */
 public record OfferTileDTO(
         char letter,

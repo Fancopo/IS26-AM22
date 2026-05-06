@@ -3,9 +3,9 @@ package it.polimi.ingsw.am22.network.common.dto;
 import java.io.Serializable;
 
 /**
- * Sintesi di una partita aperta nel registry lato server.
+ * Summary of an open match in the server-side registry.
  *
- * Viene inviata al client quando chiede la lista delle partite disponibili.
+ * Sent to the client when it requests the list of available matches.
  */
 public record MatchInfoDTO(
         String matchId,

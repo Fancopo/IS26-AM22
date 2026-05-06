@@ -720,7 +720,7 @@
     "minPlayers": 2,
     "characterType": "INVENTOR",
     "effect": {
-      "iconPerInventor": "I"
+      "iconPerInventor": "H"
     }
   },
   {

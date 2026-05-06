@@ -4,9 +4,9 @@ import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 
 /**
- * Conferma inviata al client dopo aver creato o essere entrato in una partita.
+ * Confirmation sent to the client after creating or joining a match.
  *
- * Il client deve memorizzare {@code matchId} e allegarlo a tutte le richieste successive.
+ * The client must store {@code matchId} and attach it to all subsequent requests.
  */
 public record MatchJoinedMessage(String matchId, String nickname) implements ServerMessage {
     @Override

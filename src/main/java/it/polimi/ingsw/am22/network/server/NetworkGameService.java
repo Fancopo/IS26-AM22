@@ -168,7 +168,7 @@ public class NetworkGameService {
 
     /** Richieste globali --------------------------------------------------- */
 
-    /** Crea una nuova partita, aggiunge l'host alla lobby e lo notifica. */
+    /** Creates a new match, adds the host to the lobby and notifies them. */
     private void handleCreateMatch(CreateMatchRequest request, ClientChannel channel) {
         String hostNickname = requireText(request.hostNickname(), "hostNickname");
         String matchId = nextMatchId();
@@ -176,15 +176,19 @@ public class NetworkGameService {
         matchesById.put(matchId, session);
         try {
             session.handleAddPlayer(new AddPlayerToLobbyRequest(matchId, hostNickname), channel);
-            // L'host imposta subito anche il numero di giocatori attesi.
-            session.handleSetExpectedPlayers(
-                    new SetExpectedPlayersRequest(matchId, hostNickname, request.expectedPlayers()),
-                    channel);
         } catch (RuntimeException e) {
-            // Se la creazione fallisce a metà, libera lo slot.
+            // If the host can't even join, the empty session is useless -> drop it.
             matchesById.remove(matchId);
             throw e;
         }
+        // The host has joined; the match is now in a valid lobby state (the expected-
+        // players slot is allowed to be "not set yet"). If the requested expected-player
+        // count is invalid we still surface the error to the host, but we KEEP the
+        // match alive so they can fix it via `players <N>` instead of being stranded
+        // in a phantom match the server has dropped.
+        session.handleSetExpectedPlayers(
+                new SetExpectedPlayersRequest(matchId, hostNickname, request.expectedPlayers()),
+                channel);
     }
 
     /** Risponde al solo richiedente con la lista delle partite ancora aperte. */

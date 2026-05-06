@@ -4,12 +4,12 @@ import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 
 /**
- * Messaggio di errore inviato dal server al singolo client che ha causato il problema.
+ * Error message sent by the server to the single client that caused the issue.
  *
- * Usato ad esempio per richieste non valide, eccezioni del controller
- * o payload non riconosciuti.
+ * Used for example on invalid requests, controller exceptions
+ * or unrecognized payloads.
  *
- * @param message descrizione dell'errore
+ * @param message error description
  */
 public record ErrorMessage(String message) implements ServerMessage {
     @Override

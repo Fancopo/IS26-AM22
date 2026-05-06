@@ -4,13 +4,13 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 
 /**
- * Richiesta (tipicamente dell'host) di impostare il numero di giocatori attesi.
+ * Request (typically by the host) to set the expected number of players.
  *
- * Al raggiungimento di questo numero la partita viene avviata dal server.
+ * When that number is reached the server starts the match.
  *
- * @param matchId           identificativo della partita
- * @param requesterNickname nickname di chi fa la richiesta
- * @param expectedPlayers   numero totale di giocatori desiderato
+ * @param matchId           match identifier
+ * @param requesterNickname nickname of the requester
+ * @param expectedPlayers   total desired number of players
  */
 public record SetExpectedPlayersRequest(String matchId, String requesterNickname, int expectedPlayers) implements ClientRequest {
     @Override

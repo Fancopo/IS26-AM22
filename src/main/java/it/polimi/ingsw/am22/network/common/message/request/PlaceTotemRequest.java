@@ -4,11 +4,11 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 
 /**
- * Richiesta di piazzamento del totem su una tessera offerta.
+ * Request to place the totem on an offer tile.
  *
- * @param matchId        identificativo della partita
- * @param playerNickname nickname del giocatore che compie l'azione
- * @param offerLetter    lettera della tessera scelta (es. 'A', 'B', ...)
+ * @param matchId        match identifier
+ * @param playerNickname nickname of the acting player
+ * @param offerLetter    letter of the chosen tile (e.g. 'A', 'B', ...)
  */
 public record PlaceTotemRequest(String matchId, String playerNickname, char offerLetter) implements ClientRequest {
     @Override

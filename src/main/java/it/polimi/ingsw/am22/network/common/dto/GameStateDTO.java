@@ -4,22 +4,22 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Snapshot serializzabile dello stato di gioco.
+ * Serializable snapshot of the game state.
  *
- * Contiene tutto ciò che serve al client per rappresentare la partita
- * senza dover condividere le classi concrete del modello.
- * Il costruttore compatto garantisce che le liste siano immutabili e
- * mai {@code null}, rendendo sicura la deserializzazione lato client.
+ * Contains everything the client needs to render the game
+ * without sharing the concrete model classes.
+ * The compact constructor guarantees lists are immutable and
+ * never {@code null}, making client-side deserialization safe.
  *
- * @param currentRound  numero del round corrente
- * @param currentEra    era corrente (rappresentata come stringa)
- * @param currentPhase  nome della fase di gioco corrente
- * @param activePlayer  nickname del giocatore di turno ({@code null} se nessuno)
- * @param players       lista dei giocatori con il loro stato
- * @param upperRow      carte della riga superiore sulla board
- * @param lowerRow      carte della riga inferiore sulla board
- * @param offerTrack    tessere offerta disponibili
- * @param turnOrder     slot del tracciato turno ordinati per posizione
+ * @param currentRound  current round number
+ * @param currentEra    current era (as string)
+ * @param currentPhase  current game phase name
+ * @param activePlayer  nickname of the active player ({@code null} if none)
+ * @param players       list of players and their state
+ * @param upperRow      cards in the upper row of the board
+ * @param lowerRow      cards in the lower row of the board
+ * @param offerTrack    available offer tiles
+ * @param turnOrder     turn-track slots ordered by position
  */
 public record GameStateDTO(
         int currentRound,

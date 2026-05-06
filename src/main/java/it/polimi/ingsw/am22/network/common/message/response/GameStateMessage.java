@@ -5,11 +5,11 @@ import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 
 /**
- * Messaggio broadcast con lo stato corrente della partita.
+ * Broadcast message with the current match state.
  *
- * Inviato ad ogni cambiamento significativo (azione del giocatore, cambio turno, ecc.).
+ * Sent on every significant change (player action, turn switch, etc.).
  *
- * @param gameState snapshot aggiornato dello stato di gioco
+ * @param gameState updated game-state snapshot
  */
 public record GameStateMessage(GameStateDTO gameState) implements ServerMessage {
     @Override

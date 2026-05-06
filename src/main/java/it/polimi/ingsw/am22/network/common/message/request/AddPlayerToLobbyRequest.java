@@ -4,10 +4,10 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 
 /**
- * Richiesta di ingresso nella lobby di una partita esistente.
+ * Request to join the lobby of an existing match.
  *
- * @param matchId  identificativo della partita a cui unirsi
- * @param nickname nickname scelto dal giocatore
+ * @param matchId  id of the match to join
+ * @param nickname nickname chosen by the player
  */
 public record AddPlayerToLobbyRequest(String matchId, String nickname) implements ClientRequest {
     @Override

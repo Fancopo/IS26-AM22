@@ -12,33 +12,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe responsabile del caricamento delle carte dal file JSON.
+ * Loads cards from JSON files.
  *
- * Si occupa di:
- * - caricare TribeCharacter ed Event
- * - separare gli eventi finali dagli eventi normali
- * - caricare i Building
- * - costruire un oggetto finale LoadedCards contenente tutte le carte
+ * Responsible for:
+ * - loading TribeCharacter and Event
+ * - separating final events from regular events
+ * - loading Buildings
+ * - building a final LoadedCards object containing all cards
  */
 public class CardJsonLoader {
 
-    /** ID del primo evento finale. */
+    /** ID of the first final event. */
     private static final int FINAL_EVENT_ID_1 = 95;
 
-    /** ID del secondo evento finale. */
+    /** ID of the second final event. */
     private static final int FINAL_EVENT_ID_2 = 96;
 
-    /** Mapper Jackson usato per leggere e interpretare il JSON. */
+    /** Jackson mapper used to read and parse the JSON. */
     private final ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * Carica da un file JSON tutti i TribeCharacter e gli Event.
+     * Loads all TribeCharacters and Events from a JSON file.
      *
-     * Gli eventi con ID 95 e 96 vengono salvati separatamente
-     * nella lista dei finalEvents.
+     * Events with IDs 95 and 96 are stored separately
+     * in the finalEvents list.
      *
-     * @param resourcePath percorso della risorsa JSON
-     * @return LoadedCards contenente tribeCharacters, events, finalEvents e lista vuota di buildings
+     * @param resourcePath path to the JSON resource
+     * @return LoadedCards with tribeCharacters, events, finalEvents and an empty buildings list
      */
     public LoadedCards loadTribeCharactersAndEvents(String resourcePath) {
         List<TribeCharacter> tribeCharacters = new ArrayList<>();
@@ -46,31 +46,31 @@ public class CardJsonLoader {
         List<Event> finalEvents = new ArrayList<>();
 
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
-            // Controlla che il file esista davvero tra le risorse del progetto
+            // Verify the file actually exists in project resources
             if (is == null) {
-                throw new IllegalArgumentException("File non trovato: " + resourcePath);
+                throw new IllegalArgumentException("File not found: " + resourcePath);
             }
 
-            // Legge il contenuto JSON e lo converte in un albero di nodi Jackson
+            // Read JSON content and parse it into a Jackson node tree
             JsonNode root = mapper.readTree(is);
 
-            // Il file deve avere come radice un array di carte
+            // The file root must be an array of cards
             if (!root.isArray()) {
-                throw new IllegalArgumentException("La radice del JSON deve essere un array");
+                throw new IllegalArgumentException("JSON root must be an array");
             }
 
-            // Scorre tutte le carte presenti nel file JSON
+            // Iterate over every card in the JSON file
             for (JsonNode node : root) {
                 String type = node.get("type").asText();
 
-                // In base al tipo della carta decide come interpretarla
+                // Decide how to parse based on the card type
                 switch (type) {
                     case "tribeCharacter" -> tribeCharacters.add(parseTribeCharacter(node));
 
                     case "event" -> {
                         Event event = parseEvent(node);
 
-                        // Gli eventi finali vengono salvati in una lista separata
+                        // Final events are stored in a separate list
                         if (isFinalEventNode(node)) {
                             finalEvents.add(event);
                         } else {
@@ -78,28 +78,28 @@ public class CardJsonLoader {
                         }
                     }
 
-                    // Qualsiasi tipo diverso da quelli attesi genera errore
+                    // Any unexpected type triggers an error
                     default -> throw new IllegalArgumentException(
-                            "Tipo non valido in " + resourcePath + ": " + type
+                            "Invalid type in " + resourcePath + ": " + type
                     );
                 }
             }
 
-            // Restituisce l'oggetto finale con tribeCharacters, events e finalEvents.
-            // La lista buildings qui è ancora vuota, perché viene caricata separatamente.
+            // Return the final object with tribeCharacters, events and finalEvents.
+            // The buildings list is still empty here, it is loaded separately.
             return new LoadedCards(tribeCharacters, events, finalEvents, new ArrayList<>());
 
         } catch (Exception e) {
-            // Wrappa qualsiasi errore in una RuntimeException con messaggio più chiaro
-            throw new RuntimeException("Errore nel caricamento di tribeCharacter/event", e);
+            // Wrap any error in a RuntimeException with a clearer message
+            throw new RuntimeException("Error loading tribeCharacter/event", e);
         }
     }
 
     /**
-     * Controlla se un nodo JSON rappresenta un evento finale.
+     * Checks whether a JSON node represents a final event.
      *
-     * @param node nodo JSON della carta
-     * @return true se l'id è 95 o 96, false altrimenti
+     * @param node card JSON node
+     * @return true if the id is 95 or 96, false otherwise
      */
     private boolean isFinalEventNode(JsonNode node) {
         int id = node.get("id").asInt();
@@ -107,26 +107,26 @@ public class CardJsonLoader {
     }
 
     /**
-     * Converte un nodo JSON in un oggetto TribeCharacter concreto.
+     * Converts a JSON node into a concrete TribeCharacter object.
      *
-     * In base al campo characterType crea la sottoclasse corretta:
-     * Hunter, Builder, Shaman, Inventor, Artist o Collector.
+     * Based on the characterType field, builds the correct subclass:
+     * Hunter, Builder, Shaman, Inventor, Artist or Collector.
      *
-     * @param node nodo JSON della carta tribeCharacter
-     * @return oggetto TribeCharacter
+     * @param node JSON node of the tribeCharacter card
+     * @return TribeCharacter object
      */
     private TribeCharacter parseTribeCharacter(JsonNode node) {
         try {
-            // Lettura dei campi comuni a tutte le carte personaggio
+            // Read the fields shared by all character cards
             String id = node.get("id").asText();
             Era era = Era.valueOf(node.get("era").asText());
             int minPlayers = node.get("minPlayers").asInt();
             CharacterType characterType = CharacterType.valueOf(node.get("characterType").asText());
 
-            // Nodo annidato contenente i dati specifici dell'effetto
+            // Nested node with effect-specific data
             JsonNode effectNode = node.get("effect");
 
-            // Creazione della sottoclasse concreta in base al tipo di personaggio
+            // Build the concrete subclass based on character type
             return switch (characterType) {
                 case HUNTER -> new Hunter(
                         id,
@@ -150,39 +150,45 @@ public class CardJsonLoader {
                         effectNode.get("numStars").asInt()
                 );
 
-                case INVENTOR -> new Inventor(
-                        id,
-                        era,
-                        minPlayers,
-                        (char) effectNode.get("iconPerInventor").asInt()
-                );
+                case INVENTOR -> {
+                    // The JSON stores the icon as a one-character string ("A", "B", ...),
+                    // not as a numeric code point. Using asInt() silently returns 0 and
+                    // we'd end up with a NUL char (rendered as a placeholder glyph in
+                    // the terminal). Read it as text and take the first character.
+                    String iconText = effectNode.get("iconPerInventor").asText();
+                    if (iconText == null || iconText.isEmpty()) {
+                        throw new IllegalStateException(
+                                "Inventor card " + id + " is missing the 'iconPerInventor' field.");
+                    }
+                    yield new Inventor(id, era, minPlayers, iconText.charAt(0));
+                }
 
                 case ARTIST -> new Artist(id, era, minPlayers);
                 case COLLECTOR -> new Collector(id, era, minPlayers);
             };
 
         } catch (Exception e) {
-            throw new RuntimeException("Errore nel parsing di tribeCharacter", e);
+            throw new RuntimeException("Error parsing tribeCharacter", e);
         }
     }
 
     /**
-     * Converte un nodo JSON in un oggetto Event concreto.
+     * Converts a JSON node into a concrete Event object.
      *
-     * In base al campo eventType crea la sottoclasse corretta.
+     * Builds the correct subclass based on the eventType field.
      *
-     * @param node nodo JSON della carta event
-     * @return oggetto Event
+     * @param node JSON node of the event card
+     * @return Event object
      */
     private Event parseEvent(JsonNode node) {
         try {
-            // Lettura dei campi comuni a tutti gli eventi
+            // Read fields shared by all events
             String id = node.get("id").asText();
             Era era = Era.valueOf(node.get("era").asText());
             int minPlayers = node.get("minPlayers").asInt();
             EventType eventType = EventType.valueOf(node.get("eventType").asText());
 
-            // Creazione della sottoclasse concreta dell'evento
+            // Build the concrete event subclass
             return switch (eventType) {
                 case HUNTING -> new Hunting(
                         id,
@@ -218,34 +224,34 @@ public class CardJsonLoader {
             };
 
         } catch (Exception e) {
-            throw new RuntimeException("Errore nel parsing di event", e);
+            throw new RuntimeException("Error parsing event", e);
         }
     }
 
     /**
-     * Carica tutti i building da un file JSON.
+     * Loads all buildings from a JSON file.
      *
-     * @param resourcePath percorso del file JSON dei building
-     * @return lista di building caricati
+     * @param resourcePath path to the buildings JSON file
+     * @return list of loaded buildings
      */
     public List<Building> loadBuildings(String resourcePath) {
         List<Building> buildings = new ArrayList<>();
 
         try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
-            // Verifica che il file esista
+            // Verify the file exists
             if (is == null) {
-                throw new IllegalArgumentException("File non trovato: " + resourcePath);
+                throw new IllegalArgumentException("File not found: " + resourcePath);
             }
 
-            // Legge il JSON
+            // Read JSON
             JsonNode root = mapper.readTree(is);
 
-            // Anche qui la radice deve essere un array
+            // Root must also be an array here
             if (!root.isArray()) {
-                throw new IllegalArgumentException("La radice del JSON dei building deve essere un array");
+                throw new IllegalArgumentException("Buildings JSON root must be an array");
             }
 
-            // Converte ogni nodo JSON in un Building
+            // Convert each JSON node into a Building
             for (JsonNode node : root) {
                 buildings.add(parseBuilding(node));
             }
@@ -253,44 +259,44 @@ public class CardJsonLoader {
             return buildings;
 
         } catch (Exception e) {
-            throw new RuntimeException("Errore nel caricamento dei building", e);
+            throw new RuntimeException("Error loading buildings", e);
         }
     }
 
     /**
-     * Converte un nodo JSON in un oggetto Building.
+     * Converts a JSON node into a Building object.
      *
-     * @param node nodo JSON del building
-     * @return oggetto Building
+     * @param node JSON node of the building
+     * @return Building object
      */
     private Building parseBuilding(JsonNode node) {
-        // Lettura dei campi principali del building
+        // Read main building fields
         String id = node.get("id").asText();
         Era era = Era.valueOf(node.get("era").asText());
-        int minPlayers = 2; // da tua scelta progettuale, i building hanno sempre minPlayers = 2
+        int minPlayers = 2; // by design choice, buildings always have minPlayers = 2
         int foodPrice = node.get("foodPrice").asInt();
         int finalPP = node.get("finalPP").asInt();
 
-        // Tipo di effetto del building
+        // Building effect type
         String effectType = node.get("BuildingEffectType").asText();
 
-        // Nodo annidato con i dati specifici dell'effetto
+        // Nested node with effect-specific data
         JsonNode effectNode = node.get("effect");
 
-        // Parsing dell'effetto concreto
+        // Parse the concrete effect
         BuildingEffect effect = parseBuildingEffect(effectType, effectNode, id);
 
-        // Creazione dell'oggetto finale Building
+        // Build the final Building object
         return new Building(id, era, minPlayers, foodPrice, finalPP, effect);
     }
 
     /**
-     * Converte i dati dell'effetto del building nell'oggetto concreto corretto.
+     * Converts the building effect data into the correct concrete object.
      *
-     * @param effectType tipo di effetto letto dal JSON
-     * @param effectNode nodo JSON contenente i dati dell'effetto
-     * @param buildingId id del building, utile per messaggi di errore
-     * @return oggetto BuildingEffect concreto
+     * @param effectType effect type read from JSON
+     * @param effectNode JSON node holding effect data
+     * @param buildingId building id, useful for error messages
+     * @return concrete BuildingEffect object
      */
     private BuildingEffect parseBuildingEffect(String effectType, JsonNode effectNode, String buildingId) {
         return switch (effectType) {
@@ -329,19 +335,19 @@ public class CardJsonLoader {
             );
 
             default -> throw new IllegalArgumentException(
-                    "BuildingEffectType sconosciuto nel building " + buildingId + ": " + effectType
+                    "Unknown BuildingEffectType in building " + buildingId + ": " + effectType
             );
         };
     }
 
     /**
-     * Legge un CharacterType che può anche essere nullo.
+     * Reads a CharacterType that may be null.
      *
-     * Questo metodo serve nei casi in cui il campo targetCharacterType
-     * nel JSON possa essere assente oppure valorizzato a null.
+     * Used when the targetCharacterType field in the JSON
+     * may be absent or set to null.
      *
-     * @param node nodo JSON da leggere
-     * @return CharacterType corrispondente, oppure null
+     * @param node JSON node to read
+     * @return matching CharacterType, or null
      */
     private CharacterType readNullableCharacterType(JsonNode node) {
         if (node == null || node.isNull()) {
@@ -351,24 +357,24 @@ public class CardJsonLoader {
     }
 
     /**
-     * Carica tutte le carte del gioco:
+     * Loads all game cards:
      * - tribeCharacters
      * - events
      * - finalEvents
      * - buildings
      *
-     * @param tribeEventPath percorso del JSON con tribeCharacter ed event
-     * @param buildingPath percorso del JSON con i building
-     * @return LoadedCards completo
+     * @param tribeEventPath path to the JSON with tribeCharacter and event
+     * @param buildingPath path to the JSON with the buildings
+     * @return complete LoadedCards
      */
     public LoadedCards loadAllCards(String tribeEventPath, String buildingPath) {
-        // Prima carica tribeCharacter, event e finalEvent
+        // First load tribeCharacter, event and finalEvent
         LoadedCards partial = loadTribeCharactersAndEvents(tribeEventPath);
 
-        // Poi carica i building
+        // Then load the buildings
         List<Building> buildings = loadBuildings(buildingPath);
 
-        // Costruisce l'oggetto finale con tutte le carte
+        // Build the final object with all cards
         return new LoadedCards(
                 partial.getTribeCharacters(),
                 partial.getEvents(),
@@ -377,4 +383,3 @@ public class CardJsonLoader {
         );
     }
 }
-

@@ -25,5 +25,5 @@ public class EventResolutionState implements GameState {
     }
 
     @Override
-    public String getPhaseName() { return "Risoluzione Eventi"; }
+    public String getPhaseName() { return "Event Resolution"; }
 }

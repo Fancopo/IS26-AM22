@@ -5,11 +5,11 @@ import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 
 /**
- * Messaggio broadcast inviato nel momento esatto in cui la partita inizia.
+ * Broadcast message sent the moment the match starts.
  *
- * Permette ai client di uscire dallo stato "lobby" e mostrare l'interfaccia di gioco.
+ * Lets clients leave the "lobby" state and show the game UI.
  *
- * @param initialGameState snapshot iniziale dello stato di gioco
+ * @param initialGameState initial game-state snapshot
  */
 public record GameStartedMessage(GameStateDTO initialGameState) implements ServerMessage {
     @Override

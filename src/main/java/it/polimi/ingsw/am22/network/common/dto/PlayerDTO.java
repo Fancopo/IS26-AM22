@@ -4,18 +4,18 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Snapshot serializzabile di un giocatore in partita.
+ * Serializable snapshot of a player in the match.
  *
- * Il costruttore compatto garantisce che le liste siano immutabili e mai {@code null}.
+ * The compact constructor guarantees lists are immutable and never {@code null}.
  *
- * @param nickname                       nickname del giocatore
- * @param totemColor                     colore del totem
- * @param prestigePoints                 punti prestigio attuali
- * @param food                           cibo disponibile
- * @param projectedFinalPrestigePoints   punti prestigio finali previsti
- * @param active                         {@code true} se è il giocatore di turno
- * @param tribeCharacters                carte personaggio della tribù
- * @param buildings                      edifici posseduti
+ * @param nickname                       player nickname
+ * @param totemColor                     totem color
+ * @param prestigePoints                 current prestige points
+ * @param food                           available food
+ * @param projectedFinalPrestigePoints   projected final prestige points
+ * @param active                         {@code true} if this is the active player
+ * @param tribeCharacters                tribe character cards
+ * @param buildings                      owned buildings
  */
 public record PlayerDTO(
         String nickname,

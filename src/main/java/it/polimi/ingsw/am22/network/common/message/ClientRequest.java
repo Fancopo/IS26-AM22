@@ -1,10 +1,10 @@
 package it.polimi.ingsw.am22.network.common.message;
 
 /**
- * Interfaccia base per tutte le richieste che il client invia al server.
+ * Base interface for all requests the client sends to the server.
  *
- * Ogni implementazione accetta un {@link ClientRequestVisitor} per consentire
- * il dispatch polimorfo senza instanceof.
+ * Each implementation accepts a {@link ClientRequestVisitor} to enable
+ * polymorphic dispatch without instanceof.
  */
 public interface ClientRequest extends NetworkMessage {
     void accept(ClientRequestVisitor visitor);

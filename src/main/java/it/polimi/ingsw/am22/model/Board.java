@@ -21,10 +21,10 @@ public class Board {
 
 
     public void initTrack(int numPlayers) {
-        // Svuotiamo la lista nel caso venga richiamata per un riavvio
+        // Clear the list in case this is called on restart
         offerTrack.clear();
 
-        // Formare il tracciato accostando le tessere in ordine alfabetico
+        // Build the track placing tiles in alphabetical order
         offerTrack.add(new OfferTile('B',0,1,0));
         offerTrack.add(new OfferTile('C',1,0,0));
         offerTrack.add(new OfferTile('E',1,1,0));
@@ -40,13 +40,13 @@ public class Board {
             offerTrack.add(new OfferTile('A',0,0,3));
         }
 
-        // Ordiniamo le tessere offerta in ordine alfabetico crescente per lettera
+        // Sort offer tiles in ascending alphabetical order by letter
         offerTrack.sort(Comparator.comparingInt(OfferTile::getLetter));
     }
     public void dealInitialCards(List<Card> tribeDeck, int numPlayers) {
-        // Fila inferiore = numero giocatori + 1.
-        // Se si pesca una carta Evento, va spostata nella fila superiore
-        // e si continua a pescare fino a completare la fila inferiore.
+        // Lower row = number of players + 1.
+        // If an Event card is drawn, it is moved to the upper row
+        // and we keep drawing until the lower row is filled.
         int lowerTarget = numPlayers + 1;
         while (lowerRow.size() < lowerTarget && !tribeDeck.isEmpty()) {
             Card drawn = tribeDeck.removeFirst();
@@ -57,9 +57,9 @@ public class Board {
             }
         }
 
-        // Regola del manuale (passo 5): Fila superiore = numero giocatori + 4.
-        // Se ci sono già Event spostati dal passo precedente, si pesca solo
-        // il numero di carte necessario per completare la fila.
+        // Rulebook (step 5): Upper row = number of players + 4.
+        // If Events were already moved here in the previous step, only
+        // draw the cards needed to fill the row.
         int upperTarget = numPlayers + 4;
         while (upperRow.size() < upperTarget && !tribeDeck.isEmpty()) {
             upperRow.add(tribeDeck.removeFirst());

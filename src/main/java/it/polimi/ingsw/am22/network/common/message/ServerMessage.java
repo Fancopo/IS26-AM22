@@ -1,10 +1,10 @@
 package it.polimi.ingsw.am22.network.common.message;
 
 /**
- * Interfaccia base per tutti i messaggi che il server invia al client.
+ * Base interface for all messages the server sends to the client.
  *
- * Ogni implementazione accetta un {@link ServerMessageVisitor} per consentire
- * il dispatch polimorfo senza instanceof.
+ * Each implementation accepts a {@link ServerMessageVisitor} to enable
+ * polymorphic dispatch without instanceof.
  */
 public interface ServerMessage extends NetworkMessage {
     void accept(ServerMessageVisitor visitor);
