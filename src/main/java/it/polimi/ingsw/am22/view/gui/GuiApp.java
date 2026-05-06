@@ -118,9 +118,26 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         Parent root = screen.getRoot();
         Scene existing = stage.getScene();
         if (existing == null) {
-            stage.setScene(new Scene(root, 1100, 720));
+            Scene scene = new Scene(root, 1600, 900);
+            applyStylesheet(scene);
+            stage.setScene(scene);
         } else {
             existing.setRoot(root);
+            applyStylesheet(existing);
+        }
+    }
+
+    /** Carica il CSS della GameScreen una sola volta (idempotente). */
+    private void applyStylesheet(Scene scene) {
+        try {
+            var url = getClass().getResource("/css/game.css");
+            if (url == null) return;
+            String href = url.toExternalForm();
+            if (!scene.getStylesheets().contains(href)) {
+                scene.getStylesheets().add(href);
+            }
+        } catch (Exception ignored) {
+            // CSS opzionale: la UI funziona anche senza.
         }
     }
 
@@ -184,20 +201,39 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
         });
 
-        // Inoltriamo alla schermata attiva (ConnectionScreen ignora MatchClosedMessage via default).
+        // Navigazione PRE-inoltro: se la NicknameScreen è ancora attiva e arriva
+        // una conferma di lobby (LobbyStateMessage o MatchJoinedMessage),
+        // passiamo subito alla LobbyScreen. Va fatto PRIMA dell'inoltro perché
+        // NicknameScreen.onServerMessage azzera il flag pendingJoin.
+        message.accept(new ServerMessageVisitor() {
+            @Override public void visit(LobbyStateMessage m) {
+                if (currentScreen instanceof NicknameScreen) showLobbyScreen();
+            }
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {
+                if (currentScreen instanceof NicknameScreen) showLobbyScreen();
+            }
+            @Override public void visit(GameStartedMessage m) {}
+            @Override public void visit(GameStateMessage m) {}
+            @Override public void visit(EndGameMessage m) {}
+            @Override public void visit(MatchClosedMessage m) {}
+            @Override public void visit(ErrorMessage m) {}
+            @Override public void visit(InfoMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
+        });
+
+        // Inoltriamo alla schermata attiva (eventualmente quella appena installata).
         GuiScreen screen = currentScreen;
         if (screen != null) {
             screen.onServerMessage(message);
         }
 
-        // Navigazione post-inoltro basata sul tipo di messaggio e sullo stato corrente.
+        // Navigazione post-inoltro: per il GameStateMessage, se la sessione
+        // segnala che la partita è iniziata, passiamo alla GameScreen.
         message.accept(new ServerMessageVisitor() {
-            @Override public void visit(LobbyStateMessage m) {
-                if (currentScreen instanceof NicknameScreen ns && ns.hasPendingJoin()) showLobbyScreen();
-            }
             @Override public void visit(GameStateMessage m) {
                 if (!(currentScreen instanceof GameScreen) && session != null && session.isGameStarted()) showGameScreen();
             }
+            @Override public void visit(LobbyStateMessage m) {}
             @Override public void visit(GameStartedMessage m) {}
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}

@@ -1,0 +1,214 @@
+/* ===== Game screen — palette ispirata allo screenshot BGA ===== */
+
+.game-root {
+    -fx-background-color: linear-gradient(to bottom, #5a0f1a 0%, #8a1c20 45%, #c43a1f 100%);
+    /* Quando la risorsa /images/board/bg.jpg esisterà, decommenta:
+       -fx-background-image: url("/images/board/bg.jpg");
+       -fx-background-size: cover;
+    */
+}
+
+.game-header {
+    -fx-background-color: rgba(170, 30, 40, 0.85);
+    -fx-padding: 10 20 10 20;
+    -fx-border-color: transparent transparent rgba(255, 200, 120, 0.4) transparent;
+    -fx-border-width: 0 0 2 0;
+}
+
+.game-header .label {
+    -fx-text-fill: #fff5e6;
+    -fx-font-weight: bold;
+}
+
+.game-header-title {
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+}
+
+/* ----- Pannelli giocatore (a destra) ----- */
+.player-panel {
+    -fx-background-color: rgba(70, 25, 35, 0.85);
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-border-color: rgba(200, 150, 100, 0.3);
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.player-panel-active {
+    -fx-border-color: gold;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, gold, 12, 0.4, 0, 0);
+}
+
+.player-panel .label {
+    -fx-text-fill: #ffe9c4;
+}
+
+.player-name {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #ffffff;
+}
+
+.player-pp {
+    -fx-text-fill: gold;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+/* ----- Barra inferiore: giocatore locale ----- */
+.local-bar {
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 200, 80, 0.95), rgba(220, 150, 50, 0.95));
+    -fx-padding: 10 16 10 16;
+    -fx-border-color: rgba(120, 60, 20, 0.7);
+    -fx-border-width: 2 0 0 0;
+}
+
+.local-bar .label {
+    -fx-text-fill: #2a1a05;
+    -fx-font-weight: bold;
+}
+
+.local-bar-name {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2a1a05;
+}
+
+/* ----- Carte (toggle button) ----- */
+.card-toggle {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.card-toggle:hover {
+    -fx-border-color: rgba(255, 220, 120, 0.7);
+    -fx-effect: dropshadow(gaussian, rgba(255, 220, 120, 0.8), 8, 0.4, 0, 0);
+}
+
+.card-toggle:selected {
+    -fx-border-color: gold;
+    -fx-effect: dropshadow(gaussian, gold, 14, 0.6, 0, 0);
+}
+
+.card-toggle:disabled {
+    -fx-opacity: 0.55;
+}
+
+/* ----- Tessera offerta (button) ----- */
+.offer-tile {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.offer-tile:hover:enabled {
+    -fx-border-color: rgba(255, 220, 120, 0.7);
+    -fx-effect: dropshadow(gaussian, rgba(255, 220, 120, 0.8), 8, 0.4, 0, 0);
+}
+
+.offer-tile-occupied {
+    -fx-opacity: 0.85;
+}
+
+.offer-tile:disabled {
+    -fx-opacity: 0.6;
+}
+
+/* ----- Tracciato turni ----- */
+.turn-track {
+    -fx-background-color: rgba(40, 20, 10, 0.6);
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+}
+
+.turn-slot {
+    -fx-background-color: rgba(180, 120, 60, 0.7);
+    -fx-background-radius: 6;
+    -fx-padding: 4 6 4 6;
+    -fx-text-fill: white;
+}
+
+.turn-slot-last {
+    -fx-background-color: rgba(220, 80, 40, 0.85);
+}
+
+/* ----- Action panel ----- */
+.action-panel {
+    -fx-background-color: rgba(40, 20, 30, 0.75);
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+}
+
+.action-panel .label {
+    -fx-text-fill: #ffe9c4;
+}
+
+.action-hint {
+    -fx-font-style: italic;
+    -fx-wrap-text: true;
+}
+
+.action-hint-mine {
+    -fx-text-fill: #fff7d2 !important;
+    -fx-font-weight: bold;
+    -fx-font-style: normal;
+}
+
+.confirm-button {
+    -fx-background-color: linear-gradient(to bottom, #f0c060, #c08020);
+    -fx-text-fill: #2a1a05;
+    -fx-font-weight: bold;
+    -fx-padding: 6 14 6 14;
+    -fx-background-radius: 6;
+}
+
+.confirm-button:disabled {
+    -fx-opacity: 0.5;
+}
+
+.confirm-button:hover:enabled {
+    -fx-background-color: linear-gradient(to bottom, #ffd680, #d08c25);
+}
+
+/* ----- Status bar ----- */
+.status-bar {
+    -fx-background-color: rgba(20, 5, 10, 0.85);
+    -fx-padding: 6 14 6 14;
+}
+
+.status-bar .label {
+    -fx-text-fill: #fff5e6;
+}
+
+/* ----- Sezione board centrale ----- */
+.board-section-label {
+    -fx-text-fill: #fff5e6;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.board-row {
+    -fx-padding: 4;
+    -fx-background-color: rgba(0, 0, 0, 0.18);
+    -fx-background-radius: 8;
+}
+
+/* ----- Mini-icone risorsa nei pannelli ----- */
+.resource-cell {
+    -fx-padding: 2 4 2 4;
+}
+
+.resource-count {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}

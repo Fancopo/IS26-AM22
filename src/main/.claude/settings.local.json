@@ -11,7 +11,10 @@
       "Bash(where pdftoppm *)",
       "Read(//c/Program Files//**)",
       "Bash(python -c \"import PyPDF2\")",
-      "Bash(pdftotext -layout \"/c/Users/Fang2/Desktop/polimi/III anno/software/progetto/requirements/mesos-rules-it \\(1\\).pdf\" -)"
+      "Bash(pdftotext -layout \"/c/Users/Fang2/Desktop/polimi/III anno/software/progetto/requirements/mesos-rules-it \\(1\\).pdf\" -)",
+      "Bash(./mvnw -q compile)",
+      "PowerShell($candidates = @\\(\"C:\\\\Program Files\\\\Java\", \"C:\\\\Program Files\\\\Eclipse Adoptium\", \"C:\\\\Program Files\\\\BellSoft\", \"C:\\\\Program Files\\\\Microsoft\", \"C:\\\\Program Files\\\\JetBrains\", \"C:\\\\Users\\\\Fang2\\\\.jdks\"\\); foreach \\($c in $candidates\\) { if \\(Test-Path $c\\) { Get-ChildItem $c -Directory -ErrorAction SilentlyContinue | ForEach-Object { Write-Output $_.FullName } } })",
+      "PowerShell(cd \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\"; $env:JAVA_HOME = \"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\"; .\\\\mvnw.cmd -q compile 2>&1 | Select-Object -Last 80)"
     ]
   }
 }
