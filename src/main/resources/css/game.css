@@ -102,7 +102,9 @@
 }
 
 .card-toggle:disabled {
-    -fx-opacity: 0.55;
+    /* Keep cards fully opaque even when not your turn so the player can read
+     * them. The interactive feedback comes from :hover / :selected only. */
+    -fx-opacity: 1.0;
 }
 
 /* ----- Tessera offerta (button) ----- */
@@ -122,11 +124,12 @@
 }
 
 .offer-tile-occupied {
-    -fx-opacity: 0.85;
+    -fx-opacity: 1.0;
 }
 
 .offer-tile:disabled {
-    -fx-opacity: 0.6;
+    /* Same reason as .card-toggle:disabled — keep tiles readable. */
+    -fx-opacity: 1.0;
 }
 
 /* ----- Action panel ----- */
