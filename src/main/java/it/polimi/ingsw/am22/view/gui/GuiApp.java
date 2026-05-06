@@ -5,6 +5,7 @@ import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
 import it.polimi.ingsw.am22.network.client.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.ConnectionFactory.Transport;
 import it.polimi.ingsw.am22.network.client.ObservableServerConnection;
+import it.polimi.ingsw.am22.network.client.ServerWatchdog;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.WinnerDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
@@ -48,15 +49,19 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
     /** Schermata attualmente visibile, destinataria dei {@code ServerMessage}. */
     private GuiScreen currentScreen;
 
-    /** Parametri dell'ultima connessione riuscita, usati per riconnettersi
-     *  dopo un leave volontario senza tornare alla schermata di connessione. */
-    private Transport lastTransport;
-    private String lastHost;
-    private int lastPort;
+    /**
+     * Pre-launch watchdog set by {@link it.polimi.ingsw.am22.network.client.ClientApp}
+     * before {@link Application#launch}. JavaFX instantiates {@code GuiApp} via
+     * reflection without args, so we have to pass the watchdog through a static
+     * slot rather than the constructor. It is consumed (and stopped) once the
+     * real connection is established, then forgotten.
+     */
+    private static volatile ServerWatchdog launchWatchdog;
 
-    /** Quando true, la prossima onConnectionClosed non mostra alert né torna
-     *  alla ConnectionScreen: la chiusura era voluta (es. leave dalla lobby). */
-    private boolean expectingDisconnect;
+    /** Hands the watchdog over from {@code ClientApp.main} to the upcoming JavaFX instance. */
+    public static void setLaunchWatchdog(ServerWatchdog watchdog) {
+        launchWatchdog = watchdog;
+    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -85,46 +90,21 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             this.session = new ClientSession(conn);
             // Registriamo GuiApp come handler: filtra e inoltra alla schermata attiva.
             session.setHandler(this);
-            this.lastTransport = transport;
-            this.lastHost = host;
-            this.lastPort = port;
+            // For SOCKET sessions the reader thread surfaces drops on its own, so we
+            // can release the watchdog. For RMI we keep it alive: there is no
+            // equivalent EOF event on the RMI side, so the watchdog (probing the
+            // server's TCP listener, which lives in the same JVM as the registry)
+            // is the only way to detect a dead server while the user is in lobby/game.
+            ServerWatchdog wd = launchWatchdog;
+            if (wd != null && transport == Transport.SOCKET) {
+                wd.stop();
+                launchWatchdog = null;
+            }
             return true;
         } catch (Exception e) {
             showError("Unable to connect: " + e.getMessage());
             return false;
         }
-    }
-
-    /**
-     * Esce dalla lobby corrente e torna alla {@link MatchesScreen} riaprendo
-     * una connessione fresca (il server chiude il canale alla
-     * {@code removePlayerFromLobby}).
-     */
-    public void leaveLobbyAndShowMatches(String nickname) {
-        // Sopprimiamo l'alert di "Connection closed" che la onConnectionClosed
-        // genererebbe in risposta alla chiusura del canale lato server.
-        // expectingDisconnect viene riazzerato dentro onConnectionClosed quando
-        // l'evento viene effettivamente consumato.
-        expectingDisconnect = true;
-        if (session != null) {
-            try {
-                session.getClientController().removePlayerFromLobby();
-            } catch (RuntimeException ignored) {
-            }
-            session.close(false);
-        }
-        session = null;
-        if (lastTransport == null) {
-            expectingDisconnect = false;
-            showConnectionScreen();
-            return;
-        }
-        if (!connect(lastTransport, lastHost, lastPort)) {
-            expectingDisconnect = false;
-            showConnectionScreen();
-            return;
-        }
-        showMatchesScreen(nickname);
     }
 
     public ClientSession getSession() {
@@ -139,10 +119,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
 
     public void showNicknameScreen() {
         setScreen(new NicknameScreen(this));
-    }
-
-    public void showMatchesScreen(String nickname) {
-        setScreen(new MatchesScreen(this, nickname));
     }
 
     public void showLobbyScreen() {
@@ -219,14 +195,9 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
     @Override
     public void onConnectionClosed(Throwable cause) {
         Platform.runLater(() -> {
-            if (expectingDisconnect) {
-                // Disconnessione attesa (es. leave volontario): silenziosa.
-                expectingDisconnect = false;
-                return;
-            }
             showError("Connection closed"
                     + (cause == null ? "." : ": " + cause.getClass().getSimpleName()));
-            // Dopo una disconnessione inattesa riportiamo il client alla schermata di connessione.
+            // Dopo una disconnessione riportiamo il client alla schermata di connessione.
             this.session = null;
             showConnectionScreen();
         });
@@ -255,17 +226,16 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
         });
 
-        // Navigazione PRE-inoltro: se la NicknameScreen o la MatchesScreen è
-        // ancora attiva e arriva una conferma di lobby (LobbyStateMessage o
-        // MatchJoinedMessage), passiamo subito alla LobbyScreen.
+        // Navigazione PRE-inoltro: se la NicknameScreen è ancora attiva e arriva
+        // una conferma di lobby (LobbyStateMessage o MatchJoinedMessage),
+        // passiamo subito alla LobbyScreen. Va fatto PRIMA dell'inoltro perché
+        // NicknameScreen.onServerMessage azzera il flag pendingJoin.
         message.accept(new ServerMessageVisitor() {
             @Override public void visit(LobbyStateMessage m) {
-                if (currentScreen instanceof NicknameScreen
-                        || currentScreen instanceof MatchesScreen) showLobbyScreen();
+                if (currentScreen instanceof NicknameScreen) showLobbyScreen();
             }
             @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {
-                if (currentScreen instanceof NicknameScreen
-                        || currentScreen instanceof MatchesScreen) showLobbyScreen();
+                if (currentScreen instanceof NicknameScreen) showLobbyScreen();
             }
             @Override public void visit(GameStartedMessage m) {}
             @Override public void visit(GameStateMessage m) {}

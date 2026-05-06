@@ -4,13 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="con la parte di multipartita (incompleta)">
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Fixing bug: rmi client is not closed during the game when the server is disconected( while socket client does it)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/ConnectionScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/ConnectionScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/LobbyScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/NicknameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/NicknameScreen.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +37,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,
-    &quot;accountId&quot;: &quot;3ada8e8c-3288-46a2-9893-85f519bff785&quot;
+    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;
   }
 }</component>
   <component name="MavenImportPreferences">
@@ -63,32 +58,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Client TUI A.executor": "Run",
-    "Application.Client TUI B.executor": "Run",
-    "Application.ClientApp.executor": "Run",
-    "Application.GuiApp.executor": "Run",
-    "Application.NetworkServerLauncher.executor": "Run",
-    "JUnit.ArtistTest.executor": "Coverage",
-    "JUnit.CardJsonLoaderTest.executor": "Coverage",
-    "JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor": "Coverage",
-    "JUnit.OfferTileTest.executor": "Coverage",
-    "JUnit.PlayerTest.executor": "Coverage",
-    "JUnit.SlotTest.executor": "Coverage",
-    "JUnit.TotemTest.executor": "Coverage",
-    "JUnit.TribeTest.executor": "Coverage",
-    "JUnit.java in am22.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22",
-    "node.js.selected.package.tslint": "(autodetect)"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Client TUI A.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client TUI B.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client TUI C.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client TUI D.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientApp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.NetworkServerLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ArtistTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.GameTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.ShamanTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.java in am22.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.model in am22.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\jacop\IdeaProjects\am22\src\main\java\it\polimi\ingsw\am22" />
@@ -100,16 +102,10 @@
       <recent name="it.polimi.ingsw.am22" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Client TUI A">
+  <component name="RunManager" selected="Application.Client TUI B">
     <configuration name="Client TUI A" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
       <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -127,12 +123,25 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GuiApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.view.gui.GuiApp" />
+    <configuration name="Client TUI C" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.view.gui.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Client TUI D" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -153,33 +162,47 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CardJsonLoaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="ArtistTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.model.character.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.model.character" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.model.character.ArtistTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CardJsonLoaderTest.shouldLoadBuilderCorrectly" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
+          <option name="PATTERN" value="it.polimi.ingsw.am22.model.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.CardJsonLoaderTest" />
-      <option name="METHOD_NAME" value="shouldLoadBuilderCorrectly" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.model" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.model.GameTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ShamanTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.model.character.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.model.character" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.model.character.ShamanTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -193,21 +216,23 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.Client TUI A" />
       <item itemvalue="Application.Client TUI B" />
-      <item itemvalue="Application.GuiApp" />
+      <item itemvalue="Application.Client TUI C" />
+      <item itemvalue="Application.Client TUI A" />
+      <item itemvalue="Application.Client TUI D" />
       <item itemvalue="Application.NetworkServerLauncher" />
+      <item itemvalue="JUnit.ArtistTest" />
+      <item itemvalue="JUnit.GameTest" />
+      <item itemvalue="JUnit.ShamanTest" />
       <item itemvalue="JUnit.java in am22" />
-      <item itemvalue="JUnit.CardJsonLoaderTest" />
-      <item itemvalue="JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.NetworkServerLauncher" />
-        <item itemvalue="Application.GuiApp" />
+        <item itemvalue="JUnit.ShamanTest" />
+        <item itemvalue="JUnit.GameTest" />
+        <item itemvalue="JUnit.ArtistTest" />
         <item itemvalue="JUnit.java in am22" />
-        <item itemvalue="JUnit.CardJsonLoaderTest" />
-        <item itemvalue="JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly" />
       </list>
     </recent_temporary>
   </component>
@@ -306,15 +331,31 @@
       <option name="project" value="LOCAL" />
       <updated>1777903548872</updated>
     </task>
-    <task id="LOCAL-00011" summary="con la parte di multipartita (incompleta)">
+    <task id="LOCAL-00011" summary="Latest version ansi">
       <option name="closed" value="true" />
-      <created>1777990246882</created>
+      <created>1777904761292</created>
       <option name="number" value="00011" />
       <option name="presentableId" value="LOCAL-00011" />
       <option name="project" value="LOCAL" />
-      <updated>1777990246882</updated>
+      <updated>1777904761292</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="fixing bug about the choice of picking card">
+      <option name="closed" value="true" />
+      <created>1777991382942</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1777991382942</updated>
+    </task>
+    <task id="LOCAL-00013" summary="fixing bug on pick card">
+      <option name="closed" value="true" />
+      <created>1778002478838</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1778002478838</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -328,7 +369,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/main" />
+                        <option value="game-version2" />
                       </list>
                     </value>
                   </entry>
@@ -349,8 +390,10 @@
     <MESSAGE value="Nuovo GameController.java e aggiunto nel network.client il ClientController e ServerConnection. Piccola modifica su id di Building.json" />
     <MESSAGE value="modifiche reti" />
     <MESSAGE value="piccole modifiche tui e fixing dei bug nel model" />
-    <MESSAGE value="con la parte di multipartita (incompleta)" />
-    <option name="LAST_COMMIT_MESSAGE" value="con la parte di multipartita (incompleta)" />
+    <MESSAGE value="Latest version ansi" />
+    <MESSAGE value="fixing bug about the choice of picking card" />
+    <MESSAGE value="fixing bug on pick card" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixing bug on pick card" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
