@@ -144,9 +144,13 @@ public final class ImageCache {
         return "/images/icons/icon_" + name.toLowerCase() + ".png";
     }
 
-    /** Path icona totem giocatore: {@code /images/icons/totem_{color}.png}. */
+    /**
+     * Path of the player's totem image. Files live in {@code /images/totem/}
+     * named after the lowercase English color (e.g. {@code red.jpg}).
+     */
     public static String totemPath(String color) {
-        return "/images/icons/totem_" + (color == null ? "gray" : color.toLowerCase()) + ".png";
+        if (color == null) return "/images/totem/_missing.jpg";
+        return "/images/totem/" + color.toLowerCase() + ".jpg";
     }
 
     /**
