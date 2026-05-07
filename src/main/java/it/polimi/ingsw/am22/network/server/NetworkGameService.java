@@ -3,14 +3,18 @@ package it.polimi.ingsw.am22.network.server;
 import it.polimi.ingsw.am22.controller.GameController;
 import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
+import it.polimi.ingsw.am22.network.common.dto.LeaderboardEntryDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.MatchInfoDTO;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.message.response.*;
+import it.polimi.ingsw.am22.network.server.databases.MatchResultDao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +49,9 @@ public class NetworkGameService {
     /** Generatore monotono di matchId leggibili (es. {@code M-1}, {@code M-2}, ...). */
     private final AtomicLong matchIdSeq;
 
+    /** DAO per persistere i risultati delle partite finite e leggere la classifica storica. */
+    private final MatchResultDao matchResultDao;
+
     /**
      * Scheduler used to defer the close of client channels after the end of a match.
      * Closing immediately after broadcasting {@link EndGameMessage} can race with the
@@ -67,6 +74,7 @@ public class NetworkGameService {
         this.mapper = new ModelDtoMapper();
         this.matchesById = new ConcurrentHashMap<>();
         this.matchIdSeq = new AtomicLong();
+        this.matchResultDao = new MatchResultDao();
     }
 
     /**
@@ -418,12 +426,54 @@ public class NetworkGameService {
             } finally {
                 virtualView.endBatch(false);
             }
-            virtualView.broadcast(new EndGameMessage(mapper.toWinnerDTO(winner), state));
+
+            List<Player> players = gameController.getGame().getPlayers();
+            int numPlayers = players.size();
+            List<MatchResultDao.PlayerResult> results = new ArrayList<>(numPlayers);
+            Map<String, Integer> finalScores = new HashMap<>(numPlayers * 2);
+            for (Player p : players) {
+                int score = p.finalPP();
+                results.add(new MatchResultDao.PlayerResult(p.getNickname(), score));
+                finalScores.put(p.getNickname(), score);
+            }
+
+            List<LeaderboardEntryDTO> leaderboard = List.of();
+            Map<String, Integer> positions = Map.of();
+            try {
+                matchResultDao.saveMatch(results, numPlayers);
+                leaderboard = loadLeaderboard(numPlayers);
+                positions = computePositions(numPlayers, finalScores);
+            } catch (SQLException e) {
+                System.err.println("[match " + gameController.getMatchId()
+                        + "] Persistenza classifica non disponibile: " + e.getMessage());
+            }
+
+            virtualView.broadcast(new EndGameMessage(
+                    mapper.toWinnerDTO(winner), state, leaderboard, positions));
             // Drop the match from the registry right away so no further requests can be
             // routed to it, but defer the channel close: see endGameCloser javadoc.
             matchesById.remove(gameController.getMatchId());
             VirtualView viewToClose = virtualView;
             endGameCloser.schedule(viewToClose::closeAll, END_GAME_CLOSE_DELAY_MS, TimeUnit.MILLISECONDS);
+        }
+
+        private List<LeaderboardEntryDTO> loadLeaderboard(int numPlayers) throws SQLException {
+            List<MatchResultDao.RankRow> rows = matchResultDao.getLeaderboard(numPlayers);
+            List<LeaderboardEntryDTO> out = new ArrayList<>(rows.size());
+            for (MatchResultDao.RankRow r : rows) {
+                out.add(new LeaderboardEntryDTO(r.nickname(), r.score(), r.endDate(), numPlayers));
+            }
+            return out;
+        }
+
+        private Map<String, Integer> computePositions(int numPlayers,
+                                                      Map<String, Integer> finalScores) throws SQLException {
+            Map<String, Integer> positions = new HashMap<>(finalScores.size() * 2);
+            for (Map.Entry<String, Integer> e : finalScores.entrySet()) {
+                positions.put(e.getKey(),
+                        matchResultDao.getPosition(numPlayers, e.getValue()));
+            }
+            return positions;
         }
 
         /** Lega il canale al nickname e al matchId di questa sessione. */
