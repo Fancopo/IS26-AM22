@@ -175,20 +175,18 @@ public class NetworkGameService {
         MatchSession session = new MatchSession(matchId);
         matchesById.put(matchId, session);
         try {
-            session.handleAddPlayer(new AddPlayerToLobbyRequest(matchId, hostNickname), channel);
+            session.handleHostCreateAndSetup(hostNickname, request.expectedPlayers(), channel);
         } catch (RuntimeException e) {
-            // If the host can't even join, the empty session is useless -> drop it.
-            matchesById.remove(matchId);
+            // Two failure modes:
+            //  - host couldn't even join: lobby is empty, the session is useless -> drop it.
+            //  - only setExpectedPlayers failed: host is already in lobby, KEEP the match
+            //    alive so they can fix it via `players <N>`. The error still propagates so
+            //    the outer dispatcher surfaces it as ErrorMessage to the host.
+            if (session.gameController.getLobbyPlayers().isEmpty()) {
+                matchesById.remove(matchId);
+            }
             throw e;
         }
-        // The host has joined; the match is now in a valid lobby state (the expected-
-        // players slot is allowed to be "not set yet"). If the requested expected-player
-        // count is invalid we still surface the error to the host, but we KEEP the
-        // match alive so they can fix it via `players <N>` instead of being stranded
-        // in a phantom match the server has dropped.
-        session.handleSetExpectedPlayers(
-                new SetExpectedPlayersRequest(matchId, hostNickname, request.expectedPlayers()),
-                channel);
     }
 
     /** Risponde al solo richiedente con la lista delle partite ancora aperte. */
@@ -254,6 +252,30 @@ public class NetworkGameService {
             bind(request.nickname(), channel);
             channel.send(new MatchJoinedMessage(gameController.getMatchId(), request.nickname()));
             publishStateChange(wasStarted);
+        }
+
+        /**
+         * Variante usata da {@code handleCreateMatch}: aggiunge l'host e imposta
+         * il numero di giocatori attesi in un'unica transizione, con un solo
+         * broadcast finale. Senza questa coalescenza il client riceverebbe due
+         * {@code LobbyStateMessage} consecutivi (uno con expected=0 e uno con
+         * il valore richiesto), mostrando due volte la lobby.
+         */
+        private void handleHostCreateAndSetup(String hostNickname, int expectedPlayers, ClientChannel channel) {
+            boolean wasStarted = gameController.hasStarted();
+            gameController.addPlayerToLobby(hostNickname);
+            bind(hostNickname, channel);
+            channel.send(new MatchJoinedMessage(gameController.getMatchId(), hostNickname));
+            RuntimeException pendingError = null;
+            try {
+                gameController.setExpectedPlayers(hostNickname, expectedPlayers);
+            } catch (RuntimeException e) {
+                pendingError = e;
+            }
+            publishStateChange(wasStarted);
+            if (pendingError != null) {
+                throw pendingError;
+            }
         }
 
         private void handleSetExpectedPlayers(SetExpectedPlayersRequest request, ClientChannel channel) {
