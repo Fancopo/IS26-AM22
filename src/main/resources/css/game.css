@@ -170,14 +170,45 @@
     -fx-background-color: linear-gradient(to bottom, #ffd680, #d08c25);
 }
 
+/* ----- Badge ordine selezione carta ----- */
+.card-pick-order-badge {
+    -fx-background-color: #d04020;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-min-width: 26;
+    -fx-min-height: 26;
+    -fx-pref-width: 26;
+    -fx-pref-height: 26;
+    -fx-max-width: 26;
+    -fx-max-height: 26;
+    -fx-background-radius: 13;
+    -fx-alignment: center;
+    -fx-content-display: center;
+    -fx-border-color: white;
+    -fx-border-width: 2;
+    -fx-border-radius: 13;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 4, 0.3, 0, 1);
+}
+
 /* ----- Status bar ----- */
 .status-bar {
-    -fx-background-color: rgba(20, 5, 10, 0.85);
-    -fx-padding: 6 14 6 14;
+    -fx-background-color: rgba(255, 240, 210, 0.96);
+    -fx-padding: 14 22 14 22;
+    -fx-min-height: 56;
+    -fx-pref-height: 56;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2a1a05;
+    -fx-border-color: rgba(160, 100, 30, 0.7);
+    -fx-border-width: 2 0 0 0;
+    -fx-wrap-text: true;
 }
 
 .status-bar .label {
-    -fx-text-fill: #fff5e6;
+    -fx-text-fill: #2a1a05;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
 }
 
 /* ----- Sezione board centrale ----- */

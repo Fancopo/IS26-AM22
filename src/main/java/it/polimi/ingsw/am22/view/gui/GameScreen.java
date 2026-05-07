@@ -37,9 +37,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Schermata principale di gioco.
@@ -110,8 +111,15 @@ public final class GameScreen implements GuiScreen {
     private final Button confirmPickButton = new Button("Confirm");
     private final Label statusLabel = new Label();
 
-    /** Id delle carte attualmente selezionate per la pickCards. */
-    private final Set<String> pickedCardIds = new HashSet<>();
+    /** Id delle carte attualmente selezionate per la pickCards.
+     *  LinkedHashSet: preserva l'ordine in cui sono state selezionate, cosi'
+     *  ogni carta riceve un badge "1, 2, 3..." in alto a destra. */
+    private final LinkedHashSet<String> pickedCardIds = new LinkedHashSet<>();
+
+    /** Badge numerato sovrapposto a ciascuna carta cliccabile della board.
+     *  Ricostruito ad ogni render(): la mappa lega l'id della carta al
+     *  Label del badge cosi' refreshBadges() puo' aggiornare il numero. */
+    private final Map<String, Label> badgeByCardId = new HashMap<>();
 
     public GameScreen(GuiApp app) {
         this.app = app;
@@ -273,6 +281,9 @@ public final class GameScreen implements GuiScreen {
 
     private Node buildBottom() {
         statusLabel.getStyleClass().add("status-bar");
+        statusLabel.setWrapText(true);
+        statusLabel.setMaxWidth(Double.MAX_VALUE);
+        statusLabel.setMinHeight(56);
         return statusLabel;
     }
 
@@ -292,6 +303,7 @@ public final class GameScreen implements GuiScreen {
         // svuotiamo PRIMA di rebuildare le card così le ToggleButton
         // partono deselezionate e lo stato visivo resta sincronizzato.
         pickedCardIds.clear();
+        badgeByCardId.clear();
 
         renderUpperRow(state);
         renderLowerRow(state);
@@ -409,9 +421,10 @@ public final class GameScreen implements GuiScreen {
     }
 
     /**
-     * Costruisce un nodo "carta": ToggleButton con un'immagine (o placeholder).
+     * Costruisce un nodo "carta": ToggleButton con un'immagine (o placeholder)
+     * e un badge numerato in alto a destra che mostra l'ordine di selezione.
      */
-    private ToggleButton buildCardNode(CardDTO c, boolean clickable, String fallbackLabel) {
+    private Node buildCardNode(CardDTO c, boolean clickable, String fallbackLabel) {
         Color color = colorForCardCategory(c.category());
         String label = (c.id() == null ? fallbackLabel : c.id())
                 + (c.detailType() == null ? "" : "\n" + c.detailType());
@@ -424,11 +437,26 @@ public final class GameScreen implements GuiScreen {
         tb.setUserData(c.id());
         tb.setSelected(pickedCardIds.contains(c.id()));
         tb.setDisable(!clickable);
+
+        Label badge = new Label();
+        badge.getStyleClass().add("card-pick-order-badge");
+        badge.setVisible(false);
+        badge.setMouseTransparent(true);
+        StackPane.setAlignment(badge, Pos.TOP_RIGHT);
+        StackPane.setMargin(badge, new Insets(6, 6, 0, 0));
+        if (c.id() != null) {
+            badgeByCardId.put(c.id(), badge);
+        }
+
+        StackPane wrapper = new StackPane(tb, badge);
+        wrapper.setPickOnBounds(false);
+
         tb.selectedProperty().addListener((obs, was, isNow) -> {
             if (isNow) {
                 if (canSelectCard(fallbackLabel)) {
                     pickedCardIds.add(c.id());
                     refreshPickHint();
+                    refreshBadges();
                 } else {
                     tb.setSelected(false);
                     statusLabel.setText(limitReachedMessage(fallbackLabel));
@@ -436,9 +464,39 @@ public final class GameScreen implements GuiScreen {
             } else {
                 pickedCardIds.remove(c.id());
                 refreshPickHint();
+                refreshBadges();
             }
         });
-        return tb;
+
+        // Stato iniziale del badge coerente con un eventuale pre-set.
+        if (tb.isSelected()) {
+            refreshBadges();
+        }
+        return wrapper;
+    }
+
+    /**
+     * Aggiorna i badge "1, 2, 3, ..." su ogni carta selezionata in base
+     * all'ordine di selezione registrato in {@link #pickedCardIds}.
+     * Le carte non selezionate hanno il badge nascosto.
+     */
+    private void refreshBadges() {
+        Map<String, Integer> orderByCardId = new HashMap<>();
+        int i = 1;
+        for (String cardId : pickedCardIds) {
+            orderByCardId.put(cardId, i++);
+        }
+        for (Map.Entry<String, Label> entry : badgeByCardId.entrySet()) {
+            Integer order = orderByCardId.get(entry.getKey());
+            Label badge = entry.getValue();
+            if (order == null) {
+                badge.setVisible(false);
+                badge.setText("");
+            } else {
+                badge.setText(String.valueOf(order));
+                badge.setVisible(true);
+            }
+        }
     }
 
     /**
@@ -491,12 +549,14 @@ public final class GameScreen implements GuiScreen {
     private String limitReachedMessage(String row) {
         GameStateDTO state = app.getSession().getLatestGameState();
         if (state != null && isBonusPhase(state.currentPhase())) {
-            return "Bonus phase: only one card. Click the selected card to deselect first.";
+            return "BONUS PHASE — you can pick ONLY 1 card.\n"
+                 + "To change your choice: click the card you already picked to remove it, then click the new one.";
         }
         int limit = state == null ? 0 : limitForRow(state, row);
-        String rowName = "UP".equals(row) ? "upper" : "lower";
-        return "You can pick at most " + limit + " card(s) from the " + rowName
-                + " row. Click a selected card to deselect it first.";
+        String rowName = "UP".equals(row) ? "UPPER" : "LOWER";
+        return "LIMIT REACHED — your offer tile lets you take only " + limit
+                + " card(s) from the " + rowName + " row.\n"
+                + "To change your choice: click one of the already-selected cards to remove it, then click the new one.";
     }
 
     /** Aggiorna l'actionHint con il conteggio carte selezionate per riga. */
