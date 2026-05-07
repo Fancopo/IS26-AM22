@@ -57,10 +57,10 @@ public class SocketGameServer implements AutoCloseable {
      *
      * <p>Per-client failures (such as a peer that opens the TCP socket and
      * immediately closes it without sending the {@code ObjectOutputStream}
-     * stream header — port scanners, health checks, the client-side
-     * {@code ServerWatchdog}) are isolated from the accept thread: they only
-     * skip that one connection. Only failures of {@link ServerSocket#accept()}
-     * itself (the listening socket is broken) tear the server down.
+     * stream header — port scanners, health checks) are isolated from the
+     * accept thread: they only skip that one connection. Only failures of
+     * {@link ServerSocket#accept()} itself (the listening socket is broken)
+     * tear the server down.
      */
     private void acceptLoop() {
         while (running) {

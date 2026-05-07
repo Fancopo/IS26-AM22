@@ -21,4 +21,12 @@ public interface RemoteGameServer extends Remote {
      * @throws RemoteException in caso di errore di trasporto RMI
      */
     void submitRequest(ClientRequest request, RemoteClientView clientView) throws RemoteException;
+
+    /**
+     * No-op invocato periodicamente dal client per rilevare la morte del server:
+     * RMI non emette eventi di disconnessione, quindi l'unico modo di accorgersi
+     * che il processo server non c'è più è una RMI call che fallisca con
+     * {@link RemoteException}.
+     */
+    void ping() throws RemoteException;
 }

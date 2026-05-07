@@ -5,7 +5,6 @@ import it.polimi.ingsw.am22.network.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.ConnectionFactory.Transport;
 import it.polimi.ingsw.am22.network.client.ObservableServerConnection;
-import it.polimi.ingsw.am22.network.client.ServerWatchdog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +36,6 @@ public final class TuiRunner {
      * o la connessione viene chiusa.
      */
     public static void run() {
-        run(null);
-    }
-
-    /**
-     * Variant invoked by {@code ClientApp} that hands over a {@link ServerWatchdog}
-     * already running in background. The watchdog is stopped as soon as a real
-     * connection is opened, so we don't probe the server in parallel with the live
-     * reader thread.
-     */
-    public static void run(ServerWatchdog watchdog) {
         Scanner in = new Scanner(System.in);
 
         printBanner();
@@ -61,22 +50,9 @@ public final class TuiRunner {
         try {
             connection = ConnectionFactory.open(transport, host, port);
         } catch (Exception e) {
-            if (watchdog != null) watchdog.stop();
             System.err.println("Unable to connect: " + e.getClass().getSimpleName()
                     + (e.getMessage() == null ? "" : " - " + e.getMessage()));
             return;
-        }
-        // For SOCKET sessions the live reader thread surfaces drops via EOFException,
-        // so a parallel TCP probe is redundant: stop the watchdog.
-        // For RMI sessions there is NO equivalent: the client only learns of a dead
-        // server when it tries to call a remote method, which means a player can sit
-        // in the lobby/game indefinitely after the server has died. We keep the TCP
-        // probe alive (the RMI registry lives in the same JVM as the socket listener,
-        // so if port 12345 goes silent the whole server is gone) and let it fail-fast
-        // the client process. The probe targets 127.0.0.1 so it only helps when both
-        // ends are on the same machine; that matches our default deployment.
-        if (watchdog != null && transport == Transport.SOCKET) {
-            watchdog.stop();
         }
 
         ClientSession session = new ClientSession(connection);
@@ -93,9 +69,7 @@ public final class TuiRunner {
         session.close(!serverDropped);
         System.out.println("Bye.");
         // Exit code 1 when the shutdown was caused by the server going down,
-        // 0 when the user initiated it (quit/disconnect/leave). This matches
-        // the behavior of the ServerWatchdog path so both transports look the
-        // same to scripts and run-configs.
+        // 0 when the user initiated it (quit/disconnect/leave).
         if (serverDropped) {
             System.exit(1);
         }

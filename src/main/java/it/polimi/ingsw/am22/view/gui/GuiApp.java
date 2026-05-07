@@ -5,7 +5,6 @@ import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
 import it.polimi.ingsw.am22.network.client.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.ConnectionFactory.Transport;
 import it.polimi.ingsw.am22.network.client.ObservableServerConnection;
-import it.polimi.ingsw.am22.network.client.ServerWatchdog;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.WinnerDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
@@ -59,20 +58,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
      *  alla ConnectionScreen: la chiusura era voluta (es. leave dalla lobby). */
     private boolean expectingDisconnect;
 
-    /**
-     * Pre-launch watchdog set by {@link it.polimi.ingsw.am22.network.client.ClientApp}
-     * before {@link Application#launch}. JavaFX instantiates {@code GuiApp} via
-     * reflection without args, so we have to pass the watchdog through a static
-     * slot rather than the constructor. It is consumed (and stopped) once the
-     * real connection is established, then forgotten.
-     */
-    private static volatile ServerWatchdog launchWatchdog;
-
-    /** Hands the watchdog over from {@code ClientApp.main} to the upcoming JavaFX instance. */
-    public static void setLaunchWatchdog(ServerWatchdog watchdog) {
-        launchWatchdog = watchdog;
-    }
-
     @Override
     public void start(Stage primaryStage) {
         this.stage = primaryStage;
@@ -103,16 +88,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             this.lastTransport = transport;
             this.lastHost = host;
             this.lastPort = port;
-            // For SOCKET sessions the reader thread surfaces drops on its own, so we
-            // can release the watchdog. For RMI we keep it alive: there is no
-            // equivalent EOF event on the RMI side, so the watchdog (probing the
-            // server's TCP listener, which lives in the same JVM as the registry)
-            // is the only way to detect a dead server while the user is in lobby/game.
-            ServerWatchdog wd = launchWatchdog;
-            if (wd != null && transport == Transport.SOCKET) {
-                wd.stop();
-                launchWatchdog = null;
-            }
             return true;
         } catch (Exception e) {
             showError("Unable to connect: " + e.getMessage());

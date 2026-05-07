@@ -103,10 +103,9 @@ public final class TuiView implements ClientUpdateHandler {
 
     @Override
     public void onConnectionClosed(Throwable cause) {
-        // Unified disconnect message: same string is also used by ServerWatchdog
-        // when the server's TCP listener stops responding (RMI sessions). The
-        // exception details are intentionally omitted: they're noise for the
-        // player. If a developer needs them they can add a verbose flag.
+        // Unified disconnect message. Exception details are intentionally
+        // omitted: they're noise for the player. A developer who needs them
+        // can add a verbose flag.
         println(Ansi.red("[CONN] Server connection lost  closing client."));
         disconnectedByServer = true;
         requestStop();

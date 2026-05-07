@@ -20,22 +20,10 @@ public final class ClientApp {
     }
 
     public static void main(String[] args) {
-        // Start the background watchdog as early as possible, even before the
-        // interface prompt: this way a server shutdown reaches us within ~1s
-        // regardless of whether the user is still picking TUI/GUI/transport/port.
-        // The watchdog stays silent until the server has been seen alive at least
-        // once, so it never preempts the regular ConnectionFactory error path
-        // when the server is down from the very start.
-        ServerWatchdog watchdog = new ServerWatchdog("127.0.0.1", ConnectionFactory.DEFAULT_SOCKET_PORT);
-        watchdog.start();
-
         Mode mode = resolveMode(args);
         switch (mode) {
-            case TUI -> TuiRunner.run(watchdog);
-            case GUI -> {
-                GuiApp.setLaunchWatchdog(watchdog);
-                Application.launch(GuiApp.class, args);
-            }
+            case TUI -> TuiRunner.run();
+            case GUI -> Application.launch(GuiApp.class, args);
         }
     }
 

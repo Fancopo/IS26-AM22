@@ -36,6 +36,12 @@ public class RmiGameServer extends UnicastRemoteObject implements RemoteGameServ
         gameService.handleRequest(request, new RmiClientChannel(clientView));
     }
 
+    @Override
+    public void ping() {
+        // No-op: il valore è nella RemoteException che il client riceve
+        // quando il server non c'è più.
+    }
+
     /**
      * Metodo di utilità: crea un registry sulla porta indicata e vi registra
      * un nuovo {@code RmiGameServer} con il binding fornito.

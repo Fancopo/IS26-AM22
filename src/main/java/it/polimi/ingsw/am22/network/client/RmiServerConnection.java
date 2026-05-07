@@ -13,6 +13,9 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementazione di {@link ObservableServerConnection} basata su RMI.
@@ -24,8 +27,12 @@ import java.util.Objects;
  * RMI a gestire le chiamate verso il callback.
  */
 public class RmiServerConnection implements ObservableServerConnection {
+
+    private static final long PING_INTERVAL_MS = 1000;
+
     private final RemoteGameServer remoteGameServer;
     private final RemoteClientView callback;
+    private final ScheduledExecutorService livenessProbe;
     private volatile ClientUpdateHandler updateHandler;
     private volatile boolean closed;
 
@@ -44,6 +51,31 @@ public class RmiServerConnection implements ObservableServerConnection {
         this.updateHandler = null;
         this.closed = false;
         this.callback = new ClientCallback();
+        // RMI non emette eventi di disconnessione: ci accorgiamo che il server è
+        // morto solo quando una chiamata remota fallisce. Schedulo un ping
+        // periodico così che la morte venga rilevata entro PING_INTERVAL_MS
+        // anche se il giocatore non sta interagendo. Il socket transport ottiene
+        // la stessa cosa "gratis" dall'EOFException sul reader thread.
+        this.livenessProbe = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "rmi-liveness-probe");
+            t.setDaemon(true);
+            return t;
+        });
+        livenessProbe.scheduleWithFixedDelay(this::probe,
+                PING_INTERVAL_MS, PING_INTERVAL_MS, TimeUnit.MILLISECONDS);
+    }
+
+    private void probe() {
+        if (closed) return;
+        try {
+            remoteGameServer.ping();
+        } catch (RemoteException e) {
+            ClientUpdateHandler handler = updateHandler;
+            close();
+            if (handler != null) {
+                handler.onConnectionClosed(e);
+            }
+        }
     }
 
     @Override
@@ -106,6 +138,7 @@ public class RmiServerConnection implements ObservableServerConnection {
             return;
         }
         closed = true;
+        livenessProbe.shutdownNow();
         try {
             UnicastRemoteObject.unexportObject(callback, true);
         } catch (Exception ignored) {
