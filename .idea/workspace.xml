@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="still fixed background of GUI">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/.claude/settings.local.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/ImageCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/ImageCache.java" afterDir="false" />
-    </list>
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="still fixed GUI" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -312,7 +307,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777990246882</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="still fixed GUI">
+      <option name="closed" value="true" />
+      <created>1778163854745</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1778163854745</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -348,7 +351,8 @@
     <MESSAGE value="modifiche reti" />
     <MESSAGE value="piccole modifiche tui e fixing dei bug nel model" />
     <MESSAGE value="con la parte di multipartita (incompleta)" />
-    <option name="LAST_COMMIT_MESSAGE" value="con la parte di multipartita (incompleta)" />
+    <MESSAGE value="still fixed GUI" />
+    <option name="LAST_COMMIT_MESSAGE" value="still fixed GUI" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
