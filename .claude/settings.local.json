@@ -18,7 +18,15 @@
       "Bash(./mvnw -q -pl . -DskipTests compile)",
       "PowerShell($candidates = @\\('C:\\\\Program Files\\\\Java','C:\\\\Program Files\\\\Eclipse Adoptium','C:\\\\Program Files\\\\Microsoft','C:\\\\Program Files\\\\Zulu','C:\\\\Program Files\\\\Amazon Corretto'\\); foreach \\($c in $candidates\\) { if \\(Test-Path $c\\) { Get-ChildItem $c | ForEach-Object { $_.FullName } } })",
       "Bash(export JAVA_HOME='C:\\\\Users\\\\Shiman\\\\.jdks\\\\openjdk-25.0.2')",
-      "Bash(export PATH=\"/c/Users/Shiman/.jdks/openjdk-25.0.2/bin:$PATH\")"
+      "Bash(export PATH=\"/c/Users/Shiman/.jdks/openjdk-25.0.2/bin:$PATH\")",
+      "Bash(python -c \"import pypdf; r=pypdf.PdfReader\\(r'C:\\\\Users\\\\Shiman\\\\IdeaProjects\\\\mesos\\\\Rules_ITA.pdf'\\); print\\(len\\(r.pages\\)\\)\")",
+      "Bash(python -m pip install pypdf --quiet)",
+      "Bash(where python *)",
+      "Bash(where py *)",
+      "Bash(where pdftotext *)",
+      "Bash(pdftotext -layout \"C:\\\\Users\\\\Shiman\\\\IdeaProjects\\\\mesos\\\\Rules_ITA.pdf\" \"C:\\\\Users\\\\Shiman\\\\IdeaProjects\\\\mesos\\\\Rules_ITA.txt\")",
+      "Bash(./mvnw -q -pl . -Dtest='EventTest,SustenanceTest,ShamanicRitualTest' test)",
+      "Bash(python)"
     ]
   }
 }

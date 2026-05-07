@@ -14,6 +14,17 @@ public class EventResolutionState implements GameState {
     public void resolveEvents(Game game) {
         List<Card> cardsToTrigger = new ArrayList<>(game.getBoard().getLowerRow());
 
+        // Rulebook: at the end of the last round, also resolve Events still
+        // visible in the upper row (e.g. the two Final Event cards drawn into
+        // the upper row during the previous refill).
+        if (game.getCurrentRound() == 10 || game.getTribeDeck().isEmpty()) {
+            for (Card c : game.getBoard().getUpperRow()) {
+                if (c.isEvent()) {
+                    cardsToTrigger.add(c);
+                }
+            }
+        }
+
         cardsToTrigger.sort(Comparator.comparingInt(Card::getTriggerPriority));
 
         for (Card c : cardsToTrigger) {

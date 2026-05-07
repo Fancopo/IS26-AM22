@@ -113,6 +113,19 @@ public class Board {
                 }
             }
         }
+        // If fewer than cardsNeeded remain in the deck, this is the last refill
+        // of the game: drain the leftover so the two Final Event cards at the
+        // bottom of the deck always end up visible in the upper row before the
+        // last round, regardless of how many cards the initial deal consumed.
+        if (tribeDeck.size() < cardsNeeded) {
+            while (!tribeDeck.isEmpty()) {
+                Card drawn = tribeDeck.removeFirst();
+                upperRow.add(drawn);
+                if (drawn.getEra().ordinal() > newEra.ordinal()) {
+                    newEra = drawn.getEra();
+                }
+            }
+        }
         return newEra;
     }
 
