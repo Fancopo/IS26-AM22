@@ -127,6 +127,15 @@ public final class TuiRunner {
                         controller.pickBonusCard(parts[1]);
                     }
                     case "leave" -> {
+                        // 'leave' è solo pre-game: durante la partita la chiusura del
+                        // canale farebbe scattare lato server il transport-drop, che
+                        // a partita iniziata abbatte il match per tutti — di fatto
+                        // un 'disconnect' mascherato. Per uscire mid-game serve
+                        // disconnect esplicito.
+                        if (session.isGameStarted()) {
+                            System.out.println("The match has already started — use 'disconnect' to abort it.");
+                            break;
+                        }
                         controller.removePlayerFromLobby();
                         view.requestStop();
                     }
