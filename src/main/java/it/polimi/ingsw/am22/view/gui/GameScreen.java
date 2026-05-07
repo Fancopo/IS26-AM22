@@ -4,6 +4,7 @@ import it.polimi.ingsw.am22.network.common.dto.CardDTO;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.OfferTileDTO;
 import it.polimi.ingsw.am22.network.common.dto.PlayerDTO;
+import it.polimi.ingsw.am22.network.common.dto.TurnSlotDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
@@ -24,9 +25,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -43,47 +47,38 @@ import java.util.Set;
  * <p>Layout (BorderPane) ispirato allo screenshot BGA del gioco Mesos:
  * <ul>
  *     <li><b>top</b>: header con titolo della fase corrente, round, era;</li>
- *     <li><b>center</b>: board centrale → riga superiore di carte, sezione
- *         tessere offerta (immagine numplayer_N + tessere su una sola riga),
- *         riga inferiore di carte;</li>
+ *     <li><b>center</b>: board centrale → riga superiore di carte raggruppate
+ *         per categoria, sezione tessere offerta (immagine numplayer_N + tessere
+ *         su una sola riga), riga inferiore di carte raggruppate per categoria;</li>
  *     <li><b>right</b>: pannelli giocatori (TUTTI, incluso quello locale)
- *         impilati verticalmente con totem, PP, e griglia 4×3 di icone
- *         risorsa/personaggio;</li>
+ *         impilati verticalmente con totem, PP, griglia 4×3 di icone, e le
+ *         miniature delle carte pescate fino a quel momento;</li>
  *     <li><b>bottom</b>: status bar per messaggi info/errore.</li>
  * </ul>
  *
- * <p>Tutti i nodi grafici (carte, tessere, totem, icone) sono caricati via
- * {@link ImageCache}: se il PNG corrispondente esiste nei resources, viene
- * mostrato; altrimenti si vede un placeholder colorato con etichetta. Drop-in
- * dei file PNG in {@code src/main/resources/images/...} → la UI si aggiorna
- * automaticamente al riavvio.
- *
- * <p>Le azioni disponibili dipendono dalla fase, individuata per substring
- * sul campo {@code currentPhase} del DTO. La detection è bilingue
- * (italiano/inglese):
- * <ul>
- *     <li>"Piazzamento Totem" / "Totem" → click su una tessera offerta libera
- *         per piazzare il totem;</li>
- *     <li>"Risoluzione Azioni" / "Action" → selezione carte dalle due righe +
- *         Conferma;</li>
- *     <li>"Selezione Carta Bonus" / "Bonus" → selezione di una sola carta tra
- *         quelle proposte + Conferma.</li>
- * </ul>
- * I controlli sono attivi solo se {@code activePlayer} coincide col nickname locale.
+ * <p>Le dimensioni di carte/tessere/totem sono ricalcolate ad ogni render
+ * sulla base della larghezza/altezza correnti del root, e un listener
+ * sulle proprietà di dimensione del root forza un re-render: in questo
+ * modo l'intera scena segue la dimensione della finestra (full-screen,
+ * resize, ecc.).
  */
 public final class GameScreen implements GuiScreen {
 
-    // Dimensioni di display (raddoppiate nei PNG → vedi linee guida asset).
-    private static final double CARD_W = 110;
-    private static final double CARD_H = 150;
-    // Tessere offerta: stessa dimensione delle carte per uniformità visiva.
-    private static final double TILE_W = 110;
-    private static final double TILE_H = 150;
-    // Immagine "board" (numplayer_N) affiancata alle tessere offerta.
-    private static final double BOARD_W = 110;
-    private static final double BOARD_H = 150;
-    private static final double TOTEM_S = 32;
-    private static final double ICON_S = 22;
+    // Dimensioni di display — ricalcolate ad ogni render() in base alla
+    // dimensione corrente del root, mantenendo l'aspect ratio 110:150.
+    private double cardW = 110;
+    private double cardH = 150;
+    private double tileW = 110;
+    private double tileH = 150;
+    private double boardW = 110;
+    private double boardH = 150;
+    // Right-column / player-panel: anch'essi responsive.
+    private double rightColW = 290;
+    private double totemS = 32;
+    private double iconS = 22;
+    private double miniCardW = 60;
+    private double miniCardH = 82;
+    private static final double CARD_RATIO_W_OVER_H = 110.0 / 150.0;
 
     private final GuiApp app;
     private final BorderPane root = new BorderPane();
@@ -95,8 +90,8 @@ public final class GameScreen implements GuiScreen {
     private final Label phaseLabel = new Label();
 
     // Board centrale: HBox (NON FlowPane) → niente wrap su 2 righe.
-    private final HBox upperRowBox = new HBox(8);
-    private final HBox lowerRowBox = new HBox(8);
+    private final HBox upperRowBox = new HBox(14);
+    private final HBox lowerRowBox = new HBox(14);
     private final HBox offerTilesBox = new HBox(8);
     /**
      * Sezione tessere offerta: immagine numplayer_N a sinistra + tessere a destra.
@@ -106,11 +101,13 @@ public final class GameScreen implements GuiScreen {
 
     // Right column: TUTTI i giocatori (incluso il locale, evidenziato).
     private final VBox playersBox = new VBox(10);
+    private VBox rightColumnBox;
+    private ScrollPane rightColumnScroll;
 
     // Action panel (dentro la colonna destra, in basso)
     private final VBox actionBox = new VBox(8);
     private final Label actionHint = new Label();
-    private final Button confirmPickButton = new Button("Conferma");
+    private final Button confirmPickButton = new Button("Confirm");
     private final Label statusLabel = new Label();
 
     /** Id delle carte attualmente selezionate per la pickCards. */
@@ -134,7 +131,7 @@ public final class GameScreen implements GuiScreen {
             @Override public void visit(GameStateMessage m) { render(m.gameState()); }
             @Override public void visit(GameStartedMessage m) { render(m.initialGameState()); }
             @Override public void visit(ErrorMessage m) {
-                statusLabel.setText("Errore: " + m.message());
+                statusLabel.setText("Error: " + m.message());
                 clearCardSelection();
             }
             @Override public void visit(InfoMessage m) { statusLabel.setText(m.message()); }
@@ -158,14 +155,20 @@ public final class GameScreen implements GuiScreen {
         root.setCenter(buildCenter());
         root.setRight(buildRightColumn());
         root.setBottom(buildBottom());
+
+        // Re-render whenever the window is resized so card / tile images
+        // recompute their dimensions to fit the new viewport.
+        javafx.beans.value.ChangeListener<Number> resizeListener = (obs, ov, nv) -> {
+            GameStateDTO cached = app.getSession() == null ? null
+                    : app.getSession().getLatestGameState();
+            if (cached != null) render(cached);
+        };
+        root.widthProperty().addListener(resizeListener);
+        root.heightProperty().addListener(resizeListener);
     }
 
     /**
      * Imposta lo sfondo del BorderPane radice tutto in Java.
-     *
-     * <p>Tentiamo prima di caricare l'immagine {@code mesos-loading.png}; se
-     * disponibile, viene applicata in modalità "cover". Se non si carica,
-     * cadiamo su un gradiente rosso analogo a quello del CSS.
      *
      * <p>NOTA TECNICA: il CSS della classe {@code .game-root} è volutamente
      * vuoto. Se contenesse {@code -fx-background-color}, il CSS verrebbe
@@ -200,7 +203,7 @@ public final class GameScreen implements GuiScreen {
 
     private Node buildHeader() {
         headerTitle.getStyleClass().add("game-header-title");
-        headerTitle.setText("In attesa...");
+        headerTitle.setText("Waiting...");
 
         Node spacer = new javafx.scene.layout.Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -218,29 +221,18 @@ public final class GameScreen implements GuiScreen {
         lowerRowBox.setAlignment(Pos.CENTER);
         offerTilesBox.setAlignment(Pos.CENTER);
         offerSectionBox.setAlignment(Pos.CENTER);
-        upperRowBox.getStyleClass().add("board-row");
-        lowerRowBox.getStyleClass().add("board-row");
+        // Le righe esterne sono trasparenti: i pannelli visibili (Building/
+        // Character/Event) vengono creati come HBox interne in renderCardRow().
         offerSectionBox.getStyleClass().add("board-row");
 
-        Label upLbl = new Label("Riga superiore");
-        Label lowLbl = new Label("Riga inferiore");
-        Label tileLbl = new Label("Tessere offerta");
-        for (Label l : new Label[]{upLbl, lowLbl, tileLbl}) {
-            l.getStyleClass().add("board-section-label");
-        }
-
-        // VBox interna che impila le sezioni con allineamento centrato.
-        // Il "tracciato turni" è stato rimosso dalla GUI: l'informazione resta
-        // nel DTO (state.turnOrder()) ed è ancora mostrata dal TUI.
         VBox center = new VBox(10,
-                upLbl, upperRowBox,
-                tileLbl, offerSectionBox,
-                lowLbl, lowerRowBox);
+                upperRowBox,
+                offerSectionBox,
+                lowerRowBox);
         center.setPadding(new Insets(14));
         center.setAlignment(Pos.TOP_CENTER);
         center.setFillWidth(false);
 
-        // Wrapper che centra orizzontalmente E verticalmente la VBox.
         StackPane centerWrap = new StackPane(center);
         StackPane.setAlignment(center, Pos.CENTER);
         centerWrap.setStyle("-fx-background-color: transparent;");
@@ -262,23 +254,24 @@ public final class GameScreen implements GuiScreen {
         actionHint.setMaxWidth(240);
         confirmPickButton.getStyleClass().add("confirm-button");
         confirmPickButton.setOnAction(e -> submitPick());
-        Label actionsLbl = new Label("Azioni");
+        Label actionsLbl = new Label("Actions");
         actionsLbl.getStyleClass().add("board-section-label");
         actionBox.getChildren().addAll(actionsLbl, actionHint, confirmPickButton);
 
         VBox right = new VBox(12, playersBox, actionBox);
         right.setPadding(new Insets(10));
-        right.setPrefWidth(300);
+        right.setPrefWidth(rightColW);
 
         ScrollPane scroll = new ScrollPane(right);
         scroll.setFitToWidth(true);
         scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
-        scroll.setPrefWidth(310);
+        scroll.setPrefWidth(rightColW + 10);
+        this.rightColumnBox = right;
+        this.rightColumnScroll = scroll;
         return scroll;
     }
 
     private Node buildBottom() {
-        // Solo la status bar in basso: tutti i pannelli giocatore sono a destra.
         statusLabel.getStyleClass().add("status-bar");
         return statusLabel;
     }
@@ -288,15 +281,16 @@ public final class GameScreen implements GuiScreen {
     // =====================================================================
 
     private void render(GameStateDTO state) {
+        recomputeSizes();
+        applyRightColumnSize();
         roundLabel.setText("Round " + state.currentRound());
         eraLabel.setText("Era " + state.currentEra());
-        phaseLabel.setText("Fase: " + state.currentPhase());
+        phaseLabel.setText("Phase: " + state.currentPhase());
         headerTitle.setText(headerTitleFor(state));
 
         // Le selezioni precedenti non hanno più senso con un nuovo stato:
         // svuotiamo PRIMA di rebuildare le card così le ToggleButton
-        // partono deselezionate e lo stato visivo resta sincronizzato
-        // con pickedCardIds.
+        // partono deselezionate e lo stato visivo resta sincronizzato.
         pickedCardIds.clear();
 
         renderUpperRow(state);
@@ -306,16 +300,62 @@ public final class GameScreen implements GuiScreen {
         renderActionPanel(state);
     }
 
-    /** Titolo dinamico in base alla fase, simile alla barra rossa BGA. */
+    /** Dynamic title based on phase. */
     private String headerTitleFor(GameStateDTO state) {
         if (!isMyTurn(state)) {
-            return "Turno di " + (state.activePlayer() == null ? "—" : state.activePlayer());
+            return "Turn of " + (state.activePlayer() == null ? "—" : state.activePlayer());
         }
         String phase = state.currentPhase() == null ? "" : state.currentPhase();
-        if (isTotemPhase(phase))   return "Scegli una Tessera Offerta su cui posizionare il tuo totem";
-        if (isActionPhase(phase))  return "Seleziona le carte da pescare e conferma";
-        if (isBonusPhase(phase))   return "Scegli una carta bonus";
-        return "Tocca a te";
+        if (isTotemPhase(phase))   return "Choose an Offer Tile to place your totem on";
+        if (isActionPhase(phase))  return "Select the cards to draw and confirm";
+        if (isBonusPhase(phase))   return "Choose a bonus card";
+        return "Your turn";
+    }
+
+    /**
+     * Recompute card / tile / board / panel dimensions from the current root
+     * size while preserving the original 110:150 aspect ratio. Called at the
+     * start of each render() and on every window resize.
+     */
+    private void recomputeSizes() {
+        double rw = root.getWidth();
+        double rh = root.getHeight();
+        if (rw <= 0) rw = 1600;
+        if (rh <= 0) rh = 900;
+
+        // Right column scales with window width but stays in a sane range.
+        rightColW = Math.max(240, Math.min(420, rw * 0.22));
+        totemS = Math.max(26, Math.min(46, rightColW / 8.5));
+        iconS  = Math.max(18, Math.min(34, rightColW / 13.0));
+
+        double panelInner = rightColW - 36;
+        miniCardW = Math.max(46, Math.min(110, (panelInner - 2 * 4) / 3.0));
+        miniCardH = miniCardW / CARD_RATIO_W_OVER_H;
+
+        // Center area sizing.
+        double availW = Math.max(400, rw - rightColW - 50);
+        double maxByWidth = (availW - 5 * 8) / 6.0;
+
+        double availH = Math.max(300, rh - 60 - 30 - 60);
+        double maxByHeight = (availH - 2 * 10) / 3.0;
+
+        double w = Math.min(maxByWidth, maxByHeight * CARD_RATIO_W_OVER_H);
+        w = Math.max(70, Math.min(w, 220));
+        double h = w / CARD_RATIO_W_OVER_H;
+
+        cardW = w;  cardH = h;
+        tileW = w;  tileH = h;
+        boardW = w; boardH = h;
+    }
+
+    /** Apply responsive sizes to the right column wrappers. */
+    private void applyRightColumnSize() {
+        if (rightColumnBox != null) rightColumnBox.setPrefWidth(rightColW);
+        if (rightColumnScroll != null) {
+            rightColumnScroll.setPrefWidth(rightColW + 10);
+            rightColumnScroll.setMinWidth(rightColW + 10);
+        }
+        actionHint.setMaxWidth(rightColW - 30);
     }
 
     // ------ board rows ------
@@ -323,28 +363,59 @@ public final class GameScreen implements GuiScreen {
     private void renderUpperRow(GameStateDTO state) {
         upperRowBox.getChildren().clear();
         boolean canPick = isMyTurn(state) && (isActionPhase(state.currentPhase()) || isBonusPhase(state.currentPhase()));
-        for (CardDTO c : state.upperRow()) {
-            upperRowBox.getChildren().add(buildCardNode(c, canPick, "UP"));
-        }
+        renderCardRow(upperRowBox, state.upperRow(), canPick, "UP");
     }
 
     private void renderLowerRow(GameStateDTO state) {
         lowerRowBox.getChildren().clear();
         boolean canPick = isMyTurn(state) && (isActionPhase(state.currentPhase()) || isBonusPhase(state.currentPhase()));
-        for (CardDTO c : state.lowerRow()) {
-            lowerRowBox.getChildren().add(buildCardNode(c, canPick, "LOW"));
+        renderCardRow(lowerRowBox, state.lowerRow(), canPick, "LOW");
+    }
+
+    /**
+     * Group the cards in a board row into Building / Character / Event panels
+     * (in that order) and render each non-empty group inside its own
+     * {@code .board-row} HBox.
+     */
+    private void renderCardRow(HBox row, List<CardDTO> cards, boolean canPick, String fallback) {
+        List<CardDTO> buildings  = new ArrayList<>();
+        List<CardDTO> characters = new ArrayList<>();
+        List<CardDTO> events     = new ArrayList<>();
+        List<CardDTO> others     = new ArrayList<>();
+        for (CardDTO c : cards) {
+            String cat = c.category() == null ? "" : c.category().toUpperCase();
+            switch (cat) {
+                case "BUILDING"  -> buildings.add(c);
+                case "CHARACTER" -> characters.add(c);
+                case "EVENT"     -> events.add(c);
+                default          -> others.add(c);
+            }
         }
+        addCategoryGroup(row, buildings,  canPick, fallback);
+        addCategoryGroup(row, characters, canPick, fallback);
+        addCategoryGroup(row, events,     canPick, fallback);
+        addCategoryGroup(row, others,     canPick, fallback);
+    }
+
+    private void addCategoryGroup(HBox parent, List<CardDTO> cards, boolean canPick, String fallback) {
+        if (cards.isEmpty()) return;
+        HBox group = new HBox(8);
+        group.setAlignment(Pos.CENTER);
+        group.getStyleClass().add("board-row");
+        for (CardDTO c : cards) {
+            group.getChildren().add(buildCardNode(c, canPick, fallback));
+        }
+        parent.getChildren().add(group);
     }
 
     /**
      * Costruisce un nodo "carta": ToggleButton con un'immagine (o placeholder).
-     * Path atteso: {@code /images/cards/card_{id}.png}.
      */
     private ToggleButton buildCardNode(CardDTO c, boolean clickable, String fallbackLabel) {
         Color color = colorForCardCategory(c.category());
         String label = (c.id() == null ? fallbackLabel : c.id())
                 + (c.detailType() == null ? "" : "\n" + c.detailType());
-        Node graphic = ImageCache.node(ImageCache.cardPath(c.id()), CARD_W, CARD_H, label, color);
+        Node graphic = ImageCache.node(ImageCache.cardPath(c.id()), cardW, cardH, label, color);
 
         ToggleButton tb = new ToggleButton();
         tb.setGraphic(graphic);
@@ -373,7 +444,6 @@ public final class GameScreen implements GuiScreen {
     // ------ offer tiles + numplayer board ------
 
     private void renderOfferTiles(GameStateDTO state) {
-        // (1) Riempie l'HBox interno delle tessere.
         offerTilesBox.getChildren().clear();
         boolean myTurn = isMyTurn(state);
         boolean totemPhase = isTotemPhase(state.currentPhase());
@@ -381,39 +451,143 @@ public final class GameScreen implements GuiScreen {
             offerTilesBox.getChildren().add(buildOfferTileNode(t, state, myTurn && totemPhase));
         }
 
-        // (2) Compone la sezione: a sinistra l'immagine numplayer_N, a destra
-        // le tessere. L'immagine cambia solo col numero di giocatori; provia-
-        // mo prima .png poi .jpg perché le risorse hanno entrambe le estensioni
-        // (es. numplayer_4.jpg).
         offerSectionBox.getChildren().clear();
-        int n = state.players() == null ? 0 : state.players().size();
-        Node board = ImageCache.nodeFirst(BOARD_W, BOARD_H,
-                "Board " + n + "p", Color.web("#5a2a2a"),
-                "/images/board/numplayer_" + n + ".png",
-                "/images/board/numplayer_" + n + ".jpg");
-        offerSectionBox.getChildren().addAll(board, offerTilesBox);
+        offerSectionBox.getChildren().addAll(buildNumPlayerBoard(state), offerTilesBox);
     }
 
     /**
-     * Costruisce una tessera offerta cliccabile. PNG atteso:
-     * {@code /images/tiles/tile_X.png}. Se la tessera è occupata, sopra
-     * l'immagine appare il totem del giocatore corrispondente.
+     * Build the numplayer_N board with totem overlays placed on each white
+     * square according to the turn-order positions.
+     */
+    private Node buildNumPlayerBoard(GameStateDTO state) {
+        int n = state.players() == null ? 0 : state.players().size();
+
+        Image bg = ImageCache.load("/images/board/numplayer_" + n + ".png");
+        if (bg == null) bg = ImageCache.load("/images/board/numplayer_" + n + ".jpg");
+        Node bgNode;
+        if (bg != null) {
+            ImageView iv = new ImageView(bg);
+            iv.setFitWidth(boardW);
+            iv.setFitHeight(boardH);
+            iv.setPreserveRatio(false);
+            iv.setSmooth(true);
+            bgNode = iv;
+        } else {
+            bgNode = ImageCache.placeholder(boardW, boardH,
+                    "Board " + n + "p", Color.web("#5a2a2a"));
+        }
+
+        Pane overlay = new Pane();
+        overlay.setPrefSize(boardW, boardH);
+        overlay.setMinSize(boardW, boardH);
+        overlay.setMaxSize(boardW, boardH);
+        overlay.setMouseTransparent(true);
+
+        if (state.turnOrder() != null && !state.turnOrder().isEmpty()) {
+            double[] yRatios = numplayerYRatios(n);
+            double xRatio = 0.50;
+            // Use the same totem fit-box as on the offer tiles, so the totem
+            // appears identical when it moves between the two boards.
+            double sqW = 0.40 * boardW;
+            double sqH = 0.18 * boardH;
+            for (int i = 0; i < state.turnOrder().size() && i < yRatios.length; i++) {
+                TurnSlotDTO slot = state.turnOrder().get(i);
+                if (slot.occupiedBy() == null) continue;
+                String color = totemColorForNickname(state, slot.occupiedBy());
+                Node totemBox = makeTotemForSquare(color, sqW, sqH,
+                        initialOf(slot.occupiedBy()));
+                double cx = xRatio * boardW;
+                double cy = yRatios[i] * boardH;
+                totemBox.setLayoutX(cx - sqW / 2.0);
+                totemBox.setLayoutY(cy - sqH / 2.0);
+                overlay.getChildren().add(totemBox);
+            }
+        }
+
+        StackPane stack = new StackPane(bgNode, overlay);
+        stack.setMinSize(boardW, boardH);
+        stack.setPrefSize(boardW, boardH);
+        stack.setMaxSize(boardW, boardH);
+        return stack;
+    }
+
+    /**
+     * Vertical-center ratio (y / boardH) of each white square on the
+     * {@code numplayer_N.png} board image. Indexed by turn-order position.
+     */
+    private static double[] numplayerYRatios(int n) {
+        return switch (n) {
+            case 2 -> new double[]{0.235, 0.430};
+            case 3 -> new double[]{0.215, 0.370, 0.530};
+            case 4 -> new double[]{0.180, 0.330, 0.490, 0.650};
+            case 5 -> new double[]{0.165, 0.300, 0.450, 0.595, 0.740};
+            default -> new double[0];
+        };
+    }
+
+    /**
+     * Build a totem node sized to fit exactly into a {@code sqW × sqH}
+     * rectangle (typically a white square on a tile or board).
+     */
+    private Node makeTotemForSquare(String color, double sqW, double sqH, String fallbackLabel) {
+        Node img = ImageCache.totemNode(color, Math.min(sqW, sqH), fallbackLabel);
+        StackPane box = new StackPane(img);
+        box.setMinSize(sqW, sqH);
+        box.setPrefSize(sqW, sqH);
+        box.setMaxSize(sqW, sqH);
+        box.setMouseTransparent(true);
+        return box;
+    }
+
+    /**
+     * Costruisce una tessera offerta cliccabile. Se la tessera è occupata,
+     * sopra il quadrato bianco appare il totem del giocatore corrispondente.
      */
     private Node buildOfferTileNode(OfferTileDTO t, GameStateDTO state, boolean clickable) {
         String fallback = String.valueOf(t.letter())
                 + "\nU+" + t.upperCardsToTake()
                 + " L+" + t.lowerCardsToTake()
                 + "\n+" + t.foodReward() + " food";
-        Node tileImg = ImageCache.node(ImageCache.tilePath(t.letter()), TILE_W, TILE_H,
-                fallback, Color.web("#c69862"));
+
+        // Stretch the tile image to fixed bounds so overlay coordinates
+        // (the white square position) align regardless of the source ratio.
+        Image img = ImageCache.load(ImageCache.tilePath(t.letter()));
+        Node tileImg;
+        if (img != null) {
+            ImageView iv = new ImageView(img);
+            iv.setFitWidth(tileW);
+            iv.setFitHeight(tileH);
+            iv.setPreserveRatio(false);
+            iv.setSmooth(true);
+            tileImg = iv;
+        } else {
+            tileImg = ImageCache.placeholder(tileW, tileH, fallback, Color.web("#c69862"));
+        }
 
         StackPane content = new StackPane(tileImg);
+        content.setMinSize(tileW, tileH);
+        content.setPrefSize(tileW, tileH);
+        content.setMaxSize(tileW, tileH);
+
         if (t.occupiedBy() != null) {
             String color = totemColorForNickname(state, t.occupiedBy());
-            Node totem = ImageCache.icon(ImageCache.totemPath(color), TOTEM_S,
-                    initialOf(t.occupiedBy()), ImageCache.colorFromName(color));
-            StackPane.setAlignment(totem, Pos.CENTER);
-            content.getChildren().add(totem);
+            // White square on every tile_X.png is approximately 0.40 × 0.18
+            // centered horizontally at 0.50, vertically at 0.22.
+            double sqW = 0.40 * tileW;
+            double sqH = 0.18 * tileH;
+            Node totemBox = makeTotemForSquare(color, sqW, sqH,
+                    initialOf(t.occupiedBy()));
+            Pane overlay = new Pane();
+            overlay.setPrefSize(tileW, tileH);
+            overlay.setMinSize(tileW, tileH);
+            overlay.setMaxSize(tileW, tileH);
+            overlay.setMouseTransparent(true);
+            double cx = 0.50 * tileW;
+            double cy = 0.22 * tileH;
+            totemBox.setLayoutX(cx - sqW / 2.0);
+            totemBox.setLayoutY(cy - sqH / 2.0);
+            overlay.getChildren().add(totemBox);
+            content.getChildren().add(overlay);
         }
 
         Button b = new Button();
@@ -426,7 +600,7 @@ public final class GameScreen implements GuiScreen {
             try {
                 app.getSession().getClientController().placeTotem(t.letter());
             } catch (RuntimeException ex) {
-                statusLabel.setText("Piazzamento fallito: " + ex.getMessage());
+                statusLabel.setText("Placement failed: " + ex.getMessage());
             }
         });
         return b;
@@ -434,13 +608,6 @@ public final class GameScreen implements GuiScreen {
 
     // ------ players (right column) ------
 
-    /**
-     * Renderizza TUTTI i giocatori nella colonna destra, uno sotto l'altro.
-     * Il giocatore locale viene messo per primo e marcato con {@code local=true}:
-     * eredita lo stile {@code .local-player-panel} (sfondo distintivo, ma
-     * SENZA glow dorato). Il glow appare solo per il giocatore di turno
-     * tramite la classe {@code .player-panel-active}.
-     */
     private void renderPlayers(GameStateDTO state) {
         playersBox.getChildren().clear();
         String me = app.getSession().getLocalNickname();
@@ -459,18 +626,13 @@ public final class GameScreen implements GuiScreen {
 
     private Node buildPlayerPanel(PlayerDTO p, boolean local) {
         VBox box = new VBox(6);
-        // Tutti i pannelli usano lo stesso stile base. .local-player-panel
-        // distingue il pannello locale (sfondo caldo + bordo crema sottile,
-        // niente glow). .player-panel-active aggiunge il glow dorato SOLO
-        // quando è il turno di quel giocatore.
         box.getStyleClass().add("player-panel");
         if (local) box.getStyleClass().add("local-player-panel");
         if (p.active()) box.getStyleClass().add("player-panel-active");
 
-        Node totem = ImageCache.icon(ImageCache.totemPath(p.totemColor()), TOTEM_S,
-                initialOf(p.nickname()), ImageCache.colorFromName(p.totemColor()));
+        Node totem = ImageCache.totemNode(p.totemColor(), totemS, initialOf(p.nickname()));
 
-        Label name = new Label(p.nickname() + (local ? " (tu)" : ""));
+        Label name = new Label(p.nickname() + (local ? " (you)" : ""));
         name.getStyleClass().add("player-name");
         Label pp = new Label(p.prestigePoints() + " ★");
         pp.getStyleClass().add("player-pp");
@@ -479,40 +641,62 @@ public final class GameScreen implements GuiScreen {
         header.setAlignment(Pos.CENTER_LEFT);
 
         box.getChildren().addAll(header, buildResourceGrid(p));
+
+        Node drawnCards = buildDrawnCardsPane(p);
+        if (drawnCards != null) box.getChildren().add(drawnCards);
+
         return box;
     }
 
     /**
-     * Griglia 4×3 di icone risorsa/personaggio. La mappatura icona → conteggio
-     * è centralizzata nell'array {@code specs}: per cambiare ordine o significato
-     * di una cella basta editare quell'array.
-     *
-     * <p>Naming convention: per ogni {@code iconName}, il path atteso è
-     * {@code /images/icons/icon_{iconName}.png} (vedi {@link ImageCache#iconPath}).
+     * Build a wrapping pane with mini-thumbnails of every card the player has
+     * drawn (tribe characters + buildings).
+     */
+    private Node buildDrawnCardsPane(PlayerDTO p) {
+        List<CardDTO> drawn = new ArrayList<>();
+        if (p.tribeCharacters() != null) drawn.addAll(p.tribeCharacters());
+        if (p.buildings() != null) drawn.addAll(p.buildings());
+        if (drawn.isEmpty()) return null;
+
+        FlowPane pane = new FlowPane(4, 4);
+        pane.getStyleClass().add("drawn-cards-pane");
+        pane.setPrefWrapLength(Math.max(80, rightColW - 36));
+        pane.setMaxWidth(rightColW - 20);
+        for (CardDTO c : drawn) {
+            Color color = colorForCardCategory(c.category());
+            String label = c.id() == null ? "?" : c.id();
+            Node thumb = ImageCache.node(ImageCache.cardPath(c.id()),
+                    miniCardW, miniCardH, label, color);
+            if (c.id() != null) {
+                javafx.scene.control.Tooltip.install(thumb,
+                        new javafx.scene.control.Tooltip(
+                                c.id() + (c.detailType() == null ? "" : " — " + c.detailType())));
+            }
+            pane.getChildren().add(thumb);
+        }
+        return pane;
+    }
+
+    /**
+     * Griglia 4×3 di icone risorsa/personaggio.
      */
     private Node buildResourceGrid(PlayerDTO p) {
         ResourceSpec[] specs = new ResourceSpec[] {
-                // Riga 1: risorse generali
-                new ResourceSpec("food",                p.food(),                         "Cibo"),
-                new ResourceSpec("star",                p.prestigePoints(),               "Punti Prestigio"),
-                new ResourceSpec("characters_count",    p.tribeCharacters().size(),       "Personaggi totali"),
+                new ResourceSpec("food",                p.food(),                         "Food"),
+                new ResourceSpec("star",                p.prestigePoints(),               "Prestige Points"),
+                new ResourceSpec("characters_count",    p.tribeCharacters().size(),       "Total characters"),
 
-                // Riga 2: bonus / sconti / icone uniche
-                // Note: building_discount e gatherer_discount NON sono esposti dal
-                // PlayerDTO, quindi mostrano 0. Per popolarli serve estendere il DTO.
-                new ResourceSpec("building_discount",   0,                                "Sconto edifici (Builder)"),
-                new ResourceSpec("gatherer_discount",   0,                                "Sconto Gatherer"),
-                new ResourceSpec("inventor_icons",      countUniqueInventorIcons(p),      "Icone uniche Inventor"),
+                new ResourceSpec("building_discount",   0,                                "Building discount (Builder)"),
+                new ResourceSpec("gatherer_discount",   0,                                "Gatherer discount"),
+                new ResourceSpec("inventor_icons",      countUniqueInventorIcons(p),      "Unique Inventor icons"),
 
-                // Riga 3: personaggi tribù — gruppo 1
-                new ResourceSpec("artist",   countByDetail(p.tribeCharacters(), "ARTIST"),    "Artisti"),
-                new ResourceSpec("builder",  countByDetail(p.tribeCharacters(), "BUILDER"),   "Costruttori"),
-                new ResourceSpec("hunter",   countByDetail(p.tribeCharacters(), "HUNTER"),    "Cacciatori"),
+                new ResourceSpec("artist",   countByDetail(p.tribeCharacters(), "ARTIST"),    "Artists"),
+                new ResourceSpec("builder",  countByDetail(p.tribeCharacters(), "BUILDER"),   "Builders"),
+                new ResourceSpec("hunter",   countByDetail(p.tribeCharacters(), "HUNTER"),    "Hunters"),
 
-                // Riga 4: personaggi tribù — gruppo 2
-                new ResourceSpec("inventor", countByDetail(p.tribeCharacters(), "INVENTOR"),  "Inventori"),
-                new ResourceSpec("shaman",   countByDetail(p.tribeCharacters(), "SHAMAN"),    "Sciamani"),
-                new ResourceSpec("gatherer", countByDetail(p.tribeCharacters(), "COLLECTOR"), "Raccoglitori"),
+                new ResourceSpec("inventor", countByDetail(p.tribeCharacters(), "INVENTOR"),  "Inventors"),
+                new ResourceSpec("shaman",   countByDetail(p.tribeCharacters(), "SHAMAN"),    "Shamans"),
+                new ResourceSpec("gatherer", countByDetail(p.tribeCharacters(), "COLLECTOR"), "Gatherers"),
         };
 
         GridPane grid = new GridPane();
@@ -527,11 +711,10 @@ public final class GameScreen implements GuiScreen {
         return grid;
     }
 
-    /** Spec di una cella della griglia risorse. */
     private record ResourceSpec(String iconName, int count, String tooltip) {}
 
     private Node resourceCell(ResourceSpec s) {
-        Node icon = ImageCache.icon(ImageCache.iconPath(s.iconName()), ICON_S,
+        Node icon = ImageCache.icon(ImageCache.iconPath(s.iconName()), iconS,
                 s.iconName().substring(0, 1).toUpperCase(),
                 placeholderColorForIcon(s.iconName()));
         Label countLbl = new Label(String.valueOf(s.count()));
@@ -545,11 +728,6 @@ public final class GameScreen implements GuiScreen {
         return cell;
     }
 
-    /**
-     * Conta le icone uniche degli Inventor della tribù, basandosi sulla
-     * convenzione {@code "INVENTOR-X"} usata da {@code Inventor#cardDetailType()}.
-     * Replica la logica di {@code Tribe#countUniqueInventorIcons()} sul DTO.
-     */
     private int countUniqueInventorIcons(PlayerDTO p) {
         if (p.tribeCharacters() == null) return 0;
         java.util.Set<String> set = new java.util.HashSet<>();
@@ -587,34 +765,44 @@ public final class GameScreen implements GuiScreen {
         String phase = state.currentPhase() == null ? "" : state.currentPhase();
         actionHint.getStyleClass().remove("action-hint-mine");
         if (!myTurn) {
-            actionHint.setText("In attesa di " + state.activePlayer() + "...");
+            actionHint.setText("Waiting for " + state.activePlayer() + "...");
             confirmPickButton.setDisable(true);
             return;
         }
         actionHint.getStyleClass().add("action-hint-mine");
         if (isTotemPhase(phase)) {
-            actionHint.setText("Tocca a te: clicca una tessera offerta libera per piazzare il totem.");
+            actionHint.setText("Your turn: click a free offer tile to place your totem.");
             confirmPickButton.setDisable(true);
         } else if (isActionPhase(phase)) {
-            actionHint.setText("Tocca a te: seleziona le carte e premi Conferma.");
+            actionHint.setText("Your turn: select cards and press Confirm.");
             confirmPickButton.setDisable(false);
         } else if (isBonusPhase(phase)) {
-            actionHint.setText("Tocca a te: scegli UNA carta bonus e premi Conferma.");
+            actionHint.setText("Your turn: choose ONE bonus card and press Confirm.");
             confirmPickButton.setDisable(false);
         } else {
-            actionHint.setText("Tocca a te (" + phase + ").");
+            actionHint.setText("Your turn (" + phase + ").");
             confirmPickButton.setDisable(true);
         }
     }
 
-    /** Deseleziona visivamente tutte le carte e svuota il set di selezione. */
+    /**
+     * Deseleziona visivamente tutte le carte e svuota il set di selezione.
+     * Le carte sono ora annidate in HBox interne (i pannelli per categoria),
+     * quindi scendiamo ricorsivamente nei figli.
+     */
     private void clearCardSelection() {
         pickedCardIds.clear();
-        for (Node n : upperRowBox.getChildren()) {
-            if (n instanceof ToggleButton tb) tb.setSelected(false);
-        }
-        for (Node n : lowerRowBox.getChildren()) {
-            if (n instanceof ToggleButton tb) tb.setSelected(false);
+        deselectIn(upperRowBox);
+        deselectIn(lowerRowBox);
+    }
+
+    private void deselectIn(Pane container) {
+        for (Node n : container.getChildren()) {
+            if (n instanceof ToggleButton tb) {
+                tb.setSelected(false);
+            } else if (n instanceof Pane p) {
+                deselectIn(p);
+            }
         }
     }
 
@@ -626,7 +814,7 @@ public final class GameScreen implements GuiScreen {
         try {
             if (isBonusPhase(phase)) {
                 if (ids.size() != 1) {
-                    statusLabel.setText("Seleziona esattamente una carta bonus.");
+                    statusLabel.setText("Select exactly one bonus card.");
                     return;
                 }
                 app.getSession().getClientController().pickBonusCard(ids.get(0));
@@ -635,7 +823,7 @@ public final class GameScreen implements GuiScreen {
             }
             pickedCardIds.clear();
         } catch (RuntimeException ex) {
-            statusLabel.setText("Invio fallito: " + ex.getMessage());
+            statusLabel.setText("Submit failed: " + ex.getMessage());
         }
     }
 
@@ -648,11 +836,6 @@ public final class GameScreen implements GuiScreen {
         return me != null && me.equalsIgnoreCase(state.activePlayer());
     }
 
-    // Detection delle fasi tollerante alla lingua: i nomi reali del modello
-    // sono in italiano (vedi *State.getPhaseName()): "Piazzamento Totem",
-    // "Risoluzione Azioni", "Selezione Carta Bonus", "Risoluzione Eventi".
-    // Manteniamo anche le parole inglesi nel caso vengano rinominate.
-
     private boolean isTotemPhase(String phase) {
         if (phase == null) return false;
         String p = phase.toLowerCase();
@@ -662,7 +845,6 @@ public final class GameScreen implements GuiScreen {
     private boolean isActionPhase(String phase) {
         if (phase == null) return false;
         String p = phase.toLowerCase();
-        // Esclude esplicitamente la risoluzione eventi.
         if (p.contains("event") || p.contains("eventi")) return false;
         return p.contains("azion") || p.contains("action") || p.contains("resolution") || p.contains("risoluzion");
     }
