@@ -2,6 +2,8 @@ package it.polimi.ingsw.am22.network.client;
 
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.request.*;
+import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.server.rmi.RemoteClientView;
 import it.polimi.ingsw.am22.network.server.rmi.RemoteGameServer;
 
@@ -29,6 +31,17 @@ import java.util.concurrent.TimeUnit;
 public class RmiServerConnection implements ObservableServerConnection {
 
     private static final long PING_INTERVAL_MS = 1000;
+
+    /**
+     * Ritardo dopo cui, ricevuto un messaggio "di addio" dal server (EndGame /
+     * MatchClosed), simuliamo localmente un evento di disconnessione. Serve a
+     * dare al ramo RMI la stessa UX del ramo socket: senza questo, il client
+     * RMI uscirebbe in silenzio perché lo stub di callback resta vivo e il
+     * ping continua a passare (il server è ancora attivo, ha solo smesso di
+     * parlarci). Tenuto basso così il messaggio "[CONN] Server connection
+     * lost" arriva mentre il loop TUI è ancora bloccato su stdin.
+     */
+    private static final long FAREWELL_GRACE_MS = 200;
 
     private final RemoteGameServer remoteGameServer;
     private final RemoteClientView callback;
@@ -70,11 +83,22 @@ public class RmiServerConnection implements ObservableServerConnection {
         try {
             remoteGameServer.ping();
         } catch (RemoteException e) {
-            ClientUpdateHandler handler = updateHandler;
-            close();
-            if (handler != null) {
-                handler.onConnectionClosed(e);
-            }
+            fireConnectionClosed(e);
+        }
+    }
+
+    /**
+     * Chiude la connessione e notifica l'{@link ClientUpdateHandler} con un
+     * evento di disconnessione. Idempotente: se la connessione è già chiusa
+     * non fa nulla, evitando notifiche duplicate quando probe e farewell
+     * scattano ravvicinati.
+     */
+    private void fireConnectionClosed(Throwable cause) {
+        if (closed) return;
+        ClientUpdateHandler handler = updateHandler;
+        close();
+        if (handler != null) {
+            handler.onConnectionClosed(cause);
         }
     }
 
@@ -181,6 +205,20 @@ public class RmiServerConnection implements ObservableServerConnection {
             ClientUpdateHandler handler = updateHandler;
             if (handler != null) {
                 handler.onServerMessage(message);
+            }
+            // EndGame e MatchClosed sono gli ultimi messaggi che il server invia
+            // a questo client: dopo, smette semplicemente di chiamare il
+            // callback (RmiClientChannel.close() lato server è no-op). Senza un
+            // segnale aggiuntivo il client RMI non si accorgerebbe della fine
+            // della sessione e uscirebbe in silenzio. Pianifichiamo un
+            // onConnectionClosed sintetico così la TUI/GUI vedono lo stesso
+            // evento del transport socket.
+            if (message instanceof EndGameMessage || message instanceof MatchClosedMessage) {
+                if (!closed) {
+                    livenessProbe.schedule(
+                            () -> fireConnectionClosed(null),
+                            FAREWELL_GRACE_MS, TimeUnit.MILLISECONDS);
+                }
             }
         }
     }

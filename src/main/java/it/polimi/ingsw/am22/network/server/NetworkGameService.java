@@ -405,7 +405,19 @@ public class NetworkGameService {
             if (!gameController.getGame().isGameEnded()) {
                 return;
             }
-            Player winner = gameController.determineWinner();
+            // gameController.determineWinner() chiama Game.determineWinner() che
+            // a sua volta fa notifyObservers(): senza il batch l'observer
+            // produrrebbe un GameStateMessage identico a quello già emesso a
+            // fine azione, duplicando il render del Game Over. Avvolgiamo la
+            // chiamata in un batch e lo chiudiamo SENZA emettere: lo stato
+            // finale viene comunque consegnato dentro l'EndGameMessage qui sotto.
+            Player winner;
+            virtualView.beginBatch();
+            try {
+                winner = gameController.determineWinner();
+            } finally {
+                virtualView.endBatch(false);
+            }
             virtualView.broadcast(new EndGameMessage(mapper.toWinnerDTO(winner), state));
             // Drop the match from the registry right away so no further requests can be
             // routed to it, but defer the channel close: see endGameCloser javadoc.

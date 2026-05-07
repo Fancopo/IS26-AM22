@@ -62,18 +62,37 @@ public class VirtualView implements GameObserver {
     }
 
     /**
-     * Chiude un batch. Quando l'ultimo batch annidato si chiude, se durante il
-     * batch è arrivata almeno una notifica dell'observer, emette un singolo
-     * {@link GameStateMessage} con lo stato finale.
+     * Chiude un batch emettendo (se ne è arrivata almeno una durante il batch)
+     * un singolo {@link GameStateMessage} con lo stato finale. Equivalente a
+     * {@code endBatch(true)}.
      */
     public void endBatch() {
+        endBatch(true);
+    }
+
+    /**
+     * Chiude un batch. Quando l'ultimo batch annidato si chiude:
+     * <ul>
+     *     <li>{@code broadcast=true}: se durante il batch è arrivata almeno una
+     *         notifica dell'observer, emette un singolo {@link GameStateMessage}
+     *         con lo stato finale.</li>
+     *     <li>{@code broadcast=false}: scarta le notifiche accumulate. Utile
+     *         quando la chiamata avvolta serve solo per leggere/calcolare
+     *         qualcosa (es. {@code determineWinner}) e lo stato verrà comunque
+     *         pubblicato altrimenti — tipicamente come parte di un messaggio
+     *         dedicato (es. {@code EndGameMessage}).</li>
+     * </ul>
+     */
+    public void endBatch(boolean broadcast) {
         Game toBroadcast = null;
         synchronized (this) {
             if (batchDepth > 0) {
                 batchDepth--;
             }
-            if (batchDepth == 0 && pendingGame != null) {
-                toBroadcast = pendingGame;
+            if (batchDepth == 0) {
+                if (broadcast) {
+                    toBroadcast = pendingGame;
+                }
                 pendingGame = null;
             }
         }
