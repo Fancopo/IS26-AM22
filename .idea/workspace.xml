@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="still fixed GUI">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Fixing bug: &quot;leave&quot; command works as &quot;disconnect&quot; command">
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/NetworkGameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/NetworkGameService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +37,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Fancopo/Codice-Software.git&quot;,
-    &quot;accountId&quot;: &quot;3ada8e8c-3288-46a2-9893-85f519bff785&quot;
+    &quot;accountId&quot;: &quot;95b82d4a-cd6d-46b9-ace9-7ebe0a73ee9d&quot;
   }
 }</component>
   <component name="MavenImportPreferences">
@@ -62,6 +62,9 @@
   &quot;keyToString&quot;: {
     &quot;Application.Client TUI A.executor&quot;: &quot;Run&quot;,
     &quot;Application.Client TUI B.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client TUI C.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client TUI D.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client TUI E.executor&quot;: &quot;Run&quot;,
     &quot;Application.ClientApp.executor&quot;: &quot;Run&quot;,
     &quot;Application.GuiApp.executor&quot;: &quot;Run&quot;,
     &quot;Application.NetworkServerLauncher.executor&quot;: &quot;Run&quot;,
@@ -110,6 +113,45 @@
       </method>
     </configuration>
     <configuration name="Client TUI B" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Client TUI C" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Client TUI D" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Client TUI E" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
       <module name="am22" />
       <extension name="coverage">
@@ -190,6 +232,9 @@
     <list>
       <item itemvalue="Application.Client TUI A" />
       <item itemvalue="Application.Client TUI B" />
+      <item itemvalue="Application.Client TUI C" />
+      <item itemvalue="Application.Client TUI D" />
+      <item itemvalue="Application.Client TUI E" />
       <item itemvalue="Application.GuiApp" />
       <item itemvalue="Application.NetworkServerLauncher" />
       <item itemvalue="JUnit.java in am22" />
@@ -309,31 +354,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777990246882</updated>
     </task>
-    <task id="LOCAL-00012" summary="still fixed GUI">
+    <task id="LOCAL-00012" summary="Fixing bug: close client when there is not server">
       <option name="closed" value="true" />
-      <created>1778163854745</created>
+      <created>1778110380220</created>
       <option name="number" value="00012" />
       <option name="presentableId" value="LOCAL-00012" />
       <option name="project" value="LOCAL" />
-      <updated>1778163854745</updated>
+      <updated>1778110380220</updated>
     </task>
-    <task id="LOCAL-00013" summary="still fixed GUI">
+    <task id="LOCAL-00013" summary="Fixing bug: &quot;leave&quot; command works as &quot;disconnect&quot; command">
       <option name="closed" value="true" />
-      <created>1778165248751</created>
+      <created>1778162402330</created>
       <option name="number" value="00013" />
       <option name="presentableId" value="LOCAL-00013" />
       <option name="project" value="LOCAL" />
-      <updated>1778165248751</updated>
+      <updated>1778162402330</updated>
     </task>
-    <task id="LOCAL-00014" summary="still fixed GUI">
-      <option name="closed" value="true" />
-      <created>1778165520887</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1778165520887</updated>
-    </task>
-    <option name="localTasksCounter" value="15" />
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -369,8 +406,9 @@
     <MESSAGE value="modifiche reti" />
     <MESSAGE value="piccole modifiche tui e fixing dei bug nel model" />
     <MESSAGE value="con la parte di multipartita (incompleta)" />
-    <MESSAGE value="still fixed GUI" />
-    <option name="LAST_COMMIT_MESSAGE" value="still fixed GUI" />
+    <MESSAGE value="Fixing bug: close client when there is not server" />
+    <MESSAGE value="Fixing bug: &quot;leave&quot; command works as &quot;disconnect&quot; command" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing bug: &quot;leave&quot; command works as &quot;disconnect&quot; command" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

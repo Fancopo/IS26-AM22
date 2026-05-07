@@ -297,19 +297,34 @@ public class NetworkGameService {
 
         private void handlePlaceTotem(PlaceTotemRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
-            gameController.placeTotem(request.playerNickname(), request.offerLetter());
+            virtualView.beginBatch();
+            try {
+                gameController.placeTotem(request.playerNickname(), request.offerLetter());
+            } finally {
+                virtualView.endBatch();
+            }
             broadcastGameStateAndMaybeEnd();
         }
 
         private void handlePickCards(PickCardsRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
-            gameController.pickCards(request.playerNickname(), request.selectedCardIds());
+            virtualView.beginBatch();
+            try {
+                gameController.pickCards(request.playerNickname(), request.selectedCardIds());
+            } finally {
+                virtualView.endBatch();
+            }
             broadcastGameStateAndMaybeEnd();
         }
 
         private void handlePickBonusCard(PickBonusCardRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
-            gameController.pickBonusCard(request.playerNickname(), request.bonusCardId());
+            virtualView.beginBatch();
+            try {
+                gameController.pickBonusCard(request.playerNickname(), request.bonusCardId());
+            } finally {
+                virtualView.endBatch();
+            }
             broadcastGameStateAndMaybeEnd();
         }
 
@@ -347,16 +362,19 @@ public class NetworkGameService {
 
         /**
          * Pubblica lo stato giusto in base alla transizione avvenuta:
-         * partita appena avviata → {@link GameStartedMessage} + {@link GameStateMessage};
-         * partita in corso → solo {@link GameStateMessage};
+         * partita appena avviata → {@link GameStartedMessage} (porta lo stato iniziale);
+         * partita in corso → {@link GameStateMessage};
          * ancora in lobby → {@link LobbyStateMessage}.
+         *
+         * <p>Allo start NON viene emesso un {@link GameStateMessage} aggiuntivo:
+         * lo {@link GameStartedMessage} già contiene lo stato iniziale e tutte
+         * le view lo rendono. Inviare entrambi causerebbe un doppio render.
          */
         private void publishStateChange(boolean wasStarted) {
             if (!wasStarted && gameController.hasStarted()) {
                 attachObserverIfNeeded();
                 GameStateDTO state = mapper.toGameState(gameController.getGame());
                 virtualView.broadcast(new GameStartedMessage(state));
-                virtualView.broadcast(new GameStateMessage(state));
                 maybeBroadcastEndGame(state);
             } else if (gameController.hasStarted()) {
                 broadcastGameStateAndMaybeEnd();
@@ -374,8 +392,12 @@ public class NetworkGameService {
             if (!gameController.hasStarted()) {
                 return;
             }
+            // NB: NON inviamo qui un GameStateMessage. La VirtualView è già
+            // registrata come observer del Game (vedi attachObserverIfNeeded)
+            // e il model emette notifyObservers() su ogni mutazione: lo stato
+            // arriva ai client per quella via. Un broadcast esplicito qui
+            // produrrebbe un secondo render identico subito dopo.
             GameStateDTO state = mapper.toGameState(gameController.getGame());
-            virtualView.broadcast(new GameStateMessage(state));
             maybeBroadcastEndGame(state);
         }
 

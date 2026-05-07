@@ -23,14 +23,63 @@ public class VirtualView implements GameObserver {
     private final Map<String, ClientChannel> channelsByNickname;
     private final ModelDtoMapper mapper;
 
+    /**
+     * Quando &gt; 0 le notifiche dell'observer non producono broadcast immediati:
+     * basta tenere traccia che almeno una è arrivata e, alla chiusura del batch,
+     * emettere un unico {@link GameStateMessage} con lo stato finale. Serve a
+     * coalizzare le notifiche multiple che il model fa dentro una stessa azione
+     * (setState, setActivePlayer, era/round change e il notify finale del
+     * wrapper di {@link Game}), che altrimenti causano render duplicati al client.
+     */
+    private int batchDepth;
+    private Game pendingGame;
+
     public VirtualView(ModelDtoMapper mapper) {
         this.mapper = mapper;
         this.channelsByNickname = new ConcurrentHashMap<>();
+        this.batchDepth = 0;
+        this.pendingGame = null;
     }
 
     @Override
     public void gameStatusChanged(Game game) {
+        synchronized (this) {
+            if (batchDepth > 0) {
+                pendingGame = game;
+                return;
+            }
+        }
         broadcast(new GameStateMessage(mapper.toGameState(game)));
+    }
+
+    /**
+     * Apre un batch: le successive notifiche dell'observer vengono trattenute
+     * fino al corrispondente {@link #endBatch()}. I batch sono annidabili
+     * (contatore), quindi si possono chiamare in modo difensivo.
+     */
+    public synchronized void beginBatch() {
+        batchDepth++;
+    }
+
+    /**
+     * Chiude un batch. Quando l'ultimo batch annidato si chiude, se durante il
+     * batch è arrivata almeno una notifica dell'observer, emette un singolo
+     * {@link GameStateMessage} con lo stato finale.
+     */
+    public void endBatch() {
+        Game toBroadcast = null;
+        synchronized (this) {
+            if (batchDepth > 0) {
+                batchDepth--;
+            }
+            if (batchDepth == 0 && pendingGame != null) {
+                toBroadcast = pendingGame;
+                pendingGame = null;
+            }
+        }
+        if (toBroadcast != null) {
+            broadcast(new GameStateMessage(mapper.toGameState(toBroadcast)));
+        }
     }
 
     public void bindOrReplace(String nickname, ClientChannel channel) {
