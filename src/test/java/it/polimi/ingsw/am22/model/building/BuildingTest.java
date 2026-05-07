@@ -73,23 +73,23 @@ class BuildingTest {
     }
 
     @Test
-    void testApplyOnTotemPlaced() {
+    void testApplyOnFoodSlotPlacedDelegates() {
         Player dummyPlayer = new Player("TestPlayer");
 
         // Call the method
-        testBuilding.applyOnTotemPlaced(dummyPlayer);
+        testBuilding.applyOnFoodSlotPlaced(dummyPlayer);
 
         // Verify that the Building successfully delegated the call to our mock effect
         assertTrue(mockEffect.totemPlacedCalled, "Building should delegate to the effect's onTotemPlaced method");
     }
 
     @Test
-    void testApplyOnTotemPlacedWithNullEffect() {
+    void testApplyOnFoodSlotPlacedWithNullEffect() {
         // Test defensive programming: Ensure the game doesn't crash if effect is null
         Building nullEffectBuilding = new Building("BLD_02", Era.II, 2, 0, 0, null);
         Player dummyPlayer = new Player("TestPlayer");
 
-        assertDoesNotThrow(() -> nullEffectBuilding.applyOnTotemPlaced(dummyPlayer),
+        assertDoesNotThrow(() -> nullEffectBuilding.applyOnFoodSlotPlaced(dummyPlayer),
                 "Should safely do nothing if the effect is null");
     }
 
@@ -108,16 +108,7 @@ class BuildingTest {
         assertFalse(nullEffectBuilding.grantsExtraBuyAtRoundEnd(), "Null effect should safely return false");
     }
 
-    @Test
-    void testApplyOnFoodSlotPlaced() {
-        // Since this is an empty method, we just want to ensure it doesn't crash
-        Player dummyPlayer = new Player("TestPlayer");
-
-        assertDoesNotThrow(() -> testBuilding.applyOnFoodSlotPlaced(dummyPlayer),
-                "Empty method should execute safely without throwing exceptions");
-    }
-
-    @Test
+@Test
     void testFinalBuildingPP() {
         Tribe tribe = new Tribe();
         Player dummyPlayer = new Player("TestPlayer");

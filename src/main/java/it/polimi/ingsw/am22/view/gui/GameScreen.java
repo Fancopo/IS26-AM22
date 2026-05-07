@@ -77,8 +77,8 @@ public final class GameScreen implements GuiScreen {
     private double rightColW = 290;
     private double totemS = 32;
     private double iconS = 22;
-    private double miniCardW = 60;
-    private double miniCardH = 82;
+    private double miniCardW = 38;
+    private double miniCardH = 52;
     private static final double CARD_RATIO_W_OVER_H = 110.0 / 150.0;
 
     private final GuiApp app;
@@ -340,8 +340,9 @@ public final class GameScreen implements GuiScreen {
         totemS = Math.max(26, Math.min(46, rightColW / 8.5));
         iconS  = Math.max(18, Math.min(34, rightColW / 13.0));
 
-        double panelInner = rightColW - 36;
-        miniCardW = Math.max(46, Math.min(110, (panelInner - 2 * 4) / 3.0));
+        // Mini-carte nel pannello del giocatore: appena piu' grandi delle icone
+        // (iconS), molto piu' piccole delle carte della board.
+        miniCardW = Math.max(30, Math.min(56, iconS * 1.6));
         miniCardH = miniCardW / CARD_RATIO_W_OVER_H;
 
         // Center area sizing.
@@ -832,8 +833,8 @@ public final class GameScreen implements GuiScreen {
     private Node buildResourceGrid(PlayerDTO p) {
         ResourceSpec[] specs = new ResourceSpec[] {
                 new ResourceSpec("food",                p.food(),                         "Food"),
-                new ResourceSpec("star",                p.prestigePoints(),               "Prestige Points"),
-                new ResourceSpec("characters_count",    p.tribeCharacters().size(),       "Total characters"),
+                new ResourceSpec("star",                totalStars(p),                    "Stars (from Shamans)"),
+                new ResourceSpec("setof_characters",    p.tribeCharacters().size(),       "Total characters"),
 
                 new ResourceSpec("building_discount",   0,                                "Building discount (Builder)"),
                 new ResourceSpec("gatherer_discount",   0,                                "Gatherer discount"),
@@ -877,6 +878,16 @@ public final class GameScreen implements GuiScreen {
         return cell;
     }
 
+    /** Somma le stelle portate dagli sciamani della tribu' del giocatore. */
+    private int totalStars(PlayerDTO p) {
+        if (p.tribeCharacters() == null) return 0;
+        int sum = 0;
+        for (CardDTO c : p.tribeCharacters()) {
+            sum += c.numStars();
+        }
+        return sum;
+    }
+
     private int countUniqueInventorIcons(PlayerDTO p) {
         if (p.tribeCharacters() == null) return 0;
         java.util.Set<String> set = new java.util.HashSet<>();
@@ -894,6 +905,7 @@ public final class GameScreen implements GuiScreen {
             case "food"               -> Color.web("#e07b3a");
             case "star"               -> Color.web("#d4a73a");
             case "characters_count"   -> Color.web("#7a5538");
+            case "setof_characters"   -> Color.web("#7a5538");
             case "building_discount"  -> Color.web("#8a6a3f");
             case "gatherer_discount"  -> Color.web("#7a8a3f");
             case "inventor_icons"     -> Color.web("#46a3a3");

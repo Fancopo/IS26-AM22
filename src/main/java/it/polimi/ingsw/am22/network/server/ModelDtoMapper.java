@@ -2,6 +2,7 @@ package it.polimi.ingsw.am22.network.server;
 
 import it.polimi.ingsw.am22.controller.GameController;
 import it.polimi.ingsw.am22.model.*;
+import it.polimi.ingsw.am22.model.character.TribeCharacter;
 import it.polimi.ingsw.am22.network.common.dto.*;
 
 import java.util.Comparator;
@@ -107,13 +108,15 @@ public class ModelDtoMapper {
 
     /** Estrae categoria, tipo specifico ed era da una {@link Card}. */
     private CardDTO toCardDTO(Card card) {
+        int numStars = (card instanceof TribeCharacter tc) ? tc.getNumStars() : 0;
         return new CardDTO(
                 card.getId(),
                 categoryOf(card),
                 detailTypeOf(card),
                 String.valueOf(card.getEra()),
                 card.getMinPlayers(),
-                foodCostOf(card)
+                foodCostOf(card),
+                numStars
         );
     }
 

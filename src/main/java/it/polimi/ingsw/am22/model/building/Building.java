@@ -159,12 +159,6 @@ public class Building extends Card {
         return true;
     }
 
-    public void applyOnTotemPlaced(Player owner) {
-        if (this.effect != null) {
-            this.effect.onTotemPlaced(owner);
-        }
-    }
-
     // Checks whether this specific building grants the extra purchase.
     public boolean grantsExtraBuyAtRoundEnd() {
         return this.effect != null && this.effect.hasExtraBuyAtRoundEnd();
@@ -185,5 +179,14 @@ public class Building extends Card {
     public int getFoodPrice() { return foodPrice; }
     public int getFinalPP() { return finalPP; }
     public BuildingEffect getEffect() { return effect; }
-    public void applyOnFoodSlotPlaced(Player player) {}
+    /**
+     * Triggered by {@code ActionResolutionState} when the owner's totem lands
+     * on a turn-order slot whose foodBonus is greater than zero.
+     * Delegates to the wrapped {@link BuildingEffect}.
+     */
+    public void applyOnFoodSlotPlaced(Player player) {
+        if (this.effect != null) {
+            this.effect.onTotemPlaced(player);
+        }
+    }
 }

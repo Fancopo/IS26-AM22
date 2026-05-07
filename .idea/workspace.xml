@@ -4,10 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="added some fuction for GUI and added database(SQL)">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="fixed some bug of GUI">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/.claude/settings.local.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/Building.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/Building.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/CardDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/CardDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ModelDtoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ModelDtoMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/css/game.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/game.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/images/icons/icon_characters_count.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/model/building/BuildingTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/model/building/BuildingTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +69,12 @@
   "keyToString": {
     "Application.Client TUI A.executor": "Run",
     "Application.Client TUI B.executor": "Run",
+    "Application.ClientA.executor": "Run",
     "Application.ClientApp.executor": "Run",
+    "Application.ClientB.executor": "Run",
+    "Application.ClientC.executor": "Run",
+    "Application.ClientD.executor": "Run",
+    "Application.ClientE.executor": "Run",
     "Application.DbTestMain.executor": "Run",
     "Application.GuiApp.executor": "Run",
     "Application.NetworkServerLauncher.executor": "Run",
@@ -98,8 +108,8 @@
       <recent name="it.polimi.ingsw.am22" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Client TUI B">
-    <configuration name="Client TUI A" type="Application" factoryName="Application">
+  <component name="RunManager" selected="Application.ClientB">
+    <configuration name="ClientA" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
       <module name="am22" />
       <extension name="coverage">
@@ -112,7 +122,46 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Client TUI B" type="Application" factoryName="Application">
+    <configuration name="ClientB" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ClientC" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ClientD" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.network.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ClientE" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
       <module name="am22" />
       <extension name="coverage">
@@ -188,8 +237,11 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.Client TUI A" />
-      <item itemvalue="Application.Client TUI B" />
+      <item itemvalue="Application.ClientA" />
+      <item itemvalue="Application.ClientB" />
+      <item itemvalue="Application.ClientC" />
+      <item itemvalue="Application.ClientD" />
+      <item itemvalue="Application.ClientE" />
       <item itemvalue="Application.DbTestMain" />
       <item itemvalue="Application.GuiApp" />
       <item itemvalue="Application.NetworkServerLauncher" />
@@ -341,7 +393,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778173522353</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="fixed some bug of GUI">
+      <option name="closed" value="true" />
+      <created>1778174991548</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1778174991548</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -379,7 +439,8 @@
     <MESSAGE value="con la parte di multipartita (incompleta)" />
     <MESSAGE value="still fixed GUI" />
     <MESSAGE value="added some fuction for GUI and added database(SQL)" />
-    <option name="LAST_COMMIT_MESSAGE" value="added some fuction for GUI and added database(SQL)" />
+    <MESSAGE value="fixed some bug of GUI" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed some bug of GUI" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

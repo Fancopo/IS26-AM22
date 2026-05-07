@@ -14,6 +14,7 @@ import java.io.Serializable;
  * @param era         era this card belongs to
  * @param minPlayers  minimum number of players for which it is active
  * @param foodCost    food cost ({@code null} if not applicable)
+ * @param numStars    stars carried by this card (only Shamans, 0 otherwise)
  */
 public record CardDTO(
         String id,
@@ -21,6 +22,7 @@ public record CardDTO(
         String detailType,
         String era,
         int minPlayers,
-        Integer foodCost
+        Integer foodCost,
+        int numStars
 ) implements Serializable {
 }
