@@ -24,7 +24,10 @@
       "Bash(ls \"C:\\\\Users\\\\Fang2\\\\.jdks\" 2>&1)",
       "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -q -DskipTests compile)",
       "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -DskipTests compile)",
-      "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -DskipTests clean compile)"
+      "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -DskipTests clean compile)",
+      "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -Dtest='FoodBonusFixTest,BuildingTest,TurnPhaseModifierEffectTest' test)",
+      "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -DskipTests test-compile)",
+      "Bash(\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\\\\bin\\\\java\" -cp \"target/classes;target/test-classes\" it.polimi.ingsw.am22.model.building.FoodBonusFixTest)"
     ]
   }
 }
