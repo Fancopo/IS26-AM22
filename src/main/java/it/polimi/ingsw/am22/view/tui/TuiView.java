@@ -4,6 +4,7 @@ import it.polimi.ingsw.am22.network.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
 import it.polimi.ingsw.am22.network.common.dto.CardDTO;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
+import it.polimi.ingsw.am22.network.common.dto.LeaderboardEntryDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyPlayerDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.MatchInfoDTO;
@@ -22,7 +23,9 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -90,7 +93,7 @@ public final class TuiView implements ClientUpdateHandler {
             case LobbyStateMessage lobby       -> renderLobby(lobby.lobbyState());
             case GameStartedMessage started    -> renderGameStarted(started.initialGameState());
             case GameStateMessage state        -> renderGameState(state.gameState());
-            case EndGameMessage end            -> renderEndGame(end.winner(), end.finalGameState());
+            case EndGameMessage end            -> renderEndGame(end);
             case MatchClosedMessage closed     -> {
                 println(Ansi.red(Ansi.BOLD + "[MATCH CLOSED] " + Ansi.RESET) + closed.reason());
                 requestStop();
@@ -238,7 +241,16 @@ public final class TuiView implements ClientUpdateHandler {
         return Ansi.magenta(Ansi.BOLD + "-- " + label + " --");
     }
 
-    private void renderEndGame(WinnerDTO winner, GameStateDTO finalState) {
+    private static final DateTimeFormatter LB_DATE_FMT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    private void renderEndGame(EndGameMessage end) {
+        WinnerDTO winner = end.winner();
+        GameStateDTO finalState = end.finalGameState();
+        List<LeaderboardEntryDTO> leaderboard = end.leaderboard();
+        Map<String, Integer> positions = end.positionByNickname();
+        int numPlayers = finalState == null ? 0 : finalState.players().size();
+
         synchronized (printLock) {
             System.out.println();
             System.out.println("*** GAME OVER ***");
@@ -249,6 +261,33 @@ public final class TuiView implements ClientUpdateHandler {
             System.out.println("Final snapshot:");
         }
         renderGameState(finalState);
+
+        synchronized (printLock) {
+            System.out.println();
+            String me = session.getLocalNickname();
+            if (positions.isEmpty()) {
+                System.out.println(Ansi.yellow(
+                        "[Historical leaderboard unavailable — DB offline?]"));
+            } else if (me != null && positions.containsKey(me)) {
+                System.out.println(Ansi.green(Ansi.BOLD + String.format(
+                        ">> Your position in all %d-player matches: #%d (out of %d)",
+                        numPlayers, positions.get(me), leaderboard.size())));
+            }
+
+            if (!leaderboard.isEmpty()) {
+                System.out.println();
+                System.out.println(Ansi.magenta(Ansi.BOLD + "-- Historical leaderboard ("
+                        + numPlayers + "-player matches) --"));
+                int rank = 1;
+                for (LeaderboardEntryDTO row : leaderboard) {
+                    String date = row.endDate() == null ? "" : row.endDate().format(LB_DATE_FMT);
+                    boolean isMe = me != null && me.equals(row.nickname());
+                    String line = String.format(" %3d. %-20s %4d   %s",
+                            rank++, row.nickname(), row.score(), date);
+                    System.out.println(isMe ? Ansi.green(line) : line);
+                }
+            }
+        }
         requestStop();
     }
 

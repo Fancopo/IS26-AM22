@@ -3,6 +3,7 @@ module it.polimi.ingsw.am {
     requires javafx.fxml;
     requires com.fasterxml.jackson.databind;
     requires java.rmi;
+    requires java.sql;
 
     // ----------------------------------------------------------------------
     // Model

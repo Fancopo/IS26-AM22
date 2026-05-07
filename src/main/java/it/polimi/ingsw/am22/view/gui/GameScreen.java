@@ -425,10 +425,99 @@ public final class GameScreen implements GuiScreen {
         tb.setSelected(pickedCardIds.contains(c.id()));
         tb.setDisable(!clickable);
         tb.selectedProperty().addListener((obs, was, isNow) -> {
-            if (isNow) pickedCardIds.add(c.id());
-            else pickedCardIds.remove(c.id());
+            if (isNow) {
+                if (canSelectCard(fallbackLabel)) {
+                    pickedCardIds.add(c.id());
+                    refreshPickHint();
+                } else {
+                    tb.setSelected(false);
+                    statusLabel.setText(limitReachedMessage(fallbackLabel));
+                }
+            } else {
+                pickedCardIds.remove(c.id());
+                refreshPickHint();
+            }
         });
         return tb;
+    }
+
+    /**
+     * @return la tessera offerta su cui il giocatore locale ha appena
+     *         piazzato il proprio totem, oppure {@code null} se non ne
+     *         ha ancora scelta una.
+     */
+    private OfferTileDTO chosenOfferTile(GameStateDTO state) {
+        String me = app.getSession().getLocalNickname();
+        if (me == null || state == null || state.offerTrack() == null) return null;
+        for (OfferTileDTO t : state.offerTrack()) {
+            if (me.equalsIgnoreCase(t.occupiedBy())) return t;
+        }
+        return null;
+    }
+
+    private int limitForRow(GameStateDTO state, String row) {
+        OfferTileDTO chosen = chosenOfferTile(state);
+        if (chosen == null) return Integer.MAX_VALUE;
+        return "UP".equals(row) ? chosen.upperCardsToTake() : chosen.lowerCardsToTake();
+    }
+
+    private int countSelectedInRow(GameStateDTO state, String row) {
+        if (state == null) return 0;
+        List<CardDTO> cards = "UP".equals(row) ? state.upperRow() : state.lowerRow();
+        if (cards == null) return 0;
+        int n = 0;
+        for (CardDTO c : cards) {
+            if (pickedCardIds.contains(c.id())) n++;
+        }
+        return n;
+    }
+
+    /**
+     * Verifica se è possibile selezionare un'altra carta nella riga indicata,
+     * dato lo stato corrente e la tessera offerta scelta dal giocatore.
+     */
+    private boolean canSelectCard(String row) {
+        GameStateDTO state = app.getSession().getLatestGameState();
+        if (state == null) return true;
+        String phase = state.currentPhase();
+        if (isBonusPhase(phase)) {
+            return pickedCardIds.isEmpty();
+        }
+        if (!isActionPhase(phase)) return true;
+        int limit = limitForRow(state, row);
+        return countSelectedInRow(state, row) < limit;
+    }
+
+    private String limitReachedMessage(String row) {
+        GameStateDTO state = app.getSession().getLatestGameState();
+        if (state != null && isBonusPhase(state.currentPhase())) {
+            return "Bonus phase: only one card. Click the selected card to deselect first.";
+        }
+        int limit = state == null ? 0 : limitForRow(state, row);
+        String rowName = "UP".equals(row) ? "upper" : "lower";
+        return "You can pick at most " + limit + " card(s) from the " + rowName
+                + " row. Click a selected card to deselect it first.";
+    }
+
+    /** Aggiorna l'actionHint con il conteggio carte selezionate per riga. */
+    private void refreshPickHint() {
+        GameStateDTO state = app.getSession().getLatestGameState();
+        if (state == null || !isMyTurn(state)) return;
+        String phase = state.currentPhase();
+        if (isActionPhase(phase)) {
+            OfferTileDTO chosen = chosenOfferTile(state);
+            if (chosen != null) {
+                int upPicked = countSelectedInRow(state, "UP");
+                int lowPicked = countSelectedInRow(state, "LOW");
+                actionHint.setText(String.format(
+                        "Your turn: pick %d/%d upper and %d/%d lower, then Confirm.",
+                        upPicked, chosen.upperCardsToTake(),
+                        lowPicked, chosen.lowerCardsToTake()));
+            }
+        } else if (isBonusPhase(phase)) {
+            actionHint.setText("Your turn: choose ONE bonus card and press Confirm. ("
+                    + pickedCardIds.size() + "/1)");
+        }
     }
 
     private Color colorForCardCategory(String category) {
@@ -774,11 +863,11 @@ public final class GameScreen implements GuiScreen {
             actionHint.setText("Your turn: click a free offer tile to place your totem.");
             confirmPickButton.setDisable(true);
         } else if (isActionPhase(phase)) {
-            actionHint.setText("Your turn: select cards and press Confirm.");
             confirmPickButton.setDisable(false);
+            refreshPickHint();
         } else if (isBonusPhase(phase)) {
-            actionHint.setText("Your turn: choose ONE bonus card and press Confirm.");
             confirmPickButton.setDisable(false);
+            refreshPickHint();
         } else {
             actionHint.setText("Your turn (" + phase + ").");
             confirmPickButton.setDisable(true);

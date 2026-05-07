@@ -1,12 +1,15 @@
 package it.polimi.ingsw.am22.view.gui;
 
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
+import it.polimi.ingsw.am22.network.common.dto.LeaderboardEntryDTO;
 import it.polimi.ingsw.am22.network.common.dto.PlayerDTO;
 import it.polimi.ingsw.am22.network.common.dto.WinnerDTO;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,17 +29,34 @@ import javafx.scene.layout.VBox;
 /**
  * Schermata di fine partita.
  *
- * <p>Mostra il vincitore, la classifica finale e due azioni:
- * tornare alla {@link MatchesScreen} o uscire dall'applicazione.
+ * <p>Mostra il vincitore, la classifica della partita appena finita,
+ * la posizione del giocatore locale nella classifica storica delle
+ * partite con lo stesso numero di giocatori, e un pulsante per
+ * visualizzare la classifica storica completa.
  */
 public final class EndGameScreen implements GuiScreen {
 
+    private static final DateTimeFormatter DATE_FMT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     private final GuiApp app;
     private final StackPane root;
+    private final List<LeaderboardEntryDTO> historicalLeaderboard;
+    private final int numPlayers;
 
-    public EndGameScreen(GuiApp app, WinnerDTO winner, GameStateDTO finalState) {
+    public EndGameScreen(GuiApp app,
+                         WinnerDTO winner,
+                         GameStateDTO finalState,
+                         List<LeaderboardEntryDTO> historicalLeaderboard,
+                         Map<String, Integer> positionByNickname,
+                         String localNickname) {
         this.app = app;
-        this.root = buildUi(winner, finalState);
+        this.historicalLeaderboard = historicalLeaderboard == null
+                ? List.of() : historicalLeaderboard;
+        this.numPlayers = finalState == null ? 0 : finalState.players().size();
+        this.root = buildUi(winner, finalState,
+                positionByNickname == null ? Map.of() : positionByNickname,
+                localNickname);
     }
 
     @Override
@@ -44,7 +64,10 @@ public final class EndGameScreen implements GuiScreen {
         return root;
     }
 
-    private StackPane buildUi(WinnerDTO winner, GameStateDTO finalState) {
+    private StackPane buildUi(WinnerDTO winner,
+                              GameStateDTO finalState,
+                              Map<String, Integer> positionByNickname,
+                              String localNickname) {
         Label title = new Label("GAME OVER");
         title.setStyle("-fx-font-size: 36px; -fx-font-weight: bold;");
 
@@ -76,24 +99,31 @@ public final class EndGameScreen implements GuiScreen {
             winnerBox.getChildren().add(noWinner);
         }
 
-        Label standingsTitle = new Label("Final standings");
+        Label standingsTitle = new Label("Final standings (this match)");
         standingsTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         TableView<PlayerDTO> table = buildStandingsTable(finalState, winner);
+
+        Label positionLabel = buildPositionLabel(positionByNickname, localNickname);
+
+        Button leaderboardButton = new Button("Show full leaderboard");
+        leaderboardButton.setOnAction(e -> showLeaderboardDialog());
+        leaderboardButton.setDisable(historicalLeaderboard.isEmpty());
 
         Button backButton = new Button("Back to matches");
         backButton.setOnAction(e -> app.endGameAndShowMatches());
         Button exitButton = new Button("Exit");
         exitButton.setOnAction(e -> app.exit());
 
-        HBox buttons = new HBox(12, backButton, exitButton);
+        HBox buttons = new HBox(12, leaderboardButton, backButton, exitButton);
         buttons.setAlignment(Pos.CENTER);
 
-        VBox panel = new VBox(16,
+        VBox panel = new VBox(14,
                 title,
                 winnerBox,
                 standingsTitle,
                 table,
+                positionLabel,
                 buttons);
         panel.setAlignment(Pos.TOP_CENTER);
         Backgrounds.stylePanel(panel);
@@ -104,6 +134,78 @@ public final class EndGameScreen implements GuiScreen {
         container.setId("endgame-root");
         Backgrounds.install(container, "/images/background_noMESOS.png");
         return container;
+    }
+
+    private Label buildPositionLabel(Map<String, Integer> positionByNickname,
+                                     String localNickname) {
+        Label label = new Label();
+        label.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        if (positionByNickname.isEmpty()) {
+            label.setText("Historical leaderboard unavailable.");
+            label.setStyle(label.getStyle() + " -fx-text-fill: #a04040;");
+            return label;
+        }
+
+        Integer pos = localNickname == null ? null : positionByNickname.get(localNickname);
+        if (pos == null) {
+            label.setText("Your position is not available for this match.");
+            return label;
+        }
+
+        label.setText(String.format(
+                "Your position in all %d-player matches: #%d (out of %d)",
+                numPlayers, pos, historicalLeaderboard.size()));
+        return label;
+    }
+
+    private void showLeaderboardDialog() {
+        TableView<LeaderboardEntryDTO> table = new TableView<>(
+                FXCollections.observableArrayList(historicalLeaderboard));
+        table.setPlaceholder(new Label("(no data)"));
+
+        TableColumn<LeaderboardEntryDTO, String> rankCol = new TableColumn<>("#");
+        rankCol.setCellValueFactory(c -> {
+            int idx = historicalLeaderboard.indexOf(c.getValue()) + 1;
+            return new SimpleStringProperty(String.valueOf(idx));
+        });
+        rankCol.setPrefWidth(40);
+
+        TableColumn<LeaderboardEntryDTO, String> nameCol = new TableColumn<>("Player");
+        nameCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().nickname()));
+        nameCol.setPrefWidth(200);
+
+        TableColumn<LeaderboardEntryDTO, Number> scoreCol = new TableColumn<>("Score");
+        scoreCol.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().score()));
+        scoreCol.setPrefWidth(90);
+
+        TableColumn<LeaderboardEntryDTO, String> dateCol = new TableColumn<>("Date");
+        dateCol.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().endDate() == null ? "" : c.getValue().endDate().format(DATE_FMT)));
+        dateCol.setPrefWidth(160);
+
+        table.getColumns().add(rankCol);
+        table.getColumns().add(nameCol);
+        table.getColumns().add(scoreCol);
+        table.getColumns().add(dateCol);
+        table.setPrefHeight(360);
+        table.setPrefWidth(540);
+
+        Label header = new Label("Leaderboard — " + numPlayers + "-player matches");
+        header.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        Button close = new Button("Close");
+        VBox content = new VBox(10, header, table, close);
+        content.setAlignment(Pos.CENTER);
+        content.setPadding(new Insets(16));
+
+        javafx.stage.Stage dialog = new javafx.stage.Stage();
+        dialog.setTitle("Historical leaderboard");
+        dialog.initOwner(root.getScene() == null ? null : root.getScene().getWindow());
+        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        dialog.setScene(new javafx.scene.Scene(content));
+        close.setOnAction(e -> dialog.close());
+        dialog.showAndWait();
     }
 
     private TableView<PlayerDTO> buildStandingsTable(GameStateDTO finalState, WinnerDTO winner) {

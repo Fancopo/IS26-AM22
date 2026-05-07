@@ -5,8 +5,6 @@ import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
 import it.polimi.ingsw.am22.network.client.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.ConnectionFactory.Transport;
 import it.polimi.ingsw.am22.network.client.ObservableServerConnection;
-import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
-import it.polimi.ingsw.am22.network.common.dto.WinnerDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
@@ -175,8 +173,16 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         setScreen(new GameScreen(this));
     }
 
-    public void showEndGameScreen(WinnerDTO winner, GameStateDTO finalState) {
-        setScreen(new EndGameScreen(this, winner, finalState));
+    public void showEndGameScreen(EndGameMessage m) {
+        String me = session != null ? session.getLocalNickname() : null;
+        if (me == null) me = lastNickname;
+        setScreen(new EndGameScreen(
+                this,
+                m.winner(),
+                m.finalGameState(),
+                m.leaderboard(),
+                m.positionByNickname(),
+                me));
     }
 
     /**
@@ -266,7 +272,7 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
                 // sopprimiamo l'alert di "Connection closed" e il redirect
                 // alla ConnectionScreen che ne deriverebbe.
                 expectingDisconnect = true;
-                showEndGameScreen(m.winner(), m.finalGameState());
+                showEndGameScreen(m);
             }
             @Override public void visit(MatchClosedMessage m) {
                 showError("Match closed: " + m.reason());
