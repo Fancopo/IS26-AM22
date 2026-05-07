@@ -172,7 +172,7 @@ public final class GameScreen implements GuiScreen {
      * applicato DOPO questo metodo e sovrascriverebbe l'immagine.
      */
     private void applyBackgroundImage() {
-        Image bg = ImageCache.load("/images/background/mesos-loading.png");
+        Image bg = ImageCache.load("/images/background/background_noMESOS.png");
         if (bg != null) {
             javafx.scene.layout.BackgroundImage bgImage = new javafx.scene.layout.BackgroundImage(
                     bg,
