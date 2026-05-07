@@ -17,7 +17,9 @@
       "Bash(xargs ls *)",
       "Bash(./mvnw -q -pl . compile -DskipTests)",
       "PowerShell($javaHome = $env:JAVA_HOME; if \\(-not $javaHome\\) { $java = Get-Command java -ErrorAction SilentlyContinue; if \\($java\\) { $javaHome = \\(Split-Path \\(Split-Path $java.Source -Parent\\) -Parent\\) } }; \"JAVA_HOME=$javaHome\"; if \\($javaHome\\) { Test-Path \"$javaHome\\\\bin\\\\javac.exe\" })",
-      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\"; $env:Path = \"$env:JAVA_HOME\\\\bin;$env:Path\"; Set-Location \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\"; .\\\\mvnw.cmd -q compile -DskipTests 2>&1 | Select-Object -Last 50)"
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\"; $env:Path = \"$env:JAVA_HOME\\\\bin;$env:Path\"; Set-Location \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\"; .\\\\mvnw.cmd -q compile -DskipTests 2>&1 | Select-Object -Last 50)",
+      "Bash(git -C \"C:/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22\" log --oneline --all -- 'src/main/resources/images/totem/*')",
+      "Bash(./mvnw -q -o compile)"
     ]
   }
 }

@@ -154,6 +154,20 @@ public final class ImageCache {
     }
 
     /**
+     * Restituisce un nodo totem alla dimensione richiesta, provando in ordine
+     * {@code .png} e {@code .jpg} così che basta droppare il file nella
+     * cartella {@code /images/totem/} indipendentemente dall'estensione.
+     */
+    public static Node totemNode(String color, double size, String fallbackLabel) {
+        if (color == null) {
+            return placeholder(size, size, fallbackLabel, Color.GRAY);
+        }
+        String base = "/images/totem/" + color.toLowerCase();
+        return nodeFirst(size, size, fallbackLabel, colorFromName(color),
+                base + ".png", base + ".jpg");
+    }
+
+    /**
      * Variante di {@link #node} che prova più path in ordine: il primo che
      * carica vince. Utile per asset che possono essere {@code .png} o
      * {@code .jpg} (es. {@code numplayer_4.jpg}).
