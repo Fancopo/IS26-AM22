@@ -125,7 +125,10 @@ public final class GameScreen implements GuiScreen {
         message.accept(new ServerMessageVisitor() {
             @Override public void visit(GameStateMessage m) { render(m.gameState()); }
             @Override public void visit(GameStartedMessage m) { render(m.initialGameState()); }
-            @Override public void visit(ErrorMessage m) { statusLabel.setText("Errore: " + m.message()); }
+            @Override public void visit(ErrorMessage m) {
+                statusLabel.setText("Errore: " + m.message());
+                clearCardSelection();
+            }
             @Override public void visit(InfoMessage m) { statusLabel.setText(m.message()); }
             @Override public void visit(LobbyStateMessage m) {}
             @Override public void visit(EndGameMessage m) {}
@@ -238,6 +241,12 @@ public final class GameScreen implements GuiScreen {
         phaseLabel.setText("Fase: " + state.currentPhase());
         headerTitle.setText(headerTitleFor(state));
 
+        // Le selezioni precedenti non hanno più senso con un nuovo stato:
+        // svuotiamo PRIMA di rebuildare le card così le ToggleButton
+        // partono deselezionate e lo stato visivo resta sincronizzato
+        // con pickedCardIds.
+        pickedCardIds.clear();
+
         renderUpperRow(state);
         renderLowerRow(state);
         renderOfferTiles(state);
@@ -245,9 +254,6 @@ public final class GameScreen implements GuiScreen {
         renderOpponents(state);
         renderLocalBar(state);
         renderActionPanel(state);
-
-        // Dopo un nuovo stato, le selezioni precedenti non hanno più senso.
-        pickedCardIds.clear();
     }
 
     /** Titolo dinamico in base alla fase, simile alla barra rossa BGA. */
@@ -493,6 +499,17 @@ public final class GameScreen implements GuiScreen {
         } else {
             actionHint.setText("Tocca a te (" + phase + ").");
             confirmPickButton.setDisable(true);
+        }
+    }
+
+    /** Deseleziona visivamente tutte le carte e svuota il set di selezione. */
+    private void clearCardSelection() {
+        pickedCardIds.clear();
+        for (Node n : upperRowBox.getChildren()) {
+            if (n instanceof ToggleButton tb) tb.setSelected(false);
+        }
+        for (Node n : lowerRowBox.getChildren()) {
+            if (n instanceof ToggleButton tb) tb.setSelected(false);
         }
     }
 

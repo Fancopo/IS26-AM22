@@ -53,6 +53,8 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
     private Transport lastTransport;
     private String lastHost;
     private int lastPort;
+    /** Ultimo nickname usato: serve per tornare alla MatchesScreen dopo la fine partita. */
+    private String lastNickname;
 
     /** Quando true, la prossima onConnectionClosed non mostra alert né torna
      *  alla ConnectionScreen: la chiusura era voluta (es. leave dalla lobby). */
@@ -110,7 +112,29 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
     }
 
     public void showMatchesScreen(String nickname) {
+        this.lastNickname = nickname;
         setScreen(new MatchesScreen(this, nickname));
+    }
+
+    /**
+     * Torna alla {@link MatchesScreen} dopo la fine di una partita.
+     * Il server chiude il canale a fine partita: riapriamo una connessione
+     * pulita riusando gli ultimi parametri (transport/host/port/nickname).
+     */
+    public void endGameAndShowMatches() {
+        if (session != null) {
+            session.close(false);
+            session = null;
+        }
+        if (lastTransport == null || lastNickname == null) {
+            showConnectionScreen();
+            return;
+        }
+        if (!connect(lastTransport, lastHost, lastPort)) {
+            showConnectionScreen();
+            return;
+        }
+        showMatchesScreen(lastNickname);
     }
 
     /**
@@ -238,6 +262,10 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
                 if (!(currentScreen instanceof GameScreen)) showGameScreen();
             }
             @Override public void visit(EndGameMessage m) {
+                // Il server chiude il canale subito dopo l'EndGameMessage:
+                // sopprimiamo l'alert di "Connection closed" e il redirect
+                // alla ConnectionScreen che ne deriverebbe.
+                expectingDisconnect = true;
                 showEndGameScreen(m.winner(), m.finalGameState());
             }
             @Override public void visit(MatchClosedMessage m) {

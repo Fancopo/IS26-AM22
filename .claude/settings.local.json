@@ -14,7 +14,11 @@
       "Read(//c/Program Files/**)",
       "Read(//c/Program Files/Common Files/Oracle/**)",
       "Bash(mvn -q -o compile)",
-      "Bash(./mvnw.cmd -q -o compile -pl .)"
+      "Bash(./mvnw.cmd -q -o compile -pl .)",
+      "Bash(./mvnw -q -pl . -DskipTests compile)",
+      "PowerShell($candidates = @\\('C:\\\\Program Files\\\\Java','C:\\\\Program Files\\\\Eclipse Adoptium','C:\\\\Program Files\\\\Microsoft','C:\\\\Program Files\\\\Zulu','C:\\\\Program Files\\\\Amazon Corretto'\\); foreach \\($c in $candidates\\) { if \\(Test-Path $c\\) { Get-ChildItem $c | ForEach-Object { $_.FullName } } })",
+      "Bash(export JAVA_HOME='C:\\\\Users\\\\Shiman\\\\.jdks\\\\openjdk-25.0.2')",
+      "Bash(export PATH=\"/c/Users/Shiman/.jdks/openjdk-25.0.2/bin:$PATH\")"
     ]
   }
 }
