@@ -2,6 +2,9 @@ package it.polimi.ingsw.am22.model.states;
 
 import it.polimi.ingsw.am22.model.*;
 import it.polimi.ingsw.am22.model.building.Building;
+import it.polimi.ingsw.am22.model.character.Builder;
+import it.polimi.ingsw.am22.model.character.CharacterType;
+import it.polimi.ingsw.am22.model.character.Hunter;
 
 import java.util.List;
 
@@ -65,22 +68,60 @@ public class ActionResolutionState implements GameState {
                                         : ""));
             }
 
-            // 1c. Compute total cost and verify sufficient food, WITHOUT deducting it yet.
-            int builderDiscount = player.getTribe().getBuilderDiscount();
-            int totalFoodCost = 0;
+            // 1c. Verifica del food simulando la pick NELL'ORDINE in cui il
+            //     giocatore l'ha specificata. L'ordine è semanticamente
+            //     significativo perché:
+            //       - un Builder pescato prima di un Building applica il suo
+            //         sconto a quel Building (e a quelli successivi);
+            //       - un Hunter* pescato prima di un Building dà food al
+            //         giocatore prima che debba pagare il Building;
+            //       - il bonus food di un Hunter* dipende dal numero di
+            //         Hunter già nella tribù AL MOMENTO in cui viene aggiunto
+            //         (cfr. Hunter.onAddedToTribe), quindi pescare HUNTER ->
+            //         HUNTER* dà più food di HUNTER* -> HUNTER.
+            //     Il calcolo "atomico" precedente leggeva builderDiscount una
+            //     sola volta dalla tribù iniziale e sommava i costi di tutti
+            //     i Building, ignorando completamente questi effetti.
+            int simulatedFood = player.getFood();
+            int simulatedDiscount = player.getTribe().getBuilderDiscount();
+            int simulatedHunterCount = player.getTribe().countCharacters(CharacterType.HUNTER);
+
             for (Card card : selectedCards) {
-                int baseCost = card.getFoodCost();
-                if (baseCost > 0) {
-                    totalFoodCost += Math.max(0, baseCost - builderDiscount);
+                if (card instanceof Building) {
+                    int actualCost = Math.max(0, card.getFoodCost() - simulatedDiscount);
+                    if (simulatedFood < actualCost) {
+                        throw new IllegalStateException(
+                                "Insufficient food to purchase the selected cards.");
+                    }
+                    simulatedFood -= actualCost;
+                } else if (card instanceof Builder builderCard) {
+                    simulatedDiscount += builderCard.getDiscountFood();
+                } else if (card instanceof Hunter hunterCard) {
+                    // Hunter.onAddedToTribe legge la tribù DOPO addCharacter,
+                    // quindi il count include il Hunter appena aggiunto.
+                    simulatedHunterCount++;
+                    if (hunterCard.hasFoodIcon()) {
+                        simulatedFood += simulatedHunterCount;
+                    }
                 }
-            }
-            if (player.getFood() < totalFoodCost) {
-                throw new IllegalStateException("Insufficient food to purchase the selected cards.");
+                // Artist, Inventor, Collector, Shaman: nessun effetto immediato
+                // su food / discount (il loro contributo è in fase di EndGame
+                // o durante eventi specifici), quindi non serve simularli qui.
             }
 
-            // --- PHASE 2: COMMIT (all validations passed, safe to mutate) ---
-            player.payFood(totalFoodCost);
+            // --- PHASE 2: COMMIT (validazioni passate: ora si muta) ---
+            // Stesso ordine della simulazione: ogni Building paga lo sconto
+            // *attuale* della tribù (che cresce man mano che si aggiungono
+            // Builder), e ogni addCard scatena onAddedToTribe (Hunter* food).
+            // Niente payFood "totale" upfront: con un upfront totale, picking
+            // [Hunter*, Building] potrebbe far fallire payFood per food
+            // temporaneamente insufficiente, anche se la sequenza è valida.
             for (Card card : selectedCards) {
+                if (card instanceof Building) {
+                    int discount = player.getTribe().getBuilderDiscount();
+                    int cost = Math.max(0, card.getFoodCost() - discount);
+                    player.payFood(cost);
+                }
                 player.getTribe().addCard(player, card);
             }
             game.getBoard().getUpperRow().removeAll(selectedCards);

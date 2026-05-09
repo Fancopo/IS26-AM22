@@ -118,8 +118,23 @@ public final class TuiRunner {
                         controller.placeTotem(parts[1].charAt(0));
                     }
                     case "pick" -> {
+                        // L'ordine in cui i cardId compaiono sulla riga di comando
+                        // viene preservato dalla List e quindi spedito così com'è
+                        // al server: rilevante perché Builder->Building applica lo
+                        // sconto, Building->Builder no, e analogamente per gli
+                        // Hunter con/senza simbolo.
+                        //
+                        // Prima di spedire, la TuiView stampa un echo della
+                        // sequenza con detailType colorato (BUILDER/BUILDING,
+                        // HUNTER*/HUNTER, ...): così il giocatore *vede subito*
+                        // l'ordine che sta inviando e può cogliere un eventuale
+                        // refuso ("ho scritto 98 9 invece di 9 98") confrontando
+                        // la riga di echo con l'intenzione strategica, senza
+                        // dover aspettare la risposta del server per scoprire
+                        // un food sbagliato.
                         List<String> ids = new ArrayList<>(parts.length - 1);
                         for (int i = 1; i < parts.length; i++) ids.add(parts[i]);
+                        view.echoPickOrder(ids);
                         controller.pickCards(ids);
                     }
                     case "bonus" -> {
@@ -167,10 +182,10 @@ public final class TuiRunner {
         System.out.println("  In a match:");
         System.out.println("    players <N>                     (host only) update expected players");
         System.out.println("    place <letter>                  place totem on offer tile <letter>");
-        System.out.println("    pick <id1> [id2 ...]            pick cards from the board");
+        System.out.println("    pick <id1> [id2 ...]            ");
         System.out.println("    bonus <cardId>                  select bonus card");
         System.out.println("    leave                           leave the current lobby (pre-game only)");
-        System.out.println("    disconnect                      disconnect (pre-game = leave; mid-game = aborts match)");
+        System.out.println("    disconnect                      disconnect ( mid-game = aborts match)");
         System.out.println("    quit                            quit the client");
         System.out.println();
     }

@@ -24,6 +24,7 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -80,6 +81,49 @@ public final class TuiView implements ClientUpdateHandler {
     /** Forza la richiesta di uscita (es. dopo comando {@code quit}). */
     public void requestStop() {
         this.stopRequested = true;
+    }
+
+    /**
+     * Stampa la sequenza che il comando {@code pick} sta per spedire al server,
+     * risolvendo ogni id contro la upper/lower row dell'ultimo {@code GameStateDTO}
+     * conosciuto. Ogni token mostra posizione, id e {@code detailType}
+     * (es. {@code BUILDER}, {@code BUILDING}, {@code HUNTER*}/{@code HUNTER},
+     * {@code INVENTOR-D}…), colorato come nelle righe della board, così che il
+     * giocatore possa verificare a colpo d'occhio l'ordine PRIMA di vedere la
+     * risposta del server. Risolve il problema dell'ambiguità del comando
+     * {@code pick 9 98}: senza echo, il giocatore non sa se ha messo prima il
+     * Builder o prima il Building, e l'effetto su food/sconto cambia.
+     *
+     * <p>Carte non trovate (id sbagliato, già state pescate, ecc.) vengono
+     * marcate con {@code (?)}: il server le rifiuterà, ma intanto il
+     * giocatore vede subito quale è il problema.
+     */
+    public void echoPickOrder(List<String> ids) {
+        if (ids == null || ids.isEmpty()) return;
+        GameStateDTO state = session.getLatestGameState();
+        List<CardDTO> board = new ArrayList<>();
+        if (state != null) {
+            if (state.upperRow() != null) board.addAll(state.upperRow());
+            if (state.lowerRow() != null) board.addAll(state.lowerRow());
+        }
+        StringBuilder sb = new StringBuilder("Picking in order: ");
+        for (int i = 0; i < ids.size(); i++) {
+            if (i > 0) sb.append(" -> ");
+            String id = ids.get(i);
+            CardDTO c = findCardById(board, id);
+            String body = "[" + (i + 1) + "] " + id
+                    + (c == null ? "(?)" : "(" + c.detailType() + ")");
+            sb.append(c == null ? body : colorizeCard(c, body));
+        }
+        println(Ansi.green(Ansi.BOLD + ">>> ") + sb);
+    }
+
+    private CardDTO findCardById(List<CardDTO> cards, String id) {
+        if (id == null) return null;
+        for (CardDTO c : cards) {
+            if (id.equals(c.id())) return c;
+        }
+        return null;
     }
 
     // -------------------- ClientUpdateHandler --------------------
@@ -218,9 +262,14 @@ public final class TuiView implements ClientUpdateHandler {
             System.out.println(sectionHeader("Turn order"));
             for (TurnSlotDTO slot : state.turnOrder()) {
                 String lastSpace = slot.lastSpace() ? Ansi.red(" (last)") : "";
-                System.out.println(String.format("  pos=%d food=%d%s %s",
+                // Quando il foodBonus è negativo, lo slot impone la penalità:
+                // l'ultimo player che finisce qui senza cibo perde 2 PP.
+                // Lo esplicitiamo accanto al food invece di lasciarlo implicito.
+                String penalty = slot.foodBonus() < 0 ? "/points=-2" : "";
+                System.out.println(String.format("  pos=%d food=%d%s%s %s",
                         slot.positionIndex(),
                         slot.foodBonus(),
+                        penalty,
                         lastSpace,
                         slot.occupiedBy() == null ? "" : "-> " + slot.occupiedBy()));
             }
