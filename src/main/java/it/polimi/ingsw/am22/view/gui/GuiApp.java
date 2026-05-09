@@ -140,6 +140,36 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
      * una connessione fresca (il server chiude il canale alla
      * {@code removePlayerFromLobby}).
      */
+    /**
+     * Esce da una partita gia' iniziata e torna alla {@link MatchesScreen}.
+     * Invia al server una {@code disconnectPlayer}: lato server la partita
+     * viene abortita per tutti (stesso comportamento del comando TUI
+     * {@code disconnect} mid-game). Il client poi riapre una connessione
+     * pulita e mostra la lista delle partite.
+     */
+    public void leaveMatchAndShowMatches(String nickname) {
+        expectingDisconnect = true;
+        if (session != null) {
+            try {
+                session.getClientController().disconnect();
+            } catch (RuntimeException ignored) {
+            }
+            session.close(false);
+        }
+        session = null;
+        if (lastTransport == null) {
+            expectingDisconnect = false;
+            showConnectionScreen();
+            return;
+        }
+        if (!connect(lastTransport, lastHost, lastPort)) {
+            expectingDisconnect = false;
+            showConnectionScreen();
+            return;
+        }
+        showMatchesScreen(nickname);
+    }
+
     public void leaveLobbyAndShowMatches(String nickname) {
         // Sopprimiamo l'alert di "Connection closed" che la onConnectionClosed
         // genererebbe in risposta alla chiusura del canale lato server.

@@ -75,7 +75,13 @@
 }
 
 .player-pp {
-    -fx-text-fill: gold;
+    -fx-text-fill: gold !important;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.player-pp-round {
+    -fx-text-fill: black !important;
     -fx-font-weight: bold;
     -fx-font-size: 13px;
 }
@@ -168,6 +174,18 @@
 
 .confirm-button:hover:enabled {
     -fx-background-color: linear-gradient(to bottom, #ffd680, #d08c25);
+}
+
+.leave-button {
+    -fx-background-color: linear-gradient(to bottom, #c84030, #802018);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 6 14 6 14;
+    -fx-background-radius: 6;
+}
+
+.leave-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #e85040, #a02820);
 }
 
 /* ----- Badge ordine selezione carta ----- */

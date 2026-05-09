@@ -264,7 +264,26 @@ public final class GameScreen implements GuiScreen {
         confirmPickButton.setOnAction(e -> submitPick());
         Label actionsLbl = new Label("Actions");
         actionsLbl.getStyleClass().add("board-section-label");
-        actionBox.getChildren().addAll(actionsLbl, actionHint, confirmPickButton);
+
+        Button leaveMatchButton = new Button("Leave match");
+        leaveMatchButton.getStyleClass().add("leave-button");
+        leaveMatchButton.setOnAction(e -> {
+            javafx.scene.control.Alert confirm = new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.CONFIRMATION,
+                    "Leaving the match will abort it for all players. Continue?",
+                    javafx.scene.control.ButtonType.OK,
+                    javafx.scene.control.ButtonType.CANCEL);
+            confirm.setHeaderText("Leave match");
+            confirm.showAndWait().ifPresent(bt -> {
+                if (bt == javafx.scene.control.ButtonType.OK) {
+                    String me = app.getSession() == null
+                            ? null : app.getSession().getLocalNickname();
+                    app.leaveMatchAndShowMatches(me);
+                }
+            });
+        });
+
+        actionBox.getChildren().addAll(actionsLbl, actionHint, confirmPickButton, leaveMatchButton);
 
         VBox right = new VBox(12, playersBox, actionBox);
         right.setPadding(new Insets(10));
@@ -784,10 +803,20 @@ public final class GameScreen implements GuiScreen {
 
         Label name = new Label(p.nickname() + (local ? " (you)" : ""));
         name.getStyleClass().add("player-name");
-        Label pp = new Label(p.prestigePoints() + " ★");
-        pp.getStyleClass().add("player-pp");
 
-        HBox header = new HBox(8, totem, name, spacer(), pp);
+        Label roundPp = new Label(p.prestigePoints() + " ★");
+        roundPp.getStyleClass().add("player-pp-round");
+        roundPp.setStyle("-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 13px;");
+        javafx.scene.control.Tooltip.install(roundPp,
+                new javafx.scene.control.Tooltip("Current PP (round-by-round)"));
+
+        Label finalPp = new Label(p.projectedFinalPrestigePoints() + " ★");
+        finalPp.getStyleClass().add("player-pp");
+        finalPp.setStyle("-fx-text-fill: gold; -fx-font-weight: bold; -fx-font-size: 13px;");
+        javafx.scene.control.Tooltip.install(finalPp,
+                new javafx.scene.control.Tooltip("Projected final PP (includes end-game scoring)"));
+
+        HBox header = new HBox(8, totem, name, spacer(), roundPp, finalPp);
         header.setAlignment(Pos.CENTER_LEFT);
 
         box.getChildren().addAll(header, buildResourceGrid(p));
