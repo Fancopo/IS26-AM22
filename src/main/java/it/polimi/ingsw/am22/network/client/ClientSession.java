@@ -108,6 +108,21 @@ public final class ClientSession {
     }
 
     /**
+     * Resetta lo stato locale legato al match corrente (snapshot lobby/gioco,
+     * flag gameStarted, binding del controller) lasciando intatta la
+     * connessione col server. Va chiamato sia quando il server ci notifica
+     * un {@code MatchClosedMessage}, sia quando è il giocatore stesso a
+     * fare leave volontario: in entrambi i casi la sessione resta utilizzabile
+     * per liste/creazione/join di nuove partite.
+     */
+    public void clearLocalMatchState() {
+        latestGameState = null;
+        latestLobbyState = null;
+        gameStarted = false;
+        clientController.clearMatchBinding();
+    }
+
+    /**
      * Chiude la connessione in modo pulito.
      *
      * @param notifyServer se {@code true} invia prima una disconnect al server
@@ -143,7 +158,13 @@ public final class ClientSession {
                 @Override public void visit(GameStartedMessage m) { gameStarted = true; latestGameState = m.initialGameState(); }
                 @Override public void visit(GameStateMessage m) { latestGameState = m.gameState(); }
                 @Override public void visit(EndGameMessage m) { latestGameState = m.finalGameState(); }
-                @Override public void visit(MatchClosedMessage m) {}
+                @Override public void visit(MatchClosedMessage m) {
+                    // Match abortito da remoto: pulizia automatica dello stato
+                    // locale, così la view può riportare l'utente alla
+                    // schermata iniziale di selezione partite. Il canale
+                    // resta aperto: il server non lo chiude più.
+                    clearLocalMatchState();
+                }
                 @Override public void visit(ErrorMessage m) {}
                 @Override public void visit(InfoMessage m) {}
             });

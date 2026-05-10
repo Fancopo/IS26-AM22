@@ -2,9 +2,7 @@ package it.polimi.ingsw.am22.model.states;
 
 import it.polimi.ingsw.am22.model.*;
 import it.polimi.ingsw.am22.model.building.Building;
-import it.polimi.ingsw.am22.model.character.Builder;
 import it.polimi.ingsw.am22.model.character.CharacterType;
-import it.polimi.ingsw.am22.model.character.Hunter;
 
 import java.util.List;
 
@@ -79,34 +77,17 @@ public class ActionResolutionState implements GameState {
             //         Hunter già nella tribù AL MOMENTO in cui viene aggiunto
             //         (cfr. Hunter.onAddedToTribe), quindi pescare HUNTER ->
             //         HUNTER* dà più food di HUNTER* -> HUNTER.
-            //     Il calcolo "atomico" precedente leggeva builderDiscount una
-            //     sola volta dalla tribù iniziale e sommava i costi di tutti
-            //     i Building, ignorando completamente questi effetti.
-            int simulatedFood = player.getFood();
-            int simulatedDiscount = player.getTribe().getBuilderDiscount();
-            int simulatedHunterCount = player.getTribe().countCharacters(CharacterType.HUNTER);
-
+            //     Ogni carta dichiara il proprio effetto via Card.applyPickEffect:
+            //     così Building/Builder/Hunter sono dispatch polimorfici, niente
+            //     instanceof, e Artist/Inventor/Collector/Shaman ereditano il
+            //     no-op di default (il loro contributo è in EndGame o in eventi
+            //     specifici, quindi qui non va simulato).
+            PickSimulation sim = new PickSimulation(
+                    player.getFood(),
+                    player.getTribe().getBuilderDiscount(),
+                    player.getTribe().countCharacters(CharacterType.HUNTER));
             for (Card card : selectedCards) {
-                if (card instanceof Building) {
-                    int actualCost = Math.max(0, card.getFoodCost() - simulatedDiscount);
-                    if (simulatedFood < actualCost) {
-                        throw new IllegalStateException(
-                                "Insufficient food to purchase the selected cards.");
-                    }
-                    simulatedFood -= actualCost;
-                } else if (card instanceof Builder builderCard) {
-                    simulatedDiscount += builderCard.getDiscountFood();
-                } else if (card instanceof Hunter hunterCard) {
-                    // Hunter.onAddedToTribe legge la tribù DOPO addCharacter,
-                    // quindi il count include il Hunter appena aggiunto.
-                    simulatedHunterCount++;
-                    if (hunterCard.hasFoodIcon()) {
-                        simulatedFood += simulatedHunterCount;
-                    }
-                }
-                // Artist, Inventor, Collector, Shaman: nessun effetto immediato
-                // su food / discount (il loro contributo è in fase di EndGame
-                // o durante eventi specifici), quindi non serve simularli qui.
+                card.applyPickEffect(sim);
             }
 
             // --- PHASE 2: COMMIT (validazioni passate: ora si muta) ---
@@ -117,11 +98,7 @@ public class ActionResolutionState implements GameState {
             // [Hunter*, Building] potrebbe far fallire payFood per food
             // temporaneamente insufficiente, anche se la sequenza è valida.
             for (Card card : selectedCards) {
-                if (card instanceof Building) {
-                    int discount = player.getTribe().getBuilderDiscount();
-                    int cost = Math.max(0, card.getFoodCost() - discount);
-                    player.payFood(cost);
-                }
+                card.payPickCost(player);
                 player.getTribe().addCard(player, card);
             }
             game.getBoard().getUpperRow().removeAll(selectedCards);

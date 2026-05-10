@@ -27,7 +27,15 @@
       "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -DskipTests clean compile)",
       "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -Dtest='FoodBonusFixTest,BuildingTest,TurnPhaseModifierEffectTest' test)",
       "Bash(JAVA_HOME=\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\" ./mvnw.cmd -DskipTests test-compile)",
-      "Bash(\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\\\\bin\\\\java\" -cp \"target/classes;target/test-classes\" it.polimi.ingsw.am22.model.building.FoodBonusFixTest)"
+      "Bash(\"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\\\\bin\\\\java\" -cp \"target/classes;target/test-classes\" it.polimi.ingsw.am22.model.building.FoodBonusFixTest)",
+      "Bash(mvn -q -pl . compile -DskipTests)",
+      "Bash(./mvnw.cmd -q compile -DskipTests)",
+      "PowerShell($env:JAVA_HOME; \\(Get-Command java -ErrorAction SilentlyContinue\\).Source; \\(Get-Command javac -ErrorAction SilentlyContinue\\).Source)",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\"; & \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\mvnw.cmd\" -q compile -DskipTests -f \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\pom.xml\" 2>&1 | Select-Object -Last 60)",
+      "Bash(mvn -q -DskipTests compile)",
+      "PowerShell(& \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\mvnw.cmd\" -q -DskipTests -f \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\pom.xml\" compile 2>&1)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\Java\" -ErrorAction SilentlyContinue | Select-Object -First 5 Name; Get-ChildItem \"C:\\\\Program Files\\\\Eclipse Adoptium\" -ErrorAction SilentlyContinue | Select-Object -First 5 Name; \\(Get-Command java -ErrorAction SilentlyContinue\\).Source)",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Users\\\\Fang2\\\\.jdks\\\\openjdk-25\"; & \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\mvnw.cmd\" -q -DskipTests -f \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\pom.xml\" compile 2>&1 | Select-Object -Last 80)"
     ]
   }
 }

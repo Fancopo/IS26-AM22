@@ -34,6 +34,12 @@ public final class TuiRunner {
     /**
      * Avvia la sessione TUI. Il metodo ritorna solo quando l'utente esce
      * o la connessione viene chiusa.
+     *
+     * <p>La connessione col server vive per tutta la durata del processo:
+     * un eventuale {@code leave} (lobby o partita) lascia il canale aperto,
+     * azzera lo stato locale di match e riporta il giocatore alla
+     * situazione iniziale (può di nuovo {@code list}, {@code create},
+     * {@code join}) sulla stessa sessione.
      */
     public static void run() {
         Scanner in = new Scanner(System.in);
@@ -46,32 +52,52 @@ public final class TuiRunner {
                 : ConnectionFactory.DEFAULT_RMI_PORT;
         int port = askInt(in, "Port [" + defaultPort + "]: ", defaultPort);
 
-        ObservableServerConnection connection;
-        try {
-            connection = ConnectionFactory.open(transport, host, port);
-        } catch (Exception e) {
-            System.err.println("Unable to connect: " + e.getClass().getSimpleName()
-                    + (e.getMessage() == null ? "" : " - " + e.getMessage()));
+        // Outer loop supports the end-game 'back' command: when the player
+        // picks 'back' on the end-game menu we close the just-finished
+        // session and reopen a fresh one against the same host/port —
+        // mirroring the GUI's endGameAndShowMatches flow.
+        boolean firstSession = true;
+        while (true) {
+            ObservableServerConnection connection;
+            try {
+                connection = ConnectionFactory.open(transport, host, port);
+            } catch (Exception e) {
+                System.err.println("Unable to connect: " + e.getClass().getSimpleName()
+                        + (e.getMessage() == null ? "" : " - " + e.getMessage()));
+                return;
+            }
+
+            ClientSession session = new ClientSession(connection);
+            TuiView view = new TuiView(session);
+            session.setHandler(view);
+
+            if (firstSession) {
+                printHelp();
+                firstSession = false;
+            } else {
+                System.out.println(Ansi.green(
+                        "(reconnected — type 'list' to see open matches)"));
+            }
+
+            commandLoop(in, session, view);
+
+            boolean serverDropped = view.wasDisconnectedByServer();
+            boolean expectedClose = view.isExpectingDisconnect();
+            boolean wantsReconnect = view.isReconnectRequested();
+            // After EndGame the channel is already gone (or about to be):
+            // don't try to send a disconnect notification through it.
+            session.close(!serverDropped && !expectedClose);
+
+            if (wantsReconnect) {
+                continue;
+            }
+            System.out.println("Bye.");
+            // Only signal an error exit when the drop was unexpected
+            // (i.e. NOT the post-EndGame courtesy close).
+            if (serverDropped && !expectedClose) {
+                System.exit(1);
+            }
             return;
-        }
-
-        ClientSession session = new ClientSession(connection);
-        TuiView view = new TuiView(session);
-        session.setHandler(view);
-
-        // Loop comandi: parte in modalità "fuori da una partita". Una volta
-        // dentro a una lobby si sbloccano i comandi specifici.
-        printHelp();
-        commandLoop(in, session, view);
-
-        // Cleanup: don't notify the server if the connection has already dropped.
-        boolean serverDropped = view.wasDisconnectedByServer();
-        session.close(!serverDropped);
-        System.out.println("Bye.");
-        // Exit code 1 when the shutdown was caused by the server going down,
-        // 0 when the user initiated it (quit/disconnect/leave).
-        if (serverDropped) {
-            System.exit(1);
         }
     }
 
@@ -95,12 +121,19 @@ public final class TuiRunner {
                     case "list" -> controller.listMatches();
                     case "create" -> {
                         // create <expectedPlayers> <nickname>
+                        // Un client può essere iscritto a una sola partita per volta:
+                        // se ne ha già una bound (matchId non null), serve prima
+                        // 'leave' / 'disconnect' — altrimenti finiremmo iscritti
+                        // a due match contemporaneamente lato server.
+                        requireAlreadyOutOfMatch(controller, "create");
                         requireArgs(parts, 3, "create <expectedPlayers> <nickname>");
                         int expected = Integer.parseInt(parts[1]);
                         controller.createMatch(parts[2], expected);
                     }
                     case "join" -> {
                         // join <matchId> <nickname>
+                        // Stesso vincolo di 'create': un solo match alla volta.
+                        requireAlreadyOutOfMatch(controller, "join");
                         requireArgs(parts, 3, "join <matchId> <nickname>");
                         controller.addPlayerToLobby(parts[1], parts[2]);
                     }
@@ -142,23 +175,53 @@ public final class TuiRunner {
                         controller.pickBonusCard(parts[1]);
                     }
                     case "leave" -> {
-                        // 'leave' è solo pre-game: durante la partita la chiusura del
-                        // canale farebbe scattare lato server il transport-drop, che
-                        // a partita iniziata abbatte il match per tutti — di fatto
-                        // un 'disconnect' mascherato. Per uscire mid-game serve
-                        // disconnect esplicito.
-                        if (session.isGameStarted()) {
-                            System.out.println("The match has already started — use 'disconnect' to abort it.");
+                        // 'leave' funziona sia pre-game (uscita lobby) sia
+                        // mid-game (abort match). In entrambi i casi il
+                        // server NON chiude il canale: il client resta
+                        // connesso, azzera lo stato locale di match e il
+                        // giocatore può subito riemettere list/create/join
+                        // come dalla situazione iniziale.
+                        if (controller.getMatchId() == null) {
+                            System.out.println("You are not in any lobby or match.");
                             break;
                         }
-                        controller.removePlayerFromLobby();
-                        view.requestStop();
-                    }
-                    case "disconnect" -> {
-                        controller.disconnect();
-                        view.requestStop();
+                        boolean midGame = session.isGameStarted();
+                        if (midGame) {
+                            controller.disconnect();
+                        } else {
+                            controller.removePlayerFromLobby();
+                        }
+                        session.clearLocalMatchState();
+                        System.out.println(Ansi.yellow(midGame
+                                ? "(match aborted — back to matches selection)"
+                                : "(left lobby — back to matches selection)"));
+                        System.out.println(Ansi.dim("(type 'list' to see open matches)"));
                     }
                     case "quit", "exit" -> view.requestStop();
+
+                    // ---- End-game menu (after EndGameMessage, before exit) ----
+                    case "back", "back-to-matches", "backtomatches" -> {
+                        // Equivalent to GUI's "Back to matches" button:
+                        // tear down the just-finished session and start a
+                        // fresh connection to the same host/port.
+                        if (!view.isInEndGame()) {
+                            System.out.println(
+                                    "'back' is for after the game ends. "
+                                    + "Use 'leave' to exit a lobby/match in progress.");
+                            break;
+                        }
+                        view.requestReconnect();
+                    }
+                    case "leaderboard", "lb" -> {
+                        // Equivalent to GUI's "Show full leaderboard" button.
+                        if (!view.isInEndGame()) {
+                            System.out.println(
+                                    "Leaderboard is shown only at the end of a match.");
+                            break;
+                        }
+                        view.replayHistoricalLeaderboard();
+                    }
+
                     default -> System.out.println("Unknown command. Type 'help'.");
                 }
             } catch (RuntimeException e) {
@@ -184,9 +247,13 @@ public final class TuiRunner {
         System.out.println("    place <letter>                  place totem on offer tile <letter>");
         System.out.println("    pick <id1> [id2 ...]            ");
         System.out.println("    bonus <cardId>                  select bonus card");
-        System.out.println("    leave                           leave the current lobby (pre-game only)");
-        System.out.println("    disconnect                      disconnect ( mid-game = aborts match)");
+        System.out.println("    leave                           leave the current lobby; mid-game aborts the match — returns to matches list");
         System.out.println("    quit                            quit the client");
+        System.out.println();
+        System.out.println("  After the game ends:");
+        System.out.println("    back                            return to matches selection (reopens a connection)");
+        System.out.println("    leaderboard | lb                re-display the historical leaderboard");
+        System.out.println("    exit                            quit the client");
         System.out.println();
     }
 
@@ -243,6 +310,20 @@ public final class TuiRunner {
     private static void requireArgs(String[] parts, int expected, String usage) {
         if (parts.length < expected) {
             throw new IllegalArgumentException("usage: " + usage);
+        }
+    }
+
+    /**
+     * Rifiuta i comandi {@code create} / {@code join} se il client risulta
+     * già iscritto a una partita. Senza questa guardia il giocatore poteva
+     * digitare {@code join} due volte e finire registrato lato server in
+     * due lobby contemporaneamente, comparendo come membro di entrambe.
+     */
+    private static void requireAlreadyOutOfMatch(ClientController controller, String command) {
+        String currentMatch = controller.getMatchId();
+        if (currentMatch != null && !currentMatch.isBlank()) {
+            throw new IllegalStateException("you are already in match '" + currentMatch
+                    + "' — use 'leave' (pre-game) or 'disconnect' before '" + command + "'");
         }
     }
 

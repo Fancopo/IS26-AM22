@@ -25,6 +25,7 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,6 +63,37 @@ public final class TuiView implements ClientUpdateHandler {
      */
     private volatile boolean disconnectedByServer;
 
+    /**
+     * True between the {@code EndGameMessage} and the user's choice on the
+     * end-game menu. Used to: (1) suppress the "Server connection lost"
+     * banner when the server tears down the channel ~3s later (it's
+     * expected, not an error); (2) signal to {@link TuiRunner} that no
+     * server notification is needed when closing the local session.
+     */
+    private volatile boolean expectingDisconnect;
+
+    /**
+     * True while the player is sitting on the end-game menu (winner banner +
+     * standings + leaderboard). The {@link TuiRunner} command loop uses this
+     * to enable the {@code back}/{@code leaderboard} commands.
+     */
+    private volatile boolean inEndGame;
+
+    /**
+     * Set when the player picks {@code back} from the end-game menu. The
+     * runner will then close this session, reopen a connection with the
+     * stored transport/host/port, and start a fresh session — same flow
+     * the GUI uses in {@code endGameAndShowMatches}.
+     */
+    private volatile boolean reconnectRequested;
+
+    /**
+     * Last {@code EndGameMessage} received, kept around so the
+     * {@code leaderboard} command can re-print the historical leaderboard
+     * without needing the server (which has already closed the channel).
+     */
+    private volatile EndGameMessage lastEndGame;
+
     public TuiView(ClientSession session) {
         this.session = Objects.requireNonNull(session, "session cannot be null");
     }
@@ -78,9 +110,70 @@ public final class TuiView implements ClientUpdateHandler {
         return disconnectedByServer;
     }
 
+    /** @return {@code true} while the player is on the end-game menu. */
+    public boolean isInEndGame() {
+        return inEndGame;
+    }
+
+    /**
+     * @return {@code true} when the player picked {@code back} on the
+     *         end-game menu and the runner should reopen a fresh session.
+     */
+    public boolean isReconnectRequested() {
+        return reconnectRequested;
+    }
+
+    /**
+     * @return {@code true} when the channel close is expected (post-EndGame):
+     *         the runner uses this to skip the server-notify on local close
+     *         and to avoid an exit-code-1 shutdown.
+     */
+    public boolean isExpectingDisconnect() {
+        return expectingDisconnect;
+    }
+
     /** Forza la richiesta di uscita (es. dopo comando {@code quit}). */
     public void requestStop() {
         this.stopRequested = true;
+    }
+
+    /**
+     * Marks the session for a clean teardown + reopen by the runner. Used by
+     * the end-game menu's {@code back} command: stops the command loop, but
+     * unlike a user {@code quit} the runner will then start a brand-new
+     * session against the same host/port — matching the GUI's behavior in
+     * {@code endGameAndShowMatches}.
+     */
+    public void requestReconnect() {
+        this.reconnectRequested = true;
+        this.stopRequested = true;
+    }
+
+    /**
+     * Re-prints the historical leaderboard from the cached
+     * {@code EndGameMessage}. No server round-trip — by the time the menu is
+     * up the channel is already closed. Bound to the {@code leaderboard}
+     * command on the end-game menu.
+     */
+    public void replayHistoricalLeaderboard() {
+        EndGameMessage end = lastEndGame;
+        if (end == null) {
+            println("(no leaderboard cached — has the game ended yet?)");
+            return;
+        }
+        String me = session.getLocalNickname();
+        int numPlayers = end.finalGameState() == null
+                ? 0 : end.finalGameState().players().size();
+        List<LeaderboardEntryDTO> leaderboard = end.leaderboard();
+        synchronized (printLock) {
+            System.out.println();
+            if (leaderboard == null || leaderboard.isEmpty()) {
+                System.out.println(Ansi.yellow(
+                        "[Historical leaderboard unavailable — DB offline?]"));
+            } else {
+                printHistoricalLeaderboard(leaderboard, numPlayers, me);
+            }
+        }
     }
 
     /**
@@ -139,8 +232,13 @@ public final class TuiView implements ClientUpdateHandler {
             case GameStateMessage state        -> renderGameState(state.gameState());
             case EndGameMessage end            -> renderEndGame(end);
             case MatchClosedMessage closed     -> {
+                // Match abortito da remoto: stampiamo l'avviso ma NON chiudiamo
+                // il client. La connessione col server resta viva (il server non
+                // chiude più i canali in questo scenario) e il ClientSession ha
+                // già pulito il binding locale, quindi il giocatore può tornare
+                // a usare list/create/join come dalla situazione iniziale.
                 println(Ansi.red(Ansi.BOLD + "[MATCH CLOSED] " + Ansi.RESET) + closed.reason());
-                requestStop();
+                println(Ansi.dim("(back to matches selection — type 'list' to see open matches)"));
             }
             case ErrorMessage err              -> println(Ansi.red("[ERROR] ") + err.message());
             case InfoMessage info              -> println(Ansi.yellow("[INFO]  ") + info.message());
@@ -150,6 +248,14 @@ public final class TuiView implements ClientUpdateHandler {
 
     @Override
     public void onConnectionClosed(Throwable cause) {
+        if (expectingDisconnect) {
+            // EndGameMessage just arrived; the server tears down the channel
+            // ~3s later by design. This is normal end-of-match cleanup, not
+            // a failure: don't surface the scary banner and don't stop the
+            // command loop — the player is sitting on the end-game menu and
+            // can still pick back / leaderboard / exit.
+            return;
+        }
         // Unified disconnect message. Exception details are intentionally
         // omitted: they're noise for the player. A developer who needs them
         // can add a verbose flag.
@@ -296,24 +402,82 @@ public final class TuiView implements ClientUpdateHandler {
     private void renderEndGame(EndGameMessage end) {
         WinnerDTO winner = end.winner();
         GameStateDTO finalState = end.finalGameState();
-        List<LeaderboardEntryDTO> leaderboard = end.leaderboard();
-        Map<String, Integer> positions = end.positionByNickname();
+        List<LeaderboardEntryDTO> leaderboard = end.leaderboard() == null
+                ? List.of() : end.leaderboard();
+        Map<String, Integer> positions = end.positionByNickname() == null
+                ? Map.of() : end.positionByNickname();
         int numPlayers = finalState == null ? 0 : finalState.players().size();
 
-        synchronized (printLock) {
-            System.out.println();
-            System.out.println("*** GAME OVER ***");
-            System.out.println("Winner: " + winner.nickname()
-                    + " [" + winner.totemColor() + "]"
-                    + "  PP=" + winner.finalPrestigePoints()
-                    + "  food=" + winner.remainingFood());
-            System.out.println("Final snapshot:");
-        }
-        renderGameState(finalState);
+        // Stash for on-demand re-render via 'leaderboard' on the end-game menu.
+        this.lastEndGame = end;
+        // Server closes the channel ~3s after this message: silence
+        // onConnectionClosed() and stay on the menu instead of exiting.
+        this.expectingDisconnect = true;
+        this.inEndGame = true;
+
+        String me = session.getLocalNickname();
 
         synchronized (printLock) {
+            // Deliberately no CLEAR_SCREEN: previous game-state output stays
+            // scrollable above the summary, mirroring the GUI which keeps the
+            // last board visible behind the EndGameScreen panel. The previous
+            // version delegated to renderGameState() which DID clear the
+            // screen, wiping the WINNER banner.
             System.out.println();
-            String me = session.getLocalNickname();
+            System.out.println(Ansi.yellow(Ansi.BOLD
+                    + "================================================="));
+            System.out.println(Ansi.yellow(Ansi.BOLD
+                    + "                  G A M E   O V E R              "));
+            System.out.println(Ansi.yellow(Ansi.BOLD
+                    + "================================================="));
+            if (winner != null) {
+                System.out.println(Ansi.yellow(Ansi.BOLD + ">> WINNER: "
+                        + winner.nickname() + " [" + winner.totemColor() + "]"));
+                System.out.println("   Prestige Points: "
+                        + Ansi.bold(String.valueOf(winner.finalPrestigePoints()))
+                        + "   Food left: " + winner.remainingFood());
+            } else {
+                System.out.println(Ansi.yellow("   (no winner declared)"));
+            }
+
+            // Final standings, sorted PP desc then food desc — same ordering
+            // as the GUI's standings table.
+            System.out.println();
+            System.out.println(sectionHeader("Final standings (this match)"));
+            if (finalState != null) {
+                List<PlayerDTO> sorted = new ArrayList<>(finalState.players());
+                sorted.sort(Comparator
+                        .comparingInt(PlayerDTO::prestigePoints).reversed()
+                        .thenComparingInt(PlayerDTO::food).reversed());
+                int rank = 1;
+                for (PlayerDTO p : sorted) {
+                    boolean isWinner = winner != null
+                            && p.nickname().equals(winner.nickname());
+                    boolean isMe = me != null && me.equalsIgnoreCase(p.nickname());
+                    String marker = (isWinner ? " *" : "") + (isMe ? "  <- you" : "");
+                    String line = String.format(" %2d. %-20s [%-7s]  PP=%-3d  food=%-2d%s",
+                            rank++, p.nickname(), p.totemColor(),
+                            p.prestigePoints(), p.food(), marker);
+                    if (isWinner) {
+                        System.out.println(Ansi.yellow(Ansi.BOLD + line));
+                    } else if (isMe) {
+                        System.out.println(Ansi.green(line));
+                    } else {
+                        System.out.println(line);
+                    }
+                    if (!p.tribeCharacters().isEmpty()) {
+                        System.out.println("       tribe    : "
+                                + summarizeCards(p.tribeCharacters()));
+                    }
+                    if (!p.buildings().isEmpty()) {
+                        System.out.println("       buildings: "
+                                + summarizeCards(p.buildings()));
+                    }
+                }
+            }
+
+            // DB-backed historical position + leaderboard.
+            System.out.println();
             if (positions.isEmpty()) {
                 System.out.println(Ansi.yellow(
                         "[Historical leaderboard unavailable — DB offline?]"));
@@ -325,19 +489,35 @@ public final class TuiView implements ClientUpdateHandler {
 
             if (!leaderboard.isEmpty()) {
                 System.out.println();
-                System.out.println(Ansi.magenta(Ansi.BOLD + "-- Historical leaderboard ("
-                        + numPlayers + "-player matches) --"));
-                int rank = 1;
-                for (LeaderboardEntryDTO row : leaderboard) {
-                    String date = row.endDate() == null ? "" : row.endDate().format(LB_DATE_FMT);
-                    boolean isMe = me != null && me.equals(row.nickname());
-                    String line = String.format(" %3d. %-20s %4d   %s",
-                            rank++, row.nickname(), row.score(), date);
-                    System.out.println(isMe ? Ansi.green(line) : line);
-                }
+                printHistoricalLeaderboard(leaderboard, numPlayers, me);
             }
+
+            // End-game menu — mirrors the three GUI buttons
+            // (Back to matches / Show full leaderboard / Exit).
+            System.out.println();
+            System.out.println(Ansi.cyan(Ansi.BOLD + "-- What's next? --"));
+            System.out.println("  back         return to matches selection (reopens a connection)");
+            System.out.println("  leaderboard  re-display the historical leaderboard");
+            System.out.println("  exit         quit the client");
+            System.out.println();
         }
-        requestStop();
+        // NOTE: deliberately no requestStop() here — the GUI keeps its window
+        // open after the EndGameScreen and lets the user click a button; the
+        // TUI now does the same via the menu above.
+    }
+
+    private void printHistoricalLeaderboard(List<LeaderboardEntryDTO> leaderboard,
+                                            int numPlayers, String me) {
+        System.out.println(Ansi.magenta(Ansi.BOLD + "-- Historical leaderboard ("
+                + numPlayers + "-player matches) --"));
+        int rank = 1;
+        for (LeaderboardEntryDTO row : leaderboard) {
+            String date = row.endDate() == null ? "" : row.endDate().format(LB_DATE_FMT);
+            boolean isMe = me != null && me.equals(row.nickname());
+            String line = String.format(" %3d. %-20s %4d   %s",
+                    rank++, row.nickname(), row.score(), date);
+            System.out.println(isMe ? Ansi.green(line) : line);
+        }
     }
 
     private String summarizeCards(List<CardDTO> cards) {

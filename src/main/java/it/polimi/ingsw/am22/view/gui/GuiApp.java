@@ -136,59 +136,45 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
     }
 
     /**
-     * Esce dalla lobby corrente e torna alla {@link MatchesScreen} riaprendo
-     * una connessione fresca (il server chiude il canale alla
-     * {@code removePlayerFromLobby}).
-     */
-    /**
-     * Esce da una partita gia' iniziata e torna alla {@link MatchesScreen}.
+     * Esce da una partita già iniziata e torna alla {@link MatchesScreen}.
      * Invia al server una {@code disconnectPlayer}: lato server la partita
-     * viene abortita per tutti (stesso comportamento del comando TUI
-     * {@code disconnect} mid-game). Il client poi riapre una connessione
-     * pulita e mostra la lista delle partite.
+     * viene abortita per tutti i partecipanti, ma nessun canale viene chiuso.
+     * La sessione del giocatore resta viva e può subito list/create/join un
+     * nuovo match.
      */
     public void leaveMatchAndShowMatches(String nickname) {
-        expectingDisconnect = true;
         if (session != null) {
             try {
                 session.getClientController().disconnect();
             } catch (RuntimeException ignored) {
             }
-            session.close(false);
-        }
-        session = null;
-        if (lastTransport == null) {
-            expectingDisconnect = false;
+            session.clearLocalMatchState();
+            showMatchesScreen(nickname);
+        } else {
             showConnectionScreen();
-            return;
         }
-        if (!connect(lastTransport, lastHost, lastPort)) {
-            expectingDisconnect = false;
-            showConnectionScreen();
-            return;
-        }
-        showMatchesScreen(nickname);
     }
 
+    /**
+     * Esce dalla lobby corrente (pre-game) e torna alla {@link MatchesScreen}
+     * mantenendo la stessa sessione: il server non chiude il canale, quindi
+     * il giocatore può subito vedere/creare/joinare un'altra partita.
+     */
     public void leaveLobbyAndShowMatches(String nickname) {
-        // Sopprimiamo l'alert di "Connection closed" che la onConnectionClosed
-        // genererebbe in risposta alla chiusura del canale lato server.
-        expectingDisconnect = true;
         if (session != null) {
             try {
                 session.getClientController().removePlayerFromLobby();
             } catch (RuntimeException ignored) {
             }
-            session.close(false);
+            session.clearLocalMatchState();
+            showMatchesScreen(nickname);
+            return;
         }
-        session = null;
         if (lastTransport == null) {
-            expectingDisconnect = false;
             showConnectionScreen();
             return;
         }
         if (!connect(lastTransport, lastHost, lastPort)) {
-            expectingDisconnect = false;
             showConnectionScreen();
             return;
         }
@@ -305,9 +291,17 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
                 showEndGameScreen(m);
             }
             @Override public void visit(MatchClosedMessage m) {
+                // Match abortito da remoto: la connessione col server resta
+                // viva (il server non chiude più i canali) e ClientSession ha
+                // già azzerato gli snapshot e il binding del controller.
+                // Riportiamo l'utente alla MatchesScreen mantenendo la stessa
+                // sessione, così può subito list/create/join un altro match.
                 showError("Match closed: " + m.reason());
-                if (session != null) { session.close(false); session = null; }
-                showConnectionScreen();
+                if (session != null) {
+                    showMatchesScreen(lastNickname);
+                } else {
+                    showConnectionScreen();
+                }
             }
             @Override public void visit(ErrorMessage m) { showError(m.message()); }
             @Override public void visit(InfoMessage m) { System.out.println("[INFO] " + m.message()); }

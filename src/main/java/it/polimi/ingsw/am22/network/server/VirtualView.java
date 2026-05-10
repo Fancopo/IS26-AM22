@@ -149,6 +149,28 @@ public class VirtualView implements GameObserver {
         channelsByNickname.clear();
     }
 
+    /**
+     * Snapshot dei canali correntemente legati. Restituisce una copia per
+     * permettere al chiamante di iterare senza preoccuparsi di mutazioni
+     * concorrenti sulla mappa interna.
+     */
+    public Collection<ClientChannel> snapshotChannels() {
+        return new java.util.ArrayList<>(channelsByNickname.values());
+    }
+
+    /**
+     * Sgancia tutti i nickname attualmente legati senza chiudere i canali:
+     * le mappe vengono svuotate e {@link ClientChannel#getBoundNickname()}
+     * azzerato per ciascuno. Serve quando una partita viene abbattuta ma i
+     * client devono restare connessi al server (per poter rifare list/join).
+     */
+    public void unbindAllKeepingChannels() {
+        for (ClientChannel channel : channelsByNickname.values()) {
+            channel.setBoundNickname(null);
+        }
+        channelsByNickname.clear();
+    }
+
     private void safeSend(ClientChannel channel, ServerMessage message) {
         try {
             channel.send(message);

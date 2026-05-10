@@ -170,6 +170,18 @@ public class ClientController {
     }
 
     /**
+     * Cancella il binding locale match/nickname senza notificare il server:
+     * va invocato quando è il server stesso a comunicarci che il match non
+     * esiste più (es. {@code MatchClosedMessage} per abort di un altro
+     * giocatore). Dopo, il client torna allo stato "non in partita" e può
+     * riemettere list/create/join sulla stessa connessione.
+     */
+    public void clearMatchBinding() {
+        this.matchId = null;
+        this.nickname = null;
+    }
+
+    /**
      * Notifica al server la disconnessione del giocatore locale.
      */
     public void disconnect() {

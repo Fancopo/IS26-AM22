@@ -2,6 +2,7 @@ package it.polimi.ingsw.am22.model.character;
 
 
 import it.polimi.ingsw.am22.model.Era;
+import it.polimi.ingsw.am22.model.PickSimulation;
 
 
 public class Builder extends TribeCharacter implements CharacterEffect {
@@ -23,5 +24,12 @@ public class Builder extends TribeCharacter implements CharacterEffect {
     @Override
     public int getPP() {
         return PP;
+    }
+
+    /** Validation: a Builder picked earlier in the sequence reduces the cost
+     *  of any Building picked later. */
+    @Override
+    public void applyPickEffect(PickSimulation sim) {
+        sim.addBuilderDiscount(discountFood);
     }
 }

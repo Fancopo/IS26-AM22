@@ -298,7 +298,9 @@ public class NetworkGameService {
             gameController.removePlayerFromLobby(request.nickname());
             virtualView.unbind(request.nickname());
             unbindMatch(channel);
-            channel.close();
+            // NB: il canale resta aperto. È un leave volontario: il client
+            // userà la stessa connessione per tornare alla scena "lista partite"
+            // e poter di nuovo list/create/join, senza dover riconnettersi.
             broadcastLobbyState();
             cleanupIfEmpty();
         }
@@ -350,21 +352,34 @@ public class NetworkGameService {
                 }
                 virtualView.unbind(nickname);
                 unbindMatch(channel);
-                channel.close();
+                if (transportDrop) {
+                    // Trasporto morto davvero: chiudiamo per pulizia.
+                    channel.close();
+                }
+                // Leave volontario pre-game: il canale resta vivo, il client
+                // tornerà alla scena "lista partite" sulla stessa connessione.
                 broadcastLobbyState();
                 cleanupIfEmpty();
                 return;
             }
 
+            // Mid-game: il giocatore esce dal match.
             virtualView.unbind(nickname);
             unbindMatch(channel);
-            channel.close();
+            if (transportDrop) {
+                channel.close();
+            }
+            // Avvisiamo gli altri partecipanti che il match è abortito.
             virtualView.broadcast(new MatchClosedMessage(
                     "Player " + nickname + " disconnected. The match has been closed."));
-            virtualView.closeAll();
-            if (!transportDrop) {
-                virtualView.broadcast(new InfoMessage("Disconnected: " + nickname));
+            // ... e sganciamo TUTTI i canali superstiti dal match SENZA chiuderli:
+            // chi ha fatto leave volontariamente e i restanti partecipanti
+            // restano connessi al server e possono di nuovo list/create/join
+            // dalla "situazione iniziale".
+            for (ClientChannel other : virtualView.snapshotChannels()) {
+                unbindMatch(other);
             }
+            virtualView.unbindAllKeepingChannels();
             matchesById.remove(gameController.getMatchId());
         }
 

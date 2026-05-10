@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am22.model.character;
 
 import it.polimi.ingsw.am22.model.Era;
+import it.polimi.ingsw.am22.model.PickSimulation;
 import it.polimi.ingsw.am22.model.Player;
 
 
@@ -34,5 +35,15 @@ public class Hunter extends TribeCharacter implements CharacterEffect {
     @Override
     public String cardDetailType() {
         return hasFoodIcon ? "HUNTER*" : "HUNTER";
+    }
+
+    /** Validation: mirror {@link #onAddedToTribe} on the simulation — bump the
+     *  hunter count first, then (for Hunter*) feed the player by that count. */
+    @Override
+    public void applyPickEffect(PickSimulation sim) {
+        sim.incrementHunterCount();
+        if (hasFoodIcon) {
+            sim.addFood(sim.getHunterCount());
+        }
     }
 }

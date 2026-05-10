@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am22.model.building;
 
 import it.polimi.ingsw.am22.model.Era;
+import it.polimi.ingsw.am22.model.PickSimulation;
 import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.model.Tribe;
 import it.polimi.ingsw.am22.model.Card;
@@ -175,6 +176,21 @@ public class Building extends Card {
 
     @Override
     public int getFoodCost() { return foodPrice; }
+
+    /** Validation: deduct the discounted cost from the simulated food (throws if insufficient). */
+    @Override
+    public void applyPickEffect(PickSimulation sim) {
+        int cost = Math.max(0, foodPrice - sim.getBuilderDiscount());
+        sim.payFood(cost);
+    }
+
+    /** Commit: pay the discounted cost using the tribe's *current* discount. */
+    @Override
+    public void payPickCost(Player player) {
+        int discount = player.getTribe().getBuilderDiscount();
+        int cost = Math.max(0, foodPrice - discount);
+        player.payFood(cost);
+    }
 
     public int getFoodPrice() { return foodPrice; }
     public int getFinalPP() { return finalPP; }

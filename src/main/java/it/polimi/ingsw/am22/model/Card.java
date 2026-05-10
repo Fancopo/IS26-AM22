@@ -42,6 +42,26 @@ public abstract class Card {
 
     public int getFoodCost() {return 0;} // By default, cards have no food cost
 
+    /**
+     * Apply this card's effect to the pick simulation during the VALIDATION
+     * phase of an action. Subclasses override to declare how being picked
+     * (in this position of the sequence) changes the player's simulated
+     * food / builder discount / hunter count. A Building deducts food
+     * (throwing if insufficient), a Builder increases the discount, a Hunter
+     * grows the simulated hunter count and possibly feeds the player.
+     * Default: no effect.
+     */
+    public void applyPickEffect(PickSimulation sim) {}
+
+    /**
+     * Perform the food side-effect of being picked, on the real player, during
+     * the COMMIT phase. Only cards that cost food (Building) override this;
+     * the addition of the card to the tribe is handled separately and
+     * polymorphically by {@link #addToTribe(Player, Tribe)}.
+     * Default: no cost.
+     */
+    public void payPickCost(Player player) {}
+
     public void onRoundEndTrigger(Game game) {} // No default behavior
 
     public int getTriggerPriority() {return 0;} // Determines resolution order (0 = normal, 1 = deferred).
