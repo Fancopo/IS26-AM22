@@ -103,7 +103,7 @@
       <recent name="it.polimi.ingsw.am22" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.NetworkServerLauncher">
+  <component name="RunManager" selected="Application.ClientA">
     <configuration name="ClientA" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.network.client.ClientApp" />
       <module name="am22" />
