@@ -53,6 +53,13 @@ public final class LobbyScreen implements GuiScreen {
     private final Button leaveButton = new Button("Leave lobby");
     private final HBox hostControls;
 
+    /**
+     * Costruisce la schermata di lobby.
+     * Invocata da {@link GuiApp#showLobbyScreen()} dopo il join/create di un
+     * match. Se la {@link it.polimi.ingsw.am22.network.client.ClientSession}
+     * ha gia' uno stato di lobby in cache (es. {@code LobbyStateMessage}
+     * arrivato prima della creazione di questa schermata), lo renderizza subito.
+     */
     public LobbyScreen(GuiApp app) {
         this.app = app;
         this.hostControls = new HBox(8, new Label("Expected players:"), expectedCombo, confirmExpectedButton);
@@ -65,11 +72,21 @@ public final class LobbyScreen implements GuiScreen {
         if (cached != null) render(cached);
     }
 
+    /**
+     * Restituisce il nodo radice della schermata.
+     * Chiamato da {@link GuiApp#setScreen} per montare questa schermata nello stage.
+     */
     @Override
     public Parent getRoot() {
         return root;
     }
 
+    /**
+     * Riceve i messaggi del server sul thread JavaFX.
+     * In lobby interessa solo {@link LobbyStateMessage}: ogni volta che arriva,
+     * la lista giocatori e i controlli host vengono aggiornati con {@link #render}.
+     * Gli altri tipi sono gestiti da {@link GuiApp} o da altre schermate.
+     */
     @Override
     public void onServerMessage(ServerMessage message) {
         message.accept(new ServerMessageVisitor() {
@@ -85,6 +102,11 @@ public final class LobbyScreen implements GuiScreen {
         });
     }
 
+    /**
+     * Crea il layout JavaFX della lobby: header con host e numero di giocatori
+     * attesi, lista giocatori, controlli host (visibili solo all'host), pulsante
+     * "Leave lobby" e label di stato.
+     */
     private StackPane buildUi() {
         expectedCombo.getSelectionModel().select(Integer.valueOf(2));
 
@@ -107,6 +129,15 @@ public final class LobbyScreen implements GuiScreen {
         return container;
     }
 
+    /**
+     * Collega i listener ai pulsanti della schermata:
+     * <ul>
+     *   <li>{@code confirmExpectedButton}: solo per l'host — invia al server
+     *       il numero di giocatori attesi via {@code setExpectedPlayers};</li>
+     *   <li>{@code leaveButton}: invoca {@link GuiApp#leaveLobbyAndShowMatches}
+     *       mantenendo la sessione e tornando alla MatchesScreen.</li>
+     * </ul>
+     */
     private void wireActions() {
         confirmExpectedButton.setOnAction(e -> {
             Integer selected = expectedCombo.getSelectionModel().getSelectedItem();

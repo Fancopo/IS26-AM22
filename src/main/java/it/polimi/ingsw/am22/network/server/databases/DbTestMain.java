@@ -2,8 +2,21 @@ package it.polimi.ingsw.am22.network.server.databases;
 
 import java.util.List;
 
+/**
+ * Main di utilita' per testare manualmente il {@link MatchResultDao}.
+ *
+ * <p>Salva una partita fittizia a 3 giocatori, stampa la classifica delle
+ * partite a 3 giocatori e la posizione di un punteggio dato. Va lanciato
+ * a mano da IDE: serve solo per verificare che la connessione al DB e le
+ * query funzionino, NON e' parte del flusso di gioco.
+ */
 public class DbTestMain {
 
+    /**
+     * Esegue uno scenario di test contro il database configurato:
+     * insert di una partita fittizia, query della classifica e
+     * calcolo della posizione di un punteggio.
+     */
     public static void main(String[] args) throws Exception {
         MatchResultDao dao = new MatchResultDao();
 

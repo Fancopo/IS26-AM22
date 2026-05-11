@@ -94,6 +94,12 @@ public final class TuiView implements ClientUpdateHandler {
      */
     private volatile EndGameMessage lastEndGame;
 
+    /**
+     * Costruisce la TuiView legata alla sessione client indicata.
+     * Invocata da {@link TuiRunner#run()} subito dopo l'apertura della
+     * {@link ClientSession}; la view viene poi registrata come handler della
+     * sessione (vedi {@code session.setHandler(view)}).
+     */
     public TuiView(ClientSession session) {
         this.session = Objects.requireNonNull(session, "session cannot be null");
     }
@@ -211,6 +217,13 @@ public final class TuiView implements ClientUpdateHandler {
         println(Ansi.green(Ansi.BOLD + ">>> ") + sb);
     }
 
+    /**
+     * Cerca nella lista di carte indicata quella con l'id richiesto.
+     * Usata da {@link #echoPickOrder} per risolvere ogni id digitato dall'utente
+     * contro l'ultimo {@code GameStateDTO} conosciuto.
+     *
+     * @return la carta trovata, oppure {@code null} se nessuna ha quell'id
+     */
     private CardDTO findCardById(List<CardDTO> cards, String id) {
         if (id == null) return null;
         for (CardDTO c : cards) {
@@ -221,6 +234,13 @@ public final class TuiView implements ClientUpdateHandler {
 
     // -------------------- ClientUpdateHandler --------------------
 
+    /**
+     * Callback invocata dalla {@link ClientSession} per ogni messaggio
+     * proveniente dal server. Puo' essere chiamata da thread arbitrari
+     * (reader thread socket o thread RMI): la sincronizzazione e' garantita
+     * dal {@link #printLock} nei singoli metodi di rendering. Smista il
+     * messaggio sul renderer dedicato in base al tipo.
+     */
     @Override
     public void onServerMessage(ServerMessage message) {
         // Ogni tipo di messaggio ha un rendering dedicato.
@@ -246,6 +266,14 @@ public final class TuiView implements ClientUpdateHandler {
         }
     }
 
+    /**
+     * Callback invocata dalla {@link ClientSession} quando la connessione
+     * verso il server viene chiusa. Se la chiusura era attesa (post-EndGame,
+     * {@link #expectingDisconnect} = true) non viene fatto nulla: il giocatore
+     * resta sul menu di fine partita. Altrimenti stampa un banner di errore
+     * e imposta {@code disconnectedByServer} / {@code stopRequested} per
+     * far terminare il {@link TuiRunner}.
+     */
     @Override
     public void onConnectionClosed(Throwable cause) {
         if (expectingDisconnect) {
@@ -266,6 +294,11 @@ public final class TuiView implements ClientUpdateHandler {
 
     // -------------------- Rendering --------------------
 
+    /**
+     * Stampa la lista dei match aperti ricevuta dal server (comando {@code list}).
+     * Mostra id, host, riempimento corrente/atteso e stato (open/started) per
+     * ciascun match; se la lista e' vuota suggerisce all'utente di creare un match.
+     */
     private void renderMatchesList(List<MatchInfoDTO> matches) {
         synchronized (printLock) {
             System.out.println();
@@ -287,11 +320,23 @@ public final class TuiView implements ClientUpdateHandler {
         }
     }
 
+    /**
+     * Stampa la conferma di join di una partita. Renderizzato in risposta
+     * a {@link MatchJoinedMessage} (arrivato dopo un comando {@code create}
+     * o {@code join} andato a buon fine).
+     */
     private void renderMatchJoined(MatchJoinedMessage joined) {
         println(Ansi.green(Ansi.BOLD + "[JOINED] " + Ansi.RESET)
                 + "match " + joined.matchId() + " as " + joined.nickname());
     }
 
+    /**
+     * Stampa lo stato della lobby: match id, host, numero di giocatori
+     * attesi, flag "started", lista dei giocatori connessi (con marker
+     * host e colore totem). Se il giocatore locale e' l'host e non ha
+     * ancora impostato il numero di giocatori, mostra anche un hint
+     * sul comando {@code players <N>}.
+     */
     private void renderLobby(LobbyStateDTO lobby) {
         synchronized (printLock) {
             System.out.println();
@@ -319,11 +364,24 @@ public final class TuiView implements ClientUpdateHandler {
         }
     }
 
+    /**
+     * Stampa il banner "GAME STARTED" e poi delega a {@link #renderGameState}
+     * per mostrare lo stato iniziale della partita. Invocato in risposta a
+     * {@link GameStartedMessage}.
+     */
     private void renderGameStarted(GameStateDTO state) {
         println(">>> GAME STARTED <<<");
         renderGameState(state);
     }
 
+    /**
+     * Render principale dello stato di gioco: pulisce lo schermo e stampa
+     * round / era / fase, giocatore attivo, riassunto di ogni giocatore
+     * (PP attuali e proiettati, cibo, tribu', edifici), tessere offerta,
+     * righe carte upper/lower e turn order. Se e' il turno del giocatore
+     * locale stampa anche un suggerimento sui comandi disponibili e fa
+     * suonare la campanella del terminale.
+     */
     private void renderGameState(GameStateDTO state) {
         synchronized (printLock) {
             System.out.print(Ansi.CLEAR_SCREEN);
@@ -399,6 +457,18 @@ public final class TuiView implements ClientUpdateHandler {
     private static final DateTimeFormatter LB_DATE_FMT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+    /**
+     * Rendering della fine partita (in risposta a {@link EndGameMessage}).
+     * Stampa il banner GAME OVER, il vincitore con i suoi PP/cibo finali,
+     * la classifica della partita (ordinata per PP poi cibo decrescente),
+     * la posizione del giocatore locale nella classifica storica e la
+     * classifica storica completa (se disponibile). Infine mostra il menu
+     * di fine partita ({@code back} / {@code leaderboard} / {@code exit}).
+     *
+     * <p>Imposta {@link #expectingDisconnect} = true perche' il server
+     * chiudera' il canale a breve, e {@link #inEndGame} = true per abilitare
+     * i comandi specifici del menu di fine partita.
+     */
     private void renderEndGame(EndGameMessage end) {
         WinnerDTO winner = end.winner();
         GameStateDTO finalState = end.finalGameState();
@@ -506,6 +576,12 @@ public final class TuiView implements ClientUpdateHandler {
         // TUI now does the same via the menu above.
     }
 
+    /**
+     * Stampa la classifica storica (rank, nickname, score, data) ricevuta
+     * a fine partita. La riga corrispondente al giocatore locale viene
+     * evidenziata in verde. Riusata sia da {@link #renderEndGame} che da
+     * {@link #replayHistoricalLeaderboard}.
+     */
     private void printHistoricalLeaderboard(List<LeaderboardEntryDTO> leaderboard,
                                             int numPlayers, String me) {
         System.out.println(Ansi.magenta(Ansi.BOLD + "-- Historical leaderboard ("
@@ -520,6 +596,13 @@ public final class TuiView implements ClientUpdateHandler {
         }
     }
 
+    /**
+     * Costruisce una riga compatta che descrive una lista di carte
+     * nella forma {@code id(detailType) id(detailType) ...}, colorando
+     * ogni token in base alla categoria (vedi {@link #colorizeCard}).
+     * Usato per stampare la tribu' e gli edifici di ogni giocatore e le
+     * righe upper/lower della board.
+     */
     private String summarizeCards(List<CardDTO> cards) {
         if (cards == null || cards.isEmpty()) return Ansi.dim("(none)");
         // Build the joined string with a single space between tokens, WITHOUT a trailing
@@ -558,6 +641,12 @@ public final class TuiView implements ClientUpdateHandler {
         };
     }
 
+    /**
+     * Stampa una riga su stdout serializzando l'accesso tramite {@link #printLock}.
+     * Usato da tutti i renderer "monolinea" per evitare che righe scritte da
+     * thread diversi (reader thread server e main thread del runner) si
+     * mescolino in output.
+     */
     private void println(String line) {
         synchronized (printLock) {
             System.out.println(line);

@@ -27,12 +27,20 @@ public final class Ansi {
 
     private Ansi() {}
 
+    /** Avvolge {@code s} con i codici ANSI per stamparla in rosso. */
     public static String red(String s)     { return RED     + s + RESET; }
+    /** Avvolge {@code s} con i codici ANSI per stamparla in verde. */
     public static String green(String s)   { return GREEN   + s + RESET; }
+    /** Avvolge {@code s} con i codici ANSI per stamparla in giallo. */
     public static String yellow(String s)  { return YELLOW  + s + RESET; }
+    /** Avvolge {@code s} con i codici ANSI per stamparla in blu. */
     public static String blue(String s)    { return BLUE    + s + RESET; }
+    /** Avvolge {@code s} con i codici ANSI per stamparla in magenta. */
     public static String magenta(String s) { return MAGENTA + s + RESET; }
+    /** Avvolge {@code s} con i codici ANSI per stamparla in ciano. */
     public static String cyan(String s)    { return CYAN    + s + RESET; }
+    /** Avvolge {@code s} con i codici ANSI per stamparla in grassetto. */
     public static String bold(String s)    { return BOLD    + s + RESET; }
+    /** Avvolge {@code s} con i codici ANSI per stamparla attenuata (dim). */
     public static String dim(String s)     { return DIM     + s + RESET; }
 }

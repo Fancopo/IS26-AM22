@@ -41,5 +41,12 @@ public interface ClientChannel {
      */
     String getBoundMatchId();
 
+    /**
+     * Associa (o disassocia, con {@code null}) un matchId a questo canale.
+     * Usato dal {@link NetworkGameService} per ricordare a quale partita
+     * il client e' iscritto sulla stessa connessione.
+     *
+     * @param matchId identificativo del match, o {@code null} per liberare
+     */
     void setBoundMatchId(String matchId);
 }

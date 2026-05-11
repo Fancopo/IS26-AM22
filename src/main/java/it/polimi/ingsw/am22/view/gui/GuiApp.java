@@ -58,6 +58,12 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
      *  alla ConnectionScreen: la chiusura era voluta (es. leave dalla lobby). */
     private boolean expectingDisconnect;
 
+    /**
+     * Punto di ingresso dell'applicazione JavaFX.
+     * Invocato automaticamente da {@link Application#launch} (vedi {@link #main}
+     * oppure {@code ClientApp}). Inizializza lo stage, registra l'handler di
+     * chiusura della finestra e mostra la {@link ConnectionScreen}.
+     */
     @Override
     public void start(Stage primaryStage) {
         this.stage = primaryStage;
@@ -95,20 +101,40 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         }
     }
 
+    /**
+     * Accesso alla {@link ClientSession} corrente.
+     * Usato dalle schermate per inoltrare comandi al server tramite
+     * {@code session.getClientController()} e per leggere lo stato locale
+     * (nickname, ultimo gameState/lobbyState, ecc.). Restituisce {@code null}
+     * se non e' stata ancora aperta una connessione.
+     */
     public ClientSession getSession() {
         return session;
     }
 
     // -------------------- Navigazione schermate --------------------
 
+    /**
+     * Mostra la {@link ConnectionScreen}: prima schermata della GUI, dove
+     * l'utente sceglie trasporto/host/porta.
+     */
     public void showConnectionScreen() {
         setScreen(new ConnectionScreen(this));
     }
 
+    /**
+     * Mostra la {@link NicknameScreen}: l'utente sceglie il proprio nickname
+     * prima di entrare nella schermata di selezione partita.
+     */
     public void showNicknameScreen() {
         setScreen(new NicknameScreen(this));
     }
 
+    /**
+     * Mostra la {@link MatchesScreen} per il nickname indicato e memorizza
+     * il nickname come {@link #lastNickname} per poterlo riutilizzare
+     * dopo una fine partita o un leave volontario.
+     */
     public void showMatchesScreen(String nickname) {
         this.lastNickname = nickname;
         setScreen(new MatchesScreen(this, nickname));
@@ -181,14 +207,29 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         showMatchesScreen(nickname);
     }
 
+    /**
+     * Mostra la {@link LobbyScreen}: invocato automaticamente quando arriva
+     * il primo {@link LobbyStateMessage} (o {@link it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage})
+     * dal server dopo che il giocatore ha creato o unito un match.
+     */
     public void showLobbyScreen() {
         setScreen(new LobbyScreen(this));
     }
 
+    /**
+     * Mostra la {@link GameScreen}: invocato quando arriva
+     * {@link GameStartedMessage} oppure quando lo stato della sessione
+     * indica che la partita e' iniziata.
+     */
     public void showGameScreen() {
         setScreen(new GameScreen(this));
     }
 
+    /**
+     * Mostra la {@link EndGameScreen} costruita a partire dall'{@link EndGameMessage}
+     * ricevuto: passa vincitore, stato finale, classifica storica e la posizione
+     * del giocatore locale in quella classifica.
+     */
     public void showEndGameScreen(EndGameMessage m) {
         String me = session != null ? session.getLocalNickname() : null;
         if (me == null) me = lastNickname;
@@ -253,6 +294,12 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
 
     // -------------------- ClientUpdateHandler (dal server) --------------------
 
+    /**
+     * Callback invocata dalla {@link ClientSession} per ogni messaggio in
+     * arrivo dal server. Puo' essere chiamata da thread arbitrari (reader
+     * thread del socket o thread RMI), per questo il messaggio viene sempre
+     * rimbalzato sul JavaFX thread tramite {@link Platform#runLater}.
+     */
     @Override
     public void onServerMessage(ServerMessage message) {
         // I messaggi arrivano sul reader thread socket o sul thread RMI:
@@ -260,6 +307,13 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         Platform.runLater(() -> dispatchOnFxThread(message));
     }
 
+    /**
+     * Callback invocata dalla {@link ClientSession} quando la connessione
+     * verso il server viene chiusa. Se la disconnessione era attesa
+     * ({@link #expectingDisconnect} = true, es. fine partita o leave volontario)
+     * la callback e' silenziosa, altrimenti viene mostrato un alert e si torna
+     * alla {@link ConnectionScreen}.
+     */
     @Override
     public void onConnectionClosed(Throwable cause) {
         Platform.runLater(() -> {

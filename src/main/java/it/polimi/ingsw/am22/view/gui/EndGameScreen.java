@@ -44,6 +44,18 @@ public final class EndGameScreen implements GuiScreen {
     private final List<LeaderboardEntryDTO> historicalLeaderboard;
     private final int numPlayers;
 
+    /**
+     * Costruisce la schermata di fine partita a partire dai dati ricevuti
+     * nell'{@link EndGameMessage}.
+     * Invocata da {@link GuiApp#showEndGameScreen}.
+     *
+     * @param app                    riferimento all'applicazione (per navigazione/exit)
+     * @param winner                 vincitore dichiarato dal server (puo' essere null)
+     * @param finalState             stato finale di gioco usato per la classifica
+     * @param historicalLeaderboard  classifica storica delle partite con lo stesso numero di giocatori
+     * @param positionByNickname     posizione del giocatore locale nella classifica storica
+     * @param localNickname          nickname del giocatore locale (per evidenziarlo)
+     */
     public EndGameScreen(GuiApp app,
                          WinnerDTO winner,
                          GameStateDTO finalState,
@@ -59,11 +71,22 @@ public final class EndGameScreen implements GuiScreen {
                 localNickname);
     }
 
+    /**
+     * Restituisce il nodo radice della schermata.
+     * Chiamato da {@link GuiApp#setScreen} per montare questa schermata nello stage.
+     */
     @Override
     public Parent getRoot() {
         return root;
     }
 
+    /**
+     * Costruisce l'intero layout della schermata di fine partita:
+     * titolo "GAME OVER", box dorato con il vincitore, tabella della
+     * classifica della partita appena finita, label con la posizione
+     * del giocatore nella classifica storica e una barra di pulsanti
+     * (mostra classifica, torna alle partite, esci).
+     */
     private StackPane buildUi(WinnerDTO winner,
                               GameStateDTO finalState,
                               Map<String, Integer> positionByNickname,
@@ -136,6 +159,12 @@ public final class EndGameScreen implements GuiScreen {
         return container;
     }
 
+    /**
+     * Crea la label che mostra la posizione del giocatore locale nella
+     * classifica storica per partite con lo stesso numero di giocatori.
+     * Se la classifica non e' disponibile o il nickname non c'e', mostra
+     * un messaggio alternativo.
+     */
     private Label buildPositionLabel(Map<String, Integer> positionByNickname,
                                      String localNickname) {
         Label label = new Label();
@@ -159,6 +188,11 @@ public final class EndGameScreen implements GuiScreen {
         return label;
     }
 
+    /**
+     * Apre una finestra modale con la classifica storica completa
+     * (#, giocatore, score, data) delle partite con lo stesso numero
+     * di giocatori. Invocata dal pulsante "Show full leaderboard".
+     */
     private void showLeaderboardDialog() {
         TableView<LeaderboardEntryDTO> table = new TableView<>(
                 FXCollections.observableArrayList(historicalLeaderboard));
@@ -208,6 +242,11 @@ public final class EndGameScreen implements GuiScreen {
         dialog.showAndWait();
     }
 
+    /**
+     * Costruisce la tabella della classifica della partita appena finita.
+     * I giocatori sono ordinati per punti prestigio decrescenti (tie-break
+     * con cibo decrescente). Il vincitore e' marcato con un asterisco.
+     */
     private TableView<PlayerDTO> buildStandingsTable(GameStateDTO finalState, WinnerDTO winner) {
         List<PlayerDTO> players = new ArrayList<>(
                 finalState == null ? List.of() : finalState.players());

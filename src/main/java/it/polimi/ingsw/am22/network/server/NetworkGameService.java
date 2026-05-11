@@ -70,6 +70,11 @@ public class NetworkGameService {
     /** Grace period between the EndGameMessage broadcast and the channel close. */
     private static final long END_GAME_CLOSE_DELAY_MS = 3000;
 
+    /**
+     * Costruisce il servizio centrale del server. Crea il mapper modello->DTO,
+     * il registry delle partite vuoto e il DAO per la persistenza dei risultati.
+     * Invocato una sola volta dal {@link NetworkServerLauncher} all'avvio.
+     */
     public NetworkGameService() {
         this.mapper = new ModelDtoMapper();
         this.matchesById = new ConcurrentHashMap<>();
@@ -124,6 +129,11 @@ public class NetworkGameService {
     private final class Dispatcher implements ClientRequestVisitor {
         private final ClientChannel channel;
 
+        /**
+         * Cattura il canale del client che ha inviato la richiesta: lo
+         * stesso canale verra' passato ai metodi handler della MatchSession
+         * per inviare risposte o broadcast.
+         */
         private Dispatcher(ClientChannel channel) {
             this.channel = channel;
         }
@@ -230,6 +240,11 @@ public class NetworkGameService {
         return "M-" + matchIdSeq.incrementAndGet();
     }
 
+    /**
+     * Helper di validazione per parametri testuali: lancia
+     * {@link IllegalArgumentException} se la stringa e' null o blank,
+     * altrimenti la restituisce invariata.
+     */
     private static String requireText(String value, String fieldName) {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(fieldName + " cannot be null or blank.");
@@ -247,6 +262,12 @@ public class NetworkGameService {
         private final VirtualView virtualView;
         private boolean observerAttached;
 
+        /**
+         * Crea una nuova sessione di partita: instanzia il {@link GameController}
+         * con l'id indicato e la {@link VirtualView} dedicata. L'observer
+         * sul model verra' agganciato solo a partita avviata
+         * (vedi {@link #attachObserverIfNeeded}).
+         */
         private MatchSession(String matchId) {
             this.gameController = new GameController(matchId);
             this.virtualView = new VirtualView(mapper);
@@ -286,6 +307,12 @@ public class NetworkGameService {
             }
         }
 
+        /**
+         * Imposta il numero di giocatori attesi per questa partita
+         * (operazione consentita solo all'host) e ribroadcasta lo stato.
+         * Se il valore raggiunto fa partire la partita, viene emesso anche
+         * il {@link GameStartedMessage}.
+         */
         private void handleSetExpectedPlayers(SetExpectedPlayersRequest request, ClientChannel channel) {
             bindIfKnown(request.requesterNickname(), channel);
             boolean wasStarted = gameController.hasStarted();
@@ -293,6 +320,13 @@ public class NetworkGameService {
             publishStateChange(wasStarted);
         }
 
+        /**
+         * Gestisce un leave volontario dalla lobby (pre-game). Rimuove il
+         * giocatore dal model, sgancia la sua VirtualView e libera il
+         * binding del canale; il canale resta aperto perche' il client
+         * tornera' a list/create/join sulla stessa connessione. Se la
+         * lobby resta vuota, libera lo slot nel registry.
+         */
         private void handleRemoveFromLobby(RemovePlayerFromLobbyRequest request, ClientChannel channel) {
             bindIfKnown(request.nickname(), channel);
             gameController.removePlayerFromLobby(request.nickname());
@@ -305,6 +339,12 @@ public class NetworkGameService {
             cleanupIfEmpty();
         }
 
+        /**
+         * Esegue la mossa di piazzamento del totem sulla tessera offerta
+         * scelta. La chiamata al GameController e' avvolta in un batch della
+         * VirtualView: tutte le notifiche emesse dal model vengono
+         * coalescenziate in un unico {@link GameStateMessage} a fine batch.
+         */
         private void handlePlaceTotem(PlaceTotemRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
             virtualView.beginBatch();
@@ -316,6 +356,11 @@ public class NetworkGameService {
             broadcastGameStateAndMaybeEnd();
         }
 
+        /**
+         * Esegue la scelta delle carte da pescare. L'ordine degli id e'
+         * significativo (es. Builder->Building applica lo sconto, viceversa no).
+         * Batchato come {@link #handlePlaceTotem} per evitare doppi render.
+         */
         private void handlePickCards(PickCardsRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
             virtualView.beginBatch();
@@ -327,6 +372,10 @@ public class NetworkGameService {
             broadcastGameStateAndMaybeEnd();
         }
 
+        /**
+         * Esegue la scelta della carta bonus durante la bonus phase.
+         * Batchato come gli altri handler di mossa.
+         */
         private void handlePickBonusCard(PickBonusCardRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
             virtualView.beginBatch();
@@ -406,11 +455,22 @@ public class NetworkGameService {
             }
         }
 
+        /**
+         * Mappa lo stato corrente della lobby in un DTO e lo invia a tutti
+         * i giocatori legati alla VirtualView di questa partita.
+         */
         private void broadcastLobbyState() {
             LobbyStateDTO lobbyState = mapper.toLobbyState(gameController);
             virtualView.broadcast(new LobbyStateMessage(lobbyState));
         }
 
+        /**
+         * Variante "post-mossa" del broadcast: il {@link GameStateMessage}
+         * lo ha gia' inviato la VirtualView come observer del model
+         * (vedi commento interno). Qui ci limitiamo a verificare se la
+         * partita si e' conclusa con l'ultima mossa e, in tal caso,
+         * a far partire il flusso di fine partita.
+         */
         private void broadcastGameStateAndMaybeEnd() {
             if (!gameController.hasStarted()) {
                 return;
@@ -424,6 +484,14 @@ public class NetworkGameService {
             maybeBroadcastEndGame(state);
         }
 
+        /**
+         * Se la partita risulta terminata, determina il vincitore, persiste
+         * il risultato di tutti i giocatori sul database e invia a tutti i
+         * canali un {@link EndGameMessage} con vincitore, stato finale,
+         * classifica storica e posizioni dei giocatori. Infine rimuove la
+         * partita dal registry e schedula la chiusura dei canali con un
+         * grace period (vedi {@link #endGameCloser}).
+         */
         private void maybeBroadcastEndGame(GameStateDTO state) {
             if (!gameController.getGame().isGameEnded()) {
                 return;
@@ -472,6 +540,11 @@ public class NetworkGameService {
             endGameCloser.schedule(viewToClose::closeAll, END_GAME_CLOSE_DELAY_MS, TimeUnit.MILLISECONDS);
         }
 
+        /**
+         * Carica dal DB la classifica storica per partite con il numero di
+         * giocatori indicato e la converte in lista di {@link LeaderboardEntryDTO}
+         * da spedire al client.
+         */
         private List<LeaderboardEntryDTO> loadLeaderboard(int numPlayers) throws SQLException {
             List<MatchResultDao.RankRow> rows = matchResultDao.getLeaderboard(numPlayers);
             List<LeaderboardEntryDTO> out = new ArrayList<>(rows.size());
@@ -481,6 +554,11 @@ public class NetworkGameService {
             return out;
         }
 
+        /**
+         * Calcola, per ogni giocatore della partita appena terminata, la
+         * posizione che il suo punteggio finale occupa nella classifica
+         * storica (interrogando il DAO con {@code getPosition}).
+         */
         private Map<String, Integer> computePositions(int numPlayers,
                                                       Map<String, Integer> finalScores) throws SQLException {
             Map<String, Integer> positions = new HashMap<>(finalScores.size() * 2);
@@ -510,6 +588,11 @@ public class NetworkGameService {
             }
         }
 
+        /**
+         * Rimuove dal canale il binding al matchId di questa sessione (solo
+         * se corrisponde): cosi' il client non risulta piu' "iscritto" alla
+         * partita, pur restando connesso al server.
+         */
         private void unbindMatch(ClientChannel channel) {
             if (Objects.equals(channel.getBoundMatchId(), gameController.getMatchId())) {
                 channel.setBoundMatchId(null);

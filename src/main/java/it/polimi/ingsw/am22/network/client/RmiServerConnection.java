@@ -78,6 +78,13 @@ public class RmiServerConnection implements ObservableServerConnection {
                 PING_INTERVAL_MS, PING_INTERVAL_MS, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Ping di liveness eseguito periodicamente dal {@code livenessProbe}.
+     * Se la chiamata remota fallisce significa che il server e' morto:
+     * invoca {@link #fireConnectionClosed} per notificare l'handler e
+     * chiudere la connessione, allineando il comportamento RMI a quello
+     * del trasporto socket (che riceverebbe un'EOFException sul reader thread).
+     */
     private void probe() {
         if (closed) return;
         try {
@@ -200,6 +207,12 @@ public class RmiServerConnection implements ObservableServerConnection {
             super();
         }
 
+        /**
+         * Invocato remotamente dal server per recapitare un messaggio al
+         * client. Lo inoltra all'{@link ClientUpdateHandler} registrato e,
+         * se il messaggio e' EndGame/MatchClosed, pianifica un evento
+         * sintetico di disconnessione (vedi {@link #FAREWELL_GRACE_MS}).
+         */
         @Override
         public void receive(ServerMessage message) throws RemoteException {
             ClientUpdateHandler handler = updateHandler;

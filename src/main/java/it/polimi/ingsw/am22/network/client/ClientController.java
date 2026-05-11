@@ -191,12 +191,22 @@ public class ClientController {
         this.matchId = null;
     }
 
+    /**
+     * Helper di guardia: solleva {@link IllegalStateException} se il client
+     * non ha ancora effettuato il join in una lobby. Usato all'inizio dei
+     * metodi che richiedono un {@code matchId} valido (placeTotem, pickCards, ...).
+     */
     private void requireJoined() {
         if (!hasJoinedLobby()) {
             throw new IllegalStateException("You must join a match before sending actions.");
         }
     }
 
+    /**
+     * Helper di validazione: lancia {@link IllegalArgumentException} se il
+     * valore e' null o solo whitespace, altrimenti lo restituisce invariato.
+     * Usato per controllare i parametri testuali in ingresso (nickname, matchId, ...).
+     */
     private String requireText(String value, String fieldName) {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(fieldName + " cannot be null or blank.");

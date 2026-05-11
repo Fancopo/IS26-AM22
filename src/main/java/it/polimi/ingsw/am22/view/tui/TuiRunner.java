@@ -101,6 +101,14 @@ public final class TuiRunner {
         }
     }
 
+    /**
+     * Loop principale di lettura comandi da stdin.
+     * Per ogni riga inserita dall'utente fa il parse del primo token e lo
+     * mappa su un comando: pre-lobby ({@code list}/{@code create}/{@code join}),
+     * in-match ({@code place}/{@code pick}/{@code bonus}/{@code players}/{@code leave}),
+     * end-game ({@code back}/{@code leaderboard}). Esce solo quando la TuiView
+     * imposta {@code stopRequested} (es. comando {@code quit} o disconnessione).
+     */
     private static void commandLoop(Scanner in, ClientSession session, TuiView view) {
         ClientController controller = session.getClientController();
         while (!view.isStopRequested()) {
@@ -230,6 +238,11 @@ public final class TuiRunner {
         }
     }
 
+    /**
+     * Stampa la lista di comandi disponibili con una breve descrizione.
+     * Invocato all'avvio (subito dopo la connessione) e quando l'utente
+     * digita {@code help} o {@code ?}.
+     */
     private static void printHelp() {
         System.out.println();
         System.out.println("Available commands:");
@@ -257,6 +270,12 @@ public final class TuiRunner {
         System.out.println();
     }
 
+    /**
+     * Ristampa l'ultimo {@code GameStateDTO} o {@code LobbyStateDTO} ricevuto
+     * dal server, senza fare alcuna richiesta di rete. Utile quando il
+     * terminale e' "pieno" di echo dei comandi e si vuole ricaricare la vista.
+     * Comando {@code state}.
+     */
     private static void printCachedState(ClientSession session) {
         if (session.getLatestGameState() != null) {
             new TuiView(session).onServerMessage(
@@ -273,6 +292,11 @@ public final class TuiRunner {
 
     // -------------------- Utility di input --------------------
 
+    /**
+     * Chiede all'utente il tipo di trasporto da usare (Socket TCP o RMI).
+     * Accetta varianti abbreviate ({@code s}/{@code tcp} per socket,
+     * {@code r} per RMI); ripete la domanda finche' non viene scelto un valore valido.
+     */
     private static Transport askTransport(Scanner in) {
         while (true) {
             String v = ask(in, "Transport [socket/rmi] (default socket): ", "socket").toLowerCase();
@@ -284,6 +308,11 @@ public final class TuiRunner {
         }
     }
 
+    /**
+     * Helper di lettura input testuale: stampa il prompt e ritorna la prima
+     * riga non vuota. Se l'utente preme Invio senza scrivere nulla e
+     * {@code defaultValue} non e' null, restituisce il default.
+     */
     private static String ask(Scanner in, String prompt, String defaultValue) {
         while (true) {
             System.out.print(prompt);
@@ -296,6 +325,10 @@ public final class TuiRunner {
         }
     }
 
+    /**
+     * Variante di {@link #ask} che converte l'input in intero, ripetendo
+     * la domanda se il valore non e' un numero valido. Usato per la porta.
+     */
     private static int askInt(Scanner in, String prompt, int defaultValue) {
         while (true) {
             String s = ask(in, prompt, String.valueOf(defaultValue));
@@ -307,6 +340,12 @@ public final class TuiRunner {
         }
     }
 
+    /**
+     * Verifica che il comando abbia almeno {@code expected} token (incluso
+     * il nome del comando stesso). Se mancano argomenti lancia
+     * {@link IllegalArgumentException} con il messaggio "usage: ...",
+     * intercettata dal {@link #commandLoop} e stampata come errore.
+     */
     private static void requireArgs(String[] parts, int expected, String usage) {
         if (parts.length < expected) {
             throw new IllegalArgumentException("usage: " + usage);

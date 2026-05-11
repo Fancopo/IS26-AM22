@@ -13,6 +13,13 @@ public final class NetworkServerLauncher {
 
     private NetworkServerLauncher() {
     }
+    /**
+     * Punto di ingresso del server. Crea un singolo {@link NetworkGameService}
+     * (condiviso da tutti i trasporti), avvia il listener socket sulla porta
+     * 12345 e pubblica lo stub RMI sul registry alla porta 1099 con binding
+     * {@code MESOS_SERVER}. Eventuali eccezioni di apertura porta/registry
+     * vengono propagate al chiamante.
+     */
     public static void main(String[] args) throws Exception {
         int socketPort = 12345;
         int rmiPort = 1099;

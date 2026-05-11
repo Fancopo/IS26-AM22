@@ -27,16 +27,32 @@ public final class ConnectionScreen implements GuiScreen {
     private final GuiApp app;
     private final StackPane root;
 
+    /**
+     * Costruisce la schermata di connessione.
+     * Invocata da {@link GuiApp#showConnectionScreen()} all'avvio della GUI
+     * e ogni volta che si vuole tornare alla scelta del server (es. dopo
+     * una disconnessione inattesa).
+     */
     public ConnectionScreen(GuiApp app) {
         this.app = app;
         this.root = buildUi();
     }
 
+    /**
+     * Restituisce il nodo radice della schermata.
+     * Chiamato da {@link GuiApp#setScreen} per montare questa schermata nello stage.
+     */
     @Override
     public Parent getRoot() {
         return root;
     }
 
+    /**
+     * Crea l'intero layout JavaFX della schermata: radio button per il trasporto
+     * (Socket/RMI), campi host e porta, pulsante "Connect" e label di stato.
+     * Il pulsante "Connect" invoca {@link GuiApp#connect}: se la connessione
+     * riesce si passa alla {@link NicknameScreen}.
+     */
     private StackPane buildUi() {
         // Toggle per il trasporto.
         ToggleGroup transportGroup = new ToggleGroup();

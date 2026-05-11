@@ -34,6 +34,11 @@ public class VirtualView implements GameObserver {
     private int batchDepth;
     private Game pendingGame;
 
+    /**
+     * Costruisce la VirtualView. Riusa il {@link ModelDtoMapper} condiviso
+     * dal {@link NetworkGameService} per convertire il modello in DTO ad
+     * ogni broadcast. Invocato una volta per ogni {@code MatchSession}.
+     */
     public VirtualView(ModelDtoMapper mapper) {
         this.mapper = mapper;
         this.channelsByNickname = new ConcurrentHashMap<>();
@@ -41,6 +46,12 @@ public class VirtualView implements GameObserver {
         this.pendingGame = null;
     }
 
+    /**
+     * Callback dell'interfaccia {@link GameObserver}: invocato dal model
+     * ad ogni mutazione. Se siamo dentro un batch attivo ({@code batchDepth > 0})
+     * salva solo il riferimento al Game e ritorna; altrimenti emette subito
+     * un {@link GameStateMessage} broadcast a tutti i canali.
+     */
     @Override
     public void gameStatusChanged(Game game) {
         synchronized (this) {
@@ -101,6 +112,12 @@ public class VirtualView implements GameObserver {
         }
     }
 
+    /**
+     * Lega un nickname al suo {@link ClientChannel}; se il nickname era gia'
+     * legato a un altro canale, lo rimpiazza (utile in caso di riconnessione
+     * o richiesta proveniente da un canale diverso). La normalizzazione
+     * della chiave rende il match case-insensitive sui nickname.
+     */
     public void bindOrReplace(String nickname, ClientChannel channel) {
         if (nickname == null || nickname.isBlank() || channel == null) {
             return;
@@ -110,14 +127,24 @@ public class VirtualView implements GameObserver {
         channelsByNickname.put(key, channel);
     }
 
+    /**
+     * Recupera il canale attualmente legato al nickname indicato.
+     * Restituisce {@code null} se nessun canale e' legato a quel nickname.
+     */
     public ClientChannel getChannel(String nickname) {
         return nickname == null ? null : channelsByNickname.get(normalize(nickname));
     }
 
+    /** True se esiste un binding attivo per il nickname indicato. */
     public boolean isBound(String nickname) {
         return getChannel(nickname) != null;
     }
 
+    /**
+     * Rimuove il binding per il nickname indicato e azzera il riferimento
+     * al nickname sul canale. Il canale NON viene chiuso: la connessione
+     * di rete resta viva.
+     */
     public void unbind(String nickname) {
         if (nickname == null || nickname.isBlank()) {
             return;
@@ -128,6 +155,11 @@ public class VirtualView implements GameObserver {
         }
     }
 
+    /**
+     * Invia il messaggio a tutti i client correntemente legati a questa
+     * VirtualView. Eventuali errori d'invio su un singolo canale lo fanno
+     * chiudere e rimuovere senza interrompere il broadcast agli altri.
+     */
     public void broadcast(ServerMessage message) {
         Collection<ClientChannel> snapshot = channelsByNickname.values();
         for (ClientChannel channel : snapshot) {
@@ -135,6 +167,10 @@ public class VirtualView implements GameObserver {
         }
     }
 
+    /**
+     * Invio puntuale (unicast) al solo client legato al nickname indicato.
+     * Se il nickname non e' legato a nessun canale, il messaggio viene scartato.
+     */
     public void sendTo(String nickname, ServerMessage message) {
         ClientChannel channel = getChannel(nickname);
         if (channel != null) {
@@ -142,6 +178,12 @@ public class VirtualView implements GameObserver {
         }
     }
 
+    /**
+     * Chiude tutti i canali legati e svuota la mappa interna. Invocato dal
+     * {@code endGameCloser} di {@link NetworkGameService} dopo il broadcast
+     * dell'{@link it.polimi.ingsw.am22.network.common.message.response.EndGameMessage},
+     * con un grace period per dare ai client il tempo di leggere il messaggio.
+     */
     public void closeAll() {
         for (ClientChannel channel : channelsByNickname.values()) {
             safeClose(channel);
@@ -171,6 +213,11 @@ public class VirtualView implements GameObserver {
         channelsByNickname.clear();
     }
 
+    /**
+     * Invio "best-effort" su un singolo canale: se la send fallisce
+     * (canale chiuso, errore di rete, ...) chiude il canale e lo rimuove
+     * dalla mappa, in modo che broadcast successivi non vi ripassino.
+     */
     private void safeSend(ClientChannel channel, ServerMessage message) {
         try {
             channel.send(message);
@@ -183,6 +230,7 @@ public class VirtualView implements GameObserver {
         }
     }
 
+    /** Chiusura del canale che ignora eventuali eccezioni — usato in cleanup. */
     private void safeClose(ClientChannel channel) {
         try {
             channel.close();
@@ -190,6 +238,11 @@ public class VirtualView implements GameObserver {
         }
     }
 
+    /**
+     * Forma canonica della chiave nickname (trim + lowercase) usata per
+     * il lookup nella {@link #channelsByNickname}. Rende l'uguaglianza
+     * dei nickname case-insensitive lato server.
+     */
     private String normalize(String value) {
         return value.strip().toLowerCase();
     }

@@ -19,6 +19,12 @@ public final class ClientApp {
     private ClientApp() {
     }
 
+    /**
+     * Punto di ingresso del client. Risolve la modalita' richiesta
+     * (TUI/GUI) tramite {@link #resolveMode} e lancia il runner
+     * corrispondente. La GUI viene avviata via {@link Application#launch}
+     * cosi' il framework JavaFX gestisce il proprio thread principale.
+     */
     public static void main(String[] args) {
         Mode mode = resolveMode(args);
         switch (mode) {

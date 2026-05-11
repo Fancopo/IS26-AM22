@@ -58,6 +58,12 @@ public final class MatchesScreen implements GuiScreen {
 
     private boolean pendingAction;
 
+    /**
+     * Costruisce la schermata di selezione partita.
+     * Invocata da {@link GuiApp#showMatchesScreen(String)} dopo che l'utente
+     * ha scelto il nickname (oppure dopo un leave volontario / fine partita).
+     * Richiede subito al server la lista dei match aperti.
+     */
     public MatchesScreen(GuiApp app, String nickname) {
         this.app = app;
         this.nickname = nickname;
@@ -67,11 +73,26 @@ public final class MatchesScreen implements GuiScreen {
         requestList();
     }
 
+    /**
+     * Restituisce il nodo radice della schermata.
+     * Chiamato da {@link GuiApp#setScreen} per montare questa schermata nello stage.
+     */
     @Override
     public Parent getRoot() {
         return root;
     }
 
+    /**
+     * Riceve i messaggi del server sul thread JavaFX.
+     * Gestisce:
+     * <ul>
+     *   <li>{@link MatchesListMessage}: aggiorna la tabella con i match aperti;</li>
+     *   <li>{@link ErrorMessage}: mostra l'errore e riabilita i controlli;</li>
+     *   <li>{@link LobbyStateMessage}/{@link MatchJoinedMessage}: l'azione e'
+     *       andata a buon fine — la navigazione verso la LobbyScreen e' gestita
+     *       da {@link GuiApp}, qui resettiamo solo {@code pendingAction}.</li>
+     * </ul>
+     */
     @Override
     public void onServerMessage(ServerMessage message) {
         message.accept(new ServerMessageVisitor() {
@@ -98,6 +119,12 @@ public final class MatchesScreen implements GuiScreen {
         });
     }
 
+    /**
+     * Crea il layout JavaFX: tabella dei match aperti (con id, host, numero
+     * di giocatori correnti/attesi, stato), barra superiore con nickname e
+     * refresh, pulsante "Join selected", combo + "Create new match", pulsante
+     * "Back" e label di stato.
+     */
     private StackPane buildUi() {
         nicknameLabel.setText("Playing as: " + nickname);
 
@@ -164,6 +191,19 @@ public final class MatchesScreen implements GuiScreen {
         return container;
     }
 
+    /**
+     * Collega i listener ai pulsanti:
+     * <ul>
+     *   <li>{@code refreshButton}: richiede al server la lista aggiornata;</li>
+     *   <li>{@code joinButton}: invia {@code addPlayerToLobby(matchId, nickname)}
+     *       per il match selezionato in tabella;</li>
+     *   <li>{@code createButton}: invia {@code createMatch(nickname, expected)};</li>
+     *   <li>{@code backButton}: torna alla {@link NicknameScreen}.</li>
+     * </ul>
+     * Le operazioni che modificano lo stato (join/create) impostano
+     * {@code pendingAction = true} e disabilitano i controlli finche' non
+     * arriva la risposta del server.
+     */
     private void wireActions() {
         refreshButton.setOnAction(e -> requestList());
 
@@ -211,6 +251,12 @@ public final class MatchesScreen implements GuiScreen {
         backButton.setOnAction(e -> app.showNicknameScreen());
     }
 
+    /**
+     * Invia al server la richiesta di lista dei match aperti.
+     * La risposta arrivera' come {@link MatchesListMessage} e verra' gestita
+     * da {@link #onServerMessage}. Chiamata dal costruttore (refresh iniziale)
+     * e dal pulsante "Refresh".
+     */
     private void requestList() {
         try {
             statusLabel.setText("Refreshing...");
@@ -220,6 +266,11 @@ public final class MatchesScreen implements GuiScreen {
         }
     }
 
+    /**
+     * Abilita o disabilita i pulsanti Join / Create / Refresh.
+     * Usato per evitare doppi click mentre il client e' in attesa della
+     * risposta del server a un'operazione di join o create.
+     */
     private void setControlsDisabled(boolean disabled) {
         joinButton.setDisable(disabled);
         createButton.setDisable(disabled);

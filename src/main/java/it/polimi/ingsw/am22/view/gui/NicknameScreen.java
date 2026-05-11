@@ -39,6 +39,11 @@ public final class NicknameScreen implements GuiScreen {
     private final Label statusLabel;
     private final Button joinButton;
 
+    /**
+     * Costruisce la schermata di scelta del nickname.
+     * Invocata da {@link GuiApp#showNicknameScreen()} dopo che la connessione
+     * al server e' andata a buon fine.
+     */
     public NicknameScreen(GuiApp app) {
         this.app = app;
         this.nicknameField = new TextField();
@@ -47,11 +52,22 @@ public final class NicknameScreen implements GuiScreen {
         this.root = buildUi();
     }
 
+    /**
+     * Restituisce il nodo radice della schermata.
+     * Chiamato da {@link GuiApp#setScreen} per montare questa schermata nello stage.
+     */
     @Override
     public Parent getRoot() {
         return root;
     }
 
+    /**
+     * Riceve i messaggi del server sul thread JavaFX (inoltrati da {@link GuiApp}).
+     * In questa schermata interessa solo {@link ErrorMessage}: se il nickname
+     * scelto non e' valido o e' duplicato il server risponde con un errore che
+     * viene mostrato nella {@link #statusLabel}. Tutti gli altri tipi di messaggio
+     * sono ignorati perche' la navigazione e' gestita da {@link GuiApp}.
+     */
     @Override
     public void onServerMessage(ServerMessage message) {
         message.accept(new ServerMessageVisitor() {
@@ -67,6 +83,11 @@ public final class NicknameScreen implements GuiScreen {
         });
     }
 
+    /**
+     * Crea il layout JavaFX della schermata: campo per il nickname, pulsante
+     * "Continue" (che passa alla {@link MatchesScreen}) e pulsante "Back"
+     * (che chiude la sessione e torna alla {@link ConnectionScreen}).
+     */
     private StackPane buildUi() {
         nicknameField.setPromptText("Your nickname");
 
