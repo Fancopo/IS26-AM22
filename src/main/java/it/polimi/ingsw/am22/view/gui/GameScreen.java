@@ -972,8 +972,8 @@ public final class GameScreen implements GuiScreen {
                 new ResourceSpec("star",                totalStars(p),                    "Stars (from Shamans)"),
                 new ResourceSpec("setof_characters",    p.tribeCharacters().size(),       "Total characters"),
 
-                new ResourceSpec("building_discount",   0,                                "Building discount (Builder)"),
-                new ResourceSpec("gatherer_discount",   0,                                "Gatherer discount"),
+                new ResourceSpec("building_discount",   p.builderDiscount(),              "Building discount (Builder)"),
+                new ResourceSpec("gatherer_discount",   p.gathererDiscount(),             "Gatherer discount"),
                 new ResourceSpec("inventor_icons",      countUniqueInventorIcons(p),      "Unique Inventor icons"),
 
                 new ResourceSpec("artist",   countByDetail(p.tribeCharacters(), "ARTIST"),    "Artists"),

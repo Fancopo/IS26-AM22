@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="added some comment for method" />
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Fixing bug: no final events, events on upperrow not be resolved">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_05_05_2026_16_15_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_5_0_22_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_5_0_22__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_5_16_27_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/BonusCardSelectionState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/states/BonusCardSelectionState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/NetworkGameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/NetworkGameService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/GameView.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,10 +93,15 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;game-version2&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -263,6 +279,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1773411487475</updated>
+      <workItem from="1778577030923" duration="501000" />
+      <workItem from="1778577663489" duration="1265000" />
+      <workItem from="1778584002728" duration="9313000" />
     </task>
     <task id="LOCAL-00001" summary="Initial version">
       <option name="closed" value="true" />
@@ -424,40 +443,11 @@
       <option name="project" value="LOCAL" />
       <updated>1778189212512</updated>
     </task>
-    <task id="LOCAL-00021" summary="fixed pick order(instanceof issue), fixed matches for TUI, added final reward e message for TUI, fixed the disconnect and leave issue">
-      <option name="closed" value="true" />
-      <created>1778409787301</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1778409787301</updated>
-    </task>
-    <task id="LOCAL-00022" summary="added some comment for methods">
-      <option name="closed" value="true" />
-      <created>1778532790728</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1778532790728</updated>
-    </task>
-    <task id="LOCAL-00023" summary="added some comment for method">
-      <option name="closed" value="true" />
-      <created>1778533075885</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1778533075885</updated>
-    </task>
-    <task id="LOCAL-00024" summary="added some comment for method">
-      <option name="closed" value="true" />
-      <created>1778533217723</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1778533217723</updated>
-    </task>
-    <option name="localTasksCounter" value="25" />
+    <option name="localTasksCounter" value="21" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -470,7 +460,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="game-version2" />
+                        <option value="origin/main" />
                       </list>
                     </value>
                   </entry>
@@ -495,10 +485,7 @@
     <MESSAGE value="still fixed GUI" />
     <MESSAGE value="added some fuction for GUI and added database(SQL)" />
     <MESSAGE value="fixed some bug of GUI" />
-    <MESSAGE value="fixed pick order(instanceof issue), fixed matches for TUI, added final reward e message for TUI, fixed the disconnect and leave issue" />
-    <MESSAGE value="added some comment for methods" />
-    <MESSAGE value="added some comment for method" />
-    <option name="LAST_COMMIT_MESSAGE" value="added some comment for method" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed some bug of GUI" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

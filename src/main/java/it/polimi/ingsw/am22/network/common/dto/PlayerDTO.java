@@ -14,6 +14,8 @@ import java.util.List;
  * @param food                           available food
  * @param projectedFinalPrestigePoints   projected final prestige points
  * @param active                         {@code true} if this is the active player
+ * @param builderDiscount                food discount granted by Builder characters
+ * @param gathererDiscount               sustenance food discount granted by Gatherer (Collector) characters
  * @param tribeCharacters                tribe character cards
  * @param buildings                      owned buildings
  */
@@ -24,6 +26,8 @@ public record PlayerDTO(
         int food,
         int projectedFinalPrestigePoints,
         boolean active,
+        int builderDiscount,
+        int gathererDiscount,
         List<CardDTO> tribeCharacters,
         List<CardDTO> buildings
 ) implements Serializable {

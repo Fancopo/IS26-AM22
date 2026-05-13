@@ -83,9 +83,21 @@ public class NetworkGameService {
     }
 
     /**
-     * Gestisce una richiesta proveniente da un client dispatchandola al
-     * metodo specifico in base al tipo. Eventuali eccezioni vengono
-     * convertite in {@link ErrorMessage} inviati al solo mittente.
+     * Punto d'ingresso unico per ogni richiesta che arriva dai trasporti
+     * (Socket o RMI). Dispatcha la richiesta sul metodo handler corretto
+     * usando il {@link ClientRequestVisitor}: cosi' nessun {@code instanceof}
+     * e ogni nuovo tipo di {@link ClientRequest} viene rilevato a compile-time.
+     *
+     * <p>Il metodo e' {@code synchronized}: serializza le mutazioni del registry
+     * delle partite e delle singole {@link MatchSession}. Il throughput non e'
+     * critico (le partite attive in parallelo sono poche e ogni handler e'
+     * leggero), in cambio si evita ogni race su stato condiviso.
+     *
+     * @param request la richiesta deserializzata; se {@code null} viene
+     *                risposto un {@link ErrorMessage} e non viene fatto nulla
+     * @param channel il canale del client che ha inviato la richiesta;
+     *                catturato dal {@link Dispatcher} e usato per inviare
+     *                eventuali risposte/errori
      */
     public synchronized void handleRequest(ClientRequest request, ClientChannel channel) {
         if (request == null) {
@@ -103,8 +115,25 @@ public class NetworkGameService {
     }
 
     /**
-     * Gestisce una caduta di trasporto (disconnessione non richiesta).
-     * Invocato dai trasporti quando lo stream chiude con errore.
+     * Gestisce una caduta di trasporto: il client non ha inviato
+     * {@link DisconnectPlayerRequest} ma il livello sottostante (socket
+     * chiuso, RMI unreachable) ha segnalato la fine della connessione.
+     * Viene invocato direttamente dai trasporti, non passando dal
+     * {@link ClientRequestVisitor}.
+     *
+     * <p>La logica:
+     * <ol>
+     *     <li>recupera il binding {@code (matchId, nickname)} memorizzato
+     *         sul canale al momento del join;</li>
+     *     <li>se il canale non era legato ad alcuna partita o lo era
+     *         in modo incoerente, si limita a chiudere il canale ed esce;</li>
+     *     <li>altrimenti delega a {@link MatchSession#handleDisconnect}
+     *         con {@code transportDrop=true}, che applica la stessa
+     *         logica del leave volontario ma chiude effettivamente il
+     *         canale (qui non c'e' speranza di riusarlo).</li>
+     * </ol>
+     *
+     * @param channel canale per cui il trasporto ha rilevato la chiusura
      */
     public synchronized void handleTransportDrop(ClientChannel channel) {
         String matchId = channel.getBoundMatchId();
@@ -186,7 +215,36 @@ public class NetworkGameService {
 
     /** Richieste globali --------------------------------------------------- */
 
-    /** Creates a new match, adds the host to the lobby and notifies them. */
+    /**
+     * Crea una nuova partita su richiesta di un client.
+     *
+     * <p>Step:
+     * <ol>
+     *     <li>valida il nickname dell'host (non null/blank);</li>
+     *     <li>genera un nuovo {@code matchId} univoco via {@link #nextMatchId};</li>
+     *     <li>istanzia una {@link MatchSession} e la registra subito nel
+     *         registry, cosi' una eventuale {@link ListMatchesRequest}
+     *         concorrente la vede;</li>
+     *     <li>delega a {@link MatchSession#handleHostCreateAndSetup} che
+     *         aggiunge l'host alla lobby e imposta il numero di giocatori
+     *         attesi in un'unica transizione (un solo broadcast finale).</li>
+     * </ol>
+     *
+     * <p>Gestione degli errori: la creazione puo' fallire in due modi distinti
+     * e il rollback e' diverso per ciascuno.
+     * <ul>
+     *     <li>Se l'host non e' nemmeno riuscito a unirsi (lobby vuota),
+     *         la sessione e' inutilizzabile e viene rimossa dal registry.</li>
+     *     <li>Se solo {@code setExpectedPlayers} ha fallito, l'host e' gia'
+     *         in lobby: la partita resta viva, cosi' l'host puo' correggere
+     *         il valore con un nuovo comando {@code players <N>}.</li>
+     * </ul>
+     * In entrambi i casi l'eccezione viene rilanciata, in modo che il
+     * dispatcher esterno la converta in {@link ErrorMessage} verso l'host.
+     *
+     * @param request payload con nickname host e numero di giocatori attesi
+     * @param channel canale del client host
+     */
     private void handleCreateMatch(CreateMatchRequest request, ClientChannel channel) {
         String hostNickname = requireText(request.hostNickname(), "hostNickname");
         String matchId = nextMatchId();
@@ -207,7 +265,18 @@ public class NetworkGameService {
         }
     }
 
-    /** Risponde al solo richiedente con la lista delle partite ancora aperte. */
+    /**
+     * Costruisce e invia al solo richiedente un {@link MatchesListMessage}
+     * con l'elenco delle partite in stato di lobby (non ancora partite).
+     *
+     * <p>Le partite gia' avviate vengono filtrate: non sono joinabili e
+     * non interessano alla scena "Lista partite" del client. Per ciascuna
+     * partita aperta viene incluso un {@link MatchInfoDTO} con
+     * {@code matchId}, nickname dell'host, numero atteso di giocatori e
+     * numero di giocatori attualmente in lobby.
+     *
+     * @param channel canale del client che ha richiesto la lista
+     */
     private void handleListMatches(ClientChannel channel) {
         List<MatchInfoDTO> open = new ArrayList<>();
         for (MatchSession session : matchesById.values()) {
@@ -223,7 +292,17 @@ public class NetworkGameService {
         channel.send(new MatchesListMessage(open));
     }
 
-    /** Recupera la sessione richiesta o solleva eccezione se inesistente. */
+    /**
+     * Helper di lookup: cerca nel registry la {@link MatchSession} con
+     * l'id indicato. Usato da ogni handler di richiesta "per-match" del
+     * {@link Dispatcher} per ottenere la sessione su cui invocare l'handler.
+     *
+     * @param matchId id della partita richiesta dal client
+     * @return la sessione corrispondente, mai {@code null}
+     * @throws IllegalArgumentException se {@code matchId} e' nullo/blank
+     *                                  o non corrisponde a nessuna partita
+     *                                  attiva nel registry
+     */
     private MatchSession requireSession(String matchId) {
         if (matchId == null || matchId.isBlank()) {
             throw new IllegalArgumentException("matchId is required for this request.");
@@ -235,15 +314,28 @@ public class NetworkGameService {
         return session;
     }
 
-    /** Genera un id leggibile per la prossima partita. */
+    /**
+     * Genera un identificativo univoco e leggibile per una nuova partita,
+     * nella forma {@code M-<n>} con {@code n} progressivo monotono.
+     * Si appoggia ad {@link AtomicLong} per essere sicuro anche al di fuori
+     * della {@code synchronized} di {@link #handleRequest}.
+     *
+     * @return l'id della prossima partita, mai usato in precedenza
+     */
     private String nextMatchId() {
         return "M-" + matchIdSeq.incrementAndGet();
     }
 
     /**
-     * Helper di validazione per parametri testuali: lancia
-     * {@link IllegalArgumentException} se la stringa e' null o blank,
-     * altrimenti la restituisce invariata.
+     * Helper di validazione per parametri testuali obbligatori. Centralizza
+     * il controllo "non null e non blank" e produce un messaggio d'errore
+     * uniforme che cita il nome del campo, cosi' nelle risposte di errore
+     * al client si capisce immediatamente quale parametro mancava.
+     *
+     * @param value     valore ricevuto dal client
+     * @param fieldName nome del campo, usato nel messaggio d'eccezione
+     * @return {@code value} invariato, garantito non null e non blank
+     * @throws IllegalArgumentException se {@code value} e' null o blank
      */
     private static String requireText(String value, String fieldName) {
         if (value == null || value.isBlank()) {
@@ -274,7 +366,26 @@ public class NetworkGameService {
             this.observerAttached = false;
         }
 
-        /** Aggiunge un giocatore alla lobby di questa partita. */
+        /**
+         * Aggiunge un giocatore (non host) alla lobby di questa partita.
+         *
+         * <p>Sequenza:
+         * <ol>
+         *     <li>memorizza lo stato pre-mossa di {@code hasStarted} per
+         *         capire poi se l'aggiunta ha innescato l'avvio della partita
+         *         (raggiungendo il numero atteso di giocatori);</li>
+         *     <li>delega al {@link GameController} l'inserimento del nickname
+         *         in lobby (puo' lanciare se duplicato/partita piena);</li>
+         *     <li>collega canale e nickname tramite {@link #bind};</li>
+         *     <li>conferma al solo richiedente con
+         *         {@link MatchJoinedMessage} che riporta matchId e nickname;</li>
+         *     <li>pubblica la transizione di stato a tutti i partecipanti
+         *         via {@link #publishStateChange}.</li>
+         * </ol>
+         *
+         * @param request payload con il nickname da aggiungere
+         * @param channel canale del client che si sta unendo
+         */
         private void handleAddPlayer(AddPlayerToLobbyRequest request, ClientChannel channel) {
             boolean wasStarted = gameController.hasStarted();
             gameController.addPlayerToLobby(request.nickname());
@@ -308,10 +419,20 @@ public class NetworkGameService {
         }
 
         /**
-         * Imposta il numero di giocatori attesi per questa partita
-         * (operazione consentita solo all'host) e ribroadcasta lo stato.
-         * Se il valore raggiunto fa partire la partita, viene emesso anche
-         * il {@link GameStartedMessage}.
+         * Aggiorna il numero di giocatori attesi per questa partita.
+         * L'operazione e' consentita solo all'host: il
+         * {@link GameController} verifica il vincolo e lancia se il
+         * richiedente non e' l'host (o se il valore e' fuori range).
+         *
+         * <p>Se il nuovo valore coincide con il numero attuale di giocatori
+         * in lobby, la partita parte: la transizione viene rilevata
+         * confrontando {@code hasStarted} prima e dopo, e
+         * {@link #publishStateChange} emette il {@link GameStartedMessage}
+         * (vs un semplice {@link LobbyStateMessage}).
+         *
+         * @param request payload con nickname del richiedente e nuovo valore
+         * @param channel canale del client richiedente, riallineato via
+         *                {@link #bindIfKnown}
          */
         private void handleSetExpectedPlayers(SetExpectedPlayersRequest request, ClientChannel channel) {
             bindIfKnown(request.requesterNickname(), channel);
@@ -340,10 +461,24 @@ public class NetworkGameService {
         }
 
         /**
-         * Esegue la mossa di piazzamento del totem sulla tessera offerta
-         * scelta. La chiamata al GameController e' avvolta in un batch della
-         * VirtualView: tutte le notifiche emesse dal model vengono
-         * coalescenziate in un unico {@link GameStateMessage} a fine batch.
+         * Esegue la mossa "piazza totem": il giocatore sceglie una delle
+         * offer tile disponibili (indicata da una lettera) e ci posa il
+         * proprio totem, vincolando la pesca successiva.
+         *
+         * <p>La chiamata al {@link GameController} e' avvolta in un batch
+         * della {@link VirtualView}: durante il batch le {@code notifyObservers}
+         * emesse dal model non producono messaggi singoli, e a {@code endBatch}
+         * viene inviato un unico {@link GameStateMessage} aggregato.
+         * Senza batching, una sola mossa puo' generare 5-6 notifiche
+         * (mosse, eventi, scoring) e altrettanti render lato client.
+         *
+         * <p>Il blocco {@code try/finally} garantisce che il batch venga
+         * sempre chiuso anche se il controller solleva eccezione, evitando
+         * di lasciare la VirtualView in stato "batch aperto" per sempre.
+         *
+         * @param request payload con nickname del giocatore e lettera della
+         *                offer tile scelta
+         * @param channel canale del giocatore, riallineato se gia' bindato
          */
         private void handlePlaceTotem(PlaceTotemRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
@@ -357,9 +492,20 @@ public class NetworkGameService {
         }
 
         /**
-         * Esegue la scelta delle carte da pescare. L'ordine degli id e'
-         * significativo (es. Builder->Building applica lo sconto, viceversa no).
-         * Batchato come {@link #handlePlaceTotem} per evitare doppi render.
+         * Esegue la mossa "pesca carte": il giocatore consuma il proprio
+         * totem dalla offer tile e prende le carte scelte. L'ordine degli
+         * id nella lista <strong>e' significativo</strong>: alcune carte
+         * influenzano altre in base alla sequenza (es. un Builder pescato
+         * prima di una Building applica lo sconto; viceversa no).
+         *
+         * <p>Stesso schema di batching di {@link #handlePlaceTotem}: la
+         * pesca tipicamente innesca scoring di eventi/edifici e quindi
+         * molteplici notifiche del model, che vanno coalescate per evitare
+         * render duplicati.
+         *
+         * @param request payload con nickname e lista ordinata degli id
+         *                delle carte selezionate
+         * @param channel canale del giocatore, riallineato se gia' bindato
          */
         private void handlePickCards(PickCardsRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
@@ -373,8 +519,16 @@ public class NetworkGameService {
         }
 
         /**
-         * Esegue la scelta della carta bonus durante la bonus phase.
-         * Batchato come gli altri handler di mossa.
+         * Esegue la scelta della carta bonus durante la
+         * {@code BonusCardSelectionState}: il giocatore prende una sola carta
+         * dal mazzetto bonus dell'era corrente.
+         *
+         * <p>Identica gestione di batching di {@link #handlePlaceTotem} e
+         * {@link #handlePickCards}: la scelta puo' propagare nuovo scoring
+         * e una transizione di stato del Game, quindi piu' notifiche.
+         *
+         * @param request payload con nickname e id della carta bonus scelta
+         * @param channel canale del giocatore, riallineato se gia' bindato
          */
         private void handlePickBonusCard(PickBonusCardRequest request, ClientChannel channel) {
             bindIfKnown(request.playerNickname(), channel);
@@ -388,10 +542,39 @@ public class NetworkGameService {
         }
 
         /**
-         * Gestisce la disconnessione di un giocatore di questa partita,
-         * sia volontaria ({@code transportDrop=false}) sia per caduta di
-         * trasporto ({@code transportDrop=true}). A partita avviata, la
-         * disconnessione abbatte la partita per tutti.
+         * Gestisce l'uscita di un giocatore da questa partita, sia che si
+         * tratti di un leave volontario ({@code transportDrop=false},
+         * arrivato come {@link DisconnectPlayerRequest}) sia di una caduta
+         * di trasporto ({@code transportDrop=true}, segnalata da
+         * {@link NetworkGameService#handleTransportDrop}).
+         *
+         * <p><strong>Pre-game (partita non ancora iniziata)</strong>:
+         * <ul>
+         *     <li>il giocatore viene rimosso dalla lobby (eccezioni
+         *         silenziate: il fatto che non sia presente non e' un errore
+         *         fatale in questo contesto);</li>
+         *     <li>la {@link VirtualView} sgancia il binding del nickname;</li>
+         *     <li>se la disconnessione e' di trasporto chiudiamo davvero il
+         *         canale, altrimenti lo lasciamo aperto: e' un leave volontario,
+         *         il client tornera' alla scena "Lista partite" sulla stessa
+         *         connessione senza dover riconnettersi;</li>
+         *     <li>si fa broadcast del nuovo stato di lobby e, se la lobby
+         *         e' rimasta vuota, si libera lo slot dal registry.</li>
+         * </ul>
+         *
+         * <p><strong>Mid-game</strong>: una disconnessione abbatte la partita
+         * per tutti. Si invia un {@link MatchClosedMessage} a tutti i canali
+         * ancora legati alla partita, si sgancia ogni canale dal matchId
+         * <em>senza chiuderlo</em> (cosi' chi non si era disconnesso resta
+         * connesso al server e puo' di nuovo list/create/join) e infine la
+         * sessione viene rimossa dal registry.
+         *
+         * @param nickname      nickname del giocatore che esce
+         * @param channel       canale del giocatore che ha inviato il leave
+         *                      o per cui e' caduto il trasporto
+         * @param transportDrop {@code true} se la chiamata viene da
+         *                      {@link #handleTransportDrop}, {@code false}
+         *                      per un leave esplicito del client
          */
         private void handleDisconnect(String nickname, ClientChannel channel, boolean transportDrop) {
             if (!gameController.hasStarted()) {
@@ -456,8 +639,10 @@ public class NetworkGameService {
         }
 
         /**
-         * Mappa lo stato corrente della lobby in un DTO e lo invia a tutti
-         * i giocatori legati alla VirtualView di questa partita.
+         * Costruisce un {@link LobbyStateDTO} a partire dallo stato attuale
+         * del {@link GameController} (host, expected, lista giocatori) e lo
+         * invia come {@link LobbyStateMessage} a tutti i canali registrati
+         * nella {@link VirtualView}. Usato dopo ogni mutazione pre-game.
          */
         private void broadcastLobbyState() {
             LobbyStateDTO lobbyState = mapper.toLobbyState(gameController);
@@ -541,9 +726,17 @@ public class NetworkGameService {
         }
 
         /**
-         * Carica dal DB la classifica storica per partite con il numero di
-         * giocatori indicato e la converte in lista di {@link LeaderboardEntryDTO}
-         * da spedire al client.
+         * Carica dal DB la classifica storica filtrata per dimensione
+         * partita: i punteggi di una partita a 2 giocatori non sono
+         * confrontabili con quelli di una a 4, per questo la leaderboard
+         * e' indicizzata per {@code numPlayers}.
+         *
+         * <p>Trasforma le {@link MatchResultDao.RankRow} restituite dal DAO
+         * in {@link LeaderboardEntryDTO} pronti per la serializzazione.
+         *
+         * @param numPlayers numero di giocatori della categoria di partite
+         * @return classifica storica, ordinata dal DAO (top punteggi prima)
+         * @throws SQLException se la query al DAO fallisce
          */
         private List<LeaderboardEntryDTO> loadLeaderboard(int numPlayers) throws SQLException {
             List<MatchResultDao.RankRow> rows = matchResultDao.getLeaderboard(numPlayers);
@@ -555,9 +748,16 @@ public class NetworkGameService {
         }
 
         /**
-         * Calcola, per ogni giocatore della partita appena terminata, la
-         * posizione che il suo punteggio finale occupa nella classifica
-         * storica (interrogando il DAO con {@code getPosition}).
+         * Per ogni giocatore della partita appena terminata calcola la
+         * posizione (1-based) che il suo punteggio finale occupa nella
+         * classifica storica delle partite con lo stesso numero di
+         * giocatori. Utile per mostrare al client una riga del tipo
+         * "Sei 12esimo nel ranking partite a 3 giocatori".
+         *
+         * @param numPlayers  dimensione della partita (chiave del ranking)
+         * @param finalScores mappa nickname -> punteggio finale
+         * @return mappa nickname -> posizione nel ranking storico
+         * @throws SQLException se una delle query al DAO fallisce
          */
         private Map<String, Integer> computePositions(int numPlayers,
                                                       Map<String, Integer> finalScores) throws SQLException {
@@ -569,15 +769,32 @@ public class NetworkGameService {
             return positions;
         }
 
-        /** Lega il canale al nickname e al matchId di questa sessione. */
+        /**
+         * Stabilisce (o aggiorna) il legame tra un nickname e un canale per
+         * questa partita: la {@link VirtualView} memorizza il canale come
+         * destinatario dei messaggi per quel nickname, e il canale memorizza
+         * il {@code matchId} di appartenenza (usato in seguito da
+         * {@link #handleTransportDrop} per risalire alla sessione).
+         *
+         * <p>{@code bindOrReplace} e' idempotente: chiamare {@code bind}
+         * piu' volte con lo stesso canale e' sicuro e serve in caso di
+         * riconnessione.
+         */
         private void bind(String nickname, ClientChannel channel) {
             virtualView.bindOrReplace(nickname, channel);
             channel.setBoundMatchId(gameController.getMatchId());
         }
 
         /**
-         * Se il nickname è già registrato nella VirtualView aggiorna il suo
-         * canale (utile in caso di riconnessione o richiesta da canale diverso).
+         * Variante "soft" di {@link #bind} usata dagli handler di mossa.
+         * Se il nickname e' gia' noto alla {@link VirtualView}, aggiorna il
+         * canale associato (caso utile quando una richiesta arriva da un
+         * canale diverso da quello di join, es. una riconnessione). Se il
+         * nickname non e' bindato non fa nulla: non e' compito di un handler
+         * di mossa creare un nuovo binding.
+         *
+         * <p>Tollera nickname nulli/blank ritornando in silenzio: la
+         * validazione vera e' a carico del {@link GameController}.
          */
         private void bindIfKnown(String nickname, ClientChannel channel) {
             if (nickname == null || nickname.isBlank()) {
@@ -589,9 +806,12 @@ public class NetworkGameService {
         }
 
         /**
-         * Rimuove dal canale il binding al matchId di questa sessione (solo
-         * se corrisponde): cosi' il client non risulta piu' "iscritto" alla
-         * partita, pur restando connesso al server.
+         * Rimuove dal canale l'eventuale binding al {@code matchId} di
+         * questa sessione, ma solo se l'id corrisponde davvero: cosi'
+         * evitiamo di sganciare un canale che nel frattempo fosse stato
+         * riassegnato a un'altra partita. Dopo questa operazione il client
+         * risulta non piu' "iscritto" a questa partita, pur restando
+         * collegato al server (il canale stesso non viene chiuso qui).
          */
         private void unbindMatch(ClientChannel channel) {
             if (Objects.equals(channel.getBoundMatchId(), gameController.getMatchId())) {
@@ -600,8 +820,11 @@ public class NetworkGameService {
         }
 
         /**
-         * Se la partita non è ancora iniziata e nessuno è più in lobby, libera
-         * lo slot dal registry — evita che id "morti" inquinino la lista.
+         * Garbage-collection delle lobby vuote: se la partita non e'
+         * ancora iniziata e l'ultimo giocatore se ne e' andato, la
+         * sessione e' inutile e viene rimossa dal registry. Senza questo,
+         * gli id "morti" continuerebbero a comparire nella lista partite
+         * fino al riavvio del server.
          */
         private void cleanupIfEmpty() {
             if (!gameController.hasStarted() && gameController.getLobbyPlayers().isEmpty()) {
@@ -610,9 +833,18 @@ public class NetworkGameService {
         }
 
         /**
-         * Aggancia la VirtualView al Game come observer, una sola volta:
-         * dal primo agganciamento ogni mutazione del model produce un
-         * {@code GameStateMessage} broadcast.
+         * Aggancia la {@link VirtualView} al {@code Game} come observer, ma
+         * una sola volta nella vita della sessione (idempotente): il flag
+         * {@code observerAttached} evita iscrizioni multiple, che
+         * causerebbero la spedizione di N messaggi identici per ogni
+         * mutazione del model.
+         *
+         * <p>L'aggancio avviene solo dopo lo start: prima dell'avvio
+         * {@code gameController.getGame()} puo' essere {@code null} e
+         * comunque non c'e' uno stato di gioco da osservare. Da questo
+         * momento ogni {@code notifyObservers} del model si trasforma in un
+         * {@link GameStateMessage} broadcast (eventualmente coalescato dal
+         * batching, vedi {@link #handlePlaceTotem}).
          */
         private void attachObserverIfNeeded() {
             if (observerAttached || gameController.getGame() == null) {

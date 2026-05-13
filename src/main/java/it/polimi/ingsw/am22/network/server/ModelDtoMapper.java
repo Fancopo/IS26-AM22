@@ -101,6 +101,8 @@ public class ModelDtoMapper {
                 player.getFood(),
                 resolveFinalPP(player),
                 player == activePlayer,
+                tribe.getBuilderDiscount(),
+                tribe.countCharacters(it.polimi.ingsw.am22.model.character.CharacterType.COLLECTOR) * 3,
                 tribe.getMembers().stream().map(this::toCardDTO).toList(),
                 tribe.getBuildings().stream().map(this::toCardDTO).toList()
         );
