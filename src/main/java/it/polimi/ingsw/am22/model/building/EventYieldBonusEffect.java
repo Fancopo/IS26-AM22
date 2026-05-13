@@ -3,7 +3,6 @@ package it.polimi.ingsw.am22.model.building;
 import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.model.event.EventType;
 
-// 5. EventYieldBonusEffect
 public class EventYieldBonusEffect implements BuildingEffect {
     private EventType targetEventType;
     private int bonusFood;
@@ -17,20 +16,12 @@ public class EventYieldBonusEffect implements BuildingEffect {
 
     @Override
     public void applyEventBonus(EventType eventType, Player player, int characterCount) {
-        if (this.targetEventType == eventType) {
+        if (this.targetEventType != eventType) return;
 
-            // Multiply the bonus by the amount of characters (Hunters, Artists)
-            int extraFood = this.bonusFood * characterCount;
-            int extraPP = this.bonusPP * characterCount;
+        int extraFood = bonusFood * characterCount;
+        int extraPP = bonusPP * characterCount;
 
-            if (extraFood > 0) {
-                player.addFood(extraFood);
-                System.out.println("Building Bonus: " + player.getNickname() + " got +" + extraFood + " Food!");
-            }
-            if (extraPP > 0) {
-                player.addPP(extraPP);
-                System.out.println("Building Bonus: " + player.getNickname() + " got +" + extraPP + " PP!");
-            }
-        }
+        if (extraFood > 0) player.addFood(extraFood);
+        if (extraPP > 0) player.addPP(extraPP);
     }
 }

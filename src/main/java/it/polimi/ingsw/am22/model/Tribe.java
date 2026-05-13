@@ -36,38 +36,26 @@ public class Tribe {
         buildings.add(building);
     }
 
-    /**
-     * Counts the characters of a given type.
-     * This method can also support end-game rules
-     * such as artists, builders, inventors, etc.
-     */
     public int countCharacters(CharacterType type) {
         int count = 0;
-
         for (TribeCharacter character : members) {
-            if (character.getCharacterType() == type) {
-                count++;
-            }
+            if (character.getCharacterType() == type) count++;
         }
-
         return count;
     }
 
     public int countUniqueInventorIcons() {
-        Set<Character> uniqueIcons = new HashSet<>();
-
+        Set<Character> icons = new HashSet<>();
         for (TribeCharacter character : members) {
             if (character.getCharacterType() == CharacterType.INVENTOR) {
-                uniqueIcons.add(character.getIconPerInventor());
+                icons.add(character.getIconPerInventor());
             }
         }
-
-        return uniqueIcons.size();
+        return icons.size();
     }
 
     public int getBuilderDiscount() {
         int discount = 0;
-
         for (TribeCharacter character : members) {
             if (character.getCharacterType() == CharacterType.BUILDER) {
                 discount += character.getDiscountFood();
@@ -78,9 +66,7 @@ public class Tribe {
 
     public boolean hasExtraBuyAtRoundEnd() {
         for (Building b : buildings) {
-            if (b.grantsExtraBuyAtRoundEnd()) {
-                return true;
-            }
+            if (b.grantsExtraBuyAtRoundEnd()) return true;
         }
         return false;
     }

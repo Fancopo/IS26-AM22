@@ -4,22 +4,14 @@ import it.polimi.ingsw.am22.network.server.rmi.RmiGameServer;
 import it.polimi.ingsw.am22.network.server.socket.SocketGameServer;
 
 /**
- * Main del server.
- * Crea un singolo {@link NetworkGameService} multipartita,
- * avvia {@link SocketGameServer} (12345) e {@link RmiGameServer#publish}
- * (registry 1099, binding {@code MESOS_SERVER}).
+ * Server entry point. Creates a single multi-match {@link NetworkGameService}
+ * shared by all transports, starts the socket listener on 12345 and publishes
+ * the RMI stub on the registry at 1099 under the binding {@code MESOS_SERVER}.
  */
 public final class NetworkServerLauncher {
 
-    private NetworkServerLauncher() {
-    }
-    /**
-     * Punto di ingresso del server. Crea un singolo {@link NetworkGameService}
-     * (condiviso da tutti i trasporti), avvia il listener socket sulla porta
-     * 12345 e pubblica lo stub RMI sul registry alla porta 1099 con binding
-     * {@code MESOS_SERVER}. Eventuali eccezioni di apertura porta/registry
-     * vengono propagate al chiamante.
-     */
+    private NetworkServerLauncher() {}
+
     public static void main(String[] args) throws Exception {
         int socketPort = 12345;
         int rmiPort = 1099;

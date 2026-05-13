@@ -43,28 +43,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Schermata principale di gioco.
- *
- *     <li><b>top</b>: header con titolo della fase corrente, round, era;</li>
- *     <li><b>center</b>: board centrale → riga superiore di carte raggruppate
- *         per categoria, sezione tessere offerta (immagine numplayer_N + tessere
- *         su una sola riga), riga inferiore di carte raggruppate per categoria;</li>
- *     <li><b>right</b>: pannelli giocatori (TUTTI, incluso quello locale)
- *         impilati verticalmente con totem, PP, griglia 4×3 di icone, e le
- *         miniature delle carte pescate fino a quel momento;</li>
- *     <li><b>bottom</b>: status bar per messaggi info/errore.</li>
- *
- *
- * <p>Le dimensioni di carte/tessere/totem sono ricalcolate ad ogni render
- * sulla base della larghezza/altezza correnti del root, e un listener
- * sulle proprietà di dimensione del root forza un re-render: in questo
- * modo l'intera scena segue la dimensione della finestra (full-screen,
- * resize, ecc.).
+ * Main game screen. Layout: header (phase/round/era), centre board (upper row,
+ * offer tiles with the numplayer_N image, lower row), right column (player
+ * panels), status bar at the bottom. Card/tile/totem sizes recompute on every
+ * render and on every window resize, so the layout follows the window.
  */
 public final class GameScreen implements GuiScreen {
 
-    // Dimensioni di display — ricalcolate ad ogni render() in base alla
-    // dimensione corrente del root, mantenendo l'aspect ratio 110:150.
+    // Display sizes — recomputed each render(), 110:150 aspect ratio preserved.
     private double cardW = 110;
     private double cardH = 150;
     private double tileW = 110;
@@ -119,13 +105,6 @@ public final class GameScreen implements GuiScreen {
      *  Label del badge cosi' refreshBadges() puo' aggiornare il numero. */
     private final Map<String, Label> badgeByCardId = new HashMap<>();
 
-    /**
-     * Costruisce la schermata di gioco.
-     * Invocata da {@link GuiApp#showGameScreen()} quando arriva
-     * {@link GameStartedMessage} oppure quando un {@link GameStateMessage}
-     * trova la sessione gia' "started". Se la {@link it.polimi.ingsw.am22.network.client.ClientSession}
-     * ha gia' uno stato di gioco in cache, lo renderizza subito.
-     */
     public GameScreen(GuiApp app) {
         this.app = app;
         buildUi();
@@ -133,26 +112,11 @@ public final class GameScreen implements GuiScreen {
         if (cached != null) render(cached);
     }
 
-    /**
-     * Restituisce il nodo radice della schermata.
-     * Chiamato da {@link GuiApp#setScreen} per montare questa schermata nello stage.
-     */
     @Override
     public Parent getRoot() {
         return root;
     }
 
-    /**
-     * Riceve i messaggi del server sul thread JavaFX.
-     * Gestisce:
-     * <ul>
-     *   <li>{@link GameStateMessage}/{@link GameStartedMessage}: re-render
-     *       completo della UI con il nuovo stato;</li>
-     *   <li>{@link ErrorMessage}: mostra l'errore e svuota la selezione
-     *       di carte (le selezioni potrebbero non essere piu' valide);</li>
-     *   <li>{@link InfoMessage}: scritto nella status bar.</li>
-     * </ul>
-     */
     @Override
     public void onServerMessage(ServerMessage message) {
         message.accept(new ServerMessageVisitor() {
@@ -171,18 +135,8 @@ public final class GameScreen implements GuiScreen {
         });
     }
 
-    // =====================================================================
-    // costruzione layout (statica: i nodi vengono solo riempiti in render)
-    // =====================================================================
+    // ----- layout (nodes are built once here and filled in render()) -----
 
-    /**
-     * Crea il layout statico della schermata: header in alto, board centrale
-     * (righe carte + tessere offerta), colonna giocatori a destra, status bar
-     * in basso. I nodi vengono solo riempiti in {@link #render}; qui ci si
-     * limita a costruirne la struttura.
-     * Inoltre registra un listener sulle dimensioni del root per ri-renderare
-     * carte/tessere quando la finestra viene ridimensionata.
-     */
     private void buildUi() {
         root.getStyleClass().add("game-root");
         applyBackgroundImage();
@@ -204,11 +158,9 @@ public final class GameScreen implements GuiScreen {
     }
 
     /**
-     * Imposta lo sfondo del BorderPane radice tutto in Java.
-     *
-     * <p>NOTA TECNICA: il CSS della classe {@code .game-root} è volutamente
-     * vuoto. Se contenesse {@code -fx-background-color}, il CSS verrebbe
-     * applicato DOPO questo metodo e sovrascriverebbe l'immagine.
+     * Background is set in Java because the .game-root CSS class is
+     * intentionally empty: a CSS -fx-background-color would be applied
+     * after this method and would overwrite the image.
      */
     private void applyBackgroundImage() {
         Image bg = ImageCache.load("/images/background/background_noMESOS.png");
@@ -225,7 +177,7 @@ public final class GameScreen implements GuiScreen {
             root.setBackground(new javafx.scene.layout.Background(bgImage));
             return;
         }
-        // Fallback: gradiente rosso (se l'immagine manca, vediamo questo).
+        // Fallback: red gradient when the image is missing.
         javafx.scene.paint.LinearGradient grad = new javafx.scene.paint.LinearGradient(
                 0, 0, 0, 1, true, javafx.scene.paint.CycleMethod.NO_CYCLE,
                 new javafx.scene.paint.Stop(0.0,  Color.web("#5a0f1a")),
@@ -237,10 +189,6 @@ public final class GameScreen implements GuiScreen {
                         javafx.geometry.Insets.EMPTY)));
     }
 
-    /**
-     * Costruisce l'header in alto: titolo dinamico della fase corrente a sinistra
-     * (aggiornato da {@link #headerTitleFor}) e fase / era / round a destra.
-     */
     private Node buildHeader() {
         headerTitle.getStyleClass().add("game-header-title");
         headerTitle.setText("Waiting...");
@@ -256,19 +204,12 @@ public final class GameScreen implements GuiScreen {
         return header;
     }
 
-    /**
-     * Costruisce la board centrale: una VBox con la riga superiore di carte,
-     * la sezione delle tessere offerta (board numplayer + tessere) e la riga
-     * inferiore di carte. Avvolta in uno ScrollPane trasparente per gestire
-     * dimensioni inferiori al contenuto.
-     */
     private Node buildCenter() {
         upperRowBox.setAlignment(Pos.CENTER);
         lowerRowBox.setAlignment(Pos.CENTER);
         offerTilesBox.setAlignment(Pos.CENTER);
         offerSectionBox.setAlignment(Pos.CENTER);
-        // Le righe esterne sono trasparenti: i pannelli visibili (Building/
-        // Character/Event) vengono creati come HBox interne in renderCardRow().
+        // Outer rows are transparent; visible per-category panels are added inside renderCardRow().
         offerSectionBox.getStyleClass().add("board-row");
 
         VBox center = new VBox(10,
@@ -290,12 +231,6 @@ public final class GameScreen implements GuiScreen {
         return scroll;
     }
 
-    /**
-     * Costruisce la colonna destra: pannelli giocatori in alto (popolati in
-     * {@link #renderPlayers}) e pannello azioni in basso (hint + pulsante
-     * "Confirm" + pulsante "Leave match"). Avvolta in uno ScrollPane per
-     * gestire partite con tanti giocatori.
-     */
     private Node buildRightColumn() {
         playersBox.setPadding(new Insets(2));
         playersBox.setSpacing(4);
@@ -340,10 +275,6 @@ public final class GameScreen implements GuiScreen {
         return right;
     }
 
-    /**
-     * Costruisce la status bar in fondo allo schermo: una Label dove vengono
-     * scritti errori, info dal server e messaggi di feedback delle azioni.
-     */
     private Node buildBottom() {
         statusLabel.getStyleClass().add("status-bar");
         statusLabel.setWrapText(true);
@@ -352,16 +283,8 @@ public final class GameScreen implements GuiScreen {
         return statusLabel;
     }
 
-    // =====================================================================
-    // rendering di uno stato
-    // =====================================================================
+    // ----- rendering -----
 
-    /**
-     * Re-render completo della schermata in base al nuovo {@link GameStateDTO}.
-     * Chiamato da {@link #onServerMessage} per ogni GameStateMessage / GameStartedMessage
-     * e dal listener di resize. Svuota le selezioni di carte (potrebbero non
-     * essere piu' valide nel nuovo stato), poi ricostruisce le sezioni della UI.
-     */
     private void render(GameStateDTO state) {
         recomputeSizes(state);
         applyRightColumnSize();
@@ -370,9 +293,8 @@ public final class GameScreen implements GuiScreen {
         phaseLabel.setText("Phase: " + state.currentPhase());
         headerTitle.setText(headerTitleFor(state));
 
-        // Le selezioni precedenti non hanno più senso con un nuovo stato:
-        // svuotiamo PRIMA di rebuildare le card così le ToggleButton
-        // partono deselezionate e lo stato visivo resta sincronizzato.
+        // Previous selections are stale on a new state — clear BEFORE rebuilding
+        // so ToggleButtons start deselected and the visual state stays in sync.
         pickedCardIds.clear();
         badgeByCardId.clear();
 
@@ -448,22 +370,12 @@ public final class GameScreen implements GuiScreen {
 
     // ------ board rows ------
 
-    /**
-     * Renderizza la riga superiore di carte della board. Le carte sono
-     * cliccabili (ToggleButton attivi) solo se e' il turno del giocatore
-     * locale ed e' in azione o bonus phase.
-     */
     private void renderUpperRow(GameStateDTO state) {
         upperRowBox.getChildren().clear();
         boolean canPick = isMyTurn(state) && (isActionPhase(state.currentPhase()) || isBonusPhase(state.currentPhase()));
         renderCardRow(upperRowBox, state.upperRow(), canPick, "UP");
     }
 
-    /**
-     * Renderizza la riga inferiore di carte della board. Le carte sono
-     * cliccabili (ToggleButton attivi) solo se e' il turno del giocatore
-     * locale ed e' in azione o bonus phase.
-     */
     private void renderLowerRow(GameStateDTO state) {
         lowerRowBox.getChildren().clear();
         boolean canPick = isMyTurn(state) && (isActionPhase(state.currentPhase()) || isBonusPhase(state.currentPhase()));
@@ -495,11 +407,6 @@ public final class GameScreen implements GuiScreen {
         addCategoryGroup(row, others,     canPick, fallback);
     }
 
-    /**
-     * Crea un sotto-pannello orizzontale per una singola categoria di carte
-     * (Building / Character / Event / Other) e lo aggiunge come figlio della
-     * riga. Se la categoria e' vuota non aggiunge nulla, evitando pannelli vuoti.
-     */
     private void addCategoryGroup(HBox parent, List<CardDTO> cards, boolean canPick, String fallback) {
         if (cards.isEmpty()) return;
         HBox group = new HBox(8);
@@ -511,10 +418,6 @@ public final class GameScreen implements GuiScreen {
         parent.getChildren().add(group);
     }
 
-    /**
-     * Costruisce un nodo "carta": ToggleButton con un'immagine (o placeholder)
-     * e un badge numerato in alto a destra che mostra l'ordine di selezione.
-     */
     private Node buildCardNode(CardDTO c, boolean clickable, String fallbackLabel) {
         Color color = colorForCardCategory(c.category());
         String label = (c.id() == null ? fallbackLabel : c.id())
@@ -559,18 +462,13 @@ public final class GameScreen implements GuiScreen {
             }
         });
 
-        // Stato iniziale del badge coerente con un eventuale pre-set.
+        // Keep the badge in sync with any pre-existing selection.
         if (tb.isSelected()) {
             refreshBadges();
         }
         return wrapper;
     }
 
-    /**
-     * Aggiorna i badge "1, 2, 3, ..." su ogni carta selezionata in base
-     * all'ordine di selezione registrato in {@link #pickedCardIds}.
-     * Le carte non selezionate hanno il badge nascosto.
-     */
     private void refreshBadges() {
         Map<String, Integer> orderByCardId = new HashMap<>();
         int i = 1;
@@ -590,11 +488,6 @@ public final class GameScreen implements GuiScreen {
         }
     }
 
-    /**
-     * @return la tessera offerta su cui il giocatore locale ha appena
-     *         piazzato il proprio totem, oppure {@code null} se non ne
-     *         ha ancora scelta una.
-     */
     private OfferTileDTO chosenOfferTile(GameStateDTO state) {
         String me = app.getSession().getLocalNickname();
         if (me == null || state == null || state.offerTrack() == null) return null;
@@ -604,22 +497,12 @@ public final class GameScreen implements GuiScreen {
         return null;
     }
 
-    /**
-     * Numero massimo di carte che il giocatore puo' prendere da una riga
-     * (UP/LOW) dato il valore della tessera offerta su cui ha piazzato
-     * il totem. Se nessuna tessera e' stata scelta, restituisce
-     * {@code Integer.MAX_VALUE} (limite "disattivo").
-     */
     private int limitForRow(GameStateDTO state, String row) {
         OfferTileDTO chosen = chosenOfferTile(state);
         if (chosen == null) return Integer.MAX_VALUE;
         return "UP".equals(row) ? chosen.upperCardsToTake() : chosen.lowerCardsToTake();
     }
 
-    /**
-     * Quante carte della riga indicata ({@code "UP"} o {@code "LOW"}) sono
-     * attualmente in {@link #pickedCardIds}.
-     */
     private int countSelectedInRow(GameStateDTO state, String row) {
         if (state == null) return 0;
         List<CardDTO> cards = "UP".equals(row) ? state.upperRow() : state.lowerRow();
@@ -631,10 +514,6 @@ public final class GameScreen implements GuiScreen {
         return n;
     }
 
-    /**
-     * Verifica se è possibile selezionare un'altra carta nella riga indicata,
-     * dato lo stato corrente e la tessera offerta scelta dal giocatore.
-     */
     private boolean canSelectCard(String row) {
         GameStateDTO state = app.getSession().getLatestGameState();
         if (state == null) return true;
@@ -647,11 +526,6 @@ public final class GameScreen implements GuiScreen {
         return countSelectedInRow(state, row) < limit;
     }
 
-    /**
-     * Costruisce il messaggio da mostrare in {@link #statusLabel} quando
-     * l'utente tenta di selezionare una carta oltre il limite consentito
-     * (in bonus phase: 1 carta; in action phase: il valore della tessera).
-     */
     private String limitReachedMessage(String row) {
         GameStateDTO state = app.getSession().getLatestGameState();
         if (state != null && isBonusPhase(state.currentPhase())) {
@@ -665,7 +539,6 @@ public final class GameScreen implements GuiScreen {
                 + "To change your choice: click one of the already-selected cards to remove it, then click the new one.";
     }
 
-    /** Aggiorna l'actionHint con il conteggio carte selezionate per riga. */
     private void refreshPickHint() {
         GameStateDTO state = app.getSession().getLatestGameState();
         if (state == null || !isMyTurn(state)) return;
@@ -686,11 +559,6 @@ public final class GameScreen implements GuiScreen {
         }
     }
 
-    /**
-     * Colore di placeholder associato a una categoria di carta. Usato come
-     * fallback colorato quando il PNG della carta non e' disponibile e per
-     * dare un tinto visivo alle thumbnail nel pannello del giocatore.
-     */
     private Color colorForCardCategory(String category) {
         if (category == null) return Color.web("#88aabb");
         return switch (category.toUpperCase()) {
@@ -703,12 +571,6 @@ public final class GameScreen implements GuiScreen {
 
     // ------ offer tiles + numplayer board ------
 
-    /**
-     * Renderizza la sezione tessere offerta: a sinistra la board numplayer_N
-     * (con i totem dei giocatori nella turn-order), a destra la riga di
-     * tessere lettera. Le tessere sono cliccabili solo se e' il turno del
-     * giocatore locale ed e' in fase di piazzamento totem.
-     */
     private void renderOfferTiles(GameStateDTO state) {
         offerTilesBox.getChildren().clear();
         boolean myTurn = isMyTurn(state);
@@ -805,10 +667,6 @@ public final class GameScreen implements GuiScreen {
         return box;
     }
 
-    /**
-     * Costruisce una tessera offerta cliccabile. Se la tessera è occupata,
-     * sopra il quadrato bianco appare il totem del giocatore corrispondente.
-     */
     private Node buildOfferTileNode(OfferTileDTO t, GameStateDTO state, boolean clickable) {
         String fallback = String.valueOf(t.letter())
                 + "\nU+" + t.upperCardsToTake()
@@ -874,11 +732,6 @@ public final class GameScreen implements GuiScreen {
 
     // ------ players (right column) ------
 
-    /**
-     * Renderizza i pannelli giocatore nella colonna destra. Il giocatore
-     * locale appare sempre per primo (con stile "local-player-panel"), gli
-     * altri sotto. Chiamato da {@link #render} ad ogni cambio di stato.
-     */
     private void renderPlayers(GameStateDTO state) {
         playersBox.getChildren().clear();
         String me = app.getSession().getLocalNickname();
@@ -895,13 +748,6 @@ public final class GameScreen implements GuiScreen {
         }
     }
 
-    /**
-     * Costruisce un singolo pannello giocatore: totem, nickname, PP attuali
-     * e PP finali proiettati, griglia 4x3 di risorse/personaggi, e — se il
-     * giocatore ha pescato carte — la lista in miniatura delle carte pescate.
-     * Lo stile cambia se {@code local} (il giocatore locale) e se il
-     * giocatore e' "active" (turno corrente).
-     */
     private Node buildPlayerPanel(PlayerDTO p, boolean local) {
         VBox box = new VBox(2);
         box.setPadding(new Insets(4, 6, 4, 6));
@@ -964,9 +810,6 @@ public final class GameScreen implements GuiScreen {
         return pane;
     }
 
-    /**
-     * Griglia 4×3 di icone risorsa/personaggio.
-     */
     private Node buildResourceGrid(PlayerDTO p) {
         ResourceSpec[] specs = new ResourceSpec[] {
                 new ResourceSpec("food",                p.food(),                         "Food"),
@@ -1000,10 +843,6 @@ public final class GameScreen implements GuiScreen {
 
     private record ResourceSpec(String iconName, int count, String tooltip) {}
 
-    /**
-     * Crea una cella della griglia risorse: icona (con fallback a placeholder
-     * colorato se manca il PNG) + numero, con tooltip esplicativo.
-     */
     private Node resourceCell(ResourceSpec s) {
         Node icon = ImageCache.icon(ImageCache.iconPath(s.iconName()), iconS,
                 s.iconName().substring(0, 1).toUpperCase(),
@@ -1019,7 +858,6 @@ public final class GameScreen implements GuiScreen {
         return cell;
     }
 
-    /** Somma le stelle portate dagli sciamani della tribu' del giocatore. */
     private int totalStars(PlayerDTO p) {
         if (p.tribeCharacters() == null) return 0;
         int sum = 0;
@@ -1029,11 +867,7 @@ public final class GameScreen implements GuiScreen {
         return sum;
     }
 
-    /**
-     * Conta le icone Inventor UNICHE possedute dal giocatore. Gli inventor
-     * hanno {@code detailType} nella forma {@code INVENTOR-xxx}: vengono
-     * collezionati i suffissi in un Set e si restituisce la dimensione.
-     */
+    /** Inventors have detailType "INVENTOR-X"; we count the distinct X suffixes. */
     private int countUniqueInventorIcons(PlayerDTO p) {
         if (p.tribeCharacters() == null) return 0;
         java.util.Set<String> set = new java.util.HashSet<>();
@@ -1046,11 +880,6 @@ public final class GameScreen implements GuiScreen {
         return set.size();
     }
 
-    /**
-     * Colore di placeholder per ciascuna icona risorsa/personaggio. Usato
-     * quando il PNG dell'icona non e' presente nei resources, cosi' che la
-     * cella resti riconoscibile per tipo.
-     */
     private Color placeholderColorForIcon(String iconName) {
         return switch (iconName.toLowerCase()) {
             case "food"               -> Color.web("#e07b3a");
@@ -1072,12 +901,6 @@ public final class GameScreen implements GuiScreen {
 
     // ------ action panel ------
 
-    /**
-     * Aggiorna il pannello azioni in base al turno e alla fase corrente:
-     * messaggio guida nell'actionHint e abilitazione/disabilitazione del
-     * pulsante Confirm. Se non e' il turno del giocatore locale tutti i
-     * controlli sono disabilitati e viene mostrato "Waiting for X...".
-     */
     private void renderActionPanel(GameStateDTO state) {
         boolean myTurn = isMyTurn(state);
         String phase = state.currentPhase() == null ? "" : state.currentPhase();
@@ -1103,22 +926,13 @@ public final class GameScreen implements GuiScreen {
         }
     }
 
-    /**
-     * Deseleziona visivamente tutte le carte e svuota il set di selezione.
-     * Le carte sono ora annidate in HBox interne (i pannelli per categoria),
-     * quindi scendiamo ricorsivamente nei figli.
-     */
     private void clearCardSelection() {
         pickedCardIds.clear();
         deselectIn(upperRowBox);
         deselectIn(lowerRowBox);
     }
 
-    /**
-     * Visita ricorsivamente l'albero di nodi a partire da {@code container}
-     * e deseleziona ogni {@link ToggleButton} trovato. Necessario perche'
-     * le carte sono annidate in HBox interne (un pannello per categoria).
-     */
+    /** Cards are nested in per-category HBoxes; recurse into Panes to find every ToggleButton. */
     private void deselectIn(Pane container) {
         for (Node n : container.getChildren()) {
             if (n instanceof ToggleButton tb) {
@@ -1129,12 +943,6 @@ public final class GameScreen implements GuiScreen {
         }
     }
 
-    /**
-     * Conferma la selezione corrente al server: handler del pulsante Confirm.
-     * In bonus phase invia {@code pickBonusCard(id)} con l'unica carta scelta;
-     * in action phase invia {@code pickCards(ids)} con tutte le carte
-     * selezionate nell'ordine di selezione.
-     */
     private void submitPick() {
         GameStateDTO state = app.getSession().getLatestGameState();
         if (state == null) return;
@@ -1156,34 +964,20 @@ public final class GameScreen implements GuiScreen {
         }
     }
 
-    // =====================================================================
-    // helper
-    // =====================================================================
+    // ----- helpers -----
 
-    /**
-     * Vero se l'{@code activePlayer} dello stato e' il giocatore locale.
-     * Usato per decidere se abilitare clic e mostrare hint specifici.
-     */
     private boolean isMyTurn(GameStateDTO state) {
         String me = app.getSession().getLocalNickname();
         return me != null && me.equalsIgnoreCase(state.activePlayer());
     }
 
-    /**
-     * Vero se la stringa di fase indica una fase di piazzamento del totem
-     * (nome inglese o italiano).
-     */
     private boolean isTotemPhase(String phase) {
         if (phase == null) return false;
         String p = phase.toLowerCase();
         return p.contains("totem") || p.contains("piazzamento");
     }
 
-    /**
-     * Vero se la stringa di fase indica una fase di azione (action/resolution).
-     * Le fasi "event" sono esplicitamente escluse perche' contengono comunque
-     * il sottostringa "azion" in italiano.
-     */
+    /** Event phases are excluded explicitly because they also contain "azion" in Italian. */
     private boolean isActionPhase(String phase) {
         if (phase == null) return false;
         String p = phase.toLowerCase();
@@ -1191,18 +985,10 @@ public final class GameScreen implements GuiScreen {
         return p.contains("azion") || p.contains("action") || p.contains("resolution") || p.contains("risoluzion");
     }
 
-    /**
-     * Vero se la stringa di fase indica la fase di scelta della carta bonus.
-     */
     private boolean isBonusPhase(String phase) {
         return phase != null && phase.toLowerCase().contains("bonus");
     }
 
-    /**
-     * Conta quante carte hanno un {@code detailType} contenente la keyword
-     * indicata (case insensitive). Usato per contare artisti / costruttori /
-     * cacciatori / inventori / sciamani / collettori nella griglia risorse.
-     */
     private int countByDetail(List<CardDTO> cards, String detailKeyword) {
         if (cards == null || detailKeyword == null) return 0;
         int n = 0;
@@ -1212,11 +998,6 @@ public final class GameScreen implements GuiScreen {
         return n;
     }
 
-    /**
-     * Cerca nello stato il giocatore con il nickname indicato e ne restituisce
-     * il colore del totem. Restituisce {@code null} se non lo trova. Usato
-     * per disegnare i totem sulla board numplayer e sulle tessere occupate.
-     */
     private String totemColorForNickname(GameStateDTO state, String nickname) {
         if (nickname == null) return null;
         for (PlayerDTO p : state.players()) {
@@ -1225,20 +1006,11 @@ public final class GameScreen implements GuiScreen {
         return null;
     }
 
-    /**
-     * Iniziale maiuscola del nickname, usata come etichetta di fallback
-     * nei placeholder dei totem quando l'immagine non e' disponibile.
-     */
     private String initialOf(String nickname) {
         if (nickname == null || nickname.isBlank()) return "?";
         return nickname.substring(0, 1).toUpperCase();
     }
 
-    /**
-     * Crea uno spaziatore orizzontale che cresce per riempire lo spazio
-     * disponibile in un HBox. Usato nell'header del player panel per
-     * spingere i contatori PP all'estrema destra.
-     */
     private Node spacer() {
         javafx.scene.layout.Region r = new javafx.scene.layout.Region();
         HBox.setHgrow(r, Priority.ALWAYS);

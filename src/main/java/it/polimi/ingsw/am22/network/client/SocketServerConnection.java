@@ -13,13 +13,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Implementazione di {@link ObservableServerConnection} basata su socket TCP.
- *
- * Apre un {@link Socket} verso il server e avvia un thread daemon dedicato
- * ({@code readerThread}) che in background legge i {@link ServerMessage}
- * in arrivo e li inoltra all'{@link ClientUpdateHandler} registrato.
- * Il metodo {@link #send(ClientRequest)} è {@code synchronized} per garantire
- * scritture atomiche sullo stream di output condiviso.
+ * TCP socket {@link ObservableServerConnection}. A daemon reader thread reads
+ * incoming {@link ServerMessage}s and forwards them to the registered handler.
+ * {@link #send} is synchronized to keep writes on the shared output stream atomic.
  */
 public class SocketServerConnection implements ObservableServerConnection {
     private final Socket socket;
@@ -29,20 +25,11 @@ public class SocketServerConnection implements ObservableServerConnection {
     private final Thread readerThread;
     private volatile boolean closed;
 
-    /**
-     * Apre una connessione socket verso il server e avvia il reader thread.
-     *
-     * @param host indirizzo del server
-     * @param port porta del server
-     * @throws IOException se non è possibile aprire il socket o gli stream
-     */
     public SocketServerConnection(String host, int port) throws IOException {
         this.socket = new Socket(Objects.requireNonNull(host, "host cannot be null"), port);
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.outputStream.flush();
         this.inputStream = new ObjectInputStream(socket.getInputStream());
-        this.updateHandler = null;
-        this.closed = false;
         this.readerThread = new Thread(this::readLoop, "socket-server-connection-reader");
         this.readerThread.setDaemon(true);
         this.readerThread.start();
@@ -98,15 +85,9 @@ public class SocketServerConnection implements ObservableServerConnection {
         send(new DisconnectPlayerRequest(matchId, nickname));
     }
 
-    /**
-     * Chiude il socket; il reader thread terminerà naturalmente.
-     * L'operazione è idempotente.
-     */
     @Override
     public void close() {
-        if (closed) {
-            return;
-        }
+        if (closed) return;
         closed = true;
         try {
             socket.close();
@@ -114,13 +95,6 @@ public class SocketServerConnection implements ObservableServerConnection {
         }
     }
 
-    /**
-     * Serializza e invia una richiesta al server.
-     * È {@code synchronized} per evitare scritture concorrenti sullo stream.
-     *
-     * @param request richiesta da inviare
-     * @throws IllegalStateException se la connessione è chiusa o se l'invio fallisce
-     */
     private synchronized void send(ClientRequest request) {
         if (closed) {
             throw new IllegalStateException("The socket connection is closed.");
@@ -134,11 +108,6 @@ public class SocketServerConnection implements ObservableServerConnection {
         }
     }
 
-    /**
-     * Loop di lettura eseguito nel reader thread: riceve i messaggi dal server
-     * e li inoltra all'handler registrato. In caso di errore o chiusura, invoca
-     * {@link ClientUpdateHandler#onConnectionClosed(Throwable)}.
-     */
     private void readLoop() {
         Throwable cause = null;
         try {

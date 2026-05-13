@@ -11,11 +11,9 @@ import it.polimi.ingsw.am22.network.common.message.request.RemovePlayerFromLobby
 import it.polimi.ingsw.am22.network.common.message.request.SetExpectedPlayersRequest;
 
 /**
- * Visitor per le richieste inviate dal client al server.
- *
- * Ogni implementazione definisce il comportamento per ciascun tipo di
- * {@link ClientRequest}: la dispatch avviene tramite {@link ClientRequest#accept}
- * senza usare instanceof.
+ * Visitor for client-to-server requests. Dispatch goes through
+ * {@link ClientRequest#accept} — no instanceof, a new request type becomes a
+ * compile-time obligation on every implementor.
  */
 public interface ClientRequestVisitor {
     void visit(CreateMatchRequest request);

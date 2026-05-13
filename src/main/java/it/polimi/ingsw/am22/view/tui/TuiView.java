@@ -31,136 +31,69 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Vista testuale (TUI).
- *
- * <p>Implementa {@link ClientUpdateHandler}: riceve i messaggi dal server
- * (sul reader thread socket o sul thread RMI) e li stampa a terminale.
- * I comandi dell'utente vengono letti da {@link TuiRunner} sullo stdin e
- * inoltrati al {@link it.polimi.ingsw.am22.network.client.ClientController}
- * esposto dalla {@link ClientSession}.
- *
- * <p>Pattern MVC: questa classe è la View testuale; nota che:
- * <ul>
- *   <li>non contiene logica di gioco (solo rendering e parsing input);</li>
- *   <li>tutte le decisioni sono delegate al Controller remoto via ClientController.</li>
- * </ul>
+ * Text view. Receives server messages on the reader/RMI thread and prints them
+ * to the terminal; user input is read by {@link TuiRunner} and forwarded to
+ * the {@link it.polimi.ingsw.am22.network.client.ClientController}.
+ * No game logic here — rendering and input only.
  */
 public final class TuiView implements ClientUpdateHandler {
 
-    /** Oggetto di sincronizzazione per non mescolare righe di stampa concorrenti. */
+    /** Serializes prints so concurrent threads don't interleave output lines. */
     private final Object printLock = new Object();
 
     private final ClientSession session;
 
-    /** Segnale usato da {@link TuiRunner} per uscire dal loop comandi. */
     private volatile boolean stopRequested;
 
     /**
-     * True when the client is shutting down because the server connection was
-     * lost (vs. a user-initiated {@code quit}/{@code disconnect}). Used by
-     * {@link TuiRunner} to pick the right exit code: 1 when the server dropped
-     * us, 0 for a clean user-initiated shutdown.
+     * Set when the shutdown was caused by a lost server connection (vs. a
+     * user-initiated quit). The runner uses this to pick the exit code:
+     * 1 if the server dropped us, 0 for a clean local shutdown.
      */
     private volatile boolean disconnectedByServer;
 
     /**
-     * True between the {@code EndGameMessage} and the user's choice on the
-     * end-game menu. Used to: (1) suppress the "Server connection lost"
-     * banner when the server tears down the channel ~3s later (it's
-     * expected, not an error); (2) signal to {@link TuiRunner} that no
-     * server notification is needed when closing the local session.
+     * True between EndGameMessage and the user's choice on the end-game menu.
+     * Suppresses the "Server connection lost" banner when the server tears
+     * down the channel ~3s later (it's expected, not an error), and tells
+     * the runner not to send a disconnect on local close.
      */
     private volatile boolean expectingDisconnect;
 
-    /**
-     * True while the player is sitting on the end-game menu (winner banner +
-     * standings + leaderboard). The {@link TuiRunner} command loop uses this
-     * to enable the {@code back}/{@code leaderboard} commands.
-     */
+    /** True while the player is sitting on the end-game menu. */
     private volatile boolean inEndGame;
 
     /**
-     * Set when the player picks {@code back} from the end-game menu. The
-     * runner will then close this session, reopen a connection with the
-     * stored transport/host/port, and start a fresh session — same flow
-     * the GUI uses in {@code endGameAndShowMatches}.
+     * Set when the player picks {@code back} from the end-game menu — the
+     * runner will close this session and reopen a fresh one against the
+     * same host/port (mirrors the GUI's endGameAndShowMatches).
      */
     private volatile boolean reconnectRequested;
 
-    /**
-     * Last {@code EndGameMessage} received, kept around so the
-     * {@code leaderboard} command can re-print the historical leaderboard
-     * without needing the server (which has already closed the channel).
-     */
+    /** Kept around so the {@code leaderboard} command can re-print without a round-trip. */
     private volatile EndGameMessage lastEndGame;
 
-    /**
-     * Costruisce la TuiView legata alla sessione client indicata.
-     * Invocata da {@link TuiRunner#run()} subito dopo l'apertura della
-     * {@link ClientSession}; la view viene poi registrata come handler della
-     * sessione (vedi {@code session.setHandler(view)}).
-     */
     public TuiView(ClientSession session) {
         this.session = Objects.requireNonNull(session, "session cannot be null");
     }
 
-    /**
-     * @return {@code true} se è stato ricevuto un evento che richiede di terminare il client
-     */
-    public boolean isStopRequested() {
-        return stopRequested;
-    }
+    public boolean isStopRequested() { return stopRequested; }
+    public boolean wasDisconnectedByServer() { return disconnectedByServer; }
+    public boolean isInEndGame() { return inEndGame; }
+    public boolean isReconnectRequested() { return reconnectRequested; }
+    public boolean isExpectingDisconnect() { return expectingDisconnect; }
 
-    /** @return {@code true} when the shutdown was caused by losing the server connection. */
-    public boolean wasDisconnectedByServer() {
-        return disconnectedByServer;
-    }
-
-    /** @return {@code true} while the player is on the end-game menu. */
-    public boolean isInEndGame() {
-        return inEndGame;
-    }
-
-    /**
-     * @return {@code true} when the player picked {@code back} on the
-     *         end-game menu and the runner should reopen a fresh session.
-     */
-    public boolean isReconnectRequested() {
-        return reconnectRequested;
-    }
-
-    /**
-     * @return {@code true} when the channel close is expected (post-EndGame):
-     *         the runner uses this to skip the server-notify on local close
-     *         and to avoid an exit-code-1 shutdown.
-     */
-    public boolean isExpectingDisconnect() {
-        return expectingDisconnect;
-    }
-
-    /** Forza la richiesta di uscita (es. dopo comando {@code quit}). */
     public void requestStop() {
         this.stopRequested = true;
     }
 
-    /**
-     * Marks the session for a clean teardown + reopen by the runner. Used by
-     * the end-game menu's {@code back} command: stops the command loop, but
-     * unlike a user {@code quit} the runner will then start a brand-new
-     * session against the same host/port — matching the GUI's behavior in
-     * {@code endGameAndShowMatches}.
-     */
+    /** End-game menu's {@code back}: stop the loop but signal the runner to reopen a session. */
     public void requestReconnect() {
         this.reconnectRequested = true;
         this.stopRequested = true;
     }
 
-    /**
-     * Re-prints the historical leaderboard from the cached
-     * {@code EndGameMessage}. No server round-trip — by the time the menu is
-     * up the channel is already closed. Bound to the {@code leaderboard}
-     * command on the end-game menu.
-     */
+    /** Re-prints the cached leaderboard; the channel is already closed at this point. */
     public void replayHistoricalLeaderboard() {
         EndGameMessage end = lastEndGame;
         if (end == null) {
@@ -183,19 +116,11 @@ public final class TuiView implements ClientUpdateHandler {
     }
 
     /**
-     * Stampa la sequenza che il comando {@code pick} sta per spedire al server,
-     * risolvendo ogni id contro la upper/lower row dell'ultimo {@code GameStateDTO}
-     * conosciuto. Ogni token mostra posizione, id e {@code detailType}
-     * (es. {@code BUILDER}, {@code BUILDING}, {@code HUNTER*}/{@code HUNTER},
-     * {@code INVENTOR-D}…), colorato come nelle righe della board, così che il
-     * giocatore possa verificare a colpo d'occhio l'ordine PRIMA di vedere la
-     * risposta del server. Risolve il problema dell'ambiguità del comando
-     * {@code pick 9 98}: senza echo, il giocatore non sa se ha messo prima il
-     * Builder o prima il Building, e l'effetto su food/sconto cambia.
-     *
-     * <p>Carte non trovate (id sbagliato, già state pescate, ecc.) vengono
-     * marcate con {@code (?)}: il server le rifiuterà, ma intanto il
-     * giocatore vede subito quale è il problema.
+     * Echoes the pick order before sending it: resolves each id against the
+     * latest known board and colors each token by detail type. Order matters
+     * (Builder→Building gets a discount, Building→Builder doesn't), so the
+     * echo lets the player catch a typo before seeing the server's reply.
+     * Unknown ids are marked with {@code (?)}.
      */
     public void echoPickOrder(List<String> ids) {
         if (ids == null || ids.isEmpty()) return;
@@ -217,13 +142,6 @@ public final class TuiView implements ClientUpdateHandler {
         println(Ansi.green(Ansi.BOLD + ">>> ") + sb);
     }
 
-    /**
-     * Cerca nella lista di carte indicata quella con l'id richiesto.
-     * Usata da {@link #echoPickOrder} per risolvere ogni id digitato dall'utente
-     * contro l'ultimo {@code GameStateDTO} conosciuto.
-     *
-     * @return la carta trovata, oppure {@code null} se nessuna ha quell'id
-     */
     private CardDTO findCardById(List<CardDTO> cards, String id) {
         if (id == null) return null;
         for (CardDTO c : cards) {
@@ -234,16 +152,8 @@ public final class TuiView implements ClientUpdateHandler {
 
     // -------------------- ClientUpdateHandler --------------------
 
-    /**
-     * Callback invocata dalla {@link ClientSession} per ogni messaggio
-     * proveniente dal server. Puo' essere chiamata da thread arbitrari
-     * (reader thread socket o thread RMI): la sincronizzazione e' garantita
-     * dal {@link #printLock} nei singoli metodi di rendering. Smista il
-     * messaggio sul renderer dedicato in base al tipo.
-     */
     @Override
     public void onServerMessage(ServerMessage message) {
-        // Ogni tipo di messaggio ha un rendering dedicato.
         switch (message) {
             case MatchesListMessage list       -> renderMatchesList(list.matches());
             case MatchJoinedMessage joined     -> renderMatchJoined(joined);
@@ -252,11 +162,8 @@ public final class TuiView implements ClientUpdateHandler {
             case GameStateMessage state        -> renderGameState(state.gameState());
             case EndGameMessage end            -> renderEndGame(end);
             case MatchClosedMessage closed     -> {
-                // Match abortito da remoto: stampiamo l'avviso ma NON chiudiamo
-                // il client. La connessione col server resta viva (il server non
-                // chiude più i canali in questo scenario) e il ClientSession ha
-                // già pulito il binding locale, quindi il giocatore può tornare
-                // a usare list/create/join come dalla situazione iniziale.
+                // Aborted remotely; connection stays alive, session has cleared
+                // its local binding — player can list/create/join again.
                 println(Ansi.red(Ansi.BOLD + "[MATCH CLOSED] " + Ansi.RESET) + closed.reason());
                 println(Ansi.dim("(back to matches selection — type 'list' to see open matches)"));
             }
@@ -266,14 +173,6 @@ public final class TuiView implements ClientUpdateHandler {
         }
     }
 
-    /**
-     * Callback invocata dalla {@link ClientSession} quando la connessione
-     * verso il server viene chiusa. Se la chiusura era attesa (post-EndGame,
-     * {@link #expectingDisconnect} = true) non viene fatto nulla: il giocatore
-     * resta sul menu di fine partita. Altrimenti stampa un banner di errore
-     * e imposta {@code disconnectedByServer} / {@code stopRequested} per
-     * far terminare il {@link TuiRunner}.
-     */
     @Override
     public void onConnectionClosed(Throwable cause) {
         if (expectingDisconnect) {
@@ -294,11 +193,6 @@ public final class TuiView implements ClientUpdateHandler {
 
     // -------------------- Rendering --------------------
 
-    /**
-     * Stampa la lista dei match aperti ricevuta dal server (comando {@code list}).
-     * Mostra id, host, riempimento corrente/atteso e stato (open/started) per
-     * ciascun match; se la lista e' vuota suggerisce all'utente di creare un match.
-     */
     private void renderMatchesList(List<MatchInfoDTO> matches) {
         synchronized (printLock) {
             System.out.println();
@@ -320,23 +214,11 @@ public final class TuiView implements ClientUpdateHandler {
         }
     }
 
-    /**
-     * Stampa la conferma di join di una partita. Renderizzato in risposta
-     * a {@link MatchJoinedMessage} (arrivato dopo un comando {@code create}
-     * o {@code join} andato a buon fine).
-     */
     private void renderMatchJoined(MatchJoinedMessage joined) {
         println(Ansi.green(Ansi.BOLD + "[JOINED] " + Ansi.RESET)
                 + "match " + joined.matchId() + " as " + joined.nickname());
     }
 
-    /**
-     * Stampa lo stato della lobby: match id, host, numero di giocatori
-     * attesi, flag "started", lista dei giocatori connessi (con marker
-     * host e colore totem). Se il giocatore locale e' l'host e non ha
-     * ancora impostato il numero di giocatori, mostra anche un hint
-     * sul comando {@code players <N>}.
-     */
     private void renderLobby(LobbyStateDTO lobby) {
         synchronized (printLock) {
             System.out.println();
@@ -353,7 +235,7 @@ public final class TuiView implements ClientUpdateHandler {
                         + (p.host() ? " (host)" : "")
                         + (p.totemColor() == null ? "" : " [" + p.totemColor() + "]"));
             }
-            // Suggerimento contestuale: se sono host e non ho ancora impostato il numero.
+            // Hint only shown to the host before they pick a player count.
             String me = session.getLocalNickname();
             if (lobby.hostNickname() != null
                     && lobby.hostNickname().equalsIgnoreCase(me)
@@ -364,24 +246,12 @@ public final class TuiView implements ClientUpdateHandler {
         }
     }
 
-    /**
-     * Stampa il banner "GAME STARTED" e poi delega a {@link #renderGameState}
-     * per mostrare lo stato iniziale della partita. Invocato in risposta a
-     * {@link GameStartedMessage}.
-     */
     private void renderGameStarted(GameStateDTO state) {
         println(">>> GAME STARTED <<<");
         renderGameState(state);
     }
 
-    /**
-     * Render principale dello stato di gioco: pulisce lo schermo e stampa
-     * round / era / fase, giocatore attivo, riassunto di ogni giocatore
-     * (PP attuali e proiettati, cibo, tribu', edifici), tessere offerta,
-     * righe carte upper/lower e turn order. Se e' il turno del giocatore
-     * locale stampa anche un suggerimento sui comandi disponibili e fa
-     * suonare la campanella del terminale.
-     */
+    /** Clears the screen and prints the full board summary; rings the bell on the player's turn. */
     private void renderGameState(GameStateDTO state) {
         synchronized (printLock) {
             System.out.print(Ansi.CLEAR_SCREEN);
@@ -426,9 +296,8 @@ public final class TuiView implements ClientUpdateHandler {
             System.out.println(sectionHeader("Turn order"));
             for (TurnSlotDTO slot : state.turnOrder()) {
                 String lastSpace = slot.lastSpace() ? Ansi.red(" (last)") : "";
-                // Quando il foodBonus è negativo, lo slot impone la penalità:
-                // l'ultimo player che finisce qui senza cibo perde 2 PP.
-                // Lo esplicitiamo accanto al food invece di lasciarlo implicito.
+                // Negative foodBonus means the slot imposes the -2 PP penalty
+                // for the player who finishes there without food.
                 String penalty = slot.foodBonus() < 0 ? "/points=-2" : "";
                 System.out.println(String.format("  pos=%d food=%d%s%s %s",
                         slot.positionIndex(),
@@ -444,7 +313,7 @@ public final class TuiView implements ClientUpdateHandler {
                 System.out.println();
                 System.out.println(Ansi.green(Ansi.BOLD + "*** YOUR TURN — phase: " + state.currentPhase() + " ***"));
                 System.out.println(Ansi.dim("    Commands: place <letter> | pick <id...> | bonus <id>"));
-                System.out.print(Ansi.BELL); // beep / flash della finestra
+                System.out.print(Ansi.BELL);
             }
         }
     }
@@ -458,16 +327,9 @@ public final class TuiView implements ClientUpdateHandler {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     /**
-     * Rendering della fine partita (in risposta a {@link EndGameMessage}).
-     * Stampa il banner GAME OVER, il vincitore con i suoi PP/cibo finali,
-     * la classifica della partita (ordinata per PP poi cibo decrescente),
-     * la posizione del giocatore locale nella classifica storica e la
-     * classifica storica completa (se disponibile). Infine mostra il menu
-     * di fine partita ({@code back} / {@code leaderboard} / {@code exit}).
-     *
-     * <p>Imposta {@link #expectingDisconnect} = true perche' il server
-     * chiudera' il canale a breve, e {@link #inEndGame} = true per abilitare
-     * i comandi specifici del menu di fine partita.
+     * Renders GAME OVER + winner + standings + historical leaderboard, then
+     * the end-game menu. Sets {@link #expectingDisconnect} (server will close
+     * the channel shortly) and {@link #inEndGame} (enables back/leaderboard).
      */
     private void renderEndGame(EndGameMessage end) {
         WinnerDTO winner = end.winner();
@@ -576,12 +438,6 @@ public final class TuiView implements ClientUpdateHandler {
         // TUI now does the same via the menu above.
     }
 
-    /**
-     * Stampa la classifica storica (rank, nickname, score, data) ricevuta
-     * a fine partita. La riga corrispondente al giocatore locale viene
-     * evidenziata in verde. Riusata sia da {@link #renderEndGame} che da
-     * {@link #replayHistoricalLeaderboard}.
-     */
     private void printHistoricalLeaderboard(List<LeaderboardEntryDTO> leaderboard,
                                             int numPlayers, String me) {
         System.out.println(Ansi.magenta(Ansi.BOLD + "-- Historical leaderboard ("
@@ -596,13 +452,6 @@ public final class TuiView implements ClientUpdateHandler {
         }
     }
 
-    /**
-     * Costruisce una riga compatta che descrive una lista di carte
-     * nella forma {@code id(detailType) id(detailType) ...}, colorando
-     * ogni token in base alla categoria (vedi {@link #colorizeCard}).
-     * Usato per stampare la tribu' e gli edifici di ogni giocatore e le
-     * righe upper/lower della board.
-     */
     private String summarizeCards(List<CardDTO> cards) {
         if (cards == null || cards.isEmpty()) return Ansi.dim("(none)");
         // Build the joined string with a single space between tokens, WITHOUT a trailing
@@ -641,12 +490,6 @@ public final class TuiView implements ClientUpdateHandler {
         };
     }
 
-    /**
-     * Stampa una riga su stdout serializzando l'accesso tramite {@link #printLock}.
-     * Usato da tutti i renderer "monolinea" per evitare che righe scritte da
-     * thread diversi (reader thread server e main thread del runner) si
-     * mescolino in output.
-     */
     private void println(String line) {
         synchronized (printLock) {
             System.out.println(line);

@@ -15,11 +15,7 @@ public class Event extends Card {
 
     public EventType getEventType() { return eventType; }
 
-    /**
-     * Allows subclasses (Hunting, Sustenance, etc.) to register themselves
-     * as the effect after the {@code super(...)} call.
-     * Same pattern used by TribeCharacter.setEffect(this).
-     */
+    /** Lets subclasses register themselves as their own effect after the super() call. */
     protected void setEffect(EventEffect effect) {
         this.effect = effect;
     }
@@ -32,17 +28,17 @@ public class Event extends Card {
 
     @Override
     public String cardDetailType() { return String.valueOf(eventType); }
-    public void applyEvent(List<Player> players, String id){}
-
+    public void applyEvent(List<Player> players, String id) {}
 
     @Override
-    public void onRoundEndTrigger(Game game){
-        this.effect.applyEvent(game.getPlayers(), this.getId());
+    public void onRoundEndTrigger(Game game) {
+        effect.applyEvent(game.getPlayers(), getId());
     }
 
     @Override
-    public int getTriggerPriority(){
-        return this.eventType == EventType.SUSTENANCE ? 1 : 0;
+    public int getTriggerPriority() {
+        // Sustenance resolves after every other event of the round.
+        return eventType == EventType.SUSTENANCE ? 1 : 0;
     }
 
     @Override

@@ -11,7 +11,7 @@ public interface BuildingEffect {
     default boolean preventsShamanPPLoss() {return false;}
     default boolean doublesShamanWinPP() {return false;}
     default void onTotemPlaced(Player owner) {}
-    default boolean hasExtraBuyAtRoundEnd() {return false;} // By default, buildings do NOT give an extra buy!
+    default boolean hasExtraBuyAtRoundEnd() {return false;}
     default int getSustenanceDiscount(Tribe tribe) { return 0; }
     default void onCharacterAdded(Player player, TribeCharacter newChar) {}
     default void applyEventBonus(EventType eventType, Player player, int characterCount) {}

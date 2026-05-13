@@ -10,22 +10,12 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * Implementazione RMI del {@link RemoteGameServer}.
- *
- * Estende UnicastRemoteObject per essere direttamente esportabile
- * come oggetto remoto. Ogni chiamata a submitRequest crea un
- * RmiClientChannel sopra il callback del client e delega la
- * gestione al NetworkGameService.
+ * RMI implementation of {@link RemoteGameServer}. Each submitRequest wraps the
+ * client callback in a {@link RmiClientChannel} and delegates to the service.
  */
 public class RmiGameServer extends UnicastRemoteObject implements RemoteGameServer {
     private final NetworkGameService gameService;
 
-    /**
-     * Costruisce ed esporta il server RMI.
-     *
-     * @param gameService servizio a cui inoltrare le richieste
-     * @throws RemoteException se l'export RMI fallisce
-     */
     public RmiGameServer(NetworkGameService gameService) throws RemoteException {
         super();
         this.gameService = gameService;
@@ -38,21 +28,10 @@ public class RmiGameServer extends UnicastRemoteObject implements RemoteGameServ
 
     @Override
     public void ping() {
-        // No-op: il valore è nella RemoteException che il client riceve
-        // quando il server non c'è più.
+        // No-op: the signal is the RemoteException the client gets when the server is gone.
     }
 
-    /**
-     * Metodo di utilità: crea un registry sulla porta indicata e vi registra
-     * un nuovo {@code RmiGameServer} con il binding fornito.
-     *
-     * @param port        porta del registry RMI
-     * @param bindingName nome del binding (es. {@code MESOS_SERVER})
-     * @param gameService servizio da esporre
-     * @return il {@link Registry} creato
-     * @throws RemoteException       se la creazione/registrazione fallisce
-     * @throws AlreadyBoundException se il binding esiste già
-     */
+    /** Creates an RMI registry on {@code port} and binds a fresh server under {@code bindingName}. */
     public static Registry publish(int port, String bindingName, NetworkGameService gameService)
             throws RemoteException, AlreadyBoundException {
         Registry registry = LocateRegistry.createRegistry(port);

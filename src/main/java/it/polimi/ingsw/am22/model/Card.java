@@ -15,71 +15,45 @@ public abstract class Card {
 
     public abstract void addToTribe(Player player, Tribe tribe);
 
-    /**
-     * Pre-flight check invoked before mutating any game state during a pick action.
-     * Subclasses that cannot legally be taken into a player's tribe must override this
-     * method and throw, so that an invalid selection is rejected as a whole and no
-     * partial mutation (such as adding a sibling card to the tribe) occurs.
-     * Default behavior: cards are pickable.
-     */
+    /** Pre-flight check before any state mutation. Unpickable cards (e.g. Events) override and throw. */
     public void validatePickable() {}
 
-    /**
-     * Whether this card can be taken into a tribe. Mirrors {@link #validatePickable()}
-     * but as a non-throwing predicate, so the action-resolution logic can count how
-     * many pickable cards are available in a row (e.g. when an Event blocks a slot,
-     * a tile requiring N cards must be satisfiable with fewer if fewer are pickable).
-     */
+    /** Non-throwing counterpart of {@link #validatePickable()}, used to count pickable cards in a row. */
     public boolean isPickable() { return true; }
 
-    /**
-     * Whether picking this card is an optional purchase rather than a mandatory pickup.
-     * Buildings cost food and the player chooses whether to buy them, so they should
-     * never be forced into a selection just to satisfy a tile's card-count requirement.
-     * Characters are mandatory pickups by default.
-     */
+    /** Optional purchases (Buildings) are never forced just to satisfy a tile's count requirement. */
     public boolean isOptionalPurchase() { return false; }
 
-    public int getFoodCost() {return 0;} // By default, cards have no food cost
+    public int getFoodCost() { return 0; }
 
     /**
-     * Apply this card's effect to the pick simulation during the VALIDATION
-     * phase of an action. Subclasses override to declare how being picked
-     * (in this position of the sequence) changes the player's simulated
-     * food / builder discount / hunter count. A Building deducts food
-     * (throwing if insufficient), a Builder increases the discount, a Hunter
-     * grows the simulated hunter count and possibly feeds the player.
-     * Default: no effect.
+     * Validation phase: declare how being picked at this point in the sequence affects
+     * the simulated food / builder discount / hunter count. Default: no effect.
      */
     public void applyPickEffect(PickSimulation sim) {}
 
-    /**
-     * Perform the food side-effect of being picked, on the real player, during
-     * the COMMIT phase. Only cards that cost food (Building) override this;
-     * the addition of the card to the tribe is handled separately and
-     * polymorphically by {@link #addToTribe(Player, Tribe)}.
-     * Default: no cost.
-     */
+    /** Commit phase: pay food cost on the real player. Default: free. */
     public void payPickCost(Player player) {}
 
-    public void onRoundEndTrigger(Game game) {} // No default behavior
+    public void onRoundEndTrigger(Game game) {}
 
-    public int getTriggerPriority() {return 0;} // Determines resolution order (0 = normal, 1 = deferred).
-    // Used so that Sustenance triggers last.
+    /** Resolution priority for end-of-round triggers. 1 means "deferred" (Sustenance). */
+    public int getTriggerPriority() { return 0; }
 
-    public boolean survivesRoundEnd() {return false;}  // Whether the card stays on the board at round end.
-    // By default, cards (Characters, Events) are discarded.
+    /** Whether the card stays on the board at round end. Characters/Events are discarded by default. */
+    public boolean survivesRoundEnd() { return false; }
 
-    public boolean isDestroyedOnEraIII() {return false;} // Whether the card is destroyed when transitioning to Era III.
+    public boolean isDestroyedOnEraIII() { return false; }
 
-    /** Defines whether the card is an Event. Used during setup to route Events to the upper row. */
-    public boolean isEvent() {return false;}
+    public boolean isEvent() { return false; }
 
+    /** Number of Shaman stars on this card. Only Shaman overrides; everything else is 0. */
+    public int getNumStars() { return 0; }
 
-    /** Card macro-category for the network DTO (e.g. "CHARACTER", "BUILDING", "EVENT"). */
+    /** Card macro-category for the network DTO ("CHARACTER", "BUILDING", "EVENT"). */
     public String cardCategory() { return getClass().getSimpleName().toUpperCase(Locale.ROOT); }
 
-    /** Specific type within the category (e.g. CharacterType, EventType, "BUILDING"). */
+    /** Specific type within the category (e.g. CharacterType, EventType). */
     public String cardDetailType() { return getClass().getSimpleName().toUpperCase(Locale.ROOT); }
 
     public String getId() {return id;}

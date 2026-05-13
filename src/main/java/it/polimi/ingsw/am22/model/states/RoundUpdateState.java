@@ -36,8 +36,6 @@ public class RoundUpdateState implements GameState {
             game.setCurrentRound(game.getCurrentRound() + 1);
             game.setState(new TotemPlacementState());
         }
-
-        //game.notifyObservers();
     }
 
     @Override

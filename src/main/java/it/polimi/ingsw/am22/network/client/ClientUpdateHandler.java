@@ -3,26 +3,16 @@ package it.polimi.ingsw.am22.network.client;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 
 /**
- * Callback che la view del client implementa per ricevere gli aggiornamenti dal server.
+ * Callback the client view implements to receive asynchronous updates.
  *
- * Viene invocato in modo asincrono dal reader thread (socket) o dal thread RMI:
- * l'implementazione deve essere thread-safe oppure delegare l'aggiornamento UI
- * al thread corretto (es. EDT di Swing o thread JavaFX).
+ * <p>Invoked from the reader thread (socket) or an RMI thread: implementations
+ * must be thread-safe or marshal updates onto the proper UI thread (Swing EDT
+ * or JavaFX application thread).
  */
 public interface ClientUpdateHandler {
 
-    /**
-     * Invocato ogni volta che arriva un messaggio dal server.
-     *
-     * @param message messaggio ricevuto
-     */
     void onServerMessage(ServerMessage message);
 
-    /**
-     * Invocato quando la connessione viene chiusa, sia volontariamente sia per errore.
-     *
-     * @param cause causa della chiusura ({@code null} se chiusura pulita)
-     */
-    default void onConnectionClosed(Throwable cause) {
-    }
+    /** @param cause null on a clean close. */
+    default void onConnectionClosed(Throwable cause) {}
 }

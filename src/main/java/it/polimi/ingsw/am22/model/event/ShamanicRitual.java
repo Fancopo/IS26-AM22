@@ -1,4 +1,5 @@
 package it.polimi.ingsw.am22.model.event;
+
 import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.building.BuildingEffect;
 import it.polimi.ingsw.am22.model.Tribe;
@@ -7,8 +8,8 @@ import it.polimi.ingsw.am22.model.Era;
 import it.polimi.ingsw.am22.model.Player;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ShamanicRitual extends Event implements EventEffect {
@@ -20,89 +21,57 @@ public class ShamanicRitual extends Event implements EventEffect {
 
     @Override
     public void applyEvent(List<Player> players, String id) {
-        int PPtoAdd = 0;
-        int PPtoLose = 0;
+        int ppToAdd = switch (getEra()) {
+            case I -> 5;
+            case II -> 10;
+            case III -> 15;
+        };
+        int ppToLose = switch (getEra()) {
+            case I -> -3;
+            case II -> -5;
+            case III -> -7;
+        };
 
-        if (this.getEra() == Era.I) {
-            PPtoAdd = 5;
-            PPtoLose = -3;
-        } else if (this.getEra() == Era.II) {
-            PPtoAdd = 10;
-            PPtoLose = -5;
-        } else if (this.getEra() == Era.III) {
-            PPtoAdd = 15;
-            PPtoLose = -7;
-        }
-
-        Map<Player, Integer> totalIconsPerPlayer = new HashMap<>();
+        Map<Player, Integer> totalIcons = new HashMap<>();
         Map<Player, Boolean> preventLoss = new HashMap<>();
         Map<Player, Boolean> doubleWin = new HashMap<>();
 
-        // 1. ICON COUNT AND BUILDING MODIFIERS
         for (Player player : players) {
-            int baseIcons = 0;
-            int extraIcons = 0;
+            int icons = 0;
             boolean noLoss = false;
             boolean doublePP = false;
 
             Tribe tribe = player.getTribe();
             if (tribe != null) {
-                // Count base Shaman icons
                 for (TribeCharacter character : tribe.getMembers()) {
-                        baseIcons += character.getNumStars();
+                    icons += character.getNumStars();
                 }
-
-                // Apply Building modifiers for the Shamanic Ritual
                 for (Building building : tribe.getBuildings()) {
                     BuildingEffect effect = building.getEffect();
-                        // Modifier: 3 extra icons
-                        extraIcons += effect.getExtraShamanIcons();
-                        // Modifier: do not lose Prestige Points
-                        if (effect.preventsShamanPPLoss()) noLoss = true;
-                        // Modifier: double the gained Prestige Points
-                        if (effect.doublesShamanWinPP()) doublePP = true;
-                    }
+                    icons += effect.getExtraShamanIcons();
+                    if (effect.preventsShamanPPLoss()) noLoss = true;
+                    if (effect.doublesShamanWinPP()) doublePP = true;
                 }
+            }
 
-            totalIconsPerPlayer.put(player, baseIcons + extraIcons);
+            totalIcons.put(player, icons);
             preventLoss.put(player, noLoss);
             doubleWin.put(player, doublePP);
         }
 
+        if (totalIcons.isEmpty()) return;
 
-        if (totalIconsPerPlayer.isEmpty()) return;
+        int maxIcons = Collections.max(totalIcons.values());
+        int minIcons = Collections.min(totalIcons.values());
 
-        // 2. FIND THE MAX AND MIN
-        int maxIcons = Collections.max(totalIconsPerPlayer.values());
-        int minIcons = Collections.min(totalIconsPerPlayer.values());
-
-        // 3. ASSIGN REWARDS AND PENALTIES
         for (Player player : players) {
-            int icons = totalIconsPerPlayer.get(player);
-
-            // Win: the player with the most icons in their tribe gains the listed PP.
-            // In case of a tie, all tied players get the PP.
+            int icons = totalIcons.get(player);
             if (icons == maxIcons) {
-                int earnedPP = doubleWin.get(player) ? PPtoAdd * 2 : PPtoAdd;
-                player.addPP(earnedPP);
-                System.out.println(player.getNickname() + " wins the ritual and gains " + earnedPP + " PP!");
+                player.addPP(doubleWin.get(player) ? ppToAdd * 2 : ppToAdd);
             }
-
-            // Lose: the player with the fewest icons loses the listed PP.
-            // The same tie rule applies.
-            if (icons == minIcons) {
-                if (preventLoss.get(player)) {
-                    System.out.println(player.getNickname() + " has the fewest icons, but a Building protects them from PP loss!");
-                } else {
-                    // Note: PPtoLose is already negative
-                    player.addPP(PPtoLose);
-                    System.out.println(player.getNickname() + " loses the ritual and suffers " + PPtoLose + " PP.");
-                }
+            if (icons == minIcons && !preventLoss.get(player)) {
+                player.addPP(ppToLose);
             }
         }
     }
-
-
-
 }
-

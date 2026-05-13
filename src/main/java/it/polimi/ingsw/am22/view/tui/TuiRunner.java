@@ -11,36 +11,15 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Entry point della modalità TUI in versione multipartita.
- *
- * <p>Flusso eseguito in {@link #run()}:
- * <ol>
- *     <li>chiede trasporto (Socket/RMI), host e porta;</li>
- *     <li>apre la {@link ObservableServerConnection} tramite {@link ConnectionFactory};</li>
- *     <li>crea la {@link ClientSession} e collega la {@link TuiView};</li>
- *     <li>entra nel loop comandi: prima del join sono disponibili
- *         {@code list}, {@code create}, {@code join}; una volta dentro a una
- *         partita si abilitano i comandi di lobby/gioco.</li>
- * </ol>
- *
- * <p>I messaggi del server vengono stampati in modo asincrono dalla TuiView
- * (replay automatico al cambio di stato gestito da {@link ClientSession}).
+ * TUI entry point. Asks transport/host/port, opens the connection, sets up
+ * a {@link ClientSession} backed by a {@link TuiView}, and runs the command
+ * loop. {@code leave}/{@code disconnect} keep the channel open and reset
+ * local match state — the player can list/create/join again on the same session.
  */
 public final class TuiRunner {
 
-    private TuiRunner() {
-    }
+    private TuiRunner() {}
 
-    /**
-     * Avvia la sessione TUI. Il metodo ritorna solo quando l'utente esce
-     * o la connessione viene chiusa.
-     *
-     * <p>La connessione col server vive per tutta la durata del processo:
-     * un eventuale {@code leave} (lobby o partita) lascia il canale aperto,
-     * azzera lo stato locale di match e riporta il giocatore alla
-     * situazione iniziale (può di nuovo {@code list}, {@code create},
-     * {@code join}) sulla stessa sessione.
-     */
     public static void run() {
         Scanner in = new Scanner(System.in);
 
@@ -101,14 +80,6 @@ public final class TuiRunner {
         }
     }
 
-    /**
-     * Loop principale di lettura comandi da stdin.
-     * Per ogni riga inserita dall'utente fa il parse del primo token e lo
-     * mappa su un comando: pre-lobby ({@code list}/{@code create}/{@code join}),
-     * in-match ({@code place}/{@code pick}/{@code bonus}/{@code players}/{@code leave}),
-     * end-game ({@code back}/{@code leaderboard}). Esce solo quando la TuiView
-     * imposta {@code stopRequested} (es. comando {@code quit} o disconnessione).
-     */
     private static void commandLoop(Scanner in, ClientSession session, TuiView view) {
         ClientController controller = session.getClientController();
         while (!view.isStopRequested()) {
@@ -238,11 +209,6 @@ public final class TuiRunner {
         }
     }
 
-    /**
-     * Stampa la lista di comandi disponibili con una breve descrizione.
-     * Invocato all'avvio (subito dopo la connessione) e quando l'utente
-     * digita {@code help} o {@code ?}.
-     */
     private static void printHelp() {
         System.out.println();
         System.out.println("Available commands:");
@@ -270,12 +236,7 @@ public final class TuiRunner {
         System.out.println();
     }
 
-    /**
-     * Ristampa l'ultimo {@code GameStateDTO} o {@code LobbyStateDTO} ricevuto
-     * dal server, senza fare alcuna richiesta di rete. Utile quando il
-     * terminale e' "pieno" di echo dei comandi e si vuole ricaricare la vista.
-     * Comando {@code state}.
-     */
+    /** Re-renders the latest game/lobby state without a network round-trip. */
     private static void printCachedState(ClientSession session) {
         if (session.getLatestGameState() != null) {
             new TuiView(session).onServerMessage(
@@ -292,11 +253,6 @@ public final class TuiRunner {
 
     // -------------------- Utility di input --------------------
 
-    /**
-     * Chiede all'utente il tipo di trasporto da usare (Socket TCP o RMI).
-     * Accetta varianti abbreviate ({@code s}/{@code tcp} per socket,
-     * {@code r} per RMI); ripete la domanda finche' non viene scelto un valore valido.
-     */
     private static Transport askTransport(Scanner in) {
         while (true) {
             String v = ask(in, "Transport [socket/rmi] (default socket): ", "socket").toLowerCase();
@@ -308,11 +264,6 @@ public final class TuiRunner {
         }
     }
 
-    /**
-     * Helper di lettura input testuale: stampa il prompt e ritorna la prima
-     * riga non vuota. Se l'utente preme Invio senza scrivere nulla e
-     * {@code defaultValue} non e' null, restituisce il default.
-     */
     private static String ask(Scanner in, String prompt, String defaultValue) {
         while (true) {
             System.out.print(prompt);
@@ -325,10 +276,6 @@ public final class TuiRunner {
         }
     }
 
-    /**
-     * Variante di {@link #ask} che converte l'input in intero, ripetendo
-     * la domanda se il valore non e' un numero valido. Usato per la porta.
-     */
     private static int askInt(Scanner in, String prompt, int defaultValue) {
         while (true) {
             String s = ask(in, prompt, String.valueOf(defaultValue));
@@ -340,12 +287,6 @@ public final class TuiRunner {
         }
     }
 
-    /**
-     * Verifica che il comando abbia almeno {@code expected} token (incluso
-     * il nome del comando stesso). Se mancano argomenti lancia
-     * {@link IllegalArgumentException} con il messaggio "usage: ...",
-     * intercettata dal {@link #commandLoop} e stampata come errore.
-     */
     private static void requireArgs(String[] parts, int expected, String usage) {
         if (parts.length < expected) {
             throw new IllegalArgumentException("usage: " + usage);
@@ -353,10 +294,8 @@ public final class TuiRunner {
     }
 
     /**
-     * Rifiuta i comandi {@code create} / {@code join} se il client risulta
-     * già iscritto a una partita. Senza questa guardia il giocatore poteva
-     * digitare {@code join} due volte e finire registrato lato server in
-     * due lobby contemporaneamente, comparendo come membro di entrambe.
+     * Without this guard a player could type {@code join} twice and end up
+     * registered server-side in two lobbies at once.
      */
     private static void requireAlreadyOutOfMatch(ClientController controller, String command) {
         String currentMatch = controller.getMatchId();
@@ -366,7 +305,6 @@ public final class TuiRunner {
         }
     }
 
-    /** Banner ASCII di benvenuto, stampato una volta all'avvio. */
     private static void printBanner() {
         System.out.println(Ansi.cyan(
                 "  __  __ _____ ____   ___  ____  \n" +
@@ -377,10 +315,6 @@ public final class TuiRunner {
         System.out.println(Ansi.dim("                Mesolithic Tribes — TUI client (multipartita)\n"));
     }
 
-    /**
-     * Stampa nickname locale + matchId + active player. Comando 'who' / 'me'.
-     * Utile in test multi-client per non confondere le finestre.
-     */
     private static void printWho(ClientSession session) {
         ClientController controller = session.getClientController();
         String nick = controller.getNickname();

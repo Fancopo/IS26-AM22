@@ -6,33 +6,19 @@ import it.polimi.ingsw.am22.network.server.ClientChannel;
 import java.rmi.RemoteException;
 
 /**
- * Implementazione di {@link ClientChannel} basata su callback RMI.
- *
- * Wrappa il {@link RemoteClientView} esportato dal client: ogni invio
- * si traduce in una chiamata remota {@code receive()} verso il client.
- * A differenza del canale socket, qui non c'è un socket da chiudere:
- * {@link #close()} è un no-op perché lo stub appartiene al client.
+ * {@link ClientChannel} backed by an RMI callback: every send is a remote
+ * {@code receive()} call. {@link #close()} is a no-op — the stub belongs to
+ * the client, there's nothing to close server-side.
  */
 public class RmiClientChannel implements ClientChannel {
     private final RemoteClientView remoteClientView;
     private volatile String boundNickname;
     private volatile String boundMatchId;
 
-    /**
-     * @param remoteClientView callback esportato dal client a cui recapitare i messaggi
-     */
     public RmiClientChannel(RemoteClientView remoteClientView) {
         this.remoteClientView = remoteClientView;
-        this.boundNickname = null;
-        this.boundMatchId = null;
     }
 
-    /**
-     * Recapita il messaggio al client invocando {@code receive()} via RMI.
-     *
-     * @param message messaggio da consegnare
-     * @throws IllegalStateException se la chiamata RMI fallisce
-     */
     @Override
     public void send(ServerMessage message) {
         try {
@@ -42,29 +28,13 @@ public class RmiClientChannel implements ClientChannel {
         }
     }
 
-    /** No-op: lo stub è gestito dal client, non c'è nulla da chiudere lato server. */
     @Override
     public void close() {
-        // Nothing to close explicitly on the server side for an RMI callback stub.
+        // No-op: the callback stub is owned by the client.
     }
 
-    @Override
-    public String getBoundNickname() {
-        return boundNickname;
-    }
-
-    @Override
-    public void setBoundNickname(String nickname) {
-        this.boundNickname = nickname;
-    }
-
-    @Override
-    public String getBoundMatchId() {
-        return boundMatchId;
-    }
-
-    @Override
-    public void setBoundMatchId(String matchId) {
-        this.boundMatchId = matchId;
-    }
+    @Override public String getBoundNickname() { return boundNickname; }
+    @Override public void setBoundNickname(String nickname) { this.boundNickname = nickname; }
+    @Override public String getBoundMatchId() { return boundMatchId; }
+    @Override public void setBoundMatchId(String matchId) { this.boundMatchId = matchId; }
 }

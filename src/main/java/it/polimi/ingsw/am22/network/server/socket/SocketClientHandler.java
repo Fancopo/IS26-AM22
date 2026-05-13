@@ -6,16 +6,15 @@ import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.server.ClientChannel;
 import it.polimi.ingsw.am22.network.server.NetworkGameService;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * Implementa sia ClientChannel (send sincronizzata via ObjectOutputStream)
- * sia Runnable (read loop di ClientRequest).
- * Su EOF/IO chiama gameService.handleTransportDrop.
+ * Both {@link ClientChannel} (synchronized send via ObjectOutputStream) and
+ * {@link Runnable} (read loop for incoming ClientRequests). On EOF/IO error
+ * notifies the service via {@link NetworkGameService#handleTransportDrop}.
  */
 public class SocketClientHandler implements ClientChannel, Runnable {
     private final Socket socket;
@@ -26,29 +25,14 @@ public class SocketClientHandler implements ClientChannel, Runnable {
     private volatile String boundMatchId;
     private volatile boolean closed;
 
-    /**
-     * Costruisce l'handler e inizializza gli stream di I/O sul socket.
-     *
-     * @param socket      socket già connesso al client
-     * @param gameService servizio a cui inoltrare le richieste
-     * @throws IOException se non è possibile inizializzare gli stream
-     */
     public SocketClientHandler(Socket socket, NetworkGameService gameService) throws IOException {
         this.socket = socket;
         this.gameService = gameService;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.outputStream.flush();
         this.inputStream = new ObjectInputStream(socket.getInputStream());
-        this.boundNickname = null;
-        this.boundMatchId = null;
-        this.closed = false;
     }
 
-    /**
-     * Loop di lettura: riceve {@link ClientRequest} dal client e le inoltra al servizio.
-     * Un payload non riconosciuto produce un {@link ErrorMessage}.
-     * Errori di I/O causano la notifica di transport drop al servizio.
-     */
     @Override
     public void run() {
         try {
@@ -60,10 +44,6 @@ public class SocketClientHandler implements ClientChannel, Runnable {
                     send(new ErrorMessage("Invalid payload received."));
                 }
             }
-        } catch (EOFException ignored) {
-            if (!closed) {
-                gameService.handleTransportDrop(this);
-            }
         } catch (IOException | ClassNotFoundException e) {
             if (!closed) {
                 gameService.handleTransportDrop(this);
@@ -73,18 +53,9 @@ public class SocketClientHandler implements ClientChannel, Runnable {
         }
     }
 
-    /**
-     * Invia un messaggio al client. È {@code synchronized} per evitare scritture
-     * concorrenti sullo stream condiviso.
-     *
-     * @param message messaggio da inviare
-     * @throws IllegalStateException se l'invio fallisce
-     */
     @Override
     public synchronized void send(ServerMessage message) {
-        if (closed) {
-            return;
-        }
+        if (closed) return;
         try {
             outputStream.writeObject(message);
             outputStream.flush();
@@ -94,12 +65,9 @@ public class SocketClientHandler implements ClientChannel, Runnable {
         }
     }
 
-    /** Chiude il socket sottostante in modo idempotente. */
     @Override
     public void close() {
-        if (closed) {
-            return;
-        }
+        if (closed) return;
         closed = true;
         try {
             socket.close();
@@ -107,23 +75,8 @@ public class SocketClientHandler implements ClientChannel, Runnable {
         }
     }
 
-    @Override
-    public String getBoundNickname() {
-        return boundNickname;
-    }
-
-    @Override
-    public void setBoundNickname(String nickname) {
-        this.boundNickname = nickname;
-    }
-
-    @Override
-    public String getBoundMatchId() {
-        return boundMatchId;
-    }
-
-    @Override
-    public void setBoundMatchId(String matchId) {
-        this.boundMatchId = matchId;
-    }
+    @Override public String getBoundNickname() { return boundNickname; }
+    @Override public void setBoundNickname(String nickname) { this.boundNickname = nickname; }
+    @Override public String getBoundMatchId() { return boundMatchId; }
+    @Override public void setBoundMatchId(String matchId) { this.boundMatchId = matchId; }
 }

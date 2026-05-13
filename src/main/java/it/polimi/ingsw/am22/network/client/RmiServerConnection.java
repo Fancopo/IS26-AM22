@@ -20,26 +20,24 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Implementazione di {@link ObservableServerConnection} basata su RMI.
+ * RMI-based {@link ObservableServerConnection}.
  *
- * Al momento della costruzione fa lookup sul registry remoto per ottenere
- * lo stub di {@link RemoteGameServer} ed esporta un callback locale
- * ({@link ClientCallback}) che il server invocherà per recapitare i messaggi.
- * A differenza della versione socket non serve un reader thread: è il runtime
- * RMI a gestire le chiamate verso il callback.
+ * <p>On construction looks up the remote {@link RemoteGameServer} stub and
+ * exports a local callback ({@link ClientCallback}) that the server invokes
+ * to deliver messages. No reader thread is needed: the RMI runtime drives
+ * the callback.
  */
 public class RmiServerConnection implements ObservableServerConnection {
 
     private static final long PING_INTERVAL_MS = 1000;
 
     /**
-     * Ritardo dopo cui, ricevuto un messaggio "di addio" dal server (EndGame /
-     * MatchClosed), simuliamo localmente un evento di disconnessione. Serve a
-     * dare al ramo RMI la stessa UX del ramo socket: senza questo, il client
-     * RMI uscirebbe in silenzio perché lo stub di callback resta vivo e il
-     * ping continua a passare (il server è ancora attivo, ha solo smesso di
-     * parlarci). Tenuto basso così il messaggio "[CONN] Server connection
-     * lost" arriva mentre il loop TUI è ancora bloccato su stdin.
+     * Delay after a farewell message (EndGame / MatchClosed) before we
+     * synthesize a local disconnect event. RMI doesn't emit disconnect
+     * events on its own, so without this the client would exit silently
+     * (the callback stub stays alive and the server is still pingable —
+     * it just stopped talking to us). Kept low so "[CONN] Server connection
+     * lost" reaches the TUI while it's still blocked on stdin.
      */
     private static final long FAREWELL_GRACE_MS = 200;
 
@@ -49,26 +47,14 @@ public class RmiServerConnection implements ObservableServerConnection {
     private volatile ClientUpdateHandler updateHandler;
     private volatile boolean closed;
 
-    /**
-     * Si connette al server RMI facendo lookup del binding indicato.
-     *
-     * @param host        indirizzo del registry
-     * @param port        porta del registry
-     * @param bindingName nome con cui il server è registrato
-     * @throws RemoteException   se il registry non è raggiungibile
-     * @throws NotBoundException se il binding non è presente nel registry
-     */
     public RmiServerConnection(String host, int port, String bindingName) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(Objects.requireNonNull(host, "host cannot be null"), port);
         this.remoteGameServer = (RemoteGameServer) registry.lookup(bindingName);
-        this.updateHandler = null;
-        this.closed = false;
         this.callback = new ClientCallback();
-        // RMI non emette eventi di disconnessione: ci accorgiamo che il server è
-        // morto solo quando una chiamata remota fallisce. Schedulo un ping
-        // periodico così che la morte venga rilevata entro PING_INTERVAL_MS
-        // anche se il giocatore non sta interagendo. Il socket transport ottiene
-        // la stessa cosa "gratis" dall'EOFException sul reader thread.
+        // RMI doesn't notify us when the server dies: we only find out when a
+        // remote call throws. Periodic ping makes that detection bounded by
+        // PING_INTERVAL_MS even when the user isn't interacting. Socket
+        // transport gets this for free from EOFException on the reader thread.
         this.livenessProbe = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "rmi-liveness-probe");
             t.setDaemon(true);
@@ -78,13 +64,6 @@ public class RmiServerConnection implements ObservableServerConnection {
                 PING_INTERVAL_MS, PING_INTERVAL_MS, TimeUnit.MILLISECONDS);
     }
 
-    /**
-     * Ping di liveness eseguito periodicamente dal {@code livenessProbe}.
-     * Se la chiamata remota fallisce significa che il server e' morto:
-     * invoca {@link #fireConnectionClosed} per notificare l'handler e
-     * chiudere la connessione, allineando il comportamento RMI a quello
-     * del trasporto socket (che riceverebbe un'EOFException sul reader thread).
-     */
     private void probe() {
         if (closed) return;
         try {
@@ -94,12 +73,7 @@ public class RmiServerConnection implements ObservableServerConnection {
         }
     }
 
-    /**
-     * Chiude la connessione e notifica l'{@link ClientUpdateHandler} con un
-     * evento di disconnessione. Idempotente: se la connessione è già chiusa
-     * non fa nulla, evitando notifiche duplicate quando probe e farewell
-     * scattano ravvicinati.
-     */
+    /** Idempotent: avoids duplicate notifications when probe and farewell race. */
     private void fireConnectionClosed(Throwable cause) {
         if (closed) return;
         ClientUpdateHandler handler = updateHandler;
@@ -159,15 +133,9 @@ public class RmiServerConnection implements ObservableServerConnection {
         send(new DisconnectPlayerRequest(matchId, nickname));
     }
 
-    /**
-     * Chiude la connessione rimuovendo il callback dall'export RMI.
-     * L'operazione è idempotente.
-     */
     @Override
     public void close() {
-        if (closed) {
-            return;
-        }
+        if (closed) return;
         closed = true;
         livenessProbe.shutdownNow();
         try {
@@ -176,13 +144,6 @@ public class RmiServerConnection implements ObservableServerConnection {
         }
     }
 
-    /**
-     * Inoltra una richiesta al server remoto passando il callback locale
-     * come destinatario delle risposte.
-     *
-     * @param request richiesta da inviare
-     * @throws IllegalStateException se la connessione è chiusa o se la chiamata RMI fallisce
-     */
     private void send(it.polimi.ingsw.am22.network.common.message.ClientRequest request) {
         if (closed) {
             throw new IllegalStateException("The RMI connection is closed.");
@@ -195,10 +156,7 @@ public class RmiServerConnection implements ObservableServerConnection {
         }
     }
 
-    /**
-     * Oggetto esportato via RMI che il server invoca per recapitare i messaggi
-     * al client locale. I messaggi vengono inoltrati all'{@link ClientUpdateHandler}.
-     */
+    /** RMI-exported callback the server invokes to deliver messages to this client. */
     private final class ClientCallback extends UnicastRemoteObject implements RemoteClientView {
         @Serial
         private static final long serialVersionUID = 1L;
@@ -207,25 +165,17 @@ public class RmiServerConnection implements ObservableServerConnection {
             super();
         }
 
-        /**
-         * Invocato remotamente dal server per recapitare un messaggio al
-         * client. Lo inoltra all'{@link ClientUpdateHandler} registrato e,
-         * se il messaggio e' EndGame/MatchClosed, pianifica un evento
-         * sintetico di disconnessione (vedi {@link #FAREWELL_GRACE_MS}).
-         */
         @Override
         public void receive(ServerMessage message) throws RemoteException {
             ClientUpdateHandler handler = updateHandler;
             if (handler != null) {
                 handler.onServerMessage(message);
             }
-            // EndGame e MatchClosed sono gli ultimi messaggi che il server invia
-            // a questo client: dopo, smette semplicemente di chiamare il
-            // callback (RmiClientChannel.close() lato server è no-op). Senza un
-            // segnale aggiuntivo il client RMI non si accorgerebbe della fine
-            // della sessione e uscirebbe in silenzio. Pianifichiamo un
-            // onConnectionClosed sintetico così la TUI/GUI vedono lo stesso
-            // evento del transport socket.
+            // EndGame / MatchClosed are the last messages the server will send
+            // to this client; afterwards it simply stops calling the callback
+            // (RmiClientChannel.close() server-side is a no-op). Without a
+            // synthetic disconnect the RMI client would exit silently, so we
+            // give the TUI/GUI the same event the socket transport produces.
             if (message instanceof EndGameMessage || message instanceof MatchClosedMessage) {
                 if (!closed) {
                     livenessProbe.schedule(

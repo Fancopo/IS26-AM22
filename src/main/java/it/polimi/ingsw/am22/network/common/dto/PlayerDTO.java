@@ -3,22 +3,7 @@ package it.polimi.ingsw.am22.network.common.dto;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * Serializable snapshot of a player in the match.
- *
- * The compact constructor guarantees lists are immutable and never {@code null}.
- *
- * @param nickname                       player nickname
- * @param totemColor                     totem color
- * @param prestigePoints                 current prestige points
- * @param food                           available food
- * @param projectedFinalPrestigePoints   projected final prestige points
- * @param active                         {@code true} if this is the active player
- * @param builderDiscount                food discount granted by Builder characters
- * @param gathererDiscount               sustenance food discount granted by Gatherer (Collector) characters
- * @param tribeCharacters                tribe character cards
- * @param buildings                      owned buildings
- */
+/** Serializable per-player snapshot. Compact constructor makes lists immutable and non-null. */
 public record PlayerDTO(
         String nickname,
         String totemColor,

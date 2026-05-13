@@ -1,28 +1,15 @@
 package it.polimi.ingsw.am22.network.client;
 
 /**
- * Estensione di {@link ServerConnection} che consente al client di ricevere
- * messaggi dal server in modo asincrono.
- *
- * Implementa {@link AutoCloseable} per gestire correttamente la chiusura
- * delle risorse sottostanti (socket o callback RMI).
+ * {@link ServerConnection} that also delivers asynchronous server messages
+ * to a registered handler. AutoCloseable so concrete transports can be used
+ * with try-with-resources.
  */
 public interface ObservableServerConnection extends ServerConnection, AutoCloseable {
 
-    /**
-     * Registra l'handler che riceverà i {@code ServerMessage} inviati dal server.
-     *
-     * @param handler handler da invocare ad ogni messaggio ricevuto
-     */
+    /** Registers the handler invoked on every incoming server message. */
     void setClientUpdateHandler(ClientUpdateHandler handler);
 
-    /**
-     * Chiude la connessione al server liberando le risorse sottostanti.
-     */
     @Override
     void close();
 }
-
-/** Facendo ObservableServerConnection extends AutoCloseable, le SocketServerConnection
-e RmiServerConnection diventano utilizzabili con try-with-resources:
-*/

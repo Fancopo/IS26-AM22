@@ -9,22 +9,13 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * Punto di ingresso del client MESOS.
- * Main del client.
- * Legge --tui/--gui dagli args (o chiede interattivamente)
- * e lancia TuiRunner.run() o Application.launch(GuiApp.class).
+ * Client entry point. Reads --tui/--gui from args (or asks interactively) and
+ * launches the chosen runner.
  */
 public final class ClientApp {
 
-    private ClientApp() {
-    }
+    private ClientApp() {}
 
-    /**
-     * Punto di ingresso del client. Risolve la modalita' richiesta
-     * (TUI/GUI) tramite {@link #resolveMode} e lancia il runner
-     * corrispondente. La GUI viene avviata via {@link Application#launch}
-     * cosi' il framework JavaFX gestisce il proprio thread principale.
-     */
     public static void main(String[] args) {
         Mode mode = resolveMode(args);
         switch (mode) {
@@ -33,26 +24,20 @@ public final class ClientApp {
         }
     }
 
-    /** Modalità dell'interfaccia utente richiesta. */
     private enum Mode { TUI, GUI }
 
-    /**
-     * Risolve la modalità UI: prima guarda gli argomenti, poi chiede all'utente.
-     */
     private static Mode resolveMode(String[] args) {
         for (String a : args) {
             String s = a.toLowerCase(Locale.ROOT);
             if (s.equals("--tui") || s.equals("-t") || s.equals("tui")) return Mode.TUI;
             if (s.equals("--gui") || s.equals("-g") || s.equals("gui")) return Mode.GUI;
         }
-        // Fallback: prompt interattivo (utile quando si lancia senza argomenti).
         System.out.println("MESOS client — choose interface:");
         System.out.println("  1) TUI (text)");
         System.out.println("  2) GUI (JavaFX)");
         System.out.print("Selection [1/2] (default 2): ");
-        // NB: non usiamo try-with-resources perché chiudere uno Scanner su
-        // System.in chiude lo stream condiviso: TuiRunner non riuscirebbe
-        // più a leggere input. Il GC penserà allo Scanner alla terminazione.
+        // NB: not using try-with-resources — closing a Scanner on System.in
+        // closes the shared stream and TuiRunner can no longer read input.
         Scanner in = new Scanner(System.in);
         if (in.hasNextLine()) {
             String line = in.nextLine().trim();

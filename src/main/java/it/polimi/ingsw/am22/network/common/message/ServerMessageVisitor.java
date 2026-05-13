@@ -10,13 +10,7 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 
-/**
- * Visitor per i messaggi inviati dal server al client.
- *
- * Ogni implementazione definisce il comportamento per ciascun tipo di
- * {@link ServerMessage}: la dispatch avviene tramite {@link ServerMessage#accept}
- * senza usare instanceof.
- */
+/** Visitor for server-to-client messages. Dispatch goes through {@link ServerMessage#accept}. */
 public interface ServerMessageVisitor {
     void visit(MatchesListMessage message);
     void visit(MatchJoinedMessage message);

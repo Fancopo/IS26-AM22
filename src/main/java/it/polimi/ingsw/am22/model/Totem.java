@@ -46,43 +46,32 @@ public class Totem {
     }
 
     public void moveToTurnOrder(Slot slot) {
-        if (currentOfferTile != null) {
-            currentOfferTile.clear();
-        }
-
-        if (currentSlot != null) {
-            currentSlot.removeTotem();
-        }
-
-        this.currentOfferTile = null;
+        detachFromCurrent();
         this.currentSlot = slot;
         slot.placeTotem(this);
     }
 
-    /**
-     * Moves the totem to the given offer tile and updates both sides
-     * of the association.
-     */
     public void moveToOffer(OfferTile offerTile) {
         if (offerTile == null) {
             throw new IllegalArgumentException("OfferTile cannot be null.");
         }
-
         if (!offerTile.isAvailable()) {
             throw new IllegalStateException("OfferTile is already occupied. Choose another tile.");
         }
 
-        if (currentOfferTile != null) {
-            currentOfferTile.clear();
-        }
-
-        if (currentSlot != null) {
-            currentSlot.removeTotem();
-        }
-
+        detachFromCurrent();
         this.currentOfferTile = offerTile;
-        this.currentSlot = null;
         offerTile.placeTotem(this);
     }
 
+    private void detachFromCurrent() {
+        if (currentOfferTile != null) {
+            currentOfferTile.clear();
+            currentOfferTile = null;
+        }
+        if (currentSlot != null) {
+            currentSlot.removeTotem();
+            currentSlot = null;
+        }
+    }
 }

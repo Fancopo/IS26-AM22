@@ -4,22 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Serializable snapshot of the game state.
- *
- * Contains everything the client needs to render the game
- * without sharing the concrete model classes.
- * The compact constructor guarantees lists are immutable and
- * never {@code null}, making client-side deserialization safe.
- *
- * @param currentRound  current round number
- * @param currentEra    current era (as string)
- * @param currentPhase  current game phase name
- * @param activePlayer  nickname of the active player ({@code null} if none)
- * @param players       list of players and their state
- * @param upperRow      cards in the upper row of the board
- * @param lowerRow      cards in the lower row of the board
- * @param offerTrack    available offer tiles
- * @param turnOrder     turn-track slots ordered by position
+ * Serializable snapshot of the game state. Compact constructor makes all
+ * lists immutable and never {@code null}.
  */
 public record GameStateDTO(
         int currentRound,

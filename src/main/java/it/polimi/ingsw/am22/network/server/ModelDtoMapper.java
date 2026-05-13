@@ -2,7 +2,7 @@ package it.polimi.ingsw.am22.network.server;
 
 import it.polimi.ingsw.am22.controller.GameController;
 import it.polimi.ingsw.am22.model.*;
-import it.polimi.ingsw.am22.model.character.TribeCharacter;
+import it.polimi.ingsw.am22.model.character.CharacterType;
 import it.polimi.ingsw.am22.network.common.dto.*;
 
 import java.util.Comparator;
@@ -10,18 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Unico punto in cui il network "vede" il model.
- * Costruisce GameStateDTO/LobbyStateDTO/WinnerDTO/PlayerDTO/CardDTO/OfferTileDTO/TurnSlotDTO
- * dagli oggetti di Game e GameController.
+ * Single point where the network layer reads the model. Builds the DTOs
+ * (GameState/LobbyState/Winner/Player/Card/OfferTile/TurnSlot) from Game and GameController.
  */
 public class ModelDtoMapper {
 
-    /**
-     * Produce lo snapshot della lobby a partire dal {@link GameController}.
-     *
-     * @param gameController controller da cui leggere i dati di lobby
-     * @return DTO della lobby
-     */
     public LobbyStateDTO toLobbyState(GameController gameController) {
         List<LobbyPlayerDTO> players = gameController.getLobbyPlayers().stream()
                 .map(player -> new LobbyPlayerDTO(
@@ -40,12 +33,6 @@ public class ModelDtoMapper {
         );
     }
 
-    /**
-     * Produce lo snapshot di gioco a partire dallo stato corrente del {@link Game}.
-     *
-     * @param game partita corrente
-     * @return DTO con giocatori, board e ordine di turno
-     */
     public GameStateDTO toGameState(Game game) {
         Board board = game.getBoard();
         Player activePlayer = game.getActivePlayer();
@@ -75,12 +62,6 @@ public class ModelDtoMapper {
         );
     }
 
-    /**
-     * Produce il DTO del giocatore vincitore.
-     *
-     * @param winner giocatore vincitore
-     * @return DTO con nickname, colore, punti finali e cibo residuo
-     */
     public WinnerDTO toWinnerDTO(Player winner) {
         return new WinnerDTO(
                 winner.getNickname(),
@@ -90,10 +71,8 @@ public class ModelDtoMapper {
         );
     }
 
-    /** Costruisce un {@link PlayerDTO} segnalando se il giocatore è quello di turno. */
     private PlayerDTO toPlayerDTO(Player player, Player activePlayer) {
         Tribe tribe = player.getTribe();
-
         return new PlayerDTO(
                 player.getNickname(),
                 Optional.ofNullable(player.getTotem()).map(Totem::getColor).orElse(null),
@@ -102,27 +81,25 @@ public class ModelDtoMapper {
                 resolveFinalPP(player),
                 player == activePlayer,
                 tribe.getBuilderDiscount(),
-                tribe.countCharacters(it.polimi.ingsw.am22.model.character.CharacterType.COLLECTOR) * 3,
+                tribe.countCharacters(CharacterType.COLLECTOR) * 3,
                 tribe.getMembers().stream().map(this::toCardDTO).toList(),
                 tribe.getBuildings().stream().map(this::toCardDTO).toList()
         );
     }
 
-    /** Estrae categoria, tipo specifico ed era da una {@link Card}. */
     private CardDTO toCardDTO(Card card) {
-        int numStars = (card instanceof TribeCharacter tc) ? tc.getNumStars() : 0;
+        Integer foodCost = card.getFoodCost() > 0 ? card.getFoodCost() : null;
         return new CardDTO(
                 card.getId(),
-                categoryOf(card),
-                detailTypeOf(card),
+                card.cardCategory(),
+                card.cardDetailType(),
                 String.valueOf(card.getEra()),
                 card.getMinPlayers(),
-                foodCostOf(card),
-                numStars
+                foodCost,
+                card.getNumStars()
         );
     }
 
-    /** Mappa una tessera offerta; {@code occupiedBy} è il nickname di chi la occupa. */
     private OfferTileDTO toOfferTileDTO(OfferTile tile) {
         return new OfferTileDTO(
                 tile.getLetter(),
@@ -133,7 +110,6 @@ public class ModelDtoMapper {
         );
     }
 
-    /** Mappa uno slot del tracciato turno; {@code occupiedBy} è il nickname di chi lo occupa. */
     private TurnSlotDTO toTurnSlotDTO(Slot slot) {
         return new TurnSlotDTO(
                 slot.getPositionIndex(),
@@ -143,28 +119,12 @@ public class ModelDtoMapper {
         );
     }
 
-    /** Risolve i punti prestigio finali; se il calcolo fallisce torna ai PP correnti. */
+    /** Final PP, falling back to current PP if the calculation throws. */
     private int resolveFinalPP(Player player) {
         try {
             return player.finalPP();
         } catch (Exception ignored) {
+            return player.getPP();
         }
-        return player.getPP();
-    }
-
-    /** Macro-categoria della carta delegata alla carta stessa. */
-    private String categoryOf(Card card) {
-        return card.cardCategory();
-    }
-
-    /** Tipo specifico della carta delegato alla carta stessa. */
-    private String detailTypeOf(Card card) {
-        return card.cardDetailType();
-    }
-
-    /** Costo in cibo della carta; restituisce null se zero (carta senza costo). */
-    private Integer foodCostOf(Card card) {
-        int cost = card.getFoodCost();
-        return cost > 0 ? cost : null;
     }
 }

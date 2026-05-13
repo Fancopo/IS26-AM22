@@ -14,6 +14,8 @@ import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
+import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -23,52 +25,33 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 /**
- * Applicazione JavaFX principale del client.
- *
- * <p>Ruolo nel pattern MVC: orchestratore della View grafica.
- * <ul>
- *     <li>Possiede lo {@link Stage} e la {@link ClientSession}.</li>
- *     <li>Fa da {@link ClientUpdateHandler}: riceve i messaggi dal server
- *         (su thread arbitrari) e li ridispiazza sul thread JavaFX.</li>
- *     <li>Gestisce la navigazione tra schermate:
- *         Connection &rarr; Nickname &rarr; Lobby &rarr; Game &rarr; EndGame.</li>
- * </ul>
- *
- * <p>Le singole schermate espongono un metodo {@code onServerMessage(...)}
- * che viene invocato sempre sul JavaFX thread: possono quindi aggiornare
- * i nodi UI senza ulteriori accorgimenti di threading.
+ * JavaFX root: owns the {@link Stage} and the {@link ClientSession}, acts as
+ * the {@link ClientUpdateHandler} (marshalling messages onto the FX thread),
+ * and drives screen navigation: Connection → Nickname → Matches → Lobby →
+ * Game → EndGame. Each screen's {@code onServerMessage(...)} is always
+ * called on the FX thread.
  */
 public final class GuiApp extends Application implements ClientUpdateHandler {
 
     private Stage stage;
     private ClientSession session;
-
-    /** Schermata attualmente visibile, destinataria dei {@code ServerMessage}. */
     private GuiScreen currentScreen;
 
-    /** Parametri dell'ultima connessione riuscita, usati per riconnettersi
-     *  dopo un leave volontario senza tornare alla schermata di connessione. */
+    /** Last successful connection parameters, reused after a voluntary leave. */
     private Transport lastTransport;
     private String lastHost;
     private int lastPort;
-    /** Ultimo nickname usato: serve per tornare alla MatchesScreen dopo la fine partita. */
+    /** Last nickname used: needed when bouncing back to the matches screen post-game. */
     private String lastNickname;
 
-    /** Quando true, la prossima onConnectionClosed non mostra alert né torna
-     *  alla ConnectionScreen: la chiusura era voluta (es. leave dalla lobby). */
+    /** When true, the next onConnectionClosed is silent (it was a planned tear-down). */
     private boolean expectingDisconnect;
 
-    /**
-     * Punto di ingresso dell'applicazione JavaFX.
-     * Invocato automaticamente da {@link Application#launch} (vedi {@link #main}
-     * oppure {@code ClientApp}). Inizializza lo stage, registra l'handler di
-     * chiusura della finestra e mostra la {@link ConnectionScreen}.
-     */
     @Override
     public void start(Stage primaryStage) {
         this.stage = primaryStage;
         stage.setTitle("MESOS");
-        // Se l'utente chiude la finestra con la X, chiudiamo la sessione in modo pulito.
+        // Window X → clean session shutdown.
         stage.setOnCloseRequest(e -> {
             if (session != null) session.close(true);
             Platform.exit();
@@ -77,19 +60,13 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         stage.show();
     }
 
-    // -------------------- API usate dalle schermate --------------------
+    // -------------------- API used by screens --------------------
 
-    /**
-     * Apre la connessione verso il server e crea la {@link ClientSession}.
-     * Va chiamata dalla ConnectionScreen.
-     *
-     * @return {@code true} in caso di successo, {@code false} altrimenti
-     */
+    /** Opens the server connection and creates the session. Returns false on failure. */
     public boolean connect(Transport transport, String host, int port) {
         try {
             ObservableServerConnection conn = ConnectionFactory.open(transport, host, port);
             this.session = new ClientSession(conn);
-            // Registriamo GuiApp come handler: filtra e inoltra alla schermata attiva.
             session.setHandler(this);
             this.lastTransport = transport;
             this.lastHost = host;
@@ -101,49 +78,28 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         }
     }
 
-    /**
-     * Accesso alla {@link ClientSession} corrente.
-     * Usato dalle schermate per inoltrare comandi al server tramite
-     * {@code session.getClientController()} e per leggere lo stato locale
-     * (nickname, ultimo gameState/lobbyState, ecc.). Restituisce {@code null}
-     * se non e' stata ancora aperta una connessione.
-     */
     public ClientSession getSession() {
         return session;
     }
 
-    // -------------------- Navigazione schermate --------------------
+    // -------------------- Screen navigation --------------------
 
-    /**
-     * Mostra la {@link ConnectionScreen}: prima schermata della GUI, dove
-     * l'utente sceglie trasporto/host/porta.
-     */
     public void showConnectionScreen() {
         setScreen(new ConnectionScreen(this));
     }
 
-    /**
-     * Mostra la {@link NicknameScreen}: l'utente sceglie il proprio nickname
-     * prima di entrare nella schermata di selezione partita.
-     */
     public void showNicknameScreen() {
         setScreen(new NicknameScreen(this));
     }
 
-    /**
-     * Mostra la {@link MatchesScreen} per il nickname indicato e memorizza
-     * il nickname come {@link #lastNickname} per poterlo riutilizzare
-     * dopo una fine partita o un leave volontario.
-     */
     public void showMatchesScreen(String nickname) {
         this.lastNickname = nickname;
         setScreen(new MatchesScreen(this, nickname));
     }
 
     /**
-     * Torna alla {@link MatchesScreen} dopo la fine di una partita.
-     * Il server chiude il canale a fine partita: riapriamo una connessione
-     * pulita riusando gli ultimi parametri (transport/host/port/nickname).
+     * After end-of-game the server closes the channel; reopen a fresh
+     * connection with the saved parameters and return to the matches screen.
      */
     public void endGameAndShowMatches() {
         if (session != null) {
@@ -161,13 +117,7 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         showMatchesScreen(lastNickname);
     }
 
-    /**
-     * Esce da una partita già iniziata e torna alla {@link MatchesScreen}.
-     * Invia al server una {@code disconnectPlayer}: lato server la partita
-     * viene abortita per tutti i partecipanti, ma nessun canale viene chiuso.
-     * La sessione del giocatore resta viva e può subito list/create/join un
-     * nuovo match.
-     */
+    /** Aborts a running match and returns to the matches screen on the same session. */
     public void leaveMatchAndShowMatches(String nickname) {
         if (session != null) {
             try {
@@ -181,11 +131,7 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         }
     }
 
-    /**
-     * Esce dalla lobby corrente (pre-game) e torna alla {@link MatchesScreen}
-     * mantenendo la stessa sessione: il server non chiude il canale, quindi
-     * il giocatore può subito vedere/creare/joinare un'altra partita.
-     */
+    /** Pre-game leave: same session reused for further list/create/join. */
     public void leaveLobbyAndShowMatches(String nickname) {
         if (session != null) {
             try {
@@ -207,29 +153,14 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         showMatchesScreen(nickname);
     }
 
-    /**
-     * Mostra la {@link LobbyScreen}: invocato automaticamente quando arriva
-     * il primo {@link LobbyStateMessage} (o {@link it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage})
-     * dal server dopo che il giocatore ha creato o unito un match.
-     */
     public void showLobbyScreen() {
         setScreen(new LobbyScreen(this));
     }
 
-    /**
-     * Mostra la {@link GameScreen}: invocato quando arriva
-     * {@link GameStartedMessage} oppure quando lo stato della sessione
-     * indica che la partita e' iniziata.
-     */
     public void showGameScreen() {
         setScreen(new GameScreen(this));
     }
 
-    /**
-     * Mostra la {@link EndGameScreen} costruita a partire dall'{@link EndGameMessage}
-     * ricevuto: passa vincitore, stato finale, classifica storica e la posizione
-     * del giocatore locale in quella classifica.
-     */
     public void showEndGameScreen(EndGameMessage m) {
         String me = session != null ? session.getLocalNickname() : null;
         if (me == null) me = lastNickname;
@@ -242,11 +173,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
                 me));
     }
 
-    /**
-     * Installa una nuova schermata nello stage.
-     * La Scene viene creata o aggiornata con una dimensione di default sufficiente
-     * per tutti i layout: l'utente potrà poi sostituire i nodi con le risorse grafiche.
-     */
     private void setScreen(GuiScreen screen) {
         this.currentScreen = screen;
         Parent root = screen.getRoot();
@@ -261,7 +187,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         }
     }
 
-    /** Carica il CSS della GameScreen una sola volta (idempotente). */
     private void applyStylesheet(Scene scene) {
         try {
             var url = getClass().getResource("/css/game.css");
@@ -271,11 +196,10 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
                 scene.getStylesheets().add(href);
             }
         } catch (Exception ignored) {
-            // CSS opzionale: la UI funziona anche senza.
+            // CSS is optional.
         }
     }
 
-    /** Mostra un alert non bloccante con un messaggio di errore. */
     public void showError(String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR, message);
@@ -284,7 +208,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         });
     }
 
-    /** Termina l'applicazione chiudendo la sessione se presente. */
     public void exit() {
         if (session != null) {
             session.close(true);
@@ -292,64 +215,46 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         Platform.exit();
     }
 
-    // -------------------- ClientUpdateHandler (dal server) --------------------
+    // -------------------- ClientUpdateHandler --------------------
 
     /**
-     * Callback invocata dalla {@link ClientSession} per ogni messaggio in
-     * arrivo dal server. Puo' essere chiamata da thread arbitrari (reader
-     * thread del socket o thread RMI), per questo il messaggio viene sempre
-     * rimbalzato sul JavaFX thread tramite {@link Platform#runLater}.
+     * Called from arbitrary threads (socket reader or RMI). Always re-dispatch
+     * on the JavaFX thread before touching UI.
      */
     @Override
     public void onServerMessage(ServerMessage message) {
-        // I messaggi arrivano sul reader thread socket o sul thread RMI:
-        // li rimbalziamo SEMPRE sul JavaFX thread prima di toccare la UI.
         Platform.runLater(() -> dispatchOnFxThread(message));
     }
 
-    /**
-     * Callback invocata dalla {@link ClientSession} quando la connessione
-     * verso il server viene chiusa. Se la disconnessione era attesa
-     * ({@link #expectingDisconnect} = true, es. fine partita o leave volontario)
-     * la callback e' silenziosa, altrimenti viene mostrato un alert e si torna
-     * alla {@link ConnectionScreen}.
-     */
     @Override
     public void onConnectionClosed(Throwable cause) {
         Platform.runLater(() -> {
             if (expectingDisconnect) {
-                // Disconnessione attesa (es. leave volontario): silenziosa.
                 expectingDisconnect = false;
                 return;
             }
             showError("Connection closed"
                     + (cause == null ? "." : ": " + cause.getClass().getSimpleName()));
-            // Dopo una disconnessione inattesa riportiamo il client alla schermata di connessione.
             this.session = null;
             showConnectionScreen();
         });
     }
 
-    /** Dispatch eseguito sempre sul JavaFX thread. */
     private void dispatchOnFxThread(ServerMessage message) {
-        // Navigazione automatica guidata dai messaggi chiave.
+        // Auto-navigation driven by key messages.
         message.accept(new ServerMessageVisitor() {
             @Override public void visit(GameStartedMessage m) {
                 if (!(currentScreen instanceof GameScreen)) showGameScreen();
             }
             @Override public void visit(EndGameMessage m) {
-                // Il server chiude il canale subito dopo l'EndGameMessage:
-                // sopprimiamo l'alert di "Connection closed" e il redirect
-                // alla ConnectionScreen che ne deriverebbe.
+                // The server closes the channel right after EndGameMessage;
+                // silence the "Connection closed" alert/redirect.
                 expectingDisconnect = true;
                 showEndGameScreen(m);
             }
             @Override public void visit(MatchClosedMessage m) {
-                // Match abortito da remoto: la connessione col server resta
-                // viva (il server non chiude più i canali) e ClientSession ha
-                // già azzerato gli snapshot e il binding del controller.
-                // Riportiamo l'utente alla MatchesScreen mantenendo la stessa
-                // sessione, così può subito list/create/join un altro match.
+                // Aborted remotely: connection stays alive, ClientSession has
+                // already cleared local state. Bounce back to the matches screen.
                 showError("Match closed: " + m.reason());
                 if (session != null) {
                     showMatchesScreen(lastNickname);
@@ -361,20 +266,19 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(InfoMessage m) { System.out.println("[INFO] " + m.message()); }
             @Override public void visit(LobbyStateMessage m) {}
             @Override public void visit(GameStateMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
+            @Override public void visit(MatchJoinedMessage m) {}
+            @Override public void visit(MatchesListMessage m) {}
         });
 
-        // Navigazione PRE-inoltro: se la NicknameScreen è ancora attiva e arriva
-        // una conferma di lobby (LobbyStateMessage o MatchJoinedMessage),
-        // passiamo subito alla LobbyScreen. Va fatto PRIMA dell'inoltro perché
-        // NicknameScreen.onServerMessage azzera il flag pendingJoin.
+        // Pre-forward navigation: a lobby confirm while on Nickname/Matches
+        // pushes the Lobby screen. Must happen BEFORE forwarding because
+        // those screens clear their pending-join flag on the same message.
         message.accept(new ServerMessageVisitor() {
             @Override public void visit(LobbyStateMessage m) {
                 if (currentScreen instanceof NicknameScreen
                         || currentScreen instanceof MatchesScreen) showLobbyScreen();
             }
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {
+            @Override public void visit(MatchJoinedMessage m) {
                 if (currentScreen instanceof NicknameScreen
                         || currentScreen instanceof MatchesScreen) showLobbyScreen();
             }
@@ -384,17 +288,17 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(MatchClosedMessage m) {}
             @Override public void visit(ErrorMessage m) {}
             @Override public void visit(InfoMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
+            @Override public void visit(MatchesListMessage m) {}
         });
 
-        // Inoltriamo alla schermata attiva (eventualmente quella appena installata).
+        // Forward to the currently-mounted screen.
         GuiScreen screen = currentScreen;
         if (screen != null) {
             screen.onServerMessage(message);
         }
 
-        // Navigazione post-inoltro: per il GameStateMessage, se la sessione
-        // segnala che la partita è iniziata, passiamo alla GameScreen.
+        // Post-forward: a GameStateMessage on an already-started session also
+        // moves to the GameScreen.
         message.accept(new ServerMessageVisitor() {
             @Override public void visit(GameStateMessage m) {
                 if (!(currentScreen instanceof GameScreen) && session != null && session.isGameStarted()) showGameScreen();
@@ -405,15 +309,11 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(MatchClosedMessage m) {}
             @Override public void visit(ErrorMessage m) {}
             @Override public void visit(InfoMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
+            @Override public void visit(MatchJoinedMessage m) {}
+            @Override public void visit(MatchesListMessage m) {}
         });
     }
 
-    /**
-     * Main opzionale: consente di lanciare direttamente la GUI senza passare
-     * da {@code ClientApp}. Normalmente il punto d'ingresso è {@code ClientApp}.
-     */
     public static void main(String[] args) {
         launch(args);
     }

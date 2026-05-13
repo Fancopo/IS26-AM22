@@ -17,89 +17,46 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 import java.util.Objects;
 
 /**
- Aggrega ObservableServerConnection + ClientController.
- Snapshot replay:
- registra un InternalDispatcher sempre attivo che intercetta ogni ServerMessage,
- salva latestLobbyState/latestGameState/gameStarted, e poi inoltra alla view corrente.
-
- Quando una nuova schermata si registra (setHandler), riceve subito un replay dell'ultimo stato
- — risolve la race condition "messaggio arrivato prima che la view fosse pronta".
-
- Switch di view: la GUI cambia schermata e la nuova handler riparte sincronizzata.
+ * Pairs an ObservableServerConnection with a ClientController and adds a
+ * snapshot-replay layer: an internal dispatcher captures every server message,
+ * caches the latest lobby/game state, then forwards it to the currently
+ * attached view handler.
+ *
+ * <p>When a new screen registers via {@link #setHandler}, it immediately
+ * receives a replay of the latest known state — fixes the race where a
+ * message arrives before the view is ready.
  */
 public final class ClientSession {
 
     private final ObservableServerConnection connection;
     private final ClientController clientController;
 
-    /** Handler della view attualmente attiva (può cambiare a ogni switch di schermata). */
+    /** Handler of the currently active view (may change on every screen switch). */
     private volatile ClientUpdateHandler currentHandler;
 
-    /** Ultimo stato lobby ricevuto (per replay sulla view appena attaccata). */
     private volatile LobbyStateDTO latestLobbyState;
-
-    /** Ultimo stato di gioco ricevuto (per replay sulla view appena attaccata). */
     private volatile GameStateDTO latestGameState;
-
-    /** Diventa {@code true} non appena arriva {@link GameStartedMessage}. */
     private volatile boolean gameStarted;
 
-    /**
-     * Crea la sessione e registra internamente un dispatcher che:
-     * 1. aggiorna gli snapshot;
-     * 2. inoltra il messaggio all'handler corrente (se presente).
-     * @param connection connessione già aperta verso il server
-     */
     public ClientSession(ObservableServerConnection connection) {
         this.connection = Objects.requireNonNull(connection, "connection cannot be null");
         this.clientController = new ClientController(connection);
-        // Il dispatcher interno è sempre attivo: filtra gli snapshot e poi
-        // delega alla view corrente. In questo modo i messaggi non si
-        // perdono se arrivano prima che la view sia pronta.
         this.connection.setClientUpdateHandler(new InternalDispatcher());
     }
 
-    /**
-     * @return il controller che la view usa per inviare comandi al server
-     */
-    public ClientController getClientController() {
-        return clientController;
-    }
-
-    /** @return nickname locale (può essere {@code null} prima del join). */
-    public String getLocalNickname() {
-        return clientController.getNickname();
-    }
-
-    /** @return ultimo stato lobby noto, o {@code null} se mai ricevuto. */
-    public LobbyStateDTO getLatestLobbyState() {
-        return latestLobbyState;
-    }
-
-    /** @return ultimo stato di gioco noto, o {@code null} se mai ricevuto. */
-    public GameStateDTO getLatestGameState() {
-        return latestGameState;
-    }
-
-    /** @return true se il server ha già notificato {@code GameStartedMessage}. */
-    public boolean isGameStarted() {
-        return gameStarted;
-    }
+    public ClientController getClientController() { return clientController; }
+    public String getLocalNickname() { return clientController.getNickname(); }
+    public LobbyStateDTO getLatestLobbyState() { return latestLobbyState; }
+    public GameStateDTO getLatestGameState() { return latestGameState; }
+    public boolean isGameStarted() { return gameStarted; }
 
     /**
-     * Registra l'handler della view attiva. Se esiste già un'istantanea
-     * di lobby o gioco, viene replayata subito all'handler in modo che la
-     * schermata parta già sincronizzata.
-     *
-     * @param handler nuovo handler attivo (può essere {@code null} per disattivarlo)
+     * Registers the active view handler. If a lobby/game snapshot is already
+     * available, replays it to the new handler so the screen starts in sync.
      */
     public void setHandler(ClientUpdateHandler handler) {
         this.currentHandler = handler;
-        if (handler == null) {
-            return;
-        }
-        // Replay: chi si è appena attaccato riceve il messaggio più pertinente
-        // per ricostruire il proprio stato iniziale.
+        if (handler == null) return;
         if (gameStarted && latestGameState != null) {
             handler.onServerMessage(new GameStateMessage(latestGameState));
         } else if (latestLobbyState != null) {
@@ -108,12 +65,9 @@ public final class ClientSession {
     }
 
     /**
-     * Resetta lo stato locale legato al match corrente (snapshot lobby/gioco,
-     * flag gameStarted, binding del controller) lasciando intatta la
-     * connessione col server. Va chiamato sia quando il server ci notifica
-     * un {@code MatchClosedMessage}, sia quando è il giocatore stesso a
-     * fare leave volontario: in entrambi i casi la sessione resta utilizzabile
-     * per liste/creazione/join di nuove partite.
+     * Resets local match state (snapshots + controller binding) but keeps the
+     * connection. Used both when the server sends MatchClosedMessage and on
+     * voluntary leave; afterwards the session is reusable for list/create/join.
      */
     public void clearLocalMatchState() {
         latestGameState = null;
@@ -122,47 +76,34 @@ public final class ClientSession {
         clientController.clearMatchBinding();
     }
 
-    /**
-     * Chiude la connessione in modo pulito.
-     *
-     * @param notifyServer se {@code true} invia prima una disconnect al server
-     */
     public void close(boolean notifyServer) {
         try {
             if (notifyServer && clientController.hasJoinedLobby()) {
                 clientController.disconnect();
             }
         } catch (RuntimeException ignored) {
-            // Se la connessione è già caduta, ignoriamo: l'importante è chiudere.
+            // Connection already gone: nothing to notify.
         }
         connection.close();
     }
 
-    /**
-     * Dispatcher interno: è sempre registrato sulla connection, intercetta
-     * i messaggi prima della view e aggiorna gli snapshot.
-     */
     private final class InternalDispatcher implements ClientUpdateHandler {
 
         @Override
         public void onServerMessage(ServerMessage message) {
-            // Aggiornamento snapshot prima di inoltrare: dispatch polimorfo via visitor.
             message.accept(new ServerMessageVisitor() {
                 @Override public void visit(MatchesListMessage m) {}
                 @Override public void visit(MatchJoinedMessage m) {
-                    // Memorizza il matchId locale così che le richieste successive
-                    // (placeTotem, pickCards, ecc.) vengano instradate alla partita giusta.
+                    // Store the matchId locally so subsequent moves are routed to the right match.
                     clientController.bindMatch(m.matchId(), m.nickname());
                 }
-                @Override public void visit(LobbyStateMessage m) { latestLobbyState = m.lobbyState(); }
+                @Override public void visit(LobbyStateMessage m)  { latestLobbyState = m.lobbyState(); }
                 @Override public void visit(GameStartedMessage m) { gameStarted = true; latestGameState = m.initialGameState(); }
-                @Override public void visit(GameStateMessage m) { latestGameState = m.gameState(); }
-                @Override public void visit(EndGameMessage m) { latestGameState = m.finalGameState(); }
+                @Override public void visit(GameStateMessage m)   { latestGameState = m.gameState(); }
+                @Override public void visit(EndGameMessage m)     { latestGameState = m.finalGameState(); }
                 @Override public void visit(MatchClosedMessage m) {
-                    // Match abortito da remoto: pulizia automatica dello stato
-                    // locale, così la view può riportare l'utente alla
-                    // schermata iniziale di selezione partite. Il canale
-                    // resta aperto: il server non lo chiude più.
+                    // Match aborted remotely: clean up local state so the view can
+                    // bounce the user back to the initial scene. Channel stays open.
                     clearLocalMatchState();
                 }
                 @Override public void visit(ErrorMessage m) {}

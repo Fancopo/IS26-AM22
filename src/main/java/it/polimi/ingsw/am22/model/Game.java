@@ -106,96 +106,58 @@ public class Game {
         CardJsonLoader loader = new CardJsonLoader();
         LoadedCards loadedCards = loader.loadAllCards("/TribeCharacter-Event.json", "/Building.json");
 
-        List<Card> allTribeCards = new ArrayList<>();
-        allTribeCards.addAll(loadedCards.getTribeCharacters());
-        allTribeCards.addAll(loadedCards.getEvents());
-
-        List<Card> filteredTribe = new ArrayList<>(allTribeCards.stream()
-                .filter(card -> card.getMinPlayers() <= players.size())
-                .toList());
-
-        List<Card> era1 = new ArrayList<>(filteredTribe.stream()
-                .filter(card -> card.getEra() == Era.I)
-                .toList());
-
-        List<Card> era2 = new ArrayList<>(filteredTribe.stream()
-                .filter(card -> card.getEra() == Era.II)
-                .toList());
-
-        List<Card> era3 = new ArrayList<>(filteredTribe.stream()
-                .filter(card -> card.getEra() == Era.III)
-                .toList());
-
-        List<Card> finalEvents = new ArrayList<>(loadedCards.getFinalEvents().stream()
-                .filter(card -> card.getMinPlayers() <= players.size())
-                .toList());
-
-        Collections.shuffle(era1);
-        Collections.shuffle(era2);
-        Collections.shuffle(era3);
-        Collections.shuffle(finalEvents);
+        int playerCount = players.size();
+        List<Card> tribeCards = new ArrayList<>();
+        tribeCards.addAll(loadedCards.getTribeCharacters());
+        tribeCards.addAll(loadedCards.getEvents());
+        tribeCards.removeIf(c -> c.getMinPlayers() > playerCount);
 
         tribeDeck.clear();
-        tribeDeck.addAll(era1);
-        tribeDeck.addAll(era2);
-        tribeDeck.addAll(era3);
-        tribeDeck.addAll(finalEvents);
-
-        List<Building> allBuildings = new ArrayList<>(loadedCards.getBuildings());
-
-        List<Building> buildEra1 = new ArrayList<>(allBuildings.stream()
-                .filter(building -> building.getEra() == Era.I)
-                .toList());
-
-        List<Building> buildEra2 = new ArrayList<>(allBuildings.stream()
-                .filter(building -> building.getEra() == Era.II)
-                .toList());
-
-        List<Building> buildEra3 = new ArrayList<>(allBuildings.stream()
-                .filter(building -> building.getEra() == Era.III)
-                .toList());
-
-        Collections.shuffle(buildEra1);
-        Collections.shuffle(buildEra2);
-        Collections.shuffle(buildEra3);
-
-        int countEra1;
-        int countEra2;
-        int countEra3;
-
-        switch (players.size()) {
-            case 2 -> {
-                countEra1 = 1;
-                countEra2 = 2;
-                countEra3 = 3;
-            }
-            case 3 -> {
-                countEra1 = 2;
-                countEra2 = 2;
-                countEra3 = 4;
-            }
-            case 4 -> {
-                countEra1 = 2;
-                countEra2 = 3;
-                countEra3 = 4;
-            }
-            case 5 -> {
-                countEra1 = 2;
-                countEra2 = 3;
-                countEra3 = 5;
-            }
-            default -> throw new IllegalStateException("Invalid number of players: " + players.size());
+        for (Era era : Era.values()) {
+            List<Card> shuffled = shuffledByEra(tribeCards, era);
+            tribeDeck.addAll(shuffled);
         }
 
-        List<Building> selectedEra1 = new ArrayList<>(buildEra1.subList(0, countEra1));
-        List<Building> selectedEra2 = new ArrayList<>(buildEra2.subList(0, countEra2));
-        List<Building> selectedEra3 = new ArrayList<>(buildEra3.subList(0, countEra3));
+        List<Card> finalEvents = new ArrayList<>(loadedCards.getFinalEvents());
+        finalEvents.removeIf(c -> c.getMinPlayers() > playerCount);
+        Collections.shuffle(finalEvents);
+        tribeDeck.addAll(finalEvents);
+
+        int[] buildingsPerEra = buildingsPerEra(playerCount);
+        List<Building> allBuildings = loadedCards.getBuildings();
+        List<List<Building>> byEra = new ArrayList<>();
+        for (Era era : Era.values()) {
+            List<Building> ofEra = new ArrayList<>(allBuildings.stream()
+                    .filter(b -> b.getEra() == era).toList());
+            Collections.shuffle(ofEra);
+            byEra.add(ofEra);
+        }
+
+        List<Building> eraI = byEra.get(0).subList(0, buildingsPerEra[0]);
+        List<Building> eraII = byEra.get(1).subList(0, buildingsPerEra[1]);
+        List<Building> eraIII = byEra.get(2).subList(0, buildingsPerEra[2]);
 
         buildingMarket.clear();
-        buildingMarket.addAll(selectedEra2);
-        buildingMarket.addAll(selectedEra3);
+        buildingMarket.addAll(eraII);
+        buildingMarket.addAll(eraIII);
+        board.revealNewBuildings(new ArrayList<>(eraI));
+    }
 
-        board.revealNewBuildings(selectedEra1);
+    private static List<Card> shuffledByEra(List<Card> source, Era era) {
+        List<Card> ofEra = new ArrayList<>(source.stream()
+                .filter(c -> c.getEra() == era).toList());
+        Collections.shuffle(ofEra);
+        return ofEra;
+    }
+
+    private static int[] buildingsPerEra(int playerCount) {
+        return switch (playerCount) {
+            case 2 -> new int[]{1, 2, 3};
+            case 3 -> new int[]{2, 2, 4};
+            case 4 -> new int[]{2, 3, 4};
+            case 5 -> new int[]{2, 3, 5};
+            default -> throw new IllegalStateException("Invalid number of players: " + playerCount);
+        };
     }
     public void handleEraChange() {
         if (currentEra == Era.III) {

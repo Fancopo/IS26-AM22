@@ -25,15 +25,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
- * Schermata di lobby.
- *
- * <p>Comportamento:
- * <ul>
- *     <li>Mostra la lista giocatori attualmente connessi.</li>
- *     <li>Se il giocatore locale è l'host, consente di impostare il numero
- *         di giocatori attesi (tipicamente 2..4 per Mesos).</li>
- *     <li>Attende il {@code GameStartedMessage}: la navigazione è gestita da {@link GuiApp}.</li>
- * </ul>
+ * Lobby screen. Shows connected players and (for the host) controls to set the
+ * expected number of players. Waits for {@code GameStartedMessage} —
+ * navigation is driven by {@link GuiApp}.
  */
 public final class LobbyScreen implements GuiScreen {
 
@@ -53,40 +47,22 @@ public final class LobbyScreen implements GuiScreen {
     private final Button leaveButton = new Button("Leave lobby");
     private final HBox hostControls;
 
-    /**
-     * Costruisce la schermata di lobby.
-     * Invocata da {@link GuiApp#showLobbyScreen()} dopo il join/create di un
-     * match. Se la {@link it.polimi.ingsw.am22.network.client.ClientSession}
-     * ha gia' uno stato di lobby in cache (es. {@code LobbyStateMessage}
-     * arrivato prima della creazione di questa schermata), lo renderizza subito.
-     */
     public LobbyScreen(GuiApp app) {
         this.app = app;
         this.hostControls = new HBox(8, new Label("Expected players:"), expectedCombo, confirmExpectedButton);
         this.hostControls.setAlignment(Pos.CENTER_LEFT);
         this.root = buildUi();
         wireActions();
-        // Render iniziale con l'eventuale stato già noto (potrebbe essere stato
-        // replayato dalla ClientSession subito dopo il join).
+        // Pick up any cached lobby state replayed by the session right after join.
         LobbyStateDTO cached = app.getSession().getLatestLobbyState();
         if (cached != null) render(cached);
     }
 
-    /**
-     * Restituisce il nodo radice della schermata.
-     * Chiamato da {@link GuiApp#setScreen} per montare questa schermata nello stage.
-     */
     @Override
     public Parent getRoot() {
         return root;
     }
 
-    /**
-     * Riceve i messaggi del server sul thread JavaFX.
-     * In lobby interessa solo {@link LobbyStateMessage}: ogni volta che arriva,
-     * la lista giocatori e i controlli host vengono aggiornati con {@link #render}.
-     * Gli altri tipi sono gestiti da {@link GuiApp} o da altre schermate.
-     */
     @Override
     public void onServerMessage(ServerMessage message) {
         message.accept(new ServerMessageVisitor() {
@@ -102,11 +78,6 @@ public final class LobbyScreen implements GuiScreen {
         });
     }
 
-    /**
-     * Crea il layout JavaFX della lobby: header con host e numero di giocatori
-     * attesi, lista giocatori, controlli host (visibili solo all'host), pulsante
-     * "Leave lobby" e label di stato.
-     */
     private StackPane buildUi() {
         expectedCombo.getSelectionModel().select(Integer.valueOf(2));
 
@@ -129,15 +100,6 @@ public final class LobbyScreen implements GuiScreen {
         return container;
     }
 
-    /**
-     * Collega i listener ai pulsanti della schermata:
-     * <ul>
-     *   <li>{@code confirmExpectedButton}: solo per l'host — invia al server
-     *       il numero di giocatori attesi via {@code setExpectedPlayers};</li>
-     *   <li>{@code leaveButton}: invoca {@link GuiApp#leaveLobbyAndShowMatches}
-     *       mantenendo la sessione e tornando alla MatchesScreen.</li>
-     * </ul>
-     */
     private void wireActions() {
         confirmExpectedButton.setOnAction(e -> {
             Integer selected = expectedCombo.getSelectionModel().getSelectedItem();
@@ -150,18 +112,11 @@ public final class LobbyScreen implements GuiScreen {
             }
         });
         leaveButton.setOnAction(e -> {
-            // Conserviamo il nickname locale prima del leave: il server chiuderà
-            // il canale e GuiApp aprirà una nuova connessione tornando alla
-            // schermata di selezione partita con lo stesso nickname.
             String me = app.getSession().getLocalNickname();
             app.leaveLobbyAndShowMatches(me);
         });
     }
 
-    /**
-     * Aggiorna i nodi UI in base al nuovo {@link LobbyStateDTO}.
-     * Mostra/nasconde i controlli host in base al nickname locale.
-     */
     private void render(LobbyStateDTO lobby) {
         hostLabel.setText("Host: " + (lobby.hostNickname() == null ? "(unknown)" : lobby.hostNickname()));
         expectedLabel.setText("Expected players: "
@@ -174,7 +129,6 @@ public final class LobbyScreen implements GuiScreen {
         }
         String me = app.getSession().getLocalNickname();
         boolean iAmHost = me != null && me.equalsIgnoreCase(lobby.hostNickname());
-        // Solo l'host vede i controlli per impostare il numero di giocatori attesi.
         hostControls.setVisible(iAmHost);
         hostControls.setManaged(iAmHost);
     }

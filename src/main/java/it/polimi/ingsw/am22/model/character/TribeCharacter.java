@@ -50,8 +50,6 @@ public class TribeCharacter extends Card {
     @Override
     public String cardDetailType() { return String.valueOf(characterType); }
 
-    public int getNumStars(){ return 0;}
-
     public char getIconPerInventor(){return '0';}
     public int getDiscountFood(){
         return 0;

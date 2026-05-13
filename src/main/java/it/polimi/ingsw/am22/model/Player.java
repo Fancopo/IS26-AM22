@@ -60,9 +60,6 @@ public class Player {
         this.food -= amount;
     }
 
-    /**
-     * Adds or subtracts prestige points.
-     */
     public void addPP(int amount) {
         this.PP += amount;
     }
@@ -70,38 +67,26 @@ public class Player {
     private int calculateCharacterEndgamePP() {
         int points = 0;
 
-        int builders = tribe.countCharacters(CharacterType.BUILDER);
-        int inventors = tribe.countCharacters(CharacterType.INVENTOR);
-        int artists = tribe.countCharacters(CharacterType.ARTIST);
-
-        // Builders: sum of PP printed on cards
+        // Builders: sum of PP printed on each Builder card.
         for (TribeCharacter c : tribe.getMembers()) {
             if (c.getCharacterType() == CharacterType.BUILDER) {
                 points += c.getPP();
             }
         }
 
-        // Inventors: number of inventors * number of distinct invention icons
-        int uniqueInventorIcons = tribe.countUniqueInventorIcons();
-        points += inventors * uniqueInventorIcons;
+        // Inventors: number of inventors * number of distinct invention icons.
+        int inventors = tribe.countCharacters(CharacterType.INVENTOR);
+        points += inventors * tribe.countUniqueInventorIcons();
 
-        // Artists: 10 PP for every 2 artists
+        // Artists: 10 PP for every 2 artists.
+        int artists = tribe.countCharacters(CharacterType.ARTIST);
         points += (artists / 2) * 10;
 
         return points;
     }
 
-
     public int finalPP() {
-        int total = this.PP; // PP accumulated during the match
-
-        // 1) Character PP
-        total += calculateCharacterEndgamePP();
-
-        // 2) Building PP
-        total += FinalBuildingPP(this.tribe);
-
-        return total;
+        return PP + calculateCharacterEndgamePP() + FinalBuildingPP(tribe);
     }
 
     public boolean hasExtraBuyAtRoundEnd() {
