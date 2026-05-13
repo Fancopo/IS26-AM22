@@ -29,10 +29,10 @@
 /* ----- Pannelli giocatore (a destra) ----- */
 .player-panel {
     -fx-background-color: rgba(70, 25, 35, 0.85);
-    -fx-background-radius: 10;
-    -fx-padding: 10;
+    -fx-background-radius: 8;
+    -fx-padding: 4 6 4 6;
     -fx-border-color: rgba(200, 150, 100, 0.3);
-    -fx-border-radius: 10;
+    -fx-border-radius: 8;
     -fx-border-width: 1;
 }
 
@@ -66,7 +66,7 @@
 
 .player-name {
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    -fx-font-size: 12px;
     -fx-text-fill: #ffffff;
 }
 
@@ -77,13 +77,17 @@
 .player-pp {
     -fx-text-fill: gold !important;
     -fx-font-weight: bold;
-    -fx-font-size: 13px;
+    -fx-font-size: 11px;
 }
 
 .player-pp-round {
     -fx-text-fill: black !important;
     -fx-font-weight: bold;
-    -fx-font-size: 13px;
+    -fx-font-size: 11px;
+}
+
+.resource-count {
+    -fx-font-size: 11px;
 }
 
 /* ----- Carte (toggle button) ----- */
@@ -142,7 +146,7 @@
 .action-panel {
     -fx-background-color: rgba(40, 20, 30, 0.75);
     -fx-background-radius: 8;
-    -fx-padding: 10;
+    -fx-padding: 6;
 }
 
 .action-panel .label {
@@ -244,17 +248,17 @@
 
 /* ----- Griglia 4×3 di icone risorsa nei pannelli ----- */
 .resource-grid {
-    -fx-padding: 4 0 0 0;
+    -fx-padding: 2 0 0 0;
 }
 
 .resource-cell {
-    -fx-padding: 3 6 3 6;
-    -fx-background-color: rgba(0, 0, 0, 0.18);
+    -fx-padding: 1 4 1 4;
+    -fx-background-color: rgba(255, 255, 255, 0.35);
     -fx-background-radius: 6;
 }
 
 .local-player-panel .resource-cell {
-    -fx-background-color: rgba(0, 0, 0, 0.25);
+    -fx-background-color: rgba(255, 255, 255, 0.4);
 }
 
 .resource-count {

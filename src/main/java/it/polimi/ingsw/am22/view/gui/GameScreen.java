@@ -100,7 +100,7 @@ public final class GameScreen implements GuiScreen {
 
     // Right column: TUTTI i giocatori (incluso il locale, evidenziato).
     private final VBox playersBox = new VBox(10);
-    private VBox rightColumnBox;
+    private javafx.scene.layout.Region rightColumnBox;
     private ScrollPane rightColumnScroll;
 
     // Action panel (dentro la colonna destra, in basso)
@@ -297,7 +297,8 @@ public final class GameScreen implements GuiScreen {
      * gestire partite con tanti giocatori.
      */
     private Node buildRightColumn() {
-        playersBox.setPadding(new Insets(10));
+        playersBox.setPadding(new Insets(2));
+        playersBox.setSpacing(4);
         playersBox.setFillWidth(true);
 
         actionBox.getStyleClass().add("action-panel");
@@ -327,19 +328,16 @@ public final class GameScreen implements GuiScreen {
             });
         });
 
+        actionBox.setSpacing(4);
         actionBox.getChildren().addAll(actionsLbl, actionHint, confirmPickButton, leaveMatchButton);
 
-        VBox right = new VBox(12, playersBox, actionBox);
-        right.setPadding(new Insets(10));
+        VBox right = new VBox(6, playersBox, actionBox);
+        right.setPadding(new Insets(6));
         right.setPrefWidth(rightColW);
 
-        ScrollPane scroll = new ScrollPane(right);
-        scroll.setFitToWidth(true);
-        scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
-        scroll.setPrefWidth(rightColW + 10);
         this.rightColumnBox = right;
-        this.rightColumnScroll = scroll;
-        return scroll;
+        this.rightColumnScroll = null;
+        return right;
     }
 
     /**
@@ -365,7 +363,7 @@ public final class GameScreen implements GuiScreen {
      * essere piu' valide nel nuovo stato), poi ricostruisce le sezioni della UI.
      */
     private void render(GameStateDTO state) {
-        recomputeSizes();
+        recomputeSizes(state);
         applyRightColumnSize();
         roundLabel.setText("Round " + state.currentRound());
         eraLabel.setText("Era " + state.currentEra());
@@ -402,25 +400,30 @@ public final class GameScreen implements GuiScreen {
      * size while preserving the original 110:150 aspect ratio. Called at the
      * start of each render() and on every window resize.
      */
-    private void recomputeSizes() {
+    private void recomputeSizes(GameStateDTO state) {
         double rw = root.getWidth();
         double rh = root.getHeight();
         if (rw <= 0) rw = 1600;
         if (rh <= 0) rh = 900;
 
         // Right column scales with window width but stays in a sane range.
-        rightColW = Math.max(240, Math.min(420, rw * 0.22));
-        totemS = Math.max(26, Math.min(46, rightColW / 8.5));
-        iconS  = Math.max(18, Math.min(34, rightColW / 13.0));
+        rightColW = Math.max(220, Math.min(360, rw * 0.20));
+        totemS = Math.max(20, Math.min(32, rightColW / 11.0));
+        iconS  = Math.max(14, Math.min(22, rightColW / 16.0));
 
         // Mini-carte nel pannello del giocatore: appena piu' grandi delle icone
         // (iconS), molto piu' piccole delle carte della board.
-        miniCardW = Math.max(30, Math.min(56, iconS * 1.6));
+        miniCardW = Math.max(22, Math.min(36, iconS * 1.4));
         miniCardH = miniCardW / CARD_RATIO_W_OVER_H;
+
+        // Dimensiona sempre per la configurazione massima (5 giocatori):
+        // riga superiore = numPlayers + 4 = 9 carte. Cosi' la board resta
+        // dello stesso size in ogni partita e non serve mai trascinare.
+        int slots = 9;
 
         // Center area sizing.
         double availW = Math.max(400, rw - rightColW - 50);
-        double maxByWidth = (availW - 5 * 8) / 6.0;
+        double maxByWidth = (availW - (slots - 1) * 8) / slots;
 
         double availH = Math.max(300, rh - 60 - 30 - 60);
         double maxByHeight = (availH - 2 * 10) / 3.0;
@@ -436,10 +439,9 @@ public final class GameScreen implements GuiScreen {
 
     /** Apply responsive sizes to the right column wrappers. */
     private void applyRightColumnSize() {
-        if (rightColumnBox != null) rightColumnBox.setPrefWidth(rightColW);
-        if (rightColumnScroll != null) {
-            rightColumnScroll.setPrefWidth(rightColW + 10);
-            rightColumnScroll.setMinWidth(rightColW + 10);
+        if (rightColumnBox != null) {
+            rightColumnBox.setPrefWidth(rightColW);
+            rightColumnBox.setMinWidth(rightColW);
         }
         actionHint.setMaxWidth(rightColW - 30);
     }
@@ -901,7 +903,8 @@ public final class GameScreen implements GuiScreen {
      * giocatore e' "active" (turno corrente).
      */
     private Node buildPlayerPanel(PlayerDTO p, boolean local) {
-        VBox box = new VBox(6);
+        VBox box = new VBox(2);
+        box.setPadding(new Insets(4, 6, 4, 6));
         box.getStyleClass().add("player-panel");
         if (local) box.getStyleClass().add("local-player-panel");
         if (p.active()) box.getStyleClass().add("player-panel-active");
@@ -913,13 +916,11 @@ public final class GameScreen implements GuiScreen {
 
         Label roundPp = new Label(p.prestigePoints() + " ★");
         roundPp.getStyleClass().add("player-pp-round");
-        roundPp.setStyle("-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 13px;");
         javafx.scene.control.Tooltip.install(roundPp,
                 new javafx.scene.control.Tooltip("Current PP (round-by-round)"));
 
         Label finalPp = new Label(p.projectedFinalPrestigePoints() + " ★");
         finalPp.getStyleClass().add("player-pp");
-        finalPp.setStyle("-fx-text-fill: gold; -fx-font-weight: bold; -fx-font-size: 13px;");
         javafx.scene.control.Tooltip.install(finalPp,
                 new javafx.scene.control.Tooltip("Projected final PP (includes end-game scoring)"));
 
@@ -944,10 +945,10 @@ public final class GameScreen implements GuiScreen {
         if (p.buildings() != null) drawn.addAll(p.buildings());
         if (drawn.isEmpty()) return null;
 
-        FlowPane pane = new FlowPane(4, 4);
+        FlowPane pane = new FlowPane(2, 2);
         pane.getStyleClass().add("drawn-cards-pane");
-        pane.setPrefWrapLength(Math.max(80, rightColW - 36));
-        pane.setMaxWidth(rightColW - 20);
+        pane.setPrefWrapLength(Math.max(80, rightColW - 20));
+        pane.setMaxWidth(rightColW - 10);
         for (CardDTO c : drawn) {
             Color color = colorForCardCategory(c.category());
             String label = c.id() == null ? "?" : c.id();
@@ -986,8 +987,8 @@ public final class GameScreen implements GuiScreen {
         };
 
         GridPane grid = new GridPane();
-        grid.setHgap(8);
-        grid.setVgap(4);
+        grid.setHgap(4);
+        grid.setVgap(1);
         grid.getStyleClass().add("resource-grid");
         for (int i = 0; i < specs.length; i++) {
             int col = i % 3;
