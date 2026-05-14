@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <p><b>Nickname policy.</b> Lookup is case-insensitive and locale-stable:
  * the map key is {@code nickname.strip().toLowerCase(Locale.ROOT)}, matching
- * the policy enforced by {@code GameController.containsNickname}. The
+ * the policy enforced by {@code MatchController.containsNickname}. The
  * channel keeps the nickname in its original casing for display purposes
  * (see {@link ClientHandler#getBoundNickname}).
  */

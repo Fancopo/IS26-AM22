@@ -5,7 +5,7 @@ import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-/** RMI interface the server exposes to clients. Concrete impl: {@link RmiServerEndpoint}. */
+/** RMI interface the server exposes to clients. Concrete impl: {@link RmiServer}. */
 public interface RmiServerInterface extends Remote {
 
     /** Forwards a request and registers the callback used to deliver replies. */

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.view.tui;
 
-import it.polimi.ingsw.am22.controller.client.ClientController;
+import it.polimi.ingsw.am22.controller.client.VirtualServer;
 import it.polimi.ingsw.am22.controller.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.ServerHandler;
 import it.polimi.ingsw.am22.network.protocol.dto.CardDTO;
@@ -33,7 +33,7 @@ import java.util.Objects;
 /**
  * Text view. Receives server messages on the reader/RMI thread and prints them
  * to the terminal; user input is read by {@link TuiRunner} and forwarded to
- * the {@link ClientController}.
+ * the {@link VirtualServer}.
  * No game logic here — rendering and input only.
  */
 public final class TuiView implements ServerHandler {

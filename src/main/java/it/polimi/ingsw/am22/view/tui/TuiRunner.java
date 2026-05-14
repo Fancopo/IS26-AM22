@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.view.tui;
 
-import it.polimi.ingsw.am22.controller.client.ClientController;
+import it.polimi.ingsw.am22.controller.client.VirtualServer;
 import it.polimi.ingsw.am22.controller.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
@@ -81,7 +81,7 @@ public final class TuiRunner {
     }
 
     private static void commandLoop(Scanner in, ClientSession session, TuiView view) {
-        ClientController controller = session.getClientController();
+        VirtualServer controller = session.getClientController();
         while (!view.isStopRequested()) {
             if (!in.hasNextLine()) {
                 break;
@@ -297,7 +297,7 @@ public final class TuiRunner {
      * Without this guard a player could type {@code join} twice and end up
      * registered server-side in two lobbies at once.
      */
-    private static void requireAlreadyOutOfMatch(ClientController controller, String command) {
+    private static void requireAlreadyOutOfMatch(VirtualServer controller, String command) {
         String currentMatch = controller.getMatchId();
         if (currentMatch != null && !currentMatch.isBlank()) {
             throw new IllegalStateException("you are already in match '" + currentMatch
@@ -316,7 +316,7 @@ public final class TuiRunner {
     }
 
     private static void printWho(ClientSession session) {
-        ClientController controller = session.getClientController();
+        VirtualServer controller = session.getClientController();
         String nick = controller.getNickname();
         String matchId = controller.getMatchId();
         System.out.println("You: " + (nick == null ? "(not joined)" : Ansi.bold(nick))

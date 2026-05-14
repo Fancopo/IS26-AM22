@@ -18,7 +18,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage
 import java.util.Objects;
 
 /**
- * Pairs a ServerConnection with a ClientController and adds a
+ * Pairs a ServerConnection with a VirtualServer and adds a
  * snapshot-replay layer: an internal dispatcher captures every server message,
  * caches the latest lobby/game state, then forwards it to the currently
  * attached view handler.
@@ -30,7 +30,7 @@ import java.util.Objects;
 public final class ClientSession {
 
     private final ServerConnection connection;
-    private final ClientController clientController;
+    private final VirtualServer clientController;
 
     /** Handler of the currently active view (may change on every screen switch). */
     private volatile ServerHandler currentHandler;
@@ -41,11 +41,11 @@ public final class ClientSession {
 
     public ClientSession(ServerConnection connection) {
         this.connection = Objects.requireNonNull(connection, "connection cannot be null");
-        this.clientController = new ClientController(connection);
+        this.clientController = new VirtualServer(connection);
         this.connection.setMessageDispatcher(new InternalDispatcher());
     }
 
-    public ClientController getClientController() { return clientController; }
+    public VirtualServer getClientController() { return clientController; }
     public String getLocalNickname() { return clientController.getNickname(); }
     public LobbyStateDTO getLatestLobbyState() { return latestLobbyState; }
     public GameStateDTO getLatestGameState() { return latestGameState; }

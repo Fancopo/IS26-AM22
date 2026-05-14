@@ -13,10 +13,10 @@ import java.rmi.server.UnicastRemoteObject;
  * RMI implementation of {@link RmiServerInterface}. Each submitRequest wraps the
  * client callback in a {@link RmiClientHandler} and delegates to the service.
  */
-public class RmiServerEndpoint extends UnicastRemoteObject implements RmiServerInterface {
+public class RmiServer extends UnicastRemoteObject implements RmiServerInterface {
     private final MatchManager gameService;
 
-    public RmiServerEndpoint(MatchManager gameService) throws RemoteException {
+    public RmiServer(MatchManager gameService) throws RemoteException {
         super();
         this.gameService = gameService;
     }
@@ -40,7 +40,7 @@ public class RmiServerEndpoint extends UnicastRemoteObject implements RmiServerI
     public static Handle publish(int port, String bindingName, MatchManager gameService)
             throws RemoteException, AlreadyBoundException {
         Registry registry = LocateRegistry.createRegistry(port);
-        RmiServerEndpoint endpoint = new RmiServerEndpoint(gameService);
+        RmiServer endpoint = new RmiServer(gameService);
         registry.bind(bindingName, endpoint);
         return new Handle(registry, endpoint, bindingName);
     }
@@ -52,10 +52,10 @@ public class RmiServerEndpoint extends UnicastRemoteObject implements RmiServerI
      */
     public static final class Handle {
         private final Registry registry;
-        private final RmiServerEndpoint endpoint;
+        private final RmiServer endpoint;
         private final String bindingName;
 
-        private Handle(Registry registry, RmiServerEndpoint endpoint, String bindingName) {
+        private Handle(Registry registry, RmiServer endpoint, String bindingName) {
             this.registry = registry;
             this.endpoint = endpoint;
             this.bindingName = bindingName;

@@ -14,13 +14,13 @@ import java.util.Objects;
  * {@link #bindMatch(String, String)}, called from the update handler when
  * it sees a {@code MatchJoinedMessage}.
  */
-public class ClientController {
+public class VirtualServer {
 
     private final ServerConnection serverConnection;
     private String nickname;
     private String matchId;
 
-    public ClientController(ServerConnection serverConnection) {
+    public VirtualServer(ServerConnection serverConnection) {
         this.serverConnection = Objects.requireNonNull(serverConnection, "serverConnection cannot be null");
     }
 

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.view.server;
 
-import it.polimi.ingsw.am22.controller.server.GameController;
+import it.polimi.ingsw.am22.controller.server.MatchController;
 import it.polimi.ingsw.am22.model.*;
 import it.polimi.ingsw.am22.model.character.CharacterType;
 import it.polimi.ingsw.am22.network.protocol.dto.*;
@@ -11,11 +11,11 @@ import java.util.Optional;
 
 /**
  * Single point where the network layer reads the model. Builds the DTOs
- * (GameState/LobbyState/Winner/Player/Card/OfferTile/TurnSlot) from Game and GameController.
+ * (GameState/LobbyState/Winner/Player/Card/OfferTile/TurnSlot) from Game and MatchController.
  */
 public class ModelDtoMapper {
 
-    public LobbyStateDTO toLobbyState(GameController gameController) {
+    public LobbyStateDTO toLobbyState(MatchController gameController) {
         List<LobbyPlayerDTO> players = gameController.getLobbyPlayers().stream()
                 .map(player -> new LobbyPlayerDTO(
                         player.getNickname(),

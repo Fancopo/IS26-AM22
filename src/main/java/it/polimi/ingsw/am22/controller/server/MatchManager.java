@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Server-side core of the multi-match network layer.
  *
  * <p>Holds a registry of {@link MatchSession}s, one per matchId, each with its own
- * {@link GameController} and {@link VirtualView}. Game requests carry a matchId and
+ * {@link MatchController} and {@link VirtualView}. Game requests carry a matchId and
  * get routed to the matching session; global requests (create/list) are handled here.
  *
  * <p>Dispatch goes through {@link ClientRequestVisitor}: no instanceof, and a new
@@ -175,7 +175,7 @@ public class MatchManager {
             // Read each session under its own lock so we never observe a torn state
             // (e.g. lobby being mutated by another thread while we size it).
             synchronized (session) {
-                GameController gc = session.gameController;
+                MatchController gc = session.gameController;
                 if (gc.hasStarted()) continue;
                 open.add(new MatchInfoDTO(
                         gc.getMatchId(),
@@ -210,15 +210,15 @@ public class MatchManager {
         return value;
     }
 
-    /** Per-match state: GameController + VirtualView, isolated from other matches. */
+    /** Per-match state: MatchController + VirtualView, isolated from other matches. */
     private final class MatchSession {
 
-        private final GameController gameController;
+        private final MatchController gameController;
         private final VirtualView virtualView;
         private boolean observerAttached;
 
         private MatchSession(String matchId) {
-            this.gameController = new GameController(matchId);
+            this.gameController = new MatchController(matchId);
             this.virtualView = new VirtualView(mapper);
             this.observerAttached = false;
         }

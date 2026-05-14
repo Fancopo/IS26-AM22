@@ -14,7 +14,7 @@ import java.util.Set;
  * espone azioni di partita (placeTotem, pickCards, pickBonusCard, determineWinner).
  * Risolve id stringa → oggetti del model e valida il giocatore attivo.
  */
-public class GameController {
+public class MatchController {
 
     /**
      * Colori assegnati automaticamente ai totem in ordine di ingresso nella lobby.
@@ -43,7 +43,7 @@ public class GameController {
      *
      * @param matchId identificativo del match gestito da questo controller
      */
-    public GameController(String matchId) {
+    public MatchController(String matchId) {
         if (matchId == null || matchId.isBlank()) {
             throw new IllegalArgumentException("matchId cannot be null or blank.");
         }

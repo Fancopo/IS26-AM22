@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /** ServerSocket + daemon accept thread + cached thread pool: one task per client. */
-public class SocketServerAcceptor implements AutoCloseable {
+public class SocketServer implements AutoCloseable {
     private final int port;
     private final MatchManager gameService;
     private final ExecutorService clientExecutor;
@@ -17,7 +17,7 @@ public class SocketServerAcceptor implements AutoCloseable {
     private Thread acceptThread;
     private volatile boolean running;
 
-    public SocketServerAcceptor(int port, MatchManager gameService) {
+    public SocketServer(int port, MatchManager gameService) {
         this.port = port;
         this.gameService = gameService;
         this.clientExecutor = Executors.newCachedThreadPool();

@@ -2,8 +2,8 @@ package it.polimi.ingsw.am22;
 
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.controller.server.MatchManager;
-import it.polimi.ingsw.am22.network.server.rmi.RmiServerEndpoint;
-import it.polimi.ingsw.am22.network.server.socket.SocketServerAcceptor;
+import it.polimi.ingsw.am22.network.server.rmi.RmiServer;
+import it.polimi.ingsw.am22.network.server.socket.SocketServer;
 
 /**
  * Server entry point. Creates a single multi-match {@link MatchManager}
@@ -23,10 +23,10 @@ public final class ServerMain {
 
         MatchManager gameService = new MatchManager();
 
-        SocketServerAcceptor socketServer = new SocketServerAcceptor(socketPort, gameService);
+        SocketServer socketServer = new SocketServer(socketPort, gameService);
         socketServer.start();
 
-        RmiServerEndpoint.Handle rmiHandle = RmiServerEndpoint.publish(rmiPort, bindingName, gameService);
+        RmiServer.Handle rmiHandle = RmiServer.publish(rmiPort, bindingName, gameService);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             rmiHandle.shutdown();
