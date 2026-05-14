@@ -1,21 +1,21 @@
-package it.polimi.ingsw.am22.network.server.transport.rmi;
+package it.polimi.ingsw.am22.network.server.rmi;
 
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
-import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
+import it.polimi.ingsw.am22.network.server.ClientHandler;
 
 import java.rmi.RemoteException;
 
 /**
- * {@link ClientChannel} backed by an RMI callback: every send is a remote
+ * {@link ClientHandler} backed by an RMI callback: every send is a remote
  * {@code receive()} call. {@link #close()} is a no-op — the stub belongs to
  * the client, there's nothing to close server-side.
  */
-public class RmiClientChannel implements ClientChannel {
+public class RmiClientHandler implements ClientHandler {
     private final RmiClientInterface remoteClientView;
     private volatile String boundNickname;
     private volatile String boundMatchId;
 
-    public RmiClientChannel(RmiClientInterface remoteClientView) {
+    public RmiClientHandler(RmiClientInterface remoteClientView) {
         this.remoteClientView = remoteClientView;
     }
 

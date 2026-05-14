@@ -2,8 +2,8 @@ package it.polimi.ingsw.am22;
 
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.controller.server.MatchManager;
-import it.polimi.ingsw.am22.network.server.transport.rmi.RmiServerEndpoint;
-import it.polimi.ingsw.am22.network.server.transport.socket.SocketServerAcceptor;
+import it.polimi.ingsw.am22.network.server.rmi.RmiServerEndpoint;
+import it.polimi.ingsw.am22.network.server.socket.SocketServerAcceptor;
 
 /**
  * Server entry point. Creates a single multi-match {@link MatchManager}

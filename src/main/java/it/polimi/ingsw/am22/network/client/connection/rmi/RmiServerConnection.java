@@ -1,13 +1,13 @@
 package it.polimi.ingsw.am22.network.client.connection.rmi;
 
-import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
+import it.polimi.ingsw.am22.network.client.ServerHandler;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
-import it.polimi.ingsw.am22.network.server.transport.rmi.RmiClientInterface;
-import it.polimi.ingsw.am22.network.server.transport.rmi.RmiServerInterface;
+import it.polimi.ingsw.am22.network.server.rmi.RmiClientInterface;
+import it.polimi.ingsw.am22.network.server.rmi.RmiServerInterface;
 
 import java.io.Serial;
 import java.rmi.NotBoundException;
@@ -45,7 +45,7 @@ public class RmiServerConnection implements ServerConnection {
     private final RmiServerInterface remoteGameServer;
     private final RmiClientInterface callback;
     private final ScheduledExecutorService livenessProbe;
-    private volatile ServerMessageDispatcher updateHandler;
+    private volatile ServerHandler updateHandler;
     private volatile boolean closed;
 
     public RmiServerConnection(String host, int port, String bindingName) throws RemoteException, NotBoundException {
@@ -77,7 +77,7 @@ public class RmiServerConnection implements ServerConnection {
     /** Idempotent: avoids duplicate notifications when probe and farewell race. */
     private void fireConnectionClosed(Throwable cause) {
         if (closed) return;
-        ServerMessageDispatcher handler = updateHandler;
+        ServerHandler handler = updateHandler;
         close();
         if (handler != null) {
             handler.onConnectionClosed(cause);
@@ -85,7 +85,7 @@ public class RmiServerConnection implements ServerConnection {
     }
 
     @Override
-    public void setMessageDispatcher(ServerMessageDispatcher handler) {
+    public void setMessageDispatcher(ServerHandler handler) {
         this.updateHandler = handler;
     }
 
@@ -124,13 +124,13 @@ public class RmiServerConnection implements ServerConnection {
 
         @Override
         public void receive(ServerMessage message) throws RemoteException {
-            ServerMessageDispatcher handler = updateHandler;
+            ServerHandler handler = updateHandler;
             if (handler != null) {
                 handler.onServerMessage(message);
             }
             // EndGame / MatchClosed are the last messages the server will send
             // to this client; afterwards it simply stops calling the callback
-            // (RmiClientChannel.close() server-side is a no-op). Without a
+            // (RmiClientHandler.close() server-side is a no-op). Without a
             // synthetic disconnect the RMI client would exit silently, so we
             // give the TUI/GUI the same event the socket transport produces.
             if (message instanceof EndGameMessage || message instanceof MatchClosedMessage) {

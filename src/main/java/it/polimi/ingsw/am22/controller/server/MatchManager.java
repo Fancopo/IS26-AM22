@@ -8,10 +8,10 @@ import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequestVisitor;
 import it.polimi.ingsw.am22.network.protocol.message.request.*;
 import it.polimi.ingsw.am22.network.protocol.message.response.*;
-import it.polimi.ingsw.am22.view.server.ClientBroadcaster;
+import it.polimi.ingsw.am22.view.server.VirtualView;
 import it.polimi.ingsw.am22.view.server.ModelDtoMapper;
 import it.polimi.ingsw.am22.controller.server.persistence.MatchResultDao;
-import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
+import it.polimi.ingsw.am22.network.server.ClientHandler;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Server-side core of the multi-match network layer.
  *
  * <p>Holds a registry of {@link MatchSession}s, one per matchId, each with its own
- * {@link GameController} and {@link ClientBroadcaster}. Game requests carry a matchId and
+ * {@link GameController} and {@link VirtualView}. Game requests carry a matchId and
  * get routed to the matching session; global requests (create/list) are handled here.
  *
  * <p>Dispatch goes through {@link ClientRequestVisitor}: no instanceof, and a new
@@ -69,7 +69,7 @@ public class MatchManager {
         this.matchResultDao = new MatchResultDao();
     }
 
-    public void handleRequest(ClientRequest request, ClientChannel channel) {
+    public void handleRequest(ClientRequest request, ClientHandler channel) {
         if (request == null) {
             channel.send(new ErrorMessage("Null request."));
             return;
@@ -90,7 +90,7 @@ public class MatchManager {
      * (matchId, nickname) binding stored on the channel and delegates to the
      * session's {@link MatchSession#handleDisconnect} with transportDrop=true.
      */
-    public void handleTransportDrop(ClientChannel channel) {
+    public void handleTransportDrop(ClientHandler channel) {
         String matchId = channel.getBoundMatchId();
         String nickname = channel.getBoundNickname();
         if (matchId == null || nickname == null || nickname.isBlank()) {
@@ -108,9 +108,9 @@ public class MatchManager {
     }
 
     private final class Dispatcher implements ClientRequestVisitor {
-        private final ClientChannel channel;
+        private final ClientHandler channel;
 
-        private Dispatcher(ClientChannel channel) {
+        private Dispatcher(ClientHandler channel) {
             this.channel = channel;
         }
 
@@ -148,7 +148,7 @@ public class MatchManager {
 
     // --- Global requests --------------------------------------------------
 
-    private void handleCreateMatch(CreateMatchRequest request, ClientChannel channel) {
+    private void handleCreateMatch(CreateMatchRequest request, ClientHandler channel) {
         String hostNickname = requireText(request.hostNickname(), "hostNickname");
         String matchId = nextMatchId();
         MatchSession session = new MatchSession(matchId);
@@ -169,7 +169,7 @@ public class MatchManager {
         }
     }
 
-    private void handleListMatches(ClientChannel channel) {
+    private void handleListMatches(ClientHandler channel) {
         List<MatchInfoDTO> open = new ArrayList<>();
         for (MatchSession session : matchesById.values()) {
             // Read each session under its own lock so we never observe a torn state
@@ -210,20 +210,20 @@ public class MatchManager {
         return value;
     }
 
-    /** Per-match state: GameController + ClientBroadcaster, isolated from other matches. */
+    /** Per-match state: GameController + VirtualView, isolated from other matches. */
     private final class MatchSession {
 
         private final GameController gameController;
-        private final ClientBroadcaster virtualView;
+        private final VirtualView virtualView;
         private boolean observerAttached;
 
         private MatchSession(String matchId) {
             this.gameController = new GameController(matchId);
-            this.virtualView = new ClientBroadcaster(mapper);
+            this.virtualView = new VirtualView(mapper);
             this.observerAttached = false;
         }
 
-        private void handleAddPlayer(AddPlayerToLobbyRequest request, ClientChannel channel) {
+        private void handleAddPlayer(AddPlayerToLobbyRequest request, ClientHandler channel) {
             boolean wasStarted = gameController.hasStarted();
             gameController.addPlayerToLobby(request.nickname());
             bind(request.nickname(), channel);
@@ -236,7 +236,7 @@ public class MatchManager {
          * Without this, the client would receive two LobbyStateMessages back-to-back
          * (expected=0 then the requested value) and render the lobby twice.
          */
-        private void handleHostCreateAndSetup(String hostNickname, int expectedPlayers, ClientChannel channel) {
+        private void handleHostCreateAndSetup(String hostNickname, int expectedPlayers, ClientHandler channel) {
             boolean wasStarted = gameController.hasStarted();
             gameController.addPlayerToLobby(hostNickname);
             bind(hostNickname, channel);
@@ -253,14 +253,14 @@ public class MatchManager {
             }
         }
 
-        private void handleSetExpectedPlayers(SetExpectedPlayersRequest request, ClientChannel channel) {
+        private void handleSetExpectedPlayers(SetExpectedPlayersRequest request, ClientHandler channel) {
             bindIfKnown(request.requesterNickname(), channel);
             boolean wasStarted = gameController.hasStarted();
             gameController.setExpectedPlayers(request.requesterNickname(), request.expectedPlayers());
             publishStateChange(wasStarted);
         }
 
-        private void handleRemoveFromLobby(RemovePlayerFromLobbyRequest request, ClientChannel channel) {
+        private void handleRemoveFromLobby(RemovePlayerFromLobbyRequest request, ClientHandler channel) {
             bindIfKnown(request.nickname(), channel);
             gameController.removePlayerFromLobby(request.nickname());
             virtualView.unbind(request.nickname());
@@ -272,27 +272,27 @@ public class MatchManager {
         }
 
         /**
-         * All three move handlers wrap the controller call in a ClientBroadcaster batch:
+         * All three move handlers wrap the controller call in a VirtualView batch:
          * a single move typically triggers 5-6 model notifications (state, active
          * player, era, scoring...) and we want to coalesce them into one broadcast.
          * The try/finally keeps the batch from staying open on exception.
          */
-        private void handlePlaceTotem(PlaceTotemRequest request, ClientChannel channel) {
+        private void handlePlaceTotem(PlaceTotemRequest request, ClientHandler channel) {
             runMove(request.playerNickname(), channel,
                     () -> gameController.placeTotem(request.playerNickname(), request.offerLetter()));
         }
 
-        private void handlePickCards(PickCardsRequest request, ClientChannel channel) {
+        private void handlePickCards(PickCardsRequest request, ClientHandler channel) {
             runMove(request.playerNickname(), channel,
                     () -> gameController.pickCards(request.playerNickname(), request.selectedCardIds()));
         }
 
-        private void handlePickBonusCard(PickBonusCardRequest request, ClientChannel channel) {
+        private void handlePickBonusCard(PickBonusCardRequest request, ClientHandler channel) {
             runMove(request.playerNickname(), channel,
                     () -> gameController.pickBonusCard(request.playerNickname(), request.bonusCardId()));
         }
 
-        private void runMove(String nickname, ClientChannel channel, Runnable move) {
+        private void runMove(String nickname, ClientHandler channel, Runnable move) {
             bindIfKnown(nickname, channel);
             virtualView.beginBatch();
             try {
@@ -309,7 +309,7 @@ public class MatchManager {
          * Mid-game: the match is aborted for everyone; surviving channels stay
          * connected to the server (unbound) so they can list/create/join again.
          */
-        private void handleDisconnect(String nickname, ClientChannel channel, boolean transportDrop) {
+        private void handleDisconnect(String nickname, ClientHandler channel, boolean transportDrop) {
             if (!gameController.hasStarted()) {
                 try {
                     gameController.removePlayerFromLobby(nickname);
@@ -331,7 +331,7 @@ public class MatchManager {
                     "Player " + nickname + " disconnected. The match has been closed."));
             // Detach surviving channels from the match WITHOUT closing them:
             // they stay connected to the server for future list/create/join.
-            for (ClientChannel other : virtualView.snapshotChannels()) {
+            for (ClientHandler other : virtualView.snapshotChannels()) {
                 unbindMatch(other);
             }
             virtualView.unbindAllKeepingChannels();
@@ -364,7 +364,7 @@ public class MatchManager {
         }
 
         /**
-         * NB: doesn't broadcast a GameStateMessage. ClientBroadcaster is already an
+         * NB: doesn't broadcast a GameStateMessage. VirtualView is already an
          * observer of Game; the model emits notifyObservers() on every mutation,
          * so an explicit broadcast here would produce a duplicate render.
          */
@@ -414,7 +414,7 @@ public class MatchManager {
             // Drop the match right away so no further requests reach it, but defer
             // the channel close: see endGameCloser.
             matchesById.remove(gameController.getMatchId());
-            ClientBroadcaster viewToClose = virtualView;
+            VirtualView viewToClose = virtualView;
             endGameCloser.schedule(viewToClose::closeAll, END_GAME_CLOSE_DELAY_MS, TimeUnit.MILLISECONDS);
         }
 
@@ -436,13 +436,13 @@ public class MatchManager {
             return positions;
         }
 
-        private void bind(String nickname, ClientChannel channel) {
+        private void bind(String nickname, ClientHandler channel) {
             virtualView.bindOrReplace(nickname, channel);
             channel.setBoundMatchId(gameController.getMatchId());
         }
 
         /** Soft variant of {@link #bind}: re-aligns the channel only if the nickname is already known. */
-        private void bindIfKnown(String nickname, ClientChannel channel) {
+        private void bindIfKnown(String nickname, ClientHandler channel) {
             if (nickname == null || nickname.isBlank()) return;
             if (virtualView.isBound(nickname)) {
                 bind(nickname, channel);
@@ -450,7 +450,7 @@ public class MatchManager {
         }
 
         /** Detach the channel from this match's id (only if it still matches — guards against re-assignment). */
-        private void unbindMatch(ClientChannel channel) {
+        private void unbindMatch(ClientHandler channel) {
             if (Objects.equals(channel.getBoundMatchId(), gameController.getMatchId())) {
                 channel.setBoundMatchId(null);
             }
@@ -463,7 +463,7 @@ public class MatchManager {
         }
 
         /**
-         * Attaches ClientBroadcaster as a Game observer once per session. Without the
+         * Attaches VirtualView as a Game observer once per session. Without the
          * guard, multiple subscriptions would emit N duplicate messages per
          * model mutation.
          */

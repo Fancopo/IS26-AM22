@@ -33,10 +33,10 @@ module it.polimi.ingsw.am {
     // RMI ha bisogno di "vedere" e fare reflection sulle interfacce Remote
     // e sulle implementazioni che le esportano (UnicastRemoteObject).
     // ----------------------------------------------------------------------
-    exports it.polimi.ingsw.am22.network.server.transport.rmi;
-    opens it.polimi.ingsw.am22.network.server.transport.rmi to java.rmi;
+    exports it.polimi.ingsw.am22.network.server.rmi;
+    opens it.polimi.ingsw.am22.network.server.rmi to java.rmi;
 
-    exports it.polimi.ingsw.am22.network.server.transport.socket;
+    exports it.polimi.ingsw.am22.network.server.socket;
 
     // ----------------------------------------------------------------------
     // Network — common (DTO + messaggi)
@@ -60,7 +60,7 @@ module it.polimi.ingsw.am {
     opens it.polimi.ingsw.am22.network.client.connection.socket to java.rmi, javafx.fxml, javafx.graphics;
     exports it.polimi.ingsw.am22.network.client.connection.rmi;
     opens it.polimi.ingsw.am22.network.client.connection.rmi to java.rmi, javafx.fxml, javafx.graphics;
-    exports it.polimi.ingsw.am22.network.server.transport;
+    exports it.polimi.ingsw.am22.network.server;
     exports it.polimi.ingsw.am22.controller.client;
     opens it.polimi.ingsw.am22.controller.client to java.rmi, javafx.fxml, javafx.graphics;
     exports it.polimi.ingsw.am22;

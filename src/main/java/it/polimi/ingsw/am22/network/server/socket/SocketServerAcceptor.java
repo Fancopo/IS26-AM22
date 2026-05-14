@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.network.server.transport.socket;
+package it.polimi.ingsw.am22.network.server.socket;
 
 import it.polimi.ingsw.am22.controller.server.MatchManager;
 
@@ -50,7 +50,7 @@ public class SocketServerAcceptor implements AutoCloseable {
                 return;
             }
             try {
-                clientExecutor.submit(new SocketClientChannel(clientSocket, gameService));
+                clientExecutor.submit(new SocketClientHandler(clientSocket, gameService));
             } catch (IOException e) {
                 // Drive-by connection: peer disconnected before sending the ObjectStream header.
                 try {

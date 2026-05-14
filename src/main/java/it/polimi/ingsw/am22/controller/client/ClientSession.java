@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.controller.client;
 
-import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
+import it.polimi.ingsw.am22.network.client.ServerHandler;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.protocol.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.LobbyStateDTO;
@@ -33,7 +33,7 @@ public final class ClientSession {
     private final ClientController clientController;
 
     /** Handler of the currently active view (may change on every screen switch). */
-    private volatile ServerMessageDispatcher currentHandler;
+    private volatile ServerHandler currentHandler;
 
     private volatile LobbyStateDTO latestLobbyState;
     private volatile GameStateDTO latestGameState;
@@ -55,7 +55,7 @@ public final class ClientSession {
      * Registers the active view handler. If a lobby/game snapshot is already
      * available, replays it to the new handler so the screen starts in sync.
      */
-    public void setHandler(ServerMessageDispatcher handler) {
+    public void setHandler(ServerHandler handler) {
         this.currentHandler = handler;
         if (handler == null) return;
         if (gameStarted && latestGameState != null) {
@@ -88,7 +88,7 @@ public final class ClientSession {
         connection.close();
     }
 
-    private final class InternalDispatcher implements ServerMessageDispatcher {
+    private final class InternalDispatcher implements ServerHandler {
 
         @Override
         public void onServerMessage(ServerMessage message) {
@@ -109,7 +109,7 @@ public final class ClientSession {
                 }
                 @Override public void visit(ErrorMessage m) {}
             });
-            ServerMessageDispatcher handler = currentHandler;
+            ServerHandler handler = currentHandler;
             if (handler != null) {
                 handler.onServerMessage(message);
             }
@@ -117,7 +117,7 @@ public final class ClientSession {
 
         @Override
         public void onConnectionClosed(Throwable cause) {
-            ServerMessageDispatcher handler = currentHandler;
+            ServerHandler handler = currentHandler;
             if (handler != null) {
                 handler.onConnectionClosed(cause);
             }

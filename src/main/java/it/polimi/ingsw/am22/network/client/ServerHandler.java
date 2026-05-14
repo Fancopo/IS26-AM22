@@ -9,7 +9,7 @@ import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
  * must be thread-safe or marshal updates onto the proper UI thread (Swing EDT
  * or JavaFX application thread).
  */
-public interface ServerMessageDispatcher {
+public interface ServerHandler {
 
     void onServerMessage(ServerMessage message);
 

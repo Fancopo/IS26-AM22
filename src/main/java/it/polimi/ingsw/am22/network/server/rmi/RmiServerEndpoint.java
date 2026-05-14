@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.network.server.transport.rmi;
+package it.polimi.ingsw.am22.network.server.rmi;
 
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.controller.server.MatchManager;
@@ -11,7 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 /**
  * RMI implementation of {@link RmiServerInterface}. Each submitRequest wraps the
- * client callback in a {@link RmiClientChannel} and delegates to the service.
+ * client callback in a {@link RmiClientHandler} and delegates to the service.
  */
 public class RmiServerEndpoint extends UnicastRemoteObject implements RmiServerInterface {
     private final MatchManager gameService;
@@ -23,7 +23,7 @@ public class RmiServerEndpoint extends UnicastRemoteObject implements RmiServerI
 
     @Override
     public void submitRequest(ClientRequest request, RmiClientInterface clientView) throws RemoteException {
-        gameService.handleRequest(request, new RmiClientChannel(clientView));
+        gameService.handleRequest(request, new RmiClientHandler(clientView));
     }
 
     @Override

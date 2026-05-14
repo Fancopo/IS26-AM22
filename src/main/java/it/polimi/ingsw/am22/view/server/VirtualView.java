@@ -4,7 +4,7 @@ import it.polimi.ingsw.am22.model.Game;
 import it.polimi.ingsw.am22.model.GameObserver;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
+import it.polimi.ingsw.am22.network.server.ClientHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Server-side virtual View.
  *
  * <p>As a {@link GameObserver}, every model mutation triggers a
- * {@link GameStateMessage} broadcast to all bound {@link ClientChannel}s,
+ * {@link GameStateMessage} broadcast to all bound {@link ClientHandler}s,
  * regardless of the transport. The Model stays unaware of the network.
  *
  * <p>Supports batching: a single user action may produce several model
@@ -28,17 +28,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * the map key is {@code nickname.strip().toLowerCase(Locale.ROOT)}, matching
  * the policy enforced by {@code GameController.containsNickname}. The
  * channel keeps the nickname in its original casing for display purposes
- * (see {@link ClientChannel#getBoundNickname}).
+ * (see {@link ClientHandler#getBoundNickname}).
  */
-public class ClientBroadcaster implements GameObserver {
+public class VirtualView implements GameObserver {
 
-    private final Map<String, ClientChannel> channelsByNickname;
+    private final Map<String, ClientHandler> channelsByNickname;
     private final ModelDtoMapper mapper;
 
     private int batchDepth;
     private Game pendingGame;
 
-    public ClientBroadcaster(ModelDtoMapper mapper) {
+    public VirtualView(ModelDtoMapper mapper) {
         this.mapper = mapper;
         this.channelsByNickname = new ConcurrentHashMap<>();
         this.batchDepth = 0;
@@ -86,13 +86,13 @@ public class ClientBroadcaster implements GameObserver {
     }
 
     /** Binds the nickname to the channel, replacing any previous binding (idempotent, case-insensitive). */
-    public void bindOrReplace(String nickname, ClientChannel channel) {
+    public void bindOrReplace(String nickname, ClientHandler channel) {
         if (nickname == null || nickname.isBlank() || channel == null) return;
         channel.setBoundNickname(nickname);
         channelsByNickname.put(normalize(nickname), channel);
     }
 
-    public ClientChannel getChannel(String nickname) {
+    public ClientHandler getChannel(String nickname) {
         return nickname == null ? null : channelsByNickname.get(normalize(nickname));
     }
 
@@ -103,38 +103,38 @@ public class ClientBroadcaster implements GameObserver {
     /** Removes the binding without closing the channel. */
     public void unbind(String nickname) {
         if (nickname == null || nickname.isBlank()) return;
-        ClientChannel channel = channelsByNickname.remove(normalize(nickname));
+        ClientHandler channel = channelsByNickname.remove(normalize(nickname));
         if (channel != null) {
             channel.setBoundNickname(null);
         }
     }
 
     public void broadcast(ServerMessage message) {
-        for (ClientChannel channel : channelsByNickname.values()) {
+        for (ClientHandler channel : channelsByNickname.values()) {
             safeSend(channel, message);
         }
     }
 
     public void closeAll() {
-        for (ClientChannel channel : channelsByNickname.values()) {
+        for (ClientHandler channel : channelsByNickname.values()) {
             safeClose(channel);
         }
         channelsByNickname.clear();
     }
 
-    public Collection<ClientChannel> snapshotChannels() {
+    public Collection<ClientHandler> snapshotChannels() {
         return new ArrayList<>(channelsByNickname.values());
     }
 
     /** Unbind all nicknames but keep the channels open (used when aborting a match). */
     public void unbindAllKeepingChannels() {
-        for (ClientChannel channel : channelsByNickname.values()) {
+        for (ClientHandler channel : channelsByNickname.values()) {
             channel.setBoundNickname(null);
         }
         channelsByNickname.clear();
     }
 
-    private void safeSend(ClientChannel channel, ServerMessage message) {
+    private void safeSend(ClientHandler channel, ServerMessage message) {
         try {
             channel.send(message);
         } catch (Exception e) {
@@ -146,7 +146,7 @@ public class ClientBroadcaster implements GameObserver {
         }
     }
 
-    private void safeClose(ClientChannel channel) {
+    private void safeClose(ClientHandler channel) {
         try {
             channel.close();
         } catch (Exception ignored) {

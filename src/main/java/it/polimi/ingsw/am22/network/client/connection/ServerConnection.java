@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.client.connection;
 
-import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
+import it.polimi.ingsw.am22.network.client.ServerHandler;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.CreateMatchRequest;
@@ -32,7 +32,7 @@ import java.util.List;
 public interface ServerConnection extends AutoCloseable {
 
     /** Registers the handler invoked on every incoming server message. */
-    void setMessageDispatcher(ServerMessageDispatcher handler);
+    void setMessageDispatcher(ServerHandler handler);
 
     @Override
     void close();

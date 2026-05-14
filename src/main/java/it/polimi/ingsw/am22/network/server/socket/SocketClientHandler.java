@@ -1,9 +1,9 @@
-package it.polimi.ingsw.am22.network.server.transport.socket;
+package it.polimi.ingsw.am22.network.server.socket;
 
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
-import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
+import it.polimi.ingsw.am22.network.server.ClientHandler;
 import it.polimi.ingsw.am22.controller.server.MatchManager;
 
 import java.io.IOException;
@@ -12,11 +12,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * Both {@link ClientChannel} (synchronized send via ObjectOutputStream) and
+ * Both {@link ClientHandler} (synchronized send via ObjectOutputStream) and
  * {@link Runnable} (read loop for incoming ClientRequests). On EOF/IO error
  * notifies the service via {@link MatchManager#handleTransportDrop}.
  */
-public class SocketClientChannel implements ClientChannel, Runnable {
+public class SocketClientHandler implements ClientHandler, Runnable {
     private final Socket socket;
     private final MatchManager gameService;
     private final ObjectOutputStream outputStream;
@@ -25,7 +25,7 @@ public class SocketClientChannel implements ClientChannel, Runnable {
     private volatile String boundMatchId;
     private volatile boolean closed;
 
-    public SocketClientChannel(Socket socket, MatchManager gameService) throws IOException {
+    public SocketClientHandler(Socket socket, MatchManager gameService) throws IOException {
         this.socket = socket;
         this.gameService = gameService;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
