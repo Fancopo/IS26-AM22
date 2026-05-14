@@ -114,7 +114,9 @@ public class GameController {
      * Il metodo controlla che:
      * - la lobby sia ancora aperta
      * - non si superi il massimo di 5 giocatori
-     * - il nickname non sia già presente
+     * - il nickname non sia già presente (confronto case-insensitive,
+     *   {@link Locale#ROOT}: "Alice" e "alice" sono considerati lo stesso
+     *   nickname, ma la casing originale viene conservata per la visualizzazione)
      *
      * Inoltre assegna automaticamente un totem e, se necessario,
      * imposta il primo giocatore come host.

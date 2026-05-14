@@ -8,6 +8,7 @@ import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +23,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * notifications (setState, setActivePlayer, era/round change, ...). Inside
  * a batch we only remember a notification arrived and emit one final
  * {@link GameStateMessage} on close — avoids duplicate client renders.
+ *
+ * <p><b>Nickname policy.</b> Lookup is case-insensitive and locale-stable:
+ * the map key is {@code nickname.strip().toLowerCase(Locale.ROOT)}, matching
+ * the policy enforced by {@code GameController.containsNickname}. The
+ * channel keeps the nickname in its original casing for display purposes
+ * (see {@link ClientChannel#getBoundNickname}).
  */
 public class ClientBroadcaster implements GameObserver {
 
@@ -147,6 +154,6 @@ public class ClientBroadcaster implements GameObserver {
     }
 
     private String normalize(String value) {
-        return value.strip().toLowerCase();
+        return value.strip().toLowerCase(Locale.ROOT);
     }
 }
