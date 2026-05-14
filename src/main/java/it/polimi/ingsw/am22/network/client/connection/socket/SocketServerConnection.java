@@ -4,14 +4,12 @@ import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
-import it.polimi.ingsw.am22.network.common.message.request.*;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -43,51 +41,6 @@ public class SocketServerConnection implements ServerConnection {
     }
 
     @Override
-    public void listMatches() {
-        send(new ListMatchesRequest());
-    }
-
-    @Override
-    public void createMatch(String hostNickname, int expectedPlayers) {
-        send(new CreateMatchRequest(hostNickname, expectedPlayers));
-    }
-
-    @Override
-    public void addPlayerToLobby(String matchId, String nickname) {
-        send(new AddPlayerToLobbyRequest(matchId, nickname));
-    }
-
-    @Override
-    public void setExpectedPlayers(String matchId, String requesterNickname, int expectedPlayers) {
-        send(new SetExpectedPlayersRequest(matchId, requesterNickname, expectedPlayers));
-    }
-
-    @Override
-    public void removePlayerFromLobby(String matchId, String nickname) {
-        send(new RemovePlayerFromLobbyRequest(matchId, nickname));
-    }
-
-    @Override
-    public void placeTotem(String matchId, String playerNickname, char offerLetter) {
-        send(new PlaceTotemRequest(matchId, playerNickname, offerLetter));
-    }
-
-    @Override
-    public void pickCards(String matchId, String playerNickname, List<String> selectedCardIds) {
-        send(new PickCardsRequest(matchId, playerNickname, selectedCardIds));
-    }
-
-    @Override
-    public void pickBonusCard(String matchId, String playerNickname, String bonusCardId) {
-        send(new PickBonusCardRequest(matchId, playerNickname, bonusCardId));
-    }
-
-    @Override
-    public void disconnectPlayer(String matchId, String nickname) {
-        send(new DisconnectPlayerRequest(matchId, nickname));
-    }
-
-    @Override
     public void close() {
         if (closed) return;
         closed = true;
@@ -97,7 +50,8 @@ public class SocketServerConnection implements ServerConnection {
         }
     }
 
-    private synchronized void send(ClientRequest request) {
+    @Override
+    public synchronized void send(ClientRequest request) {
         if (closed) {
             throw new IllegalStateException("The socket connection is closed.");
         }

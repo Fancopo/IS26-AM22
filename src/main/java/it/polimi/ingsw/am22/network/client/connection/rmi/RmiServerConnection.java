@@ -2,8 +2,8 @@ package it.polimi.ingsw.am22.network.client.connection.rmi;
 
 import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
+import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
-import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.server.transport.rmi.RmiClientInterface;
@@ -15,7 +15,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -91,51 +90,6 @@ public class RmiServerConnection implements ServerConnection {
     }
 
     @Override
-    public void listMatches() {
-        send(new ListMatchesRequest());
-    }
-
-    @Override
-    public void createMatch(String hostNickname, int expectedPlayers) {
-        send(new CreateMatchRequest(hostNickname, expectedPlayers));
-    }
-
-    @Override
-    public void addPlayerToLobby(String matchId, String nickname) {
-        send(new AddPlayerToLobbyRequest(matchId, nickname));
-    }
-
-    @Override
-    public void setExpectedPlayers(String matchId, String requesterNickname, int expectedPlayers) {
-        send(new SetExpectedPlayersRequest(matchId, requesterNickname, expectedPlayers));
-    }
-
-    @Override
-    public void removePlayerFromLobby(String matchId, String nickname) {
-        send(new RemovePlayerFromLobbyRequest(matchId, nickname));
-    }
-
-    @Override
-    public void placeTotem(String matchId, String playerNickname, char offerLetter) {
-        send(new PlaceTotemRequest(matchId, playerNickname, offerLetter));
-    }
-
-    @Override
-    public void pickCards(String matchId, String playerNickname, List<String> selectedCardIds) {
-        send(new PickCardsRequest(matchId, playerNickname, selectedCardIds));
-    }
-
-    @Override
-    public void pickBonusCard(String matchId, String playerNickname, String bonusCardId) {
-        send(new PickBonusCardRequest(matchId, playerNickname, bonusCardId));
-    }
-
-    @Override
-    public void disconnectPlayer(String matchId, String nickname) {
-        send(new DisconnectPlayerRequest(matchId, nickname));
-    }
-
-    @Override
     public void close() {
         if (closed) return;
         closed = true;
@@ -146,7 +100,8 @@ public class RmiServerConnection implements ServerConnection {
         }
     }
 
-    private void send(it.polimi.ingsw.am22.network.common.message.ClientRequest request) {
+    @Override
+    public void send(ClientRequest request) {
         if (closed) {
             throw new IllegalStateException("The RMI connection is closed.");
         }
