@@ -16,7 +16,7 @@ import java.net.Socket;
  * {@link Runnable} (read loop for incoming ClientRequests). On EOF/IO error
  * notifies the service via {@link MatchManager#handleTransportDrop}.
  */
-public class SocketClientHandler implements ClientChannel, Runnable {
+public class SocketClientChannel implements ClientChannel, Runnable {
     private final Socket socket;
     private final MatchManager gameService;
     private final ObjectOutputStream outputStream;
@@ -25,7 +25,7 @@ public class SocketClientHandler implements ClientChannel, Runnable {
     private volatile String boundMatchId;
     private volatile boolean closed;
 
-    public SocketClientHandler(Socket socket, MatchManager gameService) throws IOException {
+    public SocketClientChannel(Socket socket, MatchManager gameService) throws IOException {
         this.socket = socket;
         this.gameService = gameService;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());

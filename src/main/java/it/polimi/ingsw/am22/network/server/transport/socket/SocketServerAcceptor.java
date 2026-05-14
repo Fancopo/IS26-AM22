@@ -50,7 +50,7 @@ public class SocketServerAcceptor implements AutoCloseable {
                 return;
             }
             try {
-                clientExecutor.submit(new SocketClientHandler(clientSocket, gameService));
+                clientExecutor.submit(new SocketClientChannel(clientSocket, gameService));
             } catch (IOException e) {
                 // Drive-by connection: peer disconnected before sending the ObjectStream header.
                 try {
