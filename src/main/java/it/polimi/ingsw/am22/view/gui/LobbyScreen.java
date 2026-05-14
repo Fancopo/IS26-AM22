@@ -105,7 +105,7 @@ public final class LobbyScreen implements GuiScreen {
             Integer selected = expectedCombo.getSelectionModel().getSelectedItem();
             if (selected == null) return;
             try {
-                statusLabel.setText("Setting expected players...");
+                statusLabel.setText("Set a new expected players");
                 app.getSession().getClientController().setExpectedPlayers(selected);
             } catch (RuntimeException ex) {
                 statusLabel.setText("Error: " + ex.getMessage());
