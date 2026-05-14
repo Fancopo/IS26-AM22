@@ -11,7 +11,6 @@ import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 
@@ -126,7 +125,6 @@ public final class GameScreen implements GuiScreen {
                 statusLabel.setText("Error: " + m.message());
                 clearCardSelection();
             }
-            @Override public void visit(InfoMessage m) { statusLabel.setText(m.message()); }
             @Override public void visit(LobbyStateMessage m) {}
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}

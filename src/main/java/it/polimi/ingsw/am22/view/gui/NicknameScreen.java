@@ -6,7 +6,6 @@ import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 
@@ -49,7 +48,6 @@ public final class NicknameScreen implements GuiScreen {
             @Override public void visit(GameStateMessage m) {}
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}
-            @Override public void visit(InfoMessage m) {}
             @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {}
             @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
         });

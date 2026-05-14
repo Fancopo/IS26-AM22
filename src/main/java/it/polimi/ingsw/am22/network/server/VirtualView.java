@@ -108,11 +108,6 @@ public class VirtualView implements GameObserver {
         }
     }
 
-    public void sendTo(String nickname, ServerMessage message) {
-        ClientChannel channel = getChannel(nickname);
-        if (channel != null) safeSend(channel, message);
-    }
-
     public void closeAll() {
         for (ClientChannel channel : channelsByNickname.values()) {
             safeClose(channel);

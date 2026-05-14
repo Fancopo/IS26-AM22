@@ -7,7 +7,6 @@ import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
@@ -87,7 +86,6 @@ public final class MatchesScreen implements GuiScreen {
             @Override public void visit(GameStateMessage m) {}
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}
-            @Override public void visit(InfoMessage m) {}
         });
     }
 

@@ -4,7 +4,6 @@ import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
@@ -20,5 +19,4 @@ public interface ServerMessageVisitor {
     void visit(EndGameMessage message);
     void visit(MatchClosedMessage message);
     void visit(ErrorMessage message);
-    void visit(InfoMessage message);
 }

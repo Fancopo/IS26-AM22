@@ -11,7 +11,6 @@ import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
@@ -263,7 +262,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
                 }
             }
             @Override public void visit(ErrorMessage m) { showError(m.message()); }
-            @Override public void visit(InfoMessage m) { System.out.println("[INFO] " + m.message()); }
             @Override public void visit(LobbyStateMessage m) {}
             @Override public void visit(GameStateMessage m) {}
             @Override public void visit(MatchJoinedMessage m) {}
@@ -287,7 +285,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}
             @Override public void visit(ErrorMessage m) {}
-            @Override public void visit(InfoMessage m) {}
             @Override public void visit(MatchesListMessage m) {}
         });
 
@@ -308,7 +305,6 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}
             @Override public void visit(ErrorMessage m) {}
-            @Override public void visit(InfoMessage m) {}
             @Override public void visit(MatchJoinedMessage m) {}
             @Override public void visit(MatchesListMessage m) {}
         });

@@ -17,7 +17,6 @@ import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.InfoMessage;
 import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
@@ -168,7 +167,6 @@ public final class TuiView implements ClientUpdateHandler {
                 println(Ansi.dim("(back to matches selection — type 'list' to see open matches)"));
             }
             case ErrorMessage err              -> println(Ansi.red("[ERROR] ") + err.message());
-            case InfoMessage info              -> println(Ansi.yellow("[INFO]  ") + info.message());
             default                            -> println("[?] " + message);
         }
     }
