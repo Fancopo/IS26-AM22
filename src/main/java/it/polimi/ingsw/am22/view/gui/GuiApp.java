@@ -4,7 +4,7 @@ import it.polimi.ingsw.am22.network.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
-import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
+import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
@@ -65,7 +65,7 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
     /** Opens the server connection and creates the session. Returns false on failure. */
     public boolean connect(Transport transport, String host, int port) {
         try {
-            ObservableServerConnection conn = ConnectionFactory.open(transport, host, port);
+            ServerConnection conn = ConnectionFactory.open(transport, host, port);
             this.session = new ClientSession(conn);
             session.setHandler(this);
             this.lastTransport = transport;

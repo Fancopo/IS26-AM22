@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.network.client.connection.socket;
 
 import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
-import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
+import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.request.*;
@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * TCP socket {@link ObservableServerConnection}. A daemon reader thread reads
+ * TCP socket {@link ServerConnection}. A daemon reader thread reads
  * incoming {@link ServerMessage}s and forwards them to the registered handler.
  * {@link #send} is synchronized to keep writes on the shared output stream atomic.
  */
-public class SocketServerConnection implements ObservableServerConnection {
+public class SocketServerConnection implements ServerConnection {
     private final Socket socket;
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;

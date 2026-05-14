@@ -4,7 +4,7 @@ import it.polimi.ingsw.am22.network.client.ClientController;
 import it.polimi.ingsw.am22.network.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
-import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
+import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public final class TuiRunner {
         // mirroring the GUI's endGameAndShowMatches flow.
         boolean firstSession = true;
         while (true) {
-            ObservableServerConnection connection;
+            ServerConnection connection;
             try {
                 connection = ConnectionFactory.open(transport, host, port);
             } catch (Exception e) {

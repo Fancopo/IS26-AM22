@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.rmi.NotBoundException;
 
 /**
- * Builds the right {@link ObservableServerConnection} for the transport
+ * Builds the right {@link ServerConnection} for the transport
  * chosen by the user, so the rest of the client only works against the
  * interface.
  */
@@ -21,7 +21,7 @@ public final class ConnectionFactory {
 
     private ConnectionFactory() {}
 
-    public static ObservableServerConnection open(Transport transport, String host, int port)
+    public static ServerConnection open(Transport transport, String host, int port)
             throws IOException, NotBoundException {
         return switch (transport) {
             case SOCKET -> new SocketServerConnection(host, port);

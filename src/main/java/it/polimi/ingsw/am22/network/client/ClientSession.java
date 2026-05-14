@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.client;
 
-import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
+import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
@@ -18,7 +18,7 @@ import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
 import java.util.Objects;
 
 /**
- * Pairs an ObservableServerConnection with a ClientController and adds a
+ * Pairs a ServerConnection with a ClientController and adds a
  * snapshot-replay layer: an internal dispatcher captures every server message,
  * caches the latest lobby/game state, then forwards it to the currently
  * attached view handler.
@@ -29,7 +29,7 @@ import java.util.Objects;
  */
 public final class ClientSession {
 
-    private final ObservableServerConnection connection;
+    private final ServerConnection connection;
     private final ClientController clientController;
 
     /** Handler of the currently active view (may change on every screen switch). */
@@ -39,7 +39,7 @@ public final class ClientSession {
     private volatile GameStateDTO latestGameState;
     private volatile boolean gameStarted;
 
-    public ClientSession(ObservableServerConnection connection) {
+    public ClientSession(ServerConnection connection) {
         this.connection = Objects.requireNonNull(connection, "connection cannot be null");
         this.clientController = new ClientController(connection);
         this.connection.setClientUpdateHandler(new InternalDispatcher());

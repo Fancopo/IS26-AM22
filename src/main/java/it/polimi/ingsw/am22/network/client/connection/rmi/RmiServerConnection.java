@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.network.client.connection.rmi;
 
 import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
-import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
+import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
@@ -22,14 +22,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * RMI-based {@link ObservableServerConnection}.
+ * RMI-based {@link ServerConnection}.
  *
  * <p>On construction looks up the remote {@link RemoteGameServer} stub and
  * exports a local callback ({@link ClientCallback}) that the server invokes
  * to deliver messages. No reader thread is needed: the RMI runtime drives
  * the callback.
  */
-public class RmiServerConnection implements ObservableServerConnection {
+public class RmiServerConnection implements ServerConnection {
 
     private static final long PING_INTERVAL_MS = 1000;
 
