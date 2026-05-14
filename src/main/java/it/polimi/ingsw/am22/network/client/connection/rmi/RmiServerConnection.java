@@ -1,13 +1,13 @@
 package it.polimi.ingsw.am22.network.client.connection.rmi;
 
-import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
+import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
-import it.polimi.ingsw.am22.network.server.transport.rmi.RemoteClientView;
-import it.polimi.ingsw.am22.network.server.transport.rmi.RemoteGameServer;
+import it.polimi.ingsw.am22.network.server.transport.rmi.RmiClientInterface;
+import it.polimi.ingsw.am22.network.server.transport.rmi.RmiServerInterface;
 
 import java.io.Serial;
 import java.rmi.NotBoundException;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * RMI-based {@link ServerConnection}.
  *
- * <p>On construction looks up the remote {@link RemoteGameServer} stub and
+ * <p>On construction looks up the remote {@link RmiServerInterface} stub and
  * exports a local callback ({@link ClientCallback}) that the server invokes
  * to deliver messages. No reader thread is needed: the RMI runtime drives
  * the callback.
@@ -43,15 +43,15 @@ public class RmiServerConnection implements ServerConnection {
      */
     private static final long FAREWELL_GRACE_MS = 200;
 
-    private final RemoteGameServer remoteGameServer;
-    private final RemoteClientView callback;
+    private final RmiServerInterface remoteGameServer;
+    private final RmiClientInterface callback;
     private final ScheduledExecutorService livenessProbe;
-    private volatile ClientUpdateHandler updateHandler;
+    private volatile ServerMessageDispatcher updateHandler;
     private volatile boolean closed;
 
     public RmiServerConnection(String host, int port, String bindingName) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(Objects.requireNonNull(host, "host cannot be null"), port);
-        this.remoteGameServer = (RemoteGameServer) registry.lookup(bindingName);
+        this.remoteGameServer = (RmiServerInterface) registry.lookup(bindingName);
         this.callback = new ClientCallback();
         // RMI doesn't notify us when the server dies: we only find out when a
         // remote call throws. Periodic ping makes that detection bounded by
@@ -78,7 +78,7 @@ public class RmiServerConnection implements ServerConnection {
     /** Idempotent: avoids duplicate notifications when probe and farewell race. */
     private void fireConnectionClosed(Throwable cause) {
         if (closed) return;
-        ClientUpdateHandler handler = updateHandler;
+        ServerMessageDispatcher handler = updateHandler;
         close();
         if (handler != null) {
             handler.onConnectionClosed(cause);
@@ -86,7 +86,7 @@ public class RmiServerConnection implements ServerConnection {
     }
 
     @Override
-    public void setClientUpdateHandler(ClientUpdateHandler handler) {
+    public void setMessageDispatcher(ServerMessageDispatcher handler) {
         this.updateHandler = handler;
     }
 
@@ -159,7 +159,7 @@ public class RmiServerConnection implements ServerConnection {
     }
 
     /** RMI-exported callback the server invokes to deliver messages to this client. */
-    private final class ClientCallback extends UnicastRemoteObject implements RemoteClientView {
+    private final class ClientCallback extends UnicastRemoteObject implements RmiClientInterface {
         @Serial
         private static final long serialVersionUID = 1L;
 
@@ -169,7 +169,7 @@ public class RmiServerConnection implements ServerConnection {
 
         @Override
         public void receive(ServerMessage message) throws RemoteException {
-            ClientUpdateHandler handler = updateHandler;
+            ServerMessageDispatcher handler = updateHandler;
             if (handler != null) {
                 handler.onServerMessage(message);
             }

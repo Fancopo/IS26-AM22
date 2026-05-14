@@ -11,11 +11,11 @@ import java.rmi.RemoteException;
  * the client, there's nothing to close server-side.
  */
 public class RmiClientChannel implements ClientChannel {
-    private final RemoteClientView remoteClientView;
+    private final RmiClientInterface remoteClientView;
     private volatile String boundNickname;
     private volatile String boundMatchId;
 
-    public RmiClientChannel(RemoteClientView remoteClientView) {
+    public RmiClientChannel(RmiClientInterface remoteClientView) {
         this.remoteClientView = remoteClientView;
     }
 

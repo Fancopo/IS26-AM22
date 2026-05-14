@@ -12,9 +12,9 @@ import java.util.Scanner;
  * Client entry point. Reads --tui/--gui from args (or asks interactively) and
  * launches the chosen runner.
  */
-public final class ClientApp {
+public final class ClientMain {
 
-    private ClientApp() {}
+    private ClientMain() {}
 
     public static void main(String[] args) {
         Mode mode = resolveMode(args);

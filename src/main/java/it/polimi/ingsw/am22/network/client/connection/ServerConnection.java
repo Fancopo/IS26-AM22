@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.client.connection;
 
-import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
+import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 public interface ServerConnection extends AutoCloseable {
 
     /** Registers the handler invoked on every incoming server message. */
-    void setClientUpdateHandler(ClientUpdateHandler handler);
+    void setMessageDispatcher(ServerMessageDispatcher handler);
 
     @Override
     void close();

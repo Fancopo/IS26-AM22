@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.view.gui;
 
 import it.polimi.ingsw.am22.network.client.ClientSession;
-import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
+import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
@@ -25,12 +25,12 @@ import javafx.stage.Stage;
 
 /**
  * JavaFX root: owns the {@link Stage} and the {@link ClientSession}, acts as
- * the {@link ClientUpdateHandler} (marshalling messages onto the FX thread),
+ * the {@link ServerMessageDispatcher} (marshalling messages onto the FX thread),
  * and drives screen navigation: Connection → Nickname → Matches → Lobby →
  * Game → EndGame. Each screen's {@code onServerMessage(...)} is always
  * called on the FX thread.
  */
-public final class GuiApp extends Application implements ClientUpdateHandler {
+public final class GuiApp extends Application implements ServerMessageDispatcher {
 
     private Stage stage;
     private ClientSession session;
@@ -214,7 +214,7 @@ public final class GuiApp extends Application implements ClientUpdateHandler {
         Platform.exit();
     }
 
-    // -------------------- ClientUpdateHandler --------------------
+    // -------------------- ServerMessageDispatcher --------------------
 
     /**
      * Called from arbitrary threads (socket reader or RMI). Always re-dispatch

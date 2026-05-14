@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * a batch we only remember a notification arrived and emit one final
  * {@link GameStateMessage} on close — avoids duplicate client renders.
  */
-public class VirtualView implements GameObserver {
+public class ClientBroadcaster implements GameObserver {
 
     private final Map<String, ClientChannel> channelsByNickname;
     private final ModelDtoMapper mapper;
@@ -31,7 +31,7 @@ public class VirtualView implements GameObserver {
     private int batchDepth;
     private Game pendingGame;
 
-    public VirtualView(ModelDtoMapper mapper) {
+    public ClientBroadcaster(ModelDtoMapper mapper) {
         this.mapper = mapper;
         this.channelsByNickname = new ConcurrentHashMap<>();
         this.batchDepth = 0;

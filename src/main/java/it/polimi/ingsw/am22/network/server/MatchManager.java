@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Server-side core of the multi-match network layer.
  *
  * <p>Holds a registry of {@link MatchSession}s, one per matchId, each with its own
- * {@link GameController} and {@link VirtualView}. Game requests carry a matchId and
+ * {@link GameController} and {@link ClientBroadcaster}. Game requests carry a matchId and
  * get routed to the matching session; global requests (create/list) are handled here.
  *
  * <p>Dispatch goes through {@link ClientRequestVisitor}: no instanceof, and a new
@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * matches can therefore progress in parallel, and a slow client in match A
  * does not block match B.
  */
-public class NetworkGameService {
+public class MatchManager {
 
     private final ModelDtoMapper mapper;
     private final Map<String, MatchSession> matchesById;
@@ -61,7 +61,7 @@ public class NetworkGameService {
 
     private static final long END_GAME_CLOSE_DELAY_MS = 3000;
 
-    public NetworkGameService() {
+    public MatchManager() {
         this.mapper = new ModelDtoMapper();
         this.matchesById = new ConcurrentHashMap<>();
         this.matchIdSeq = new AtomicLong();
@@ -209,16 +209,16 @@ public class NetworkGameService {
         return value;
     }
 
-    /** Per-match state: GameController + VirtualView, isolated from other matches. */
+    /** Per-match state: GameController + ClientBroadcaster, isolated from other matches. */
     private final class MatchSession {
 
         private final GameController gameController;
-        private final VirtualView virtualView;
+        private final ClientBroadcaster virtualView;
         private boolean observerAttached;
 
         private MatchSession(String matchId) {
             this.gameController = new GameController(matchId);
-            this.virtualView = new VirtualView(mapper);
+            this.virtualView = new ClientBroadcaster(mapper);
             this.observerAttached = false;
         }
 
@@ -271,7 +271,7 @@ public class NetworkGameService {
         }
 
         /**
-         * All three move handlers wrap the controller call in a VirtualView batch:
+         * All three move handlers wrap the controller call in a ClientBroadcaster batch:
          * a single move typically triggers 5-6 model notifications (state, active
          * player, era, scoring...) and we want to coalesce them into one broadcast.
          * The try/finally keeps the batch from staying open on exception.
@@ -363,7 +363,7 @@ public class NetworkGameService {
         }
 
         /**
-         * NB: doesn't broadcast a GameStateMessage. VirtualView is already an
+         * NB: doesn't broadcast a GameStateMessage. ClientBroadcaster is already an
          * observer of Game; the model emits notifyObservers() on every mutation,
          * so an explicit broadcast here would produce a duplicate render.
          */
@@ -413,7 +413,7 @@ public class NetworkGameService {
             // Drop the match right away so no further requests reach it, but defer
             // the channel close: see endGameCloser.
             matchesById.remove(gameController.getMatchId());
-            VirtualView viewToClose = virtualView;
+            ClientBroadcaster viewToClose = virtualView;
             endGameCloser.schedule(viewToClose::closeAll, END_GAME_CLOSE_DELAY_MS, TimeUnit.MILLISECONDS);
         }
 
@@ -462,7 +462,7 @@ public class NetworkGameService {
         }
 
         /**
-         * Attaches VirtualView as a Game observer once per session. Without the
+         * Attaches ClientBroadcaster as a Game observer once per session. Without the
          * guard, multiple subscriptions would emit N duplicate messages per
          * model mutation.
          */

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.server.transport.socket;
 
-import it.polimi.ingsw.am22.network.server.NetworkGameService;
+import it.polimi.ingsw.am22.network.server.MatchManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,15 +9,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /** ServerSocket + daemon accept thread + cached thread pool: one task per client. */
-public class SocketGameServer implements AutoCloseable {
+public class SocketServerAcceptor implements AutoCloseable {
     private final int port;
-    private final NetworkGameService gameService;
+    private final MatchManager gameService;
     private final ExecutorService clientExecutor;
     private ServerSocket serverSocket;
     private Thread acceptThread;
     private volatile boolean running;
 
-    public SocketGameServer(int port, NetworkGameService gameService) {
+    public SocketServerAcceptor(int port, MatchManager gameService) {
         this.port = port;
         this.gameService = gameService;
         this.clientExecutor = Executors.newCachedThreadPool();

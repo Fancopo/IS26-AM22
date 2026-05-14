@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.network.server.transport.rmi;
 
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
-import it.polimi.ingsw.am22.network.server.NetworkGameService;
+import it.polimi.ingsw.am22.network.server.MatchManager;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -10,19 +10,19 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * RMI implementation of {@link RemoteGameServer}. Each submitRequest wraps the
+ * RMI implementation of {@link RmiServerInterface}. Each submitRequest wraps the
  * client callback in a {@link RmiClientChannel} and delegates to the service.
  */
-public class RmiGameServer extends UnicastRemoteObject implements RemoteGameServer {
-    private final NetworkGameService gameService;
+public class RmiServerEndpoint extends UnicastRemoteObject implements RmiServerInterface {
+    private final MatchManager gameService;
 
-    public RmiGameServer(NetworkGameService gameService) throws RemoteException {
+    public RmiServerEndpoint(MatchManager gameService) throws RemoteException {
         super();
         this.gameService = gameService;
     }
 
     @Override
-    public void submitRequest(ClientRequest request, RemoteClientView clientView) throws RemoteException {
+    public void submitRequest(ClientRequest request, RmiClientInterface clientView) throws RemoteException {
         gameService.handleRequest(request, new RmiClientChannel(clientView));
     }
 
@@ -32,10 +32,10 @@ public class RmiGameServer extends UnicastRemoteObject implements RemoteGameServ
     }
 
     /** Creates an RMI registry on {@code port} and binds a fresh server under {@code bindingName}. */
-    public static Registry publish(int port, String bindingName, NetworkGameService gameService)
+    public static Registry publish(int port, String bindingName, MatchManager gameService)
             throws RemoteException, AlreadyBoundException {
         Registry registry = LocateRegistry.createRegistry(port);
-        registry.bind(bindingName, new RmiGameServer(gameService));
+        registry.bind(bindingName, new RmiServerEndpoint(gameService));
         return registry;
     }
 }

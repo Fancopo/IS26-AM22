@@ -4,7 +4,7 @@ import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
-import it.polimi.ingsw.am22.network.server.NetworkGameService;
+import it.polimi.ingsw.am22.network.server.MatchManager;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,18 +14,18 @@ import java.net.Socket;
 /**
  * Both {@link ClientChannel} (synchronized send via ObjectOutputStream) and
  * {@link Runnable} (read loop for incoming ClientRequests). On EOF/IO error
- * notifies the service via {@link NetworkGameService#handleTransportDrop}.
+ * notifies the service via {@link MatchManager#handleTransportDrop}.
  */
 public class SocketClientHandler implements ClientChannel, Runnable {
     private final Socket socket;
-    private final NetworkGameService gameService;
+    private final MatchManager gameService;
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
     private volatile String boundNickname;
     private volatile String boundMatchId;
     private volatile boolean closed;
 
-    public SocketClientHandler(Socket socket, NetworkGameService gameService) throws IOException {
+    public SocketClientHandler(Socket socket, MatchManager gameService) throws IOException {
         this.socket = socket;
         this.gameService = gameService;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());

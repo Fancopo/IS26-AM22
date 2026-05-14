@@ -32,7 +32,7 @@ public final class ClientSession {
     private final ClientController clientController;
 
     /** Handler of the currently active view (may change on every screen switch). */
-    private volatile ClientUpdateHandler currentHandler;
+    private volatile ServerMessageDispatcher currentHandler;
 
     private volatile LobbyStateDTO latestLobbyState;
     private volatile GameStateDTO latestGameState;
@@ -41,7 +41,7 @@ public final class ClientSession {
     public ClientSession(ServerConnection connection) {
         this.connection = Objects.requireNonNull(connection, "connection cannot be null");
         this.clientController = new ClientController(connection);
-        this.connection.setClientUpdateHandler(new InternalDispatcher());
+        this.connection.setMessageDispatcher(new InternalDispatcher());
     }
 
     public ClientController getClientController() { return clientController; }
@@ -54,7 +54,7 @@ public final class ClientSession {
      * Registers the active view handler. If a lobby/game snapshot is already
      * available, replays it to the new handler so the screen starts in sync.
      */
-    public void setHandler(ClientUpdateHandler handler) {
+    public void setHandler(ServerMessageDispatcher handler) {
         this.currentHandler = handler;
         if (handler == null) return;
         if (gameStarted && latestGameState != null) {
@@ -87,7 +87,7 @@ public final class ClientSession {
         connection.close();
     }
 
-    private final class InternalDispatcher implements ClientUpdateHandler {
+    private final class InternalDispatcher implements ServerMessageDispatcher {
 
         @Override
         public void onServerMessage(ServerMessage message) {
@@ -108,7 +108,7 @@ public final class ClientSession {
                 }
                 @Override public void visit(ErrorMessage m) {}
             });
-            ClientUpdateHandler handler = currentHandler;
+            ServerMessageDispatcher handler = currentHandler;
             if (handler != null) {
                 handler.onServerMessage(message);
             }
@@ -116,7 +116,7 @@ public final class ClientSession {
 
         @Override
         public void onConnectionClosed(Throwable cause) {
-            ClientUpdateHandler handler = currentHandler;
+            ServerMessageDispatcher handler = currentHandler;
             if (handler != null) {
                 handler.onConnectionClosed(cause);
             }

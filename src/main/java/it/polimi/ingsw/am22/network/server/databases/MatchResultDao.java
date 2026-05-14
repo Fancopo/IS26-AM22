@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * DAO per la tabella {@code match_results}: persiste i risultati di ogni
- * partita finita e fornisce le query usate dal {@link NetworkGameService}
+ * partita finita e fornisce le query usate dal {@link MatchManager}
  * per costruire la classifica storica e calcolare la posizione di un
  * giocatore. Tutte le operazioni aprono una connessione, eseguono e la
  * chiudono in try-with-resources (nessun pool).

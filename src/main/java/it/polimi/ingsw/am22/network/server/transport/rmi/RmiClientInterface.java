@@ -10,6 +10,6 @@ import java.rmi.RemoteException;
  * implementation and passes it to {@code submitRequest}; the server uses it
  * via {@link RmiClientChannel} to deliver replies.
  */
-public interface RemoteClientView extends Remote {
+public interface RmiClientInterface extends Remote {
     void receive(ServerMessage message) throws RemoteException;
 }

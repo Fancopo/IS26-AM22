@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.view.tui;
 
 import it.polimi.ingsw.am22.network.client.ClientSession;
-import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
+import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
 import it.polimi.ingsw.am22.network.common.dto.CardDTO;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.LeaderboardEntryDTO;
@@ -35,7 +35,7 @@ import java.util.Objects;
  * the {@link it.polimi.ingsw.am22.network.client.ClientController}.
  * No game logic here — rendering and input only.
  */
-public final class TuiView implements ClientUpdateHandler {
+public final class TuiView implements ServerMessageDispatcher {
 
     /** Serializes prints so concurrent threads don't interleave output lines. */
     private final Object printLock = new Object();
@@ -149,7 +149,7 @@ public final class TuiView implements ClientUpdateHandler {
         return null;
     }
 
-    // -------------------- ClientUpdateHandler --------------------
+    // -------------------- ServerMessageDispatcher --------------------
 
     @Override
     public void onServerMessage(ServerMessage message) {

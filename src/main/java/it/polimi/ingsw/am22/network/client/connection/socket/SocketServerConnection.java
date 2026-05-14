@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.client.connection.socket;
 
-import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
+import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
@@ -23,7 +23,7 @@ public class SocketServerConnection implements ServerConnection {
     private final Socket socket;
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
-    private volatile ClientUpdateHandler updateHandler;
+    private volatile ServerMessageDispatcher updateHandler;
     private final Thread readerThread;
     private volatile boolean closed;
 
@@ -38,7 +38,7 @@ public class SocketServerConnection implements ServerConnection {
     }
 
     @Override
-    public void setClientUpdateHandler(ClientUpdateHandler handler) {
+    public void setMessageDispatcher(ServerMessageDispatcher handler) {
         this.updateHandler = handler;
     }
 
@@ -116,7 +116,7 @@ public class SocketServerConnection implements ServerConnection {
             while (!closed) {
                 Object incoming = inputStream.readObject();
                 if (incoming instanceof ServerMessage message) {
-                    ClientUpdateHandler handler = updateHandler;
+                    ServerMessageDispatcher handler = updateHandler;
                     if (handler != null) {
                         handler.onServerMessage(message);
                     }
@@ -130,7 +130,7 @@ public class SocketServerConnection implements ServerConnection {
             }
         } finally {
             close();
-            ClientUpdateHandler handler = updateHandler;
+            ServerMessageDispatcher handler = updateHandler;
             if (handler != null) {
                 handler.onConnectionClosed(cause);
             }
