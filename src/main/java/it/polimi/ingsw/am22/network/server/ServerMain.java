@@ -1,21 +1,24 @@
 package it.polimi.ingsw.am22.network.server;
 
+import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.network.server.transport.rmi.RmiServerEndpoint;
 import it.polimi.ingsw.am22.network.server.transport.socket.SocketServerAcceptor;
 
 /**
  * Server entry point. Creates a single multi-match {@link MatchManager}
- * shared by all transports, starts the socket listener on 12345 and publishes
- * the RMI stub on the registry at 1099 under the binding {@code MESOS_SERVER}.
+ * shared by all transports, starts the socket listener on
+ * {@link ConnectionFactory#DEFAULT_SOCKET_PORT} and publishes the RMI stub on
+ * the registry at {@link ConnectionFactory#DEFAULT_RMI_PORT} under the
+ * binding {@link ConnectionFactory#DEFAULT_RMI_BINDING}.
  */
 public final class ServerMain {
 
     private ServerMain() {}
 
     public static void main(String[] args) throws Exception {
-        int socketPort = 12345;
-        int rmiPort = 1099;
-        String bindingName = "MESOS_SERVER";
+        int socketPort = ConnectionFactory.DEFAULT_SOCKET_PORT;
+        int rmiPort = ConnectionFactory.DEFAULT_RMI_PORT;
+        String bindingName = ConnectionFactory.DEFAULT_RMI_BINDING;
 
         MatchManager gameService = new MatchManager();
 

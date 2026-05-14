@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="merged observableServerConnection with serverConnection.">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="adjust the nickname' uniqueness">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/GameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ClientBroadcaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ClientBroadcaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ServerMain.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -383,7 +382,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778776676067</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="adjust the nickname' uniqueness">
+      <option name="closed" value="true" />
+      <created>1778790665203</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1778790665203</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -429,7 +436,8 @@
     <MESSAGE value="Fixing bug: resized the gamescreen avoiding the scrolling." />
     <MESSAGE value="Optimized MVC design, reduced javadoc. Gamescreen adjusted." />
     <MESSAGE value="merged observableServerConnection with serverConnection." />
-    <option name="LAST_COMMIT_MESSAGE" value="merged observableServerConnection with serverConnection." />
+    <MESSAGE value="adjust the nickname' uniqueness" />
+    <option name="LAST_COMMIT_MESSAGE" value="adjust the nickname' uniqueness" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
