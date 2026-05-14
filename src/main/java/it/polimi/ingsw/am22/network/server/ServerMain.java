@@ -25,7 +25,12 @@ public final class ServerMain {
         SocketServerAcceptor socketServer = new SocketServerAcceptor(socketPort, gameService);
         socketServer.start();
 
-        RmiServerEndpoint.publish(rmiPort, bindingName, gameService);
+        RmiServerEndpoint.Handle rmiHandle = RmiServerEndpoint.publish(rmiPort, bindingName, gameService);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            rmiHandle.shutdown();
+            socketServer.close();
+        }, "server-shutdown"));
 
         System.out.println("MESOS server online (multipartita).");
         System.out.println("Socket port: " + socketPort);

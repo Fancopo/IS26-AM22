@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="adjust the nickname' uniqueness">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ServerMain.java" afterDir="false" />
-    </list>
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="putted default values of socket and rmi ports on ServerMain" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -390,7 +387,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778790665203</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="putted default values of socket and rmi ports on ServerMain">
+      <option name="closed" value="true" />
+      <created>1778791049954</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1778791049954</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -437,7 +442,8 @@
     <MESSAGE value="Optimized MVC design, reduced javadoc. Gamescreen adjusted." />
     <MESSAGE value="merged observableServerConnection with serverConnection." />
     <MESSAGE value="adjust the nickname' uniqueness" />
-    <option name="LAST_COMMIT_MESSAGE" value="adjust the nickname' uniqueness" />
+    <MESSAGE value="putted default values of socket and rmi ports on ServerMain" />
+    <option name="LAST_COMMIT_MESSAGE" value="putted default values of socket and rmi ports on ServerMain" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

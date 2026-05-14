@@ -31,11 +31,41 @@ public class RmiServerEndpoint extends UnicastRemoteObject implements RmiServerI
         // No-op: the signal is the RemoteException the client gets when the server is gone.
     }
 
-    /** Creates an RMI registry on {@code port} and binds a fresh server under {@code bindingName}. */
-    public static Registry publish(int port, String bindingName, MatchManager gameService)
+    /**
+     * Creates an RMI registry on {@code port} and binds a fresh server under
+     * {@code bindingName}. The returned {@link Handle} keeps the registry and
+     * endpoint references alive and exposes {@link Handle#shutdown()} for a
+     * graceful tear-down (unbind + unexport, releasing the port).
+     */
+    public static Handle publish(int port, String bindingName, MatchManager gameService)
             throws RemoteException, AlreadyBoundException {
         Registry registry = LocateRegistry.createRegistry(port);
-        registry.bind(bindingName, new RmiServerEndpoint(gameService));
-        return registry;
+        RmiServerEndpoint endpoint = new RmiServerEndpoint(gameService);
+        registry.bind(bindingName, endpoint);
+        return new Handle(registry, endpoint, bindingName);
+    }
+
+    /**
+     * Holds the references needed to tear down an RMI publication: without
+     * them the registry and endpoint stay exported for the lifetime of the
+     * JVM, blocking the port and preventing in-process restarts.
+     */
+    public static final class Handle {
+        private final Registry registry;
+        private final RmiServerEndpoint endpoint;
+        private final String bindingName;
+
+        private Handle(Registry registry, RmiServerEndpoint endpoint, String bindingName) {
+            this.registry = registry;
+            this.endpoint = endpoint;
+            this.bindingName = bindingName;
+        }
+
+        /** Best-effort release: unbind + unexport endpoint + unexport registry. Idempotent. */
+        public void shutdown() {
+            try { registry.unbind(bindingName); } catch (Exception ignored) {}
+            try { UnicastRemoteObject.unexportObject(endpoint, true); } catch (Exception ignored) {}
+            try { UnicastRemoteObject.unexportObject(registry, true); } catch (Exception ignored) {}
+        }
     }
 }
