@@ -33,7 +33,6 @@ module it.polimi.ingsw.am {
     // RMI ha bisogno di "vedere" e fare reflection sulle interfacce Remote
     // e sulle implementazioni che le esportano (UnicastRemoteObject).
     // ----------------------------------------------------------------------
-    exports it.polimi.ingsw.am22.network.server;
     exports it.polimi.ingsw.am22.network.server.transport.rmi;
     opens it.polimi.ingsw.am22.network.server.transport.rmi to java.rmi;
 
@@ -44,17 +43,17 @@ module it.polimi.ingsw.am {
     // I record/DTO viaggiano serializzati: java.rmi deve poterli istanziare
     // tramite reflection.
     // ----------------------------------------------------------------------
-    exports it.polimi.ingsw.am22.network.common.message;
-    opens it.polimi.ingsw.am22.network.common.message to java.rmi;
+    exports it.polimi.ingsw.am22.network.protocol.message;
+    opens it.polimi.ingsw.am22.network.protocol.message to java.rmi;
 
-    exports it.polimi.ingsw.am22.network.common.message.request;
-    opens it.polimi.ingsw.am22.network.common.message.request to java.rmi;
+    exports it.polimi.ingsw.am22.network.protocol.message.request;
+    opens it.polimi.ingsw.am22.network.protocol.message.request to java.rmi;
 
-    exports it.polimi.ingsw.am22.network.common.message.response;
-    opens it.polimi.ingsw.am22.network.common.message.response to java.rmi;
+    exports it.polimi.ingsw.am22.network.protocol.message.response;
+    opens it.polimi.ingsw.am22.network.protocol.message.response to java.rmi;
 
-    exports it.polimi.ingsw.am22.network.common.dto;
-    opens it.polimi.ingsw.am22.network.common.dto to java.rmi;
+    exports it.polimi.ingsw.am22.network.protocol.dto;
+    opens it.polimi.ingsw.am22.network.protocol.dto to java.rmi;
     exports it.polimi.ingsw.am22.network.client.connection;
     opens it.polimi.ingsw.am22.network.client.connection to java.rmi, javafx.fxml, javafx.graphics;
     exports it.polimi.ingsw.am22.network.client.connection.socket;
@@ -62,4 +61,10 @@ module it.polimi.ingsw.am {
     exports it.polimi.ingsw.am22.network.client.connection.rmi;
     opens it.polimi.ingsw.am22.network.client.connection.rmi to java.rmi, javafx.fxml, javafx.graphics;
     exports it.polimi.ingsw.am22.network.server.transport;
+    exports it.polimi.ingsw.am22.controller.client;
+    opens it.polimi.ingsw.am22.controller.client to java.rmi, javafx.fxml, javafx.graphics;
+    exports it.polimi.ingsw.am22;
+    opens it.polimi.ingsw.am22 to java.rmi, javafx.fxml, javafx.graphics;
+    exports it.polimi.ingsw.am22.controller.server;
+    exports it.polimi.ingsw.am22.view.server;
 }

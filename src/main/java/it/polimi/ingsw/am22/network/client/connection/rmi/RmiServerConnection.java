@@ -2,10 +2,10 @@ package it.polimi.ingsw.am22.network.client.connection.rmi;
 
 import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
-import it.polimi.ingsw.am22.network.common.message.ClientRequest;
-import it.polimi.ingsw.am22.network.common.message.ServerMessage;
-import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
-import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.server.transport.rmi.RmiClientInterface;
 import it.polimi.ingsw.am22.network.server.transport.rmi.RmiServerInterface;
 

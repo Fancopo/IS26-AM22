@@ -1,16 +1,16 @@
 package it.polimi.ingsw.am22.network.client.connection;
 
 import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
-import it.polimi.ingsw.am22.network.common.message.ClientRequest;
-import it.polimi.ingsw.am22.network.common.message.request.AddPlayerToLobbyRequest;
-import it.polimi.ingsw.am22.network.common.message.request.CreateMatchRequest;
-import it.polimi.ingsw.am22.network.common.message.request.DisconnectPlayerRequest;
-import it.polimi.ingsw.am22.network.common.message.request.ListMatchesRequest;
-import it.polimi.ingsw.am22.network.common.message.request.PickBonusCardRequest;
-import it.polimi.ingsw.am22.network.common.message.request.PickCardsRequest;
-import it.polimi.ingsw.am22.network.common.message.request.PlaceTotemRequest;
-import it.polimi.ingsw.am22.network.common.message.request.RemovePlayerFromLobbyRequest;
-import it.polimi.ingsw.am22.network.common.message.request.SetExpectedPlayersRequest;
+import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.CreateMatchRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.DisconnectPlayerRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.ListMatchesRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.PickBonusCardRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.PickCardsRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.PlaceTotemRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.RemovePlayerFromLobbyRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.SetExpectedPlayersRequest;
 
 import java.util.List;
 

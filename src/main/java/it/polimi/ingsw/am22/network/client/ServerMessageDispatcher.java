@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.client;
 
-import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 
 /**
  * Callback the client view implements to receive asynchronous updates.

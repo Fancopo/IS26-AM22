@@ -1,9 +1,9 @@
 package it.polimi.ingsw.am22.view.gui;
 
-import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
-import it.polimi.ingsw.am22.network.common.dto.LeaderboardEntryDTO;
-import it.polimi.ingsw.am22.network.common.dto.PlayerDTO;
-import it.polimi.ingsw.am22.network.common.dto.WinnerDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.GameStateDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.LeaderboardEntryDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.PlayerDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.WinnerDTO;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

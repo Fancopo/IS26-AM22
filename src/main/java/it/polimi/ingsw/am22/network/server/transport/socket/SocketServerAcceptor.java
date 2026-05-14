@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.server.transport.socket;
 
-import it.polimi.ingsw.am22.network.server.MatchManager;
+import it.polimi.ingsw.am22.controller.server.MatchManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;

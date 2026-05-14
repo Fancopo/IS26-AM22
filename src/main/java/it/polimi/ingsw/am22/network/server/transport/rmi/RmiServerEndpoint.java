@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.network.server.transport.rmi;
 
-import it.polimi.ingsw.am22.network.common.message.ClientRequest;
-import it.polimi.ingsw.am22.network.server.MatchManager;
+import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
+import it.polimi.ingsw.am22.controller.server.MatchManager;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;

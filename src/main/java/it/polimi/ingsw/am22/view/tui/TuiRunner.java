@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.view.tui;
 
-import it.polimi.ingsw.am22.network.client.ClientController;
-import it.polimi.ingsw.am22.network.client.ClientSession;
+import it.polimi.ingsw.am22.controller.client.ClientController;
+import it.polimi.ingsw.am22.controller.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
@@ -240,11 +240,11 @@ public final class TuiRunner {
     private static void printCachedState(ClientSession session) {
         if (session.getLatestGameState() != null) {
             new TuiView(session).onServerMessage(
-                    new it.polimi.ingsw.am22.network.common.message.response.GameStateMessage(
+                    new it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage(
                             session.getLatestGameState()));
         } else if (session.getLatestLobbyState() != null) {
             new TuiView(session).onServerMessage(
-                    new it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage(
+                    new it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage(
                             session.getLatestLobbyState()));
         } else {
             System.out.println("(no state received yet — try 'list' or 'create')");

@@ -1,26 +1,27 @@
 package it.polimi.ingsw.am22.view.tui;
 
-import it.polimi.ingsw.am22.network.client.ClientSession;
+import it.polimi.ingsw.am22.controller.client.ClientController;
+import it.polimi.ingsw.am22.controller.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.ServerMessageDispatcher;
-import it.polimi.ingsw.am22.network.common.dto.CardDTO;
-import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
-import it.polimi.ingsw.am22.network.common.dto.LeaderboardEntryDTO;
-import it.polimi.ingsw.am22.network.common.dto.LobbyPlayerDTO;
-import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
-import it.polimi.ingsw.am22.network.common.dto.MatchInfoDTO;
-import it.polimi.ingsw.am22.network.common.dto.OfferTileDTO;
-import it.polimi.ingsw.am22.network.common.dto.PlayerDTO;
-import it.polimi.ingsw.am22.network.common.dto.TurnSlotDTO;
-import it.polimi.ingsw.am22.network.common.dto.WinnerDTO;
-import it.polimi.ingsw.am22.network.common.message.ServerMessage;
-import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
-import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
-import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
-import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
-import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
-import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
+import it.polimi.ingsw.am22.network.protocol.dto.CardDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.GameStateDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.LeaderboardEntryDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.LobbyPlayerDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.LobbyStateDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.MatchInfoDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.OfferTileDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.PlayerDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.TurnSlotDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.WinnerDTO;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.Objects;
 /**
  * Text view. Receives server messages on the reader/RMI thread and prints them
  * to the terminal; user input is read by {@link TuiRunner} and forwarded to
- * the {@link it.polimi.ingsw.am22.network.client.ClientController}.
+ * the {@link ClientController}.
  * No game logic here — rendering and input only.
  */
 public final class TuiView implements ServerMessageDispatcher {

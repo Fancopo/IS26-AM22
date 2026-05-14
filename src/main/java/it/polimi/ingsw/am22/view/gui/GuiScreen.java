@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.view.gui;
 
-import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import javafx.scene.Parent;
 
 /**

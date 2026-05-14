@@ -1,18 +1,18 @@
 package it.polimi.ingsw.am22.view.gui;
 
-import it.polimi.ingsw.am22.network.common.dto.CardDTO;
-import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
-import it.polimi.ingsw.am22.network.common.dto.OfferTileDTO;
-import it.polimi.ingsw.am22.network.common.dto.PlayerDTO;
-import it.polimi.ingsw.am22.network.common.dto.TurnSlotDTO;
-import it.polimi.ingsw.am22.network.common.message.ServerMessage;
-import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
-import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
-import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
-import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
-import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.protocol.dto.CardDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.GameStateDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.OfferTileDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.PlayerDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.TurnSlotDTO;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessageVisitor;
+import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -128,8 +128,8 @@ public final class GameScreen implements GuiScreen {
             @Override public void visit(LobbyStateMessage m) {}
             @Override public void visit(EndGameMessage m) {}
             @Override public void visit(MatchClosedMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage m) {}
+            @Override public void visit(it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage m) {}
         });
     }
 

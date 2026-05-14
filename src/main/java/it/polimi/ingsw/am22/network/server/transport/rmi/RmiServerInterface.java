@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.server.transport.rmi;
 
-import it.polimi.ingsw.am22.network.common.message.ClientRequest;
+import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

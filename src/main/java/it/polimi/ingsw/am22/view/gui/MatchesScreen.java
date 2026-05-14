@@ -1,16 +1,16 @@
 package it.polimi.ingsw.am22.view.gui;
 
-import it.polimi.ingsw.am22.network.common.dto.MatchInfoDTO;
-import it.polimi.ingsw.am22.network.common.message.ServerMessage;
-import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
-import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
-import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
-import it.polimi.ingsw.am22.network.common.message.response.GameStartedMessage;
-import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.LobbyStateMessage;
-import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
-import it.polimi.ingsw.am22.network.common.message.response.MatchJoinedMessage;
-import it.polimi.ingsw.am22.network.common.message.response.MatchesListMessage;
+import it.polimi.ingsw.am22.network.protocol.dto.MatchInfoDTO;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessageVisitor;
+import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

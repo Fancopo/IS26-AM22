@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.network.server.transport;
 
-import it.polimi.ingsw.am22.network.common.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 
 /** Server-side abstraction of a single client channel (send/close + binding state). */
 public interface ClientChannel {

@@ -1,10 +1,10 @@
 package it.polimi.ingsw.am22.network.server.transport.socket;
 
-import it.polimi.ingsw.am22.network.common.message.ClientRequest;
-import it.polimi.ingsw.am22.network.common.message.ServerMessage;
-import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
+import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
-import it.polimi.ingsw.am22.network.server.MatchManager;
+import it.polimi.ingsw.am22.controller.server.MatchManager;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
