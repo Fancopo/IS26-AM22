@@ -4,71 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="add graceful shutdown for RMI and socket transports&#10;RmiServerEndpoint.publish() now returns a Handle holding the Registry and endpoint references, so ServerMain can unbind and unexport on JVM shutdown. Without this the port stayed bound for the lifetime&#10;of the process, blocking in-process restarts.">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="reorderd packages and files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/GameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Launcher.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ClientController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/client/ClientController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/ClientMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/client/ClientSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ServerMessageDispatcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/ServerMessageDispatcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/ServerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/ServerConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/rmi/RmiServerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/rmi/RmiServerConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/socket/SocketServerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/socket/SocketServerConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/CardDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/CardDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/GameStateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/GameStateDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/LeaderboardEntryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/LeaderboardEntryDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/LobbyPlayerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/LobbyPlayerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/LobbyStateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/LobbyStateDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/MatchInfoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/MatchInfoDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/OfferTileDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/OfferTileDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/PlayerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/PlayerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/TurnSlotDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/TurnSlotDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/dto/WinnerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/dto/WinnerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/ClientRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/ClientRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/ClientRequestVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/ClientRequestVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/NetworkMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/NetworkMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/ServerMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/ServerMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/ServerMessageVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/ServerMessageVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/AddPlayerToLobbyRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/AddPlayerToLobbyRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/CreateMatchRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/CreateMatchRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/DisconnectPlayerRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/DisconnectPlayerRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/ListMatchesRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/ListMatchesRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PickBonusCardRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/PickBonusCardRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PickCardsRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/PickCardsRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/PlaceTotemRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/PlaceTotemRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/RemovePlayerFromLobbyRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/RemovePlayerFromLobbyRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/request/SetExpectedPlayersRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/request/SetExpectedPlayersRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/EndGameMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/EndGameMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/ErrorMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/ErrorMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/GameStartedMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/GameStartedMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/GameStateMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/GameStateMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/LobbyStateMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/LobbyStateMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchClosedMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/MatchClosedMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchJoinedMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/MatchJoinedMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/common/message/response/MatchesListMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/MatchesListMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ClientBroadcaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/server/ClientBroadcaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/MatchManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/MatchManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ModelDtoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/server/ModelDtoMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/ServerMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/databases/DatabaseConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/persistence/DatabaseConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/databases/MatchResultDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/persistence/MatchResultDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/ClientChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/ClientChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/rmi/RmiClientChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/rmi/RmiClientChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/rmi/RmiClientInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/rmi/RmiClientInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/rmi/RmiServerEndpoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/rmi/RmiServerEndpoint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/rmi/RmiServerInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/rmi/RmiServerInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/socket/SocketClientChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/socket/SocketClientChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/socket/SocketServerAcceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/server/transport/socket/SocketServerAcceptor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/EndGameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/EndGameScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/LobbyScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/MatchesScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/MatchesScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/NicknameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/NicknameScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/MatchManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/MatchManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/server/ModelDtoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/ModelDtoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/server/VirtualView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/server/VirtualView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -469,7 +409,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778791695882</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="reorderd packages and files">
+      <option name="closed" value="true" />
+      <created>1778794303582</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1778794303582</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -518,7 +466,8 @@
     <MESSAGE value="adjust the nickname' uniqueness" />
     <MESSAGE value="putted default values of socket and rmi ports on ServerMain" />
     <MESSAGE value="add graceful shutdown for RMI and socket transports&#10;RmiServerEndpoint.publish() now returns a Handle holding the Registry and endpoint references, so ServerMain can unbind and unexport on JVM shutdown. Without this the port stayed bound for the lifetime&#10;of the process, blocking in-process restarts." />
-    <option name="LAST_COMMIT_MESSAGE" value="add graceful shutdown for RMI and socket transports&#10;RmiServerEndpoint.publish() now returns a Handle holding the Registry and endpoint references, so ServerMain can unbind and unexport on JVM shutdown. Without this the port stayed bound for the lifetime&#10;of the process, blocking in-process restarts." />
+    <MESSAGE value="reorderd packages and files" />
+    <option name="LAST_COMMIT_MESSAGE" value="reorderd packages and files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

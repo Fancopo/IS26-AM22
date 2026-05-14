@@ -2,6 +2,7 @@ package it.polimi.ingsw.am22.view.server;
 
 import it.polimi.ingsw.am22.model.Game;
 import it.polimi.ingsw.am22.model.GameObserver;
+import it.polimi.ingsw.am22.network.protocol.ModelDtoMapper;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.server.ClientHandler;

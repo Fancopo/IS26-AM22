@@ -9,7 +9,7 @@ import it.polimi.ingsw.am22.network.protocol.message.ClientRequestVisitor;
 import it.polimi.ingsw.am22.network.protocol.message.request.*;
 import it.polimi.ingsw.am22.network.protocol.message.response.*;
 import it.polimi.ingsw.am22.view.server.VirtualView;
-import it.polimi.ingsw.am22.view.server.ModelDtoMapper;
+import it.polimi.ingsw.am22.network.protocol.ModelDtoMapper;
 import it.polimi.ingsw.am22.controller.server.persistence.MatchResultDao;
 import it.polimi.ingsw.am22.network.server.ClientHandler;
 

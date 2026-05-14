@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.view.server;
+package it.polimi.ingsw.am22.network.protocol;
 
 import it.polimi.ingsw.am22.controller.server.MatchController;
 import it.polimi.ingsw.am22.model.*;
