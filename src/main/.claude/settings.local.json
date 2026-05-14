@@ -19,7 +19,13 @@
       "Read(//tmp/**)",
       "Bash(java -cp \"target/classes;target/test-classes;$\\(./mvnw -q dependency:build-classpath -Dmdep.outputFile=/tmp/cp.txt && cat /tmp/cp.txt\\)\" it.polimi.ingsw.am22.simulation.FivePlayerExtraBuySimulationTest)",
       "Bash(./mvnw -q test-compile)",
-      "Bash(java -cp \"target/classes;target/test-classes;$\\(cat /tmp/cp.txt\\)\" it.polimi.ingsw.am22.simulation.FivePlayerExtraBuySimulationTest)"
+      "Bash(java -cp \"target/classes;target/test-classes;$\\(cat /tmp/cp.txt\\)\" it.polimi.ingsw.am22.simulation.FivePlayerExtraBuySimulationTest)",
+      "Bash(git rm *)",
+      "Read(//c/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22/**)",
+      "Bash(mvn -q -o compile)",
+      "Bash(./mvnw -q -o compile)",
+      "PowerShell($env:JAVA_HOME)",
+      "PowerShell(@\\(\"C:\\\\Program Files\\\\Java\",\"C:\\\\Program Files \\(x86\\)\\\\Java\",\"C:\\\\Program Files\\\\Eclipse Adoptium\",\"C:\\\\Program Files\\\\OpenJDK\",\"C:\\\\Program Files\\\\Microsoft\\\\jdk-21\",\"C:\\\\Program Files\\\\Microsoft\"\\) | ForEach-Object { if \\(Test-Path $_\\) { Write-Output \"EXIST: $_\"; Get-ChildItem $_ -ErrorAction SilentlyContinue | ForEach-Object { Write-Output \"  $\\($_.Name\\)\" } } })"
     ]
   }
 }

@@ -32,8 +32,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * get routed to the matching session; global requests (create/list) are handled here.
  *
  * <p>Dispatch goes through {@link ClientRequestVisitor}: no instanceof, and a new
- * request type is a compile-time obligation. {@link #handleRequest} is synchronized
- * to keep mutations on the registry and on individual sessions serialized.
+ * request type is a compile-time obligation.
+ *
+ * <p>Locking: the registry is a {@link ConcurrentHashMap}, so lookup, insertion
+ * and removal of {@link MatchSession}s are thread-safe without an external lock.
+ * Mutations inside a single session are serialized by synchronizing on the
+ * {@code MatchSession} instance itself (used as its own monitor) — distinct
+ * matches can therefore progress in parallel, and a slow client in match A
+ * does not block match B.
  */
 public class NetworkGameService {
 
@@ -62,7 +68,7 @@ public class NetworkGameService {
         this.matchResultDao = new MatchResultDao();
     }
 
-    public synchronized void handleRequest(ClientRequest request, ClientChannel channel) {
+    public void handleRequest(ClientRequest request, ClientChannel channel) {
         if (request == null) {
             channel.send(new ErrorMessage("Null request."));
             return;
@@ -83,7 +89,7 @@ public class NetworkGameService {
      * (matchId, nickname) binding stored on the channel and delegates to the
      * session's {@link MatchSession#handleDisconnect} with transportDrop=true.
      */
-    public synchronized void handleTransportDrop(ClientChannel channel) {
+    public void handleTransportDrop(ClientChannel channel) {
         String matchId = channel.getBoundMatchId();
         String nickname = channel.getBoundNickname();
         if (matchId == null || nickname == null || nickname.isBlank()) {
@@ -95,7 +101,9 @@ public class NetworkGameService {
             channel.close();
             return;
         }
-        session.handleDisconnect(nickname, channel, true);
+        synchronized (session) {
+            session.handleDisconnect(nickname, channel, true);
+        }
     }
 
     private final class Dispatcher implements ClientRequestVisitor {
@@ -107,14 +115,33 @@ public class NetworkGameService {
 
         @Override public void visit(CreateMatchRequest request) { handleCreateMatch(request, channel); }
         @Override public void visit(ListMatchesRequest request) { handleListMatches(channel); }
-        @Override public void visit(AddPlayerToLobbyRequest request)   { requireSession(request.matchId()).handleAddPlayer(request, channel); }
-        @Override public void visit(SetExpectedPlayersRequest request) { requireSession(request.matchId()).handleSetExpectedPlayers(request, channel); }
-        @Override public void visit(RemovePlayerFromLobbyRequest request) { requireSession(request.matchId()).handleRemoveFromLobby(request, channel); }
-        @Override public void visit(PlaceTotemRequest request)   { requireSession(request.matchId()).handlePlaceTotem(request, channel); }
-        @Override public void visit(PickCardsRequest request)    { requireSession(request.matchId()).handlePickCards(request, channel); }
-        @Override public void visit(PickBonusCardRequest request){ requireSession(request.matchId()).handlePickBonusCard(request, channel); }
+        @Override public void visit(AddPlayerToLobbyRequest request) {
+            MatchSession s = requireSession(request.matchId());
+            synchronized (s) { s.handleAddPlayer(request, channel); }
+        }
+        @Override public void visit(SetExpectedPlayersRequest request) {
+            MatchSession s = requireSession(request.matchId());
+            synchronized (s) { s.handleSetExpectedPlayers(request, channel); }
+        }
+        @Override public void visit(RemovePlayerFromLobbyRequest request) {
+            MatchSession s = requireSession(request.matchId());
+            synchronized (s) { s.handleRemoveFromLobby(request, channel); }
+        }
+        @Override public void visit(PlaceTotemRequest request) {
+            MatchSession s = requireSession(request.matchId());
+            synchronized (s) { s.handlePlaceTotem(request, channel); }
+        }
+        @Override public void visit(PickCardsRequest request) {
+            MatchSession s = requireSession(request.matchId());
+            synchronized (s) { s.handlePickCards(request, channel); }
+        }
+        @Override public void visit(PickBonusCardRequest request) {
+            MatchSession s = requireSession(request.matchId());
+            synchronized (s) { s.handlePickBonusCard(request, channel); }
+        }
         @Override public void visit(DisconnectPlayerRequest request) {
-            requireSession(request.matchId()).handleDisconnect(request.nickname(), channel, false);
+            MatchSession s = requireSession(request.matchId());
+            synchronized (s) { s.handleDisconnect(request.nickname(), channel, false); }
         }
     }
 
@@ -125,31 +152,37 @@ public class NetworkGameService {
         String matchId = nextMatchId();
         MatchSession session = new MatchSession(matchId);
         matchesById.put(matchId, session);
-        try {
-            session.handleHostCreateAndSetup(hostNickname, request.expectedPlayers(), channel);
-        } catch (RuntimeException e) {
-            // Two failure modes, different rollback:
-            //  - host couldn't even join: lobby empty, drop the session.
-            //  - only setExpectedPlayers failed: host is in lobby, KEEP the match
-            //    alive so they can fix it via `players <N>`.
-            if (session.gameController.getLobbyPlayers().isEmpty()) {
-                matchesById.remove(matchId);
+        synchronized (session) {
+            try {
+                session.handleHostCreateAndSetup(hostNickname, request.expectedPlayers(), channel);
+            } catch (RuntimeException e) {
+                // Two failure modes, different rollback:
+                //  - host couldn't even join: lobby empty, drop the session.
+                //  - only setExpectedPlayers failed: host is in lobby, KEEP the match
+                //    alive so they can fix it via `players <N>`.
+                if (session.gameController.getLobbyPlayers().isEmpty()) {
+                    matchesById.remove(matchId);
+                }
+                throw e;
             }
-            throw e;
         }
     }
 
     private void handleListMatches(ClientChannel channel) {
         List<MatchInfoDTO> open = new ArrayList<>();
         for (MatchSession session : matchesById.values()) {
-            GameController gc = session.gameController;
-            if (gc.hasStarted()) continue;
-            open.add(new MatchInfoDTO(
-                    gc.getMatchId(),
-                    gc.getHostNickname(),
-                    gc.getExpectedPlayers(),
-                    gc.getLobbyPlayers().size(),
-                    false));
+            // Read each session under its own lock so we never observe a torn state
+            // (e.g. lobby being mutated by another thread while we size it).
+            synchronized (session) {
+                GameController gc = session.gameController;
+                if (gc.hasStarted()) continue;
+                open.add(new MatchInfoDTO(
+                        gc.getMatchId(),
+                        gc.getHostNickname(),
+                        gc.getExpectedPlayers(),
+                        gc.getLobbyPlayers().size(),
+                        false));
+            }
         }
         channel.send(new MatchesListMessage(open));
     }
