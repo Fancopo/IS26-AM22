@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22/src/**)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\\\\src\" -Recurse -Filter \"*Test*.java\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object FullName)",
+      "Bash(ls \"C:\\\\Users\\\\Fang2\\\\Desktop\\\\polimi\\\\III anno\\\\software\\\\progetto\\\\Event-Character\\\\am22\")",
+      "Bash(./mvnw -q -pl . test -Dtest=FivePlayerExtraBuySimulationTest)",
+      "Read(//c/Program Files/Microsoft/**)",
+      "Bash(find /c -maxdepth 4 -name \"javac.exe\")",
+      "Bash(export JAVA_HOME=\"/c/Users/Fang2/.jdks/openjdk-25\")",
+      "Bash(export PATH=\"$JAVA_HOME/bin:$PATH\")",
+      "Bash(java -version)",
+      "Bash(./mvnw -q test -Dtest=FivePlayerExtraBuySimulationTest)",
+      "Bash(./mvnw test-compile *)",
+      "Bash(./mvnw clean *)",
+      "Bash(./mvnw test *)",
+      "Bash(./mvnw -q dependency:build-classpath -Dmdep.outputFile=/tmp/cp.txt)",
+      "Read(//tmp/**)",
+      "Bash(java -cp \"target/classes;target/test-classes;$\\(./mvnw -q dependency:build-classpath -Dmdep.outputFile=/tmp/cp.txt && cat /tmp/cp.txt\\)\" it.polimi.ingsw.am22.simulation.FivePlayerExtraBuySimulationTest)",
+      "Bash(./mvnw -q test-compile)",
+      "Bash(java -cp \"target/classes;target/test-classes;$\\(cat /tmp/cp.txt\\)\" it.polimi.ingsw.am22.simulation.FivePlayerExtraBuySimulationTest)"
+    ]
+  }
+}
