@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am22.network.client;
 
+import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.view.gui;
 
-import it.polimi.ingsw.am22.network.client.ConnectionFactory;
-import it.polimi.ingsw.am22.network.client.ConnectionFactory.Transport;
+import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
+import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

@@ -2,9 +2,9 @@ package it.polimi.ingsw.am22.view.gui;
 
 import it.polimi.ingsw.am22.network.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
-import it.polimi.ingsw.am22.network.client.ConnectionFactory;
-import it.polimi.ingsw.am22.network.client.ConnectionFactory.Transport;
-import it.polimi.ingsw.am22.network.client.ObservableServerConnection;
+import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
+import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
+import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;

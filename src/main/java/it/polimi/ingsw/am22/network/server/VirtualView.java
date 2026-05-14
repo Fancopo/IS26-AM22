@@ -4,6 +4,7 @@ import it.polimi.ingsw.am22.model.Game;
 import it.polimi.ingsw.am22.model.GameObserver;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.response.GameStateMessage;
+import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
 
 import java.util.ArrayList;
 import java.util.Collection;

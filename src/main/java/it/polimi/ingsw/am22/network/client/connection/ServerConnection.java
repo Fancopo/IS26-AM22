@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.network.client;
+package it.polimi.ingsw.am22.network.client.connection;
 
 import java.util.List;
 

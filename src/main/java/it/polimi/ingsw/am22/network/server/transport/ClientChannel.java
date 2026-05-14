@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.network.server;
+package it.polimi.ingsw.am22.network.server.transport;
 
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 

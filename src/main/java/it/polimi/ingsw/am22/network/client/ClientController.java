@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am22.network.client;
 
+import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
+
 import java.util.List;
 import java.util.Objects;
 

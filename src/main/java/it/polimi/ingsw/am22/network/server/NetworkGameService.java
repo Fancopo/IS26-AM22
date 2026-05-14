@@ -4,13 +4,13 @@ import it.polimi.ingsw.am22.controller.GameController;
 import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.network.common.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.LeaderboardEntryDTO;
-import it.polimi.ingsw.am22.network.common.dto.LobbyStateDTO;
 import it.polimi.ingsw.am22.network.common.dto.MatchInfoDTO;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ClientRequestVisitor;
 import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.message.response.*;
 import it.polimi.ingsw.am22.network.server.databases.MatchResultDao;
+import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

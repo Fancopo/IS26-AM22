@@ -2,9 +2,9 @@ package it.polimi.ingsw.am22.view.tui;
 
 import it.polimi.ingsw.am22.network.client.ClientController;
 import it.polimi.ingsw.am22.network.client.ClientSession;
-import it.polimi.ingsw.am22.network.client.ConnectionFactory;
-import it.polimi.ingsw.am22.network.client.ConnectionFactory.Transport;
-import it.polimi.ingsw.am22.network.client.ObservableServerConnection;
+import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
+import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
+import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
 
 import java.util.ArrayList;
 import java.util.List;

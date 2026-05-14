@@ -1,5 +1,7 @@
-package it.polimi.ingsw.am22.network.client;
+package it.polimi.ingsw.am22.network.client.connection.socket;
 
+import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
+import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.request.*;

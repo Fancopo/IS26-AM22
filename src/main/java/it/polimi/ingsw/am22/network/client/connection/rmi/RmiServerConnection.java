@@ -1,11 +1,13 @@
-package it.polimi.ingsw.am22.network.client;
+package it.polimi.ingsw.am22.network.client.connection.rmi;
 
+import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
+import it.polimi.ingsw.am22.network.client.connection.ObservableServerConnection;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.request.*;
 import it.polimi.ingsw.am22.network.common.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.common.message.response.MatchClosedMessage;
-import it.polimi.ingsw.am22.network.server.rmi.RemoteClientView;
-import it.polimi.ingsw.am22.network.server.rmi.RemoteGameServer;
+import it.polimi.ingsw.am22.network.server.transport.rmi.RemoteClientView;
+import it.polimi.ingsw.am22.network.server.transport.rmi.RemoteGameServer;
 
 import java.io.Serial;
 import java.rmi.NotBoundException;

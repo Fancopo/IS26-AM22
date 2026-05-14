@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.network.server.socket;
+package it.polimi.ingsw.am22.network.server.transport.socket;
 
 import it.polimi.ingsw.am22.network.server.NetworkGameService;
 

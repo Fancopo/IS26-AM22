@@ -1,9 +1,9 @@
-package it.polimi.ingsw.am22.network.server.socket;
+package it.polimi.ingsw.am22.network.server.transport.socket;
 
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 import it.polimi.ingsw.am22.network.common.message.ServerMessage;
 import it.polimi.ingsw.am22.network.common.message.response.ErrorMessage;
-import it.polimi.ingsw.am22.network.server.ClientChannel;
+import it.polimi.ingsw.am22.network.server.transport.ClientChannel;
 import it.polimi.ingsw.am22.network.server.NetworkGameService;
 
 import java.io.IOException;

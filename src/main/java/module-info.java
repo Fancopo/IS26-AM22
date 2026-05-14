@@ -34,10 +34,10 @@ module it.polimi.ingsw.am {
     // e sulle implementazioni che le esportano (UnicastRemoteObject).
     // ----------------------------------------------------------------------
     exports it.polimi.ingsw.am22.network.server;
-    exports it.polimi.ingsw.am22.network.server.rmi;
-    opens it.polimi.ingsw.am22.network.server.rmi to java.rmi;
+    exports it.polimi.ingsw.am22.network.server.transport.rmi;
+    opens it.polimi.ingsw.am22.network.server.transport.rmi to java.rmi;
 
-    exports it.polimi.ingsw.am22.network.server.socket;
+    exports it.polimi.ingsw.am22.network.server.transport.socket;
 
     // ----------------------------------------------------------------------
     // Network — common (DTO + messaggi)
@@ -55,4 +55,11 @@ module it.polimi.ingsw.am {
 
     exports it.polimi.ingsw.am22.network.common.dto;
     opens it.polimi.ingsw.am22.network.common.dto to java.rmi;
+    exports it.polimi.ingsw.am22.network.client.connection;
+    opens it.polimi.ingsw.am22.network.client.connection to java.rmi, javafx.fxml, javafx.graphics;
+    exports it.polimi.ingsw.am22.network.client.connection.socket;
+    opens it.polimi.ingsw.am22.network.client.connection.socket to java.rmi, javafx.fxml, javafx.graphics;
+    exports it.polimi.ingsw.am22.network.client.connection.rmi;
+    opens it.polimi.ingsw.am22.network.client.connection.rmi to java.rmi, javafx.fxml, javafx.graphics;
+    exports it.polimi.ingsw.am22.network.server.transport;
 }

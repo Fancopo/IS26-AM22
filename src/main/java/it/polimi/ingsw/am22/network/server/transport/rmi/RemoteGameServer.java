@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.network.server.rmi;
+package it.polimi.ingsw.am22.network.server.transport.rmi;
 
 import it.polimi.ingsw.am22.network.common.message.ClientRequest;
 

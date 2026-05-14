@@ -1,7 +1,7 @@
 package it.polimi.ingsw.am22.network.server;
 
-import it.polimi.ingsw.am22.network.server.rmi.RmiGameServer;
-import it.polimi.ingsw.am22.network.server.socket.SocketGameServer;
+import it.polimi.ingsw.am22.network.server.transport.rmi.RmiGameServer;
+import it.polimi.ingsw.am22.network.server.transport.socket.SocketGameServer;
 
 /**
  * Server entry point. Creates a single multi-match {@link NetworkGameService}

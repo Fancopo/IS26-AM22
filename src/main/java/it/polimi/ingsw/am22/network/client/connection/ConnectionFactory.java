@@ -1,4 +1,7 @@
-package it.polimi.ingsw.am22.network.client;
+package it.polimi.ingsw.am22.network.client.connection;
+
+import it.polimi.ingsw.am22.network.client.connection.rmi.RmiServerConnection;
+import it.polimi.ingsw.am22.network.client.connection.socket.SocketServerConnection;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;

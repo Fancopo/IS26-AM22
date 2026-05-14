@@ -1,4 +1,6 @@
-package it.polimi.ingsw.am22.network.client;
+package it.polimi.ingsw.am22.network.client.connection;
+
+import it.polimi.ingsw.am22.network.client.ClientUpdateHandler;
 
 /**
  * {@link ServerConnection} that also delivers asynchronous server messages
