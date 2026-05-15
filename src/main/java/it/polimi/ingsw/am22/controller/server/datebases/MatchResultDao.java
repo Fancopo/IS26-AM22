@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.controller.server.persistence;
+package it.polimi.ingsw.am22.controller.server.datebases;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

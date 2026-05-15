@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.controller.server.persistence;
+package it.polimi.ingsw.am22.controller.server.datebases;
 
 import java.io.IOException;
 import java.io.InputStream;

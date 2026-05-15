@@ -27,24 +27,25 @@ public final class ClientMain {
     private enum Mode { TUI, GUI }
 
     private static Mode resolveMode(String[] args) {
+        //if someone wants to specify gui/tui at the start from terminal jar
         for (String a : args) {
             String s = a.toLowerCase(Locale.ROOT);
             if (s.equals("--tui") || s.equals("-t") || s.equals("tui")) return Mode.TUI;
             if (s.equals("--gui") || s.equals("-g") || s.equals("gui")) return Mode.GUI;
         }
+        //at running from intelliJ
         System.out.println("MESOS client — choose interface:");
         System.out.println("  1) TUI (text)");
         System.out.println("  2) GUI (JavaFX)");
-        System.out.print("Selection [1/2] (default 2): ");
-        // NB: not using try-with-resources — closing a Scanner on System.in
-        // closes the shared stream and TuiRunner can no longer read input.
         Scanner in = new Scanner(System.in);
-        if (in.hasNextLine()) {
-            String line = in.nextLine().trim();
-            if (line.equals("1") || line.equalsIgnoreCase("tui") || line.equalsIgnoreCase("t")) {
-                return Mode.TUI;
-            }
+        while (true) {
+            System.out.print("Selection [tui/gui] (default gui): ");
+            if (!in.hasNextLine()) return Mode.GUI;
+            String line = in.nextLine().trim().toLowerCase(Locale.ROOT);
+            if (line.isEmpty()) return Mode.GUI;
+            if (line.equals("1") || line.equals("tui") || line.equals("t")) return Mode.TUI;
+            if (line.equals("2") || line.equals("gui") || line.equals("g")) return Mode.GUI;
+            System.out.println("Input non valido: scrivi 'tui' o 'gui' (oppure invio per gui).");
         }
-        return Mode.GUI;
     }
 }
