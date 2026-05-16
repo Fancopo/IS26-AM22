@@ -37,4 +37,7 @@ public record EndGameMessage(
 
     @Override
     public void accept(ServerMessageVisitor visitor) { visitor.visit(this); }
+
+    @Override
+    public boolean isTerminal() { return true; }
 }

@@ -68,4 +68,6 @@ module it.polimi.ingsw.am {
     exports it.polimi.ingsw.am22.controller.server;
     exports it.polimi.ingsw.am22.view.server;
     exports it.polimi.ingsw.am22.network.protocol;
+    exports it.polimi.ingsw.am22.view.gui.screen;
+    opens it.polimi.ingsw.am22.view.gui.screen to javafx.fxml, javafx.graphics;
 }

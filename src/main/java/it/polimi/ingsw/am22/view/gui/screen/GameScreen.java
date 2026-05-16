@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.view.gui;
+package it.polimi.ingsw.am22.view.gui.screen;
 
 import it.polimi.ingsw.am22.network.protocol.dto.CardDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.GameStateDTO;
@@ -11,6 +11,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 
+import it.polimi.ingsw.am22.view.gui.GuiApp;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -45,6 +46,8 @@ import java.util.Map;
  * render and on every window resize, so the layout follows the window.
  */
 public final class GameScreen implements GuiScreen {
+
+    @Override public boolean isGameScreen() { return true; }
 
     // Display sizes — recomputed each render(), 110:150 aspect ratio preserved.
     private double cardW = 110;

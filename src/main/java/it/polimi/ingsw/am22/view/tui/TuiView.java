@@ -14,6 +14,7 @@ import it.polimi.ingsw.am22.network.protocol.dto.PlayerDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.TurnSlotDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.WinnerDTO;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
+import it.polimi.ingsw.am22.network.protocol.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
@@ -154,23 +155,25 @@ public final class TuiView implements ServerHandler {
 
     @Override
     public void onServerMessage(ServerMessage message) {
-        switch (message) {
-            case MatchesListMessage list       -> renderMatchesList(list.matches());
-            case MatchJoinedMessage joined     -> renderMatchJoined(joined);
-            case LobbyStateMessage lobby       -> renderLobby(lobby.lobbyState());
-            case GameStartedMessage started    -> renderGameStarted(started.initialGameState());
-            case GameStateMessage state        -> renderGameState(state.gameState());
-            case EndGameMessage end            -> renderEndGame(end);
-            case MatchClosedMessage closed     -> {
-                // Aborted remotely; connection stays alive, session has cleared
-                // its local binding — player can list/create/join again.
-                println(Ansi.red(Ansi.BOLD + "[MATCH CLOSED] " + Ansi.RESET) + closed.reason());
-                println(Ansi.dim("(back to matches selection — type 'list' to see open matches)"));
-            }
-            case ErrorMessage err              -> println(Ansi.red("[ERROR] ") + err.message());
-            default                            -> println("[?] " + message);
-        }
+        message.accept(messageRenderer);
     }
+
+    /** Polymorphic dispatcher: each {@code visit} renders one message kind. */
+    private final ServerMessageVisitor messageRenderer = new ServerMessageVisitor() {
+        @Override public void visit(MatchesListMessage m)  { renderMatchesList(m.matches()); }
+        @Override public void visit(MatchJoinedMessage m)  { renderMatchJoined(m); }
+        @Override public void visit(LobbyStateMessage m)   { renderLobby(m.lobbyState()); }
+        @Override public void visit(GameStartedMessage m)  { renderGameStarted(m.initialGameState()); }
+        @Override public void visit(GameStateMessage m)    { renderGameState(m.gameState()); }
+        @Override public void visit(EndGameMessage m)      { renderEndGame(m); }
+        @Override public void visit(MatchClosedMessage m) {
+            // Aborted remotely; connection stays alive, session has cleared
+            // its local binding — player can list/create/join again.
+            println(Ansi.red(Ansi.BOLD + "[MATCH CLOSED] " + Ansi.RESET) + m.reason());
+            println(Ansi.dim("(back to matches selection — type 'list' to see open matches)"));
+        }
+        @Override public void visit(ErrorMessage m)        { println(Ansi.red("[ERROR] ") + m.message()); }
+    };
 
     @Override
     public void onConnectionClosed(Throwable cause) {

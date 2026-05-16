@@ -4,8 +4,6 @@ import it.polimi.ingsw.am22.network.client.ServerHandler;
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
-import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
-import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.server.rmi.RmiClientInterface;
 import it.polimi.ingsw.am22.network.server.rmi.RmiServerInterface;
 
@@ -133,7 +131,7 @@ public class RmiServerConnection implements ServerConnection {
             // (RmiClientHandler.close() server-side is a no-op). Without a
             // synthetic disconnect the RMI client would exit silently, so we
             // give the TUI/GUI the same event the socket transport produces.
-            if (message instanceof EndGameMessage || message instanceof MatchClosedMessage) {
+            if (message.isTerminal()) {
                 if (!closed) {
                     livenessProbe.schedule(
                             () -> fireConnectionClosed(null),

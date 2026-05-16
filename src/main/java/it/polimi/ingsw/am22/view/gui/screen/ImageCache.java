@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.view.gui;
+package it.polimi.ingsw.am22.view.gui.screen;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;

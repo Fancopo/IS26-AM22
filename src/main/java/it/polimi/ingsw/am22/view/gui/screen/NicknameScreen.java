@@ -1,9 +1,10 @@
-package it.polimi.ingsw.am22.view.gui;
+package it.polimi.ingsw.am22.view.gui.screen;
 
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 
+import it.polimi.ingsw.am22.view.gui.GuiApp;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -14,6 +15,8 @@ import javafx.scene.layout.VBox;
 
 /** Nickname picker. Only listens for {@link ErrorMessage}; navigation is driven by {@link GuiApp}. */
 public final class NicknameScreen implements GuiScreen {
+
+    @Override public boolean isPreLobbyScreen() { return true; }
 
     private final GuiApp app;
     private final StackPane root;

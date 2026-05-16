@@ -69,7 +69,7 @@ public class SocketServerConnection implements ServerConnection {
         try {
             while (!closed) {
                 Object incoming = inputStream.readObject();
-                if (incoming instanceof ServerMessage message) {
+                if (incoming instanceof ServerMessage message) {//not a dispatching, so it's ok using instanceOf
                     ServerHandler handler = updateHandler;
                     if (handler != null) {
                         handler.onServerMessage(message);

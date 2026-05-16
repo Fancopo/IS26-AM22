@@ -15,4 +15,7 @@ import it.polimi.ingsw.am22.network.protocol.message.ServerMessageVisitor;
 public record MatchClosedMessage(String reason) implements ServerMessage {
     @Override
     public void accept(ServerMessageVisitor visitor) { visitor.visit(this); }
+
+    @Override
+    public boolean isTerminal() { return true; }
 }

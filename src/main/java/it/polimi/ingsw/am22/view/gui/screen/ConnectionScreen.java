@@ -1,8 +1,9 @@
-package it.polimi.ingsw.am22.view.gui;
+package it.polimi.ingsw.am22.view.gui.screen;
 
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
 
+import it.polimi.ingsw.am22.view.gui.GuiApp;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.view.gui;
+package it.polimi.ingsw.am22.view.gui.screen;
 
 import it.polimi.ingsw.am22.network.protocol.dto.MatchInfoDTO;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
@@ -8,6 +8,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 
+import it.polimi.ingsw.am22.view.gui.GuiApp;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -27,6 +28,8 @@ import javafx.scene.layout.VBox;
  * {@link LobbyStateMessage}/{@link MatchJoinedMessage}.
  */
 public final class MatchesScreen implements GuiScreen {
+
+    @Override public boolean isPreLobbyScreen() { return true; }
 
     private static final Integer[] EXPECTED_PLAYERS_OPTIONS = {2, 3, 4, 5};
 

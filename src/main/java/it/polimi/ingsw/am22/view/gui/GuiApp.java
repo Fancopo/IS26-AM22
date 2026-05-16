@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am22.view.gui;
 
-import it.polimi.ingsw.am22.controller.client.ClientSession;
+import  it.polimi.ingsw.am22.controller.client.ClientSession;
 import it.polimi.ingsw.am22.network.client.ServerHandler;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory;
 import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transport;
@@ -14,8 +14,8 @@ import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
-import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 
+import it.polimi.ingsw.am22.view.gui.screen.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;
@@ -243,7 +243,7 @@ public final class GuiApp extends Application implements ServerHandler {
         // Auto-navigation driven by key messages.
         message.accept(new ServerMessageVisitor() {
             @Override public void visit(GameStartedMessage m) {
-                if (!(currentScreen instanceof GameScreen)) showGameScreen();
+                if (currentScreen == null || !currentScreen.isGameScreen()) showGameScreen();
             }
             @Override public void visit(EndGameMessage m) {
                 // The server closes the channel right after EndGameMessage;
@@ -269,12 +269,10 @@ public final class GuiApp extends Application implements ServerHandler {
         // those screens clear their pending-join flag on the same message.
         message.accept(new ServerMessageVisitor() {
             @Override public void visit(LobbyStateMessage m) {
-                if (currentScreen instanceof NicknameScreen
-                        || currentScreen instanceof MatchesScreen) showLobbyScreen();
+                if (currentScreen != null && currentScreen.isPreLobbyScreen()) showLobbyScreen();
             }
             @Override public void visit(MatchJoinedMessage m) {
-                if (currentScreen instanceof NicknameScreen
-                        || currentScreen instanceof MatchesScreen) showLobbyScreen();
+                if (currentScreen != null && currentScreen.isPreLobbyScreen()) showLobbyScreen();
             }
         });
 
@@ -288,7 +286,8 @@ public final class GuiApp extends Application implements ServerHandler {
         // moves to the GameScreen.
         message.accept(new ServerMessageVisitor() {
             @Override public void visit(GameStateMessage m) {
-                if (!(currentScreen instanceof GameScreen) && session != null && session.isGameStarted()) showGameScreen();
+                if ((currentScreen == null || !currentScreen.isGameScreen())
+                        && session != null && session.isGameStarted()) showGameScreen();
             }
         });
     }

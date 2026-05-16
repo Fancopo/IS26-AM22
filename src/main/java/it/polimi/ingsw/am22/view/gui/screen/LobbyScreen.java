@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am22.view.gui;
+package it.polimi.ingsw.am22.view.gui.screen;
 
 import it.polimi.ingsw.am22.network.protocol.dto.LobbyPlayerDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.LobbyStateDTO;
@@ -6,6 +6,7 @@ import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessageVisitor;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
 
+import it.polimi.ingsw.am22.view.gui.GuiApp;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
