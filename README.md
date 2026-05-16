@@ -88,7 +88,7 @@ che contiene i file `server.jar` e `client.jar` ed eseguire i seguenti comandi.
 - **Server** [Windows / Unix]
 
   ```
-  java -Dfile.encoding=UTF-8 -jar server.jar
+  java -jar server.jar
   ```
 
   All'avvio il server stampa le porte in ascolto:
@@ -98,13 +98,13 @@ che contiene i file `server.jar` e `client.jar` ed eseguire i seguenti comandi.
 - **Client — Interfaccia Grafica (GUI)** [Windows / Unix]
 
   ```
-  java -Dfile.encoding=UTF-8 -jar client.jar --gui
+  java -jar client.jar --gui
   ```
 
 - **Client — Interfaccia Testuale (TUI)** [Windows / Unix]
 
   ```
-  java -Dfile.encoding=UTF-8 -jar client.jar --tui
+  java -jar client.jar --tui
   ```
 
 Se il client viene avviato **senza specificare l'interfaccia**
