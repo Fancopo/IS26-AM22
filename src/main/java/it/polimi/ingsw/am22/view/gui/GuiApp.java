@@ -262,10 +262,6 @@ public final class GuiApp extends Application implements ServerHandler {
                 }
             }
             @Override public void visit(ErrorMessage m) { showError(m.message()); }
-            @Override public void visit(LobbyStateMessage m) {}
-            @Override public void visit(GameStateMessage m) {}
-            @Override public void visit(MatchJoinedMessage m) {}
-            @Override public void visit(MatchesListMessage m) {}
         });
 
         // Pre-forward navigation: a lobby confirm while on Nickname/Matches
@@ -280,12 +276,6 @@ public final class GuiApp extends Application implements ServerHandler {
                 if (currentScreen instanceof NicknameScreen
                         || currentScreen instanceof MatchesScreen) showLobbyScreen();
             }
-            @Override public void visit(GameStartedMessage m) {}
-            @Override public void visit(GameStateMessage m) {}
-            @Override public void visit(EndGameMessage m) {}
-            @Override public void visit(MatchClosedMessage m) {}
-            @Override public void visit(ErrorMessage m) {}
-            @Override public void visit(MatchesListMessage m) {}
         });
 
         // Forward to the currently-mounted screen.
@@ -300,13 +290,6 @@ public final class GuiApp extends Application implements ServerHandler {
             @Override public void visit(GameStateMessage m) {
                 if (!(currentScreen instanceof GameScreen) && session != null && session.isGameStarted()) showGameScreen();
             }
-            @Override public void visit(LobbyStateMessage m) {}
-            @Override public void visit(GameStartedMessage m) {}
-            @Override public void visit(EndGameMessage m) {}
-            @Override public void visit(MatchClosedMessage m) {}
-            @Override public void visit(ErrorMessage m) {}
-            @Override public void visit(MatchJoinedMessage m) {}
-            @Override public void visit(MatchesListMessage m) {}
         });
     }
 

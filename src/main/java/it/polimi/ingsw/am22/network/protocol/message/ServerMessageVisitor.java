@@ -9,14 +9,17 @@ import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 
-/** Visitor for server-to-client messages. Dispatch goes through {@link ServerMessage#accept}. */
+/**
+ * Visitor for server-to-client messages. Dispatch goes through {@link ServerMessage#accept}.
+ * All methods default to no-op so implementers only override the messages they care about.
+ */
 public interface ServerMessageVisitor {
-    void visit(MatchesListMessage message);
-    void visit(MatchJoinedMessage message);
-    void visit(LobbyStateMessage message);
-    void visit(GameStartedMessage message);
-    void visit(GameStateMessage message);
-    void visit(EndGameMessage message);
-    void visit(MatchClosedMessage message);
-    void visit(ErrorMessage message);
+    default void visit(MatchesListMessage message) {}
+    default void visit(MatchJoinedMessage message) {}
+    default void visit(LobbyStateMessage message) {}
+    default void visit(GameStartedMessage message) {}
+    default void visit(GameStateMessage message) {}
+    default void visit(EndGameMessage message) {}
+    default void visit(MatchClosedMessage message) {}
+    default void visit(ErrorMessage message) {}
 }

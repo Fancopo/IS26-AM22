@@ -3,12 +3,8 @@ package it.polimi.ingsw.am22.view.gui;
 import it.polimi.ingsw.am22.network.protocol.dto.MatchInfoDTO;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessageVisitor;
-import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
-import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
-import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
-import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 
@@ -82,10 +78,6 @@ public final class MatchesScreen implements GuiScreen {
             }
             @Override public void visit(LobbyStateMessage m) { pendingAction = false; }
             @Override public void visit(MatchJoinedMessage m) { pendingAction = false; }
-            @Override public void visit(GameStartedMessage m) {}
-            @Override public void visit(GameStateMessage m) {}
-            @Override public void visit(EndGameMessage m) {}
-            @Override public void visit(MatchClosedMessage m) {}
         });
     }
 

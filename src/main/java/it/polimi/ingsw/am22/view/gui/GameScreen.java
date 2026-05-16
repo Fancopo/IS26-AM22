@@ -7,12 +7,9 @@ import it.polimi.ingsw.am22.network.protocol.dto.PlayerDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.TurnSlotDTO;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessageVisitor;
-import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
-import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
-import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -125,11 +122,6 @@ public final class GameScreen implements GuiScreen {
                 statusLabel.setText("Error: " + m.message());
                 clearCardSelection();
             }
-            @Override public void visit(LobbyStateMessage m) {}
-            @Override public void visit(EndGameMessage m) {}
-            @Override public void visit(MatchClosedMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage m) {}
-            @Override public void visit(it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage m) {}
         });
     }
 
