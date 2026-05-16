@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am22.model;
 
-public class Totem {
+import java.io.Serializable;
+
+public class Totem implements Serializable {
     private final String color;
     private final Player owner;
     private OfferTile currentOfferTile;

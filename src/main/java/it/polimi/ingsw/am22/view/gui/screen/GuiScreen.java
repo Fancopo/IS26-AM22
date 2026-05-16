@@ -29,4 +29,10 @@ public interface GuiScreen {
      * should push the Lobby screen.
      */
     default boolean isPreLobbyScreen() { return false; }
+
+    /**
+     * True for the crash-recovery waiting lobby. {@link GuiApp} uses it to
+     * avoid rebuilding the screen on every reconnection update.
+     */
+    default boolean isRecoveryScreen() { return false; }
 }

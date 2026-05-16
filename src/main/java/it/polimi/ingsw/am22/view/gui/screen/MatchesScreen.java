@@ -105,8 +105,9 @@ public final class MatchesScreen implements GuiScreen {
 
         TableColumn<MatchInfoDTO, String> statusCol = new TableColumn<>("Status");
         statusCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
-                c.getValue().started() ? "started" : "open"));
-        statusCol.setPrefWidth(90);
+                c.getValue().recovering() ? "Reconnecting"
+                        : c.getValue().started() ? "started" : "open"));
+        statusCol.setPrefWidth(110);
 
         matchesTable.getColumns().add(idCol);
         matchesTable.getColumns().add(hostCol);
@@ -152,16 +153,24 @@ public final class MatchesScreen implements GuiScreen {
                 statusLabel.setText("Please select a match to join.");
                 return;
             }
-            if (selected.started()) {
+            if (selected.started() && !selected.recovering()) {
                 statusLabel.setText("That match has already started.");
                 return;
             }
             try {
-                statusLabel.setText("Joining " + selected.matchId() + "...");
                 pendingAction = true;
                 setControlsDisabled(true);
-                app.getSession().getClientController()
-                        .addPlayerToLobby(selected.matchId(), nickname);
+                if (selected.recovering()) {
+                    // Suspended match: re-enter it. The server resumes the match
+                    // for us only if this nickname was one of its players.
+                    statusLabel.setText("Reconnecting to " + selected.matchId() + " as " + nickname + "...");
+                    app.getSession().getClientController()
+                            .reconnect(selected.matchId(), nickname);
+                } else {
+                    statusLabel.setText("Joining " + selected.matchId() + "...");
+                    app.getSession().getClientController()
+                            .addPlayerToLobby(selected.matchId(), nickname);
+                }
             } catch (RuntimeException ex) {
                 pendingAction = false;
                 setControlsDisabled(false);
@@ -187,7 +196,20 @@ public final class MatchesScreen implements GuiScreen {
             }
         });
 
-        backButton.setOnAction(e -> app.showNicknameScreen());
+        backButton.setOnAction(e -> {
+            // If we are bound to a match (e.g. we reconnected to a suspended
+            // one), leaving here aborts it — like any voluntary leave, the
+            // match is closed and its saved snapshot discarded server-side.
+            if (app.getSession() != null
+                    && app.getSession().getClientController().getMatchId() != null) {
+                try {
+                    app.getSession().getClientController().disconnect();
+                } catch (RuntimeException ignored) {
+                }
+                app.getSession().clearLocalMatchState();
+            }
+            app.showNicknameScreen();
+        });
     }
 
     private void requestList() {

@@ -2,12 +2,13 @@ package it.polimi.ingsw.am22.model;
 
 import it.polimi.ingsw.am22.model.building.Building;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class Board {
+public class Board implements Serializable {
     private List<Card> upperRow;
     private List<Card> lowerRow;
     private TurnOrderTile turnOrderTile;

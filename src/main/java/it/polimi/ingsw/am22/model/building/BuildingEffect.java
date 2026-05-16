@@ -5,7 +5,9 @@ import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;
 import it.polimi.ingsw.am22.model.event.EventType;
 
-public interface BuildingEffect {
+import java.io.Serializable;
+
+public interface BuildingEffect extends Serializable {
     default int calculateEndGame(Tribe tribe) { return 0; }
     default int getExtraShamanIcons() {return 0;}
     default boolean preventsShamanPPLoss() {return false;}

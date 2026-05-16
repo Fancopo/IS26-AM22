@@ -7,6 +7,7 @@ import it.polimi.ingsw.am22.network.protocol.message.request.ListMatchesRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PickBonusCardRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PickCardsRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PlaceTotemRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.ReconnectRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.RemovePlayerFromLobbyRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.SetExpectedPlayersRequest;
 
@@ -25,4 +26,5 @@ public interface ClientRequestVisitor {
     void visit(PickCardsRequest request);
     void visit(PickBonusCardRequest request);
     void visit(DisconnectPlayerRequest request);
+    void visit(ReconnectRequest request);
 }

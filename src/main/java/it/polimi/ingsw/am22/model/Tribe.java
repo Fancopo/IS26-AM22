@@ -4,9 +4,10 @@ import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.character.CharacterType;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Tribe {
+public class Tribe implements Serializable {
     private List<TribeCharacter> members;
     private List<Building> buildings;
 

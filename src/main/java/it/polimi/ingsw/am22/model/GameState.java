@@ -1,8 +1,9 @@
 package it.polimi.ingsw.am22.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface GameState {
+public interface GameState extends Serializable {
 
     // If a state does not override the method, the exception fires automatically.
     default void startMatch(Game game) {

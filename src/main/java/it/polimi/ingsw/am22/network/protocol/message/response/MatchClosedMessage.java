@@ -16,6 +16,8 @@ public record MatchClosedMessage(String reason) implements ServerMessage {
     @Override
     public void accept(ServerMessageVisitor visitor) { visitor.visit(this); }
 
-    @Override
-    public boolean isTerminal() { return true; }
+    // Not terminal for the transport: the server keeps the channel open after
+    // this message so clients can return to the matches list and list/create/
+    // join again. A synthetic disconnect here would wrongly drop RMI clients
+    // back to the connection screen instead of the matches screen.
 }

@@ -55,6 +55,28 @@ public class MatchController {
     }
 
     /**
+     * Rebuilds a controller around a game restored from disk after a server
+     * crash. The match is already past the lobby phase, so {@code lobbyPlayers}
+     * is re-populated from the game's players only to keep the two views
+     * consistent for the (unused, post-start) lobby getters.
+     *
+     * @param matchId         id of the restored match
+     * @param game            the in-progress game loaded from a snapshot
+     * @param hostNickname    nickname of the original host
+     * @param expectedPlayers number of players the match was started with
+     */
+    public MatchController(String matchId, Game game, String hostNickname, int expectedPlayers) {
+        this(matchId);
+        if (game == null) {
+            throw new IllegalArgumentException("game cannot be null when restoring a match.");
+        }
+        this.game = game;
+        this.hostNickname = hostNickname;
+        this.expectedPlayers = expectedPlayers;
+        this.lobbyPlayers.addAll(game.getPlayers());
+    }
+
+    /**
      * Restituisce l'identificativo del match gestito da questo controller.
      *
      * @return matchId univoco

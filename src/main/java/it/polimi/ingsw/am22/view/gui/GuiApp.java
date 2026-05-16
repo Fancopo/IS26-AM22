@@ -13,6 +13,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 
 import it.polimi.ingsw.am22.view.gui.screen.*;
@@ -72,7 +73,7 @@ public final class GuiApp extends Application implements ServerHandler {
             this.lastPort = port;
             return true;
         } catch (Exception e) {
-            showError("Unable to connect: " + e.getMessage());
+            showError("Unable to connect: " + ConnectionFactory.describeConnectionError(e));
             return false;
         }
     }
@@ -156,6 +157,43 @@ public final class GuiApp extends Application implements ServerHandler {
         setScreen(new LobbyScreen(this));
     }
 
+    /** Offers to resume a match the server crashed out of. */
+    public void showReconnectScreen(String matchId) {
+        setScreen(new ReconnectScreen(this, matchId));
+    }
+
+    /** Lobby-style waiting screen for a recovered match pending reconnections. */
+    public void showRecoveryLobbyScreen() {
+        setScreen(new RecoveryLobbyScreen(this));
+    }
+
+    /**
+     * Reopens a connection (reusing the last transport/host/port) and asks the
+     * server to resume the suspended match. Returns false if the server is
+     * still unreachable; the actual outcome of the resume arrives later as a
+     * GameStartedMessage (success) or an ErrorMessage (e.g. nickname mismatch).
+     */
+    public boolean reconnectToPreviousMatch(String matchId, String nickname) {
+        if (lastTransport == null) {
+            return false;
+        }
+        if (session != null) {
+            session.close(false);
+            session = null;
+        }
+        if (!connect(lastTransport, lastHost, lastPort)) {
+            return false;
+        }
+        this.lastNickname = nickname;
+        try {
+            session.getClientController().reconnect(matchId, nickname);
+            return true;
+        } catch (RuntimeException e) {
+            showError("Reconnect failed: " + e.getMessage());
+            return false;
+        }
+    }
+
     public void showGameScreen() {
         setScreen(new GameScreen(this));
     }
@@ -232,6 +270,16 @@ public final class GuiApp extends Application implements ServerHandler {
                 expectingDisconnect = false;
                 return;
             }
+            // A drop while a match is running means the server crashed: that
+            // match was persisted server-side and can be resumed, so route the
+            // player to the reconnect screen instead of the connection one.
+            if (session != null && session.isGameStarted()
+                    && session.getClientController().getMatchId() != null) {
+                String matchId = session.getClientController().getMatchId();
+                this.session = null;
+                showReconnectScreen(matchId);
+                return;
+            }
             showError("Connection closed"
                     + (cause == null ? "." : ": " + cause.getClass().getSimpleName()));
             this.session = null;
@@ -259,6 +307,15 @@ public final class GuiApp extends Application implements ServerHandler {
                     showMatchesScreen(lastNickname);
                 } else {
                     showConnectionScreen();
+                }
+            }
+            @Override public void visit(MatchRecoveringMessage m) {
+                // Reconnected, but the match is paused until everyone is back:
+                // show the recovery lobby, which lists who has reconnected and
+                // who is still missing. When the last player returns the server
+                // sends GameStartedMessage and we move to the game.
+                if (currentScreen == null || !currentScreen.isRecoveryScreen()) {
+                    showRecoveryLobbyScreen();
                 }
             }
             @Override public void visit(ErrorMessage m) { showError(m.message()); }

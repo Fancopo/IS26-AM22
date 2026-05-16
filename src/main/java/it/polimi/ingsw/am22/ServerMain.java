@@ -29,6 +29,9 @@ public final class ServerMain {
         RmiServer.Handle rmiHandle = RmiServer.publish(rmiPort, bindingName, gameService);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            // Flush running matches to disk before tearing down the transports
+            // so an orderly stop is just as recoverable as a crash.
+            gameService.shutdown();
             rmiHandle.shutdown();
             socketServer.close();
         }, "server-shutdown"));

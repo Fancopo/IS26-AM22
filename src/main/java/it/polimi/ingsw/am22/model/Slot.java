@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am22.model;
 
-public class Slot {
+import java.io.Serializable;
+
+public class Slot implements Serializable {
     private int foodBonus;
     private int positionIndex;
     private boolean isLastSpace;

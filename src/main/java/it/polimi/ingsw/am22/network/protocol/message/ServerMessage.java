@@ -10,9 +10,11 @@ public interface ServerMessage extends NetworkMessage {
     void accept(ServerMessageVisitor visitor);
 
     /**
-     * Whether this is the last message the server will send for the current
-     * match (e.g. end of game or abnormal closure). Transports use it to
-     * decide when to fire a synthetic disconnect after delivery.
+     * Whether this is the last message the server will send on this channel
+     * (e.g. end of game, after which the server closes the connection).
+     * Transports use it to decide when to fire a synthetic disconnect after
+     * delivery. Note: an abnormally closed match is NOT terminal — the server
+     * keeps the channel open so the client can return to the matches list.
      */
     default boolean isTerminal() { return false; }
 }

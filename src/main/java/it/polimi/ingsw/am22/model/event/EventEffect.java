@@ -2,6 +2,6 @@ package it.polimi.ingsw.am22.model.event;
 import it.polimi.ingsw.am22.model.Player;
 
 import java.util.List;
-public interface EventEffect {
+public interface EventEffect extends java.io.Serializable {
     void applyEvent(List<Player> players, String id);
 }

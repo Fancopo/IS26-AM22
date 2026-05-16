@@ -12,6 +12,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 
@@ -101,6 +102,13 @@ public final class ClientSession {
                 @Override public void visit(LobbyStateMessage m)  { latestLobbyState = m.lobbyState(); }
                 @Override public void visit(GameStartedMessage m) { gameStarted = true; latestGameState = m.initialGameState(); }
                 @Override public void visit(GameStateMessage m)   { latestGameState = m.gameState(); }
+                @Override public void visit(MatchRecoveringMessage m) {
+                    // The match is in progress (just paused for reconnection):
+                    // keep gameStarted set so a further crash is still treated
+                    // as a recoverable mid-match drop.
+                    gameStarted = true;
+                    latestGameState = m.gameState();
+                }
                 @Override public void visit(EndGameMessage m)     { latestGameState = m.finalGameState(); }
                 @Override public void visit(MatchClosedMessage m) {
                     // Match aborted remotely: clean up local state so the view can

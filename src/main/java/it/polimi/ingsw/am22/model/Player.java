@@ -3,9 +3,11 @@ package it.polimi.ingsw.am22.model;
 import it.polimi.ingsw.am22.model.character.CharacterType;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;
 
+import java.io.Serializable;
+
 import static it.polimi.ingsw.am22.model.building.Building.FinalBuildingPP;
 
-public class Player {
+public class Player implements Serializable {
     private String nickname;
     private int PP;
     private int food;

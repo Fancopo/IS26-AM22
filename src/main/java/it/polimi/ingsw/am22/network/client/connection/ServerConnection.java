@@ -9,6 +9,7 @@ import it.polimi.ingsw.am22.network.protocol.message.request.ListMatchesRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PickBonusCardRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PickCardsRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PlaceTotemRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.ReconnectRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.RemovePlayerFromLobbyRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.SetExpectedPlayersRequest;
 
@@ -74,5 +75,9 @@ public interface ServerConnection extends AutoCloseable {
 
     default void disconnectPlayer(String matchId, String nickname) {
         send(new DisconnectPlayerRequest(matchId, nickname));
+    }
+
+    default void reconnect(String matchId, String nickname) {
+        send(new ReconnectRequest(matchId, nickname));
     }
 }

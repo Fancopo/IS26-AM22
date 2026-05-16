@@ -6,7 +6,7 @@ package it.polimi.ingsw.am22.model.character;
  * Default values are provided by {@link TribeCharacter} so callers can read
  * them uniformly without type-checking the concrete subclass.
  */
-public interface CharacterEffect {
+public interface CharacterEffect extends java.io.Serializable {
     int getNumStars();
     char getIconPerInventor();
     int getDiscountFood();

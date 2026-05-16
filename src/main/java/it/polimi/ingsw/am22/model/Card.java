@@ -1,8 +1,9 @@
 package it.polimi.ingsw.am22.model;
 
+import java.io.Serializable;
 import java.util.Locale;
 
-public abstract class Card {
+public abstract class Card implements Serializable {
     private String id;
     private Era era;
     private int minPlayers;

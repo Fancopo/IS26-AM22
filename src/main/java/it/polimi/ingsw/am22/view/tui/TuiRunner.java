@@ -31,31 +31,41 @@ public final class TuiRunner {
                 : ConnectionFactory.DEFAULT_RMI_PORT;
         int port = askInt(in, "Port [" + defaultPort + "]: ", defaultPort);
 
-        // Outer loop supports the end-game 'back' command: when the player
-        // picks 'back' on the end-game menu we close the just-finished
-        // session and reopen a fresh one against the same host/port —
-        // mirroring the GUI's endGameAndShowMatches flow.
+        // Outer loop supports the end-game 'back' command and server-crash
+        // recovery: in both cases the just-finished session is closed and a
+        // fresh one is opened against the same host/port.
         boolean firstSession = true;
+        // A live, already-resumed session produced by the recovery flow;
+        // when set, the loop runs it directly instead of opening a new one.
+        TuiView resumedView = null;
+
         while (true) {
-            ServerConnection connection;
-            try {
-                connection = ConnectionFactory.open(transport, host, port);
-            } catch (Exception e) {
-                System.err.println("Unable to connect: " + e.getClass().getSimpleName()
-                        + (e.getMessage() == null ? "" : " - " + e.getMessage()));
-                return;
-            }
+            ClientSession session;
+            TuiView view;
 
-            ClientSession session = new ClientSession(connection);
-            TuiView view = new TuiView(session);
-            session.setHandler(view);
-
-            if (firstSession) {
-                printHelp();
-                firstSession = false;
+            if (resumedView != null) {
+                view = resumedView;
+                session = resumedView.getSession();
+                resumedView = null;
             } else {
-                System.out.println(Ansi.green(
-                        "(reconnected — type 'list' to see open matches)"));
+                ServerConnection connection;
+                try {
+                    connection = ConnectionFactory.open(transport, host, port);
+                } catch (Exception e) {
+                    System.err.println("Unable to connect: "
+                            + ConnectionFactory.describeConnectionError(e));
+                    return;
+                }
+                session = new ClientSession(connection);
+                view = new TuiView(session);
+                session.setHandler(view);
+                if (firstSession) {
+                    printHelp();
+                    firstSession = false;
+                } else {
+                    System.out.println(Ansi.green(
+                            "(reconnected — type 'list' to see open matches)"));
+                }
             }
 
             commandLoop(in, session, view);
@@ -63,6 +73,10 @@ public final class TuiRunner {
             boolean serverDropped = view.wasDisconnectedByServer();
             boolean expectedClose = view.isExpectingDisconnect();
             boolean wantsReconnect = view.isReconnectRequested();
+            // Captured before close(): a server crash mid-match leaves a
+            // resumable match on the server, keyed by this matchId.
+            boolean wasMidGame = session.isGameStarted();
+            String recoverableMatchId = session.getClientController().getMatchId();
             // After EndGame the channel is already gone (or about to be):
             // don't try to send a disconnect notification through it.
             session.close(!serverDropped && !expectedClose);
@@ -70,6 +84,17 @@ public final class TuiRunner {
             if (wantsReconnect) {
                 continue;
             }
+
+            // Server crashed while a match was running: notify the player that
+            // an uncomplete match exists and offer to resume it.
+            if (serverDropped && !expectedClose && wasMidGame && recoverableMatchId != null) {
+                resumedView = recoverMatch(in, transport, host, port, recoverableMatchId);
+                // Whether the match was resumed (resumedView != null) or the
+                // player gave up (null, → fresh session to look for another
+                // match), the loop just iterates again.
+                continue;
+            }
+
             System.out.println("Bye.");
             // Only signal an error exit when the drop was unexpected
             // (i.e. NOT the post-EndGame courtesy close).
@@ -77,6 +102,95 @@ public final class TuiRunner {
                 System.exit(1);
             }
             return;
+        }
+    }
+
+    /**
+     * Server-crash recovery flow. Notifies the player that an uncomplete match
+     * exists, then keeps asking for the nickname used in that match until
+     * either the server accepts the reconnection or the player gives up. A
+     * wrong nickname is not fatal: the player is simply asked again, and can
+     * type {@code back} to abandon the recovery and look for another match.
+     *
+     * @return the live {@link TuiView} of the resumed session, or null if the
+     *         player declined / gave up the recovery
+     */
+    private static TuiView recoverMatch(Scanner in, Transport transport,
+                                        String host, int port, String matchId) {
+        System.out.println();
+        System.out.println(Ansi.yellow(Ansi.BOLD
+                + "[!] Found an uncomplete match (" + matchId + ")."));
+        System.out.println(Ansi.yellow(
+                "    The server went down while your match was still in progress."));
+        if (!askYesNo(in, "Do you want to continue the previous match? [yes/no]: ")) {
+            return null;
+        }
+
+        while (true) {
+            String nickname = ask(in, "Enter the nickname you used in the previous match: ", null);
+
+            ServerConnection connection;
+            try {
+                connection = ConnectionFactory.open(transport, host, port);
+            } catch (Exception e) {
+                System.err.println("Unable to connect: "
+                        + ConnectionFactory.describeConnectionError(e));
+                if (askYesNo(in, "Server still unreachable. Try again? [yes/no]: ")) {
+                    continue;
+                }
+                return null;
+            }
+
+            ClientSession session = new ClientSession(connection);
+            TuiView view = new TuiView(session);
+            session.setHandler(view);
+            view.armReconnect();
+            System.out.println(Ansi.green(
+                    "(reconnecting to match " + matchId + " as '" + nickname + "'…)"));
+            session.getClientController().reconnect(matchId, nickname);
+
+            if (waitReconnectOutcome(view)) {
+                return view;
+            }
+
+            // Reconnection refused (the [ERROR] line is printed by the view):
+            // ask the player whether to retry by typing the nickname again.
+            session.close(false);
+            if (!askYesNo(in, "Reconnection failed. "
+                    + "Do you want to try again by typing your nickname? [yes/no]: ")) {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Blocks until the server accepts or refuses a reconnection, or a short
+     * timeout elapses.
+     *
+     * @return true if the match was resumed, false on refusal / timeout
+     */
+    private static boolean waitReconnectOutcome(TuiView view) {
+        long deadline = System.currentTimeMillis() + 10_000;
+        while (System.currentTimeMillis() < deadline) {
+            if (view.isReconnectAccepted()) return true;
+            if (view.isReconnectRejected()) return false;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        System.out.println(Ansi.red("[ERROR] No response from the server."));
+        return false;
+    }
+
+    private static boolean askYesNo(Scanner in, String prompt) {
+        while (true) {
+            String v = ask(in, prompt, "no").toLowerCase();
+            if (v.equals("yes") || v.equals("y")) return true;
+            if (v.equals("no") || v.equals("n")) return false;
+            System.out.println("Please type 'yes' or 'no'.");
         }
     }
 

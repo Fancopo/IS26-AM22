@@ -1,9 +1,10 @@
 package it.polimi.ingsw.am22.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TurnOrderTile {
+public class TurnOrderTile implements Serializable {
     private List<Slot> slots;
 
     public TurnOrderTile() {

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am22.model;
 
-public class OfferTile {
+import java.io.Serializable;
+
+public class OfferTile implements Serializable {
     private char letter;
     private int upperCardsToTake;
     private int lowerCardsToTake;

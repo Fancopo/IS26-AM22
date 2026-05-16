@@ -93,6 +93,20 @@ public class VirtualServer {
         this.nickname = null;
     }
 
+    /**
+     * Rejoins a match that survived a server crash. Unlike a normal join the
+     * matchId is already known by the client (it was kept across the drop):
+     * both nickname and matchId are bound locally right away so any move sent
+     * before the server's confirmation still routes to the right match.
+     */
+    public void reconnect(String matchId, String nickname) {
+        String cleanMatchId = requireText(matchId, "matchId");
+        String cleanNickname = requireText(nickname, "nickname");
+        this.nickname = cleanNickname;
+        this.matchId = cleanMatchId;
+        serverConnection.reconnect(cleanMatchId, cleanNickname);
+    }
+
     public void disconnect() {
         requireJoined();
         serverConnection.disconnectPlayer(matchId, nickname);

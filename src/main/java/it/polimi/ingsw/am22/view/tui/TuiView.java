@@ -21,6 +21,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 
@@ -74,6 +75,17 @@ public final class TuiView implements ServerHandler {
     /** Kept around so the {@code leaderboard} command can re-print without a round-trip. */
     private volatile EndGameMessage lastEndGame;
 
+    /**
+     * Server-crash recovery handshake state. While {@link #awaitingReconnect}
+     * is set, the next GameStartedMessage means the reconnection succeeded and
+     * the next ErrorMessage (or a connection drop) means it was refused —
+     * {@code TuiRunner} polls {@link #reconnectAccepted}/{@link #reconnectRejected}
+     * to drive the retry loop.
+     */
+    private volatile boolean awaitingReconnect;
+    private volatile boolean reconnectAccepted;
+    private volatile boolean reconnectRejected;
+
     public TuiView(ClientSession session) {
         this.session = Objects.requireNonNull(session, "session cannot be null");
     }
@@ -83,6 +95,19 @@ public final class TuiView implements ServerHandler {
     public boolean isInEndGame() { return inEndGame; }
     public boolean isReconnectRequested() { return reconnectRequested; }
     public boolean isExpectingDisconnect() { return expectingDisconnect; }
+
+    /** Session this view renders — used by the runner to keep a resumed session. */
+    public ClientSession getSession() { return session; }
+
+    /** Arms the recovery handshake watch before a ReconnectRequest is sent. */
+    public void armReconnect() {
+        awaitingReconnect = true;
+        reconnectAccepted = false;
+        reconnectRejected = false;
+    }
+
+    public boolean isReconnectAccepted() { return reconnectAccepted; }
+    public boolean isReconnectRejected() { return reconnectRejected; }
 
     public void requestStop() {
         this.stopRequested = true;
@@ -163,7 +188,13 @@ public final class TuiView implements ServerHandler {
         @Override public void visit(MatchesListMessage m)  { renderMatchesList(m.matches()); }
         @Override public void visit(MatchJoinedMessage m)  { renderMatchJoined(m); }
         @Override public void visit(LobbyStateMessage m)   { renderLobby(m.lobbyState()); }
-        @Override public void visit(GameStartedMessage m)  { renderGameStarted(m.initialGameState()); }
+        @Override public void visit(GameStartedMessage m)  {
+            if (awaitingReconnect) {
+                reconnectAccepted = true;
+                awaitingReconnect = false;
+            }
+            renderGameStarted(m.initialGameState());
+        }
         @Override public void visit(GameStateMessage m)    { renderGameState(m.gameState()); }
         @Override public void visit(EndGameMessage m)      { renderEndGame(m); }
         @Override public void visit(MatchClosedMessage m) {
@@ -172,11 +203,30 @@ public final class TuiView implements ServerHandler {
             println(Ansi.red(Ansi.BOLD + "[MATCH CLOSED] " + Ansi.RESET) + m.reason());
             println(Ansi.dim("(back to matches selection — type 'list' to see open matches)"));
         }
-        @Override public void visit(ErrorMessage m)        { println(Ansi.red("[ERROR] ") + m.message()); }
+        @Override public void visit(MatchRecoveringMessage m) {
+            if (awaitingReconnect) {
+                reconnectAccepted = true;
+                awaitingReconnect = false;
+            }
+            renderRecovering(m);
+        }
+        @Override public void visit(ErrorMessage m) {
+            if (awaitingReconnect) {
+                reconnectRejected = true;
+                awaitingReconnect = false;
+            }
+            println(Ansi.red("[ERROR] ") + m.message());
+        }
     };
 
     @Override
     public void onConnectionClosed(Throwable cause) {
+        if (awaitingReconnect) {
+            // The channel dropped before the server answered the reconnection:
+            // treat it as a refusal so the recovery loop can retry.
+            reconnectRejected = true;
+            awaitingReconnect = false;
+        }
         if (expectingDisconnect) {
             // EndGameMessage just arrived; the server tears down the channel
             // ~3s later by design. This is normal end-of-match cleanup, not
@@ -185,12 +235,17 @@ public final class TuiView implements ServerHandler {
             // can still pick back / leaderboard / exit.
             return;
         }
-        // Unified disconnect message. Exception details are intentionally
-        // omitted: they're noise for the player. A developer who needs them
-        // can add a verbose flag.
-        println(Ansi.red("[CONN] Server connection lost  closing client."));
         disconnectedByServer = true;
         requestStop();
+        if (session.isGameStarted()) {
+            // The server crashed mid-match: the match was persisted server-side
+            // and can be recovered. commandLoop is blocked reading stdin, so
+            // the player must press ENTER to reach the recovery prompt.
+            println(Ansi.red("[CONN] Server connection lost — your match was saved on the server."));
+            println(Ansi.yellow("       Press ENTER to try to recover the previous match."));
+        } else {
+            println(Ansi.red("[CONN] Server connection lost — closing client."));
+        }
     }
 
     // -------------------- Rendering --------------------
@@ -203,12 +258,16 @@ public final class TuiView implements ServerHandler {
                 System.out.println("(no open matches — use 'create <expectedPlayers> <nickname>' to start one)");
             } else {
                 for (MatchInfoDTO info : matches) {
+                    String status = info.recovering()
+                            ? Ansi.yellow("(reconnecting " + info.currentPlayers()
+                                    + "/" + info.expectedPlayers() + ")")
+                            : info.started() ? "(started)" : "(open)";
                     System.out.println(String.format("  %s  host=%s  %d/%s  %s",
                             info.matchId(),
                             info.hostNickname(),
                             info.currentPlayers(),
                             info.expectedPlayers() > 0 ? String.valueOf(info.expectedPlayers()) : "?",
-                            info.started() ? "(started)" : "(open)"));
+                            status));
                 }
                 System.out.println("Use 'join <matchId> <nickname>' to enter one.");
             }
@@ -251,6 +310,28 @@ public final class TuiView implements ServerHandler {
     private void renderGameStarted(GameStateDTO state) {
         println(">>> GAME STARTED <<<");
         renderGameState(state);
+    }
+
+    /**
+     * Renders the frozen board plus a banner saying the crash-recovered match
+     * is paused until every player reconnects.
+     */
+    private void renderRecovering(MatchRecoveringMessage m) {
+        if (m.gameState() != null) {
+            renderGameState(m.gameState());
+        }
+        synchronized (printLock) {
+            System.out.println();
+            System.out.println(Ansi.yellow(Ansi.BOLD
+                    + "*** MATCH PAUSED — WAITING FOR PLAYERS TO RECONNECT ("
+                    + m.reconnectedCount() + "/" + m.totalPlayers() + ") ***"));
+            if (m.missingNicknames() != null && !m.missingNicknames().isEmpty()) {
+                System.out.println(Ansi.yellow("    Still missing: "
+                        + String.join(", ", m.missingNicknames())));
+            }
+            System.out.println(Ansi.dim(
+                    "    The game resumes automatically once every player is back."));
+        }
     }
 
     /** Clears the screen and prints the full board summary; rings the bell on the player's turn. */

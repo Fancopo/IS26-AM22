@@ -28,4 +28,29 @@ public final class ConnectionFactory {
             case RMI    -> new RmiServerConnection(host, port, DEFAULT_RMI_BINDING);
         };
     }
+
+    /**
+     * Turns a connection failure into a short, user-facing reason that is the
+     * same for both transports. RMI wraps the real cause in nested exceptions
+     * with verbose messages ("Connection refused to host: ...; nested
+     * exception is: ..."), so the whole cause chain is scanned for the
+     * canonical "connection refused" — that way socket and RMI both report a
+     * plain {@code "Connection refused"}.
+     *
+     * @param error the exception thrown by {@link #open}
+     * @return a concise human-readable failure reason
+     */
+    public static String describeConnectionError(Throwable error) {
+        for (Throwable t = error; t != null; t = t.getCause()) {
+            String msg = t.getMessage();
+            if (msg != null && msg.toLowerCase(java.util.Locale.ROOT).contains("connection refused")) {
+                return "Connection refused";
+            }
+        }
+        String msg = error == null ? null : error.getMessage();
+        if (msg != null && !msg.isBlank()) {
+            return msg;
+        }
+        return error == null ? "unknown error" : error.getClass().getSimpleName();
+    }
 }

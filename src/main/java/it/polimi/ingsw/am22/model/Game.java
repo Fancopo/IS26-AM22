@@ -3,13 +3,17 @@ package it.polimi.ingsw.am22.model;
 import it.polimi.ingsw.am22.model.building.Building;
 import it.polimi.ingsw.am22.model.states.SetUpState;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
-public class Game {
+public class Game implements Serializable {
     private final List<Player> players;
     private final Board board;
     private final List<Card> tribeDeck;
@@ -18,7 +22,14 @@ public class Game {
     private Era currentEra;
     private Player activePlayer;
     private GameState currentState;
-    private List<GameObserver> observers;
+
+    /**
+     * Observers are runtime-only wiring (e.g. the server's VirtualView): they
+     * are not part of the persisted game state. Marked transient so a saved
+     * snapshot stays free of network/view objects; re-populated on restore by
+     * whoever re-attaches as observer.
+     */
+    private transient List<GameObserver> observers;
 
     public Game(List<Player> players) {
         this.players = new ArrayList<>(players);
@@ -55,6 +66,16 @@ public class Game {
         return observers.size();
     }
     //end observer methods
+
+    /**
+     * After deserialization the transient {@link #observers} list is null:
+     * re-create it empty so a restored game can accept fresh observers.
+     */
+    @Serial
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.observers = new CopyOnWriteArrayList<>();
+    }
 
     public void setState(GameState state) {
         this.currentState = state;
