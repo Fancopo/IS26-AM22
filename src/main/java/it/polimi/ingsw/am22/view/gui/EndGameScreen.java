@@ -22,7 +22,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -123,14 +122,7 @@ public final class EndGameScreen implements GuiScreen {
                 positionLabel,
                 buttons);
         panel.setAlignment(Pos.TOP_CENTER);
-        Backgrounds.stylePanel(panel);
-        panel.setMaxWidth(720);
-        panel.setMaxHeight(Region.USE_PREF_SIZE);
-
-        StackPane container = new StackPane(panel);
-        container.setId("endgame-root");
-        Backgrounds.install(container, "/images/background_noMESOS.png");
-        return container;
+        return Backgrounds.wrapInPanel(panel, 720, "endgame-root", "/images/background_noMESOS.png");
     }
 
     private Label buildPositionLabel(Map<String, Integer> positionByNickname,

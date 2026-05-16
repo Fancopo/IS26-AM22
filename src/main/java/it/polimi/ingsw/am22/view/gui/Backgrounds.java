@@ -36,4 +36,21 @@ final class Backgrounds {
         panel.setStyle(PANEL_STYLE);
         panel.setPadding(new javafx.geometry.Insets(24));
     }
+
+    /** Styles {@code panel}, caps its width, and wraps it in a {@link StackPane} with the default background. */
+    static StackPane wrapInPanel(Region panel, double maxWidth, String screenId) {
+        return wrapInPanel(panel, maxWidth, screenId, DEFAULT);
+    }
+
+    /** Styles {@code panel}, caps its width, and wraps it in a {@link StackPane} with {@code backgroundResource}. */
+    static StackPane wrapInPanel(Region panel, double maxWidth, String screenId, String backgroundResource) {
+        stylePanel(panel);
+        panel.setMaxWidth(maxWidth);
+        panel.setMaxHeight(Region.USE_PREF_SIZE);
+
+        StackPane container = new StackPane(panel);
+        container.setId(screenId);
+        install(container, backgroundResource);
+        return container;
+    }
 }

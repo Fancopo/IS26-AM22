@@ -76,14 +76,7 @@ public final class LobbyScreen implements GuiScreen {
                 leaveButton,
                 statusLabel);
         center.setAlignment(Pos.TOP_CENTER);
-        Backgrounds.stylePanel(center);
-        center.setMaxWidth(620);
-        center.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
-
-        StackPane container = new StackPane(center);
-        container.setId("lobby-root");
-        Backgrounds.install(container);
-        return container;
+        return Backgrounds.wrapInPanel(center, 620, "lobby-root");
     }
 
     private void wireActions() {

@@ -93,13 +93,6 @@ public final class ConnectionScreen implements GuiScreen {
                 connectButton,
                 statusLabel);
         box.setAlignment(Pos.CENTER);
-        Backgrounds.stylePanel(box);
-        box.setMaxWidth(420);
-        box.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
-
-        StackPane container = new StackPane(box);
-        container.setId("connection-root");
-        Backgrounds.install(container);
-        return container;
+        return Backgrounds.wrapInPanel(box, 420, "connection-root");
     }
 }

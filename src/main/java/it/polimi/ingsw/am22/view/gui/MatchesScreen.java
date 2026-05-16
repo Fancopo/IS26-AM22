@@ -137,14 +137,7 @@ public final class MatchesScreen implements GuiScreen {
                 backButton,
                 statusLabel);
         center.setAlignment(Pos.TOP_CENTER);
-        Backgrounds.stylePanel(center);
-        center.setMaxWidth(720);
-        center.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
-
-        StackPane container = new StackPane(center);
-        container.setId("matches-root");
-        Backgrounds.install(container);
-        return container;
+        return Backgrounds.wrapInPanel(center, 720, "matches-root");
     }
 
     private void wireActions() {
