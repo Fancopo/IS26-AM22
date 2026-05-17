@@ -86,7 +86,7 @@ public final class LobbyScreen implements GuiScreen {
             if (selected == null) return;
             try {
                 statusLabel.setText("Set a new expected players");
-                app.getSession().getClientController().setExpectedPlayers(selected);
+                app.getSession().getVirtualServer().setExpectedPlayers(selected);
             } catch (RuntimeException ex) {
                 statusLabel.setText("Error: " + ex.getMessage());
             }

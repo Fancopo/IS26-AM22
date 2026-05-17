@@ -59,7 +59,7 @@ public final class RecoveryLobbyScreen implements GuiScreen {
 
     private StackPane buildUi() {
         String matchId = app.getSession() == null ? null
-                : app.getSession().getClientController().getMatchId();
+                : app.getSession().getVirtualServer().getMatchId();
         titleLabel.setText("Resuming match" + (matchId == null ? "" : " " + matchId));
 
         leaveButton.setOnAction(e -> {

@@ -715,7 +715,7 @@ public final class GameScreen implements GuiScreen {
         b.setDisable(!clickable || t.occupiedBy() != null);
         b.setOnAction(e -> {
             try {
-                app.getSession().getClientController().placeTotem(t.letter());
+                app.getSession().getVirtualServer().placeTotem(t.letter());
             } catch (RuntimeException ex) {
                 statusLabel.setText("Placement failed: " + ex.getMessage());
             }
@@ -947,9 +947,9 @@ public final class GameScreen implements GuiScreen {
                     statusLabel.setText("Select exactly one bonus card.");
                     return;
                 }
-                app.getSession().getClientController().pickBonusCard(ids.get(0));
+                app.getSession().getVirtualServer().pickBonusCard(ids.get(0));
             } else {
-                app.getSession().getClientController().pickCards(ids);
+                app.getSession().getVirtualServer().pickCards(ids);
             }
             pickedCardIds.clear();
         } catch (RuntimeException ex) {

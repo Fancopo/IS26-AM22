@@ -121,7 +121,7 @@ public final class GuiApp extends Application implements ServerHandler {
     public void leaveMatchAndShowMatches(String nickname) {
         if (session != null) {
             try {
-                session.getClientController().disconnect();
+                session.getVirtualServer().disconnect();
             } catch (RuntimeException ignored) {
             }
             session.clearLocalMatchState();
@@ -135,7 +135,7 @@ public final class GuiApp extends Application implements ServerHandler {
     public void leaveLobbyAndShowMatches(String nickname) {
         if (session != null) {
             try {
-                session.getClientController().removePlayerFromLobby();
+                session.getVirtualServer().removePlayerFromLobby();
             } catch (RuntimeException ignored) {
             }
             session.clearLocalMatchState();
@@ -186,7 +186,7 @@ public final class GuiApp extends Application implements ServerHandler {
         }
         this.lastNickname = nickname;
         try {
-            session.getClientController().reconnect(matchId, nickname);
+            session.getVirtualServer().reconnect(matchId, nickname);
             return true;
         } catch (RuntimeException e) {
             showError("Reconnect failed: " + e.getMessage());
@@ -274,8 +274,8 @@ public final class GuiApp extends Application implements ServerHandler {
             // match was persisted server-side and can be resumed, so route the
             // player to the reconnect screen instead of the connection one.
             if (session != null && session.isGameStarted()
-                    && session.getClientController().getMatchId() != null) {
-                String matchId = session.getClientController().getMatchId();
+                    && session.getVirtualServer().getMatchId() != null) {
+                String matchId = session.getVirtualServer().getMatchId();
                 this.session = null;
                 showReconnectScreen(matchId);
                 return;

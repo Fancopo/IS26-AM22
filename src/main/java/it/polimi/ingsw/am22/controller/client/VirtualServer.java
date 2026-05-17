@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Bridge between the client view and the server connection.
+ * Local proxy of the server on the client side (the "Virtual Server" of the
+ * distributed-MVC schema).
  *
- * <p>The view calls methods on this controller; the controller forwards
- * requests to the server, automatically attaching the local nickname and
- * matchId. The matchId is set after the server confirms create/join via
- * {@link #bindMatch(String, String)}, called from the update handler when
- * it sees a {@code MatchJoinedMessage}.
+ * <p>The view calls methods on this proxy as if it were the server; the proxy
+ * forwards requests over the network, automatically attaching the local
+ * nickname and matchId. The matchId is set after the server confirms
+ * create/join via {@link #bindMatch(String, String)}, called from the update
+ * handler when it sees a {@code MatchJoinedMessage}.
  */
 public class VirtualServer {
 

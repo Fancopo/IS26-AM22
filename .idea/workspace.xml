@@ -4,25 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Turn visit methods in ServerMessageVisitor into defaults to semplify classes that implement it.">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="reorderd packages and files">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_10_0_48_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_10_0_48__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_7_22_21_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_7_22_21__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_8_12_47_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_5_8_12_47__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]10/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_10.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/rmi/RmiServerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/rmi/RmiServerConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/socket/SocketServerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/client/connection/socket/SocketServerConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/ServerMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/ServerMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/EndGameMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/EndGameMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/MatchClosedMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/message/response/MatchClosedMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/Backgrounds.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/Backgrounds.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/ConnectionScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/ConnectionScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/EndGameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/EndGameScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/GameScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/client/ClientSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/client/ClientSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/client/VirtualServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/client/VirtualServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/MatchManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/MatchManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/ModelDtoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/network/protocol/ModelDtoMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/GuiScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/ImageCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/ImageCache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/LobbyScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/MatchesScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/MatchesScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/NicknameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/NicknameScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/GameScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/LobbyScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/MatchesScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/MatchesScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/RecoveryLobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/RecoveryLobbyScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/tui/TuiRunner.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,44 +76,44 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Client TUI A.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Client TUI B.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ClientA.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ClientApp.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ClientB.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ClientC.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ClientD.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ClientE.executor&quot;: &quot;Run&quot;,
-    &quot;Application.DbTestMain.executor&quot;: &quot;Run&quot;,
-    &quot;Application.GuiApp.executor&quot;: &quot;Run&quot;,
-    &quot;Application.NetworkServerLauncher.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ServerMain.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ArtistTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,
-    &quot;JUnit.java in am22.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Client TUI A.executor": "Run",
+    "Application.Client TUI B.executor": "Run",
+    "Application.ClientA.executor": "Run",
+    "Application.ClientApp.executor": "Run",
+    "Application.ClientB.executor": "Run",
+    "Application.ClientC.executor": "Run",
+    "Application.ClientD.executor": "Run",
+    "Application.ClientE.executor": "Run",
+    "Application.DbTestMain.executor": "Run",
+    "Application.GuiApp.executor": "Run",
+    "Application.NetworkServerLauncher.executor": "Run",
+    "Application.ServerMain.executor": "Run",
+    "JUnit.ArtistTest.executor": "Coverage",
+    "JUnit.CardJsonLoaderTest.executor": "Coverage",
+    "JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor": "Coverage",
+    "JUnit.OfferTileTest.executor": "Coverage",
+    "JUnit.PlayerTest.executor": "Coverage",
+    "JUnit.SlotTest.executor": "Coverage",
+    "JUnit.TotemTest.executor": "Coverage",
+    "JUnit.TribeTest.executor": "Coverage",
+    "JUnit.java in am22.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "game-version2",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\jacop\IdeaProjects\am22\src\main\java\it\polimi\ingsw\am22" />
@@ -139,6 +140,45 @@
       </method>
     </configuration>
     <configuration name="ClientB" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.ClientMain" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ClientC" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.ClientMain" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ClientD" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.ClientMain" />
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ClientE" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.ClientMain" />
       <module name="am22" />
       <extension name="coverage">
@@ -190,6 +230,9 @@
     <list>
       <item itemvalue="Application.ClientA" />
       <item itemvalue="Application.ClientB" />
+      <item itemvalue="Application.ClientC" />
+      <item itemvalue="Application.ClientD" />
+      <item itemvalue="Application.ClientE" />
       <item itemvalue="Application.ServerMain" />
       <item itemvalue="JUnit.java in am22" />
       <item itemvalue="JUnit.CardJsonLoaderTest" />
@@ -219,7 +262,6 @@
       <workItem from="1778577030923" duration="501000" />
       <workItem from="1778577663489" duration="1265000" />
       <workItem from="1778584002728" duration="18787000" />
-      <workItem from="1778925393058" duration="6402000" />
     </task>
     <task id="LOCAL-00001" summary="Initial version">
       <option name="closed" value="true" />
@@ -445,63 +487,34 @@
       <option name="project" value="LOCAL" />
       <updated>1778794303582</updated>
     </task>
-    <task id="LOCAL-00029" summary="reorderd packages and files">
-      <option name="closed" value="true" />
-      <created>1778797353764</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1778797353764</updated>
-    </task>
-    <task id="LOCAL-00030" summary="adjusted clientMain and renamed package databases">
-      <option name="closed" value="true" />
-      <created>1778873663781</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1778873663781</updated>
-    </task>
-    <task id="LOCAL-00031" summary="commenti personali">
-      <option name="closed" value="true" />
-      <created>1778930980465</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1778930980465</updated>
-    </task>
-    <task id="LOCAL-00032" summary="Turn visit methods in ServerMessageVisitor into defaults to semplify classes that implement it.">
-      <option name="closed" value="true" />
-      <created>1778931699146</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1778931699146</updated>
-    </task>
-    <option name="localTasksCounter" value="33" />
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="6bfe56ac-f6bc-42be-b8d8-59b53ecb6f73" value="TOOL_WINDOW" />
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
+        <entry key="6bfe56ac-f6bc-42be-b8d8-59b53ecb6f73">
+          <value>
+            <State />
+          </value>
+        </entry>
         <entry key="MAIN">
           <value>
             <State>
-              <option name="COLUMN_ID_WIDTH">
-                <map>
-                  <entry key="Table.Default.Author.ColumnIdWidth" value="110" />
-                  <entry key="Table.Default.Date.ColumnIdWidth" value="92" />
-                  <entry key="Table.GitHub.CommitStatus.ColumnIdWidth" value="91" />
-                </map>
-              </option>
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="official/main" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
@@ -534,10 +547,7 @@
     <MESSAGE value="putted default values of socket and rmi ports on ServerMain" />
     <MESSAGE value="add graceful shutdown for RMI and socket transports&#10;RmiServerEndpoint.publish() now returns a Handle holding the Registry and endpoint references, so ServerMain can unbind and unexport on JVM shutdown. Without this the port stayed bound for the lifetime&#10;of the process, blocking in-process restarts." />
     <MESSAGE value="reorderd packages and files" />
-    <MESSAGE value="adjusted clientMain and renamed package databases" />
-    <MESSAGE value="commenti personali" />
-    <MESSAGE value="Turn visit methods in ServerMessageVisitor into defaults to semplify classes that implement it." />
-    <option name="LAST_COMMIT_MESSAGE" value="Turn visit methods in ServerMessageVisitor into defaults to semplify classes that implement it." />
+    <option name="LAST_COMMIT_MESSAGE" value="reorderd packages and files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

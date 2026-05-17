@@ -15,20 +15,20 @@ import java.util.Optional;
  */
 public class ModelDtoMapper {
 
-    public LobbyStateDTO toLobbyState(MatchController gameController) {
-        List<LobbyPlayerDTO> players = gameController.getLobbyPlayers().stream()
+    public LobbyStateDTO toLobbyState(MatchController matchController) {
+        List<LobbyPlayerDTO> players = matchController.getLobbyPlayers().stream()
                 .map(player -> new LobbyPlayerDTO(
                         player.getNickname(),
                         Optional.ofNullable(player.getTotem()).map(Totem::getColor).orElse(null),
-                        player.getNickname().equals(gameController.getHostNickname())
+                        player.getNickname().equals(matchController.getHostNickname())
                 ))
                 .toList();
 
         return new LobbyStateDTO(
-                gameController.getMatchId(),
-                gameController.getHostNickname(),
-                gameController.getExpectedPlayers(),
-                gameController.hasStarted(),
+                matchController.getMatchId(),
+                matchController.getHostNickname(),
+                matchController.getExpectedPlayers(),
+                matchController.hasStarted(),
                 players
         );
     }

@@ -164,11 +164,11 @@ public final class MatchesScreen implements GuiScreen {
                     // Suspended match: re-enter it. The server resumes the match
                     // for us only if this nickname was one of its players.
                     statusLabel.setText("Reconnecting to " + selected.matchId() + " as " + nickname + "...");
-                    app.getSession().getClientController()
+                    app.getSession().getVirtualServer()
                             .reconnect(selected.matchId(), nickname);
                 } else {
                     statusLabel.setText("Joining " + selected.matchId() + "...");
-                    app.getSession().getClientController()
+                    app.getSession().getVirtualServer()
                             .addPlayerToLobby(selected.matchId(), nickname);
                 }
             } catch (RuntimeException ex) {
@@ -188,7 +188,7 @@ public final class MatchesScreen implements GuiScreen {
                 statusLabel.setText("Creating new match (" + expected + " players)...");
                 pendingAction = true;
                 setControlsDisabled(true);
-                app.getSession().getClientController().createMatch(nickname, expected);
+                app.getSession().getVirtualServer().createMatch(nickname, expected);
             } catch (RuntimeException ex) {
                 pendingAction = false;
                 setControlsDisabled(false);
@@ -201,9 +201,9 @@ public final class MatchesScreen implements GuiScreen {
             // one), leaving here aborts it — like any voluntary leave, the
             // match is closed and its saved snapshot discarded server-side.
             if (app.getSession() != null
-                    && app.getSession().getClientController().getMatchId() != null) {
+                    && app.getSession().getVirtualServer().getMatchId() != null) {
                 try {
-                    app.getSession().getClientController().disconnect();
+                    app.getSession().getVirtualServer().disconnect();
                 } catch (RuntimeException ignored) {
                 }
                 app.getSession().clearLocalMatchState();
@@ -215,7 +215,7 @@ public final class MatchesScreen implements GuiScreen {
     private void requestList() {
         try {
             statusLabel.setText("Refreshing...");
-            app.getSession().getClientController().listMatches();
+            app.getSession().getVirtualServer().listMatches();
         } catch (RuntimeException ex) {
             statusLabel.setText("Refresh failed: " + ex.getMessage());
         }

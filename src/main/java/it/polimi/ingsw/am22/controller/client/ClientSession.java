@@ -31,7 +31,7 @@ import java.util.Objects;
 public final class ClientSession {
 
     private final ServerConnection connection;
-    private final VirtualServer clientController;
+    private final VirtualServer virtualServer;
 
     /** Handler of the currently active view (may change on every screen switch). */
     private volatile ServerHandler currentHandler;
@@ -42,12 +42,12 @@ public final class ClientSession {
 
     public ClientSession(ServerConnection connection) {
         this.connection = Objects.requireNonNull(connection, "connection cannot be null");
-        this.clientController = new VirtualServer(connection);
+        this.virtualServer = new VirtualServer(connection);
         this.connection.setMessageDispatcher(new InternalDispatcher());
     }
 
-    public VirtualServer getClientController() { return clientController; }
-    public String getLocalNickname() { return clientController.getNickname(); }
+    public VirtualServer getVirtualServer() { return virtualServer; }
+    public String getLocalNickname() { return virtualServer.getNickname(); }
     public LobbyStateDTO getLatestLobbyState() { return latestLobbyState; }
     public GameStateDTO getLatestGameState() { return latestGameState; }
     public boolean isGameStarted() { return gameStarted; }
@@ -67,7 +67,7 @@ public final class ClientSession {
     }
 
     /**
-     * Resets local match state (snapshots + controller binding) but keeps the
+     * Resets local match state (snapshots + virtual-server binding) but keeps the
      * connection. Used both when the server sends MatchClosedMessage and on
      * voluntary leave; afterwards the session is reusable for list/create/join.
      */
@@ -75,13 +75,13 @@ public final class ClientSession {
         latestGameState = null;
         latestLobbyState = null;
         gameStarted = false;
-        clientController.clearMatchBinding();
+        virtualServer.clearMatchBinding();
     }
 
     public void close(boolean notifyServer) {
         try {
-            if (notifyServer && clientController.hasJoinedLobby()) {
-                clientController.disconnect();
+            if (notifyServer && virtualServer.hasJoinedLobby()) {
+                virtualServer.disconnect();
             }
         } catch (RuntimeException ignored) {
             // Connection already gone: nothing to notify.
@@ -97,7 +97,7 @@ public final class ClientSession {
                 @Override public void visit(MatchesListMessage m) {}
                 @Override public void visit(MatchJoinedMessage m) {
                     // Store the matchId locally so subsequent moves are routed to the right match.
-                    clientController.bindMatch(m.matchId(), m.nickname());
+                    virtualServer.bindMatch(m.matchId(), m.nickname());
                 }
                 @Override public void visit(LobbyStateMessage m)  { latestLobbyState = m.lobbyState(); }
                 @Override public void visit(GameStartedMessage m) { gameStarted = true; latestGameState = m.initialGameState(); }

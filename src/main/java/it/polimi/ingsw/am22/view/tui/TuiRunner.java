@@ -76,7 +76,7 @@ public final class TuiRunner {
             // Captured before close(): a server crash mid-match leaves a
             // resumable match on the server, keyed by this matchId.
             boolean wasMidGame = session.isGameStarted();
-            String recoverableMatchId = session.getClientController().getMatchId();
+            String recoverableMatchId = session.getVirtualServer().getMatchId();
             // After EndGame the channel is already gone (or about to be):
             // don't try to send a disconnect notification through it.
             session.close(!serverDropped && !expectedClose);
@@ -147,7 +147,7 @@ public final class TuiRunner {
             view.armReconnect();
             System.out.println(Ansi.green(
                     "(reconnecting to match " + matchId + " as '" + nickname + "'…)"));
-            session.getClientController().reconnect(matchId, nickname);
+            session.getVirtualServer().reconnect(matchId, nickname);
 
             if (waitReconnectOutcome(view)) {
                 return view;
@@ -195,7 +195,7 @@ public final class TuiRunner {
     }
 
     private static void commandLoop(Scanner in, ClientSession session, TuiView view) {
-        VirtualServer controller = session.getClientController();
+        VirtualServer virtualServer = session.getVirtualServer();
         while (!view.isStopRequested()) {
             if (!in.hasNextLine()) {
                 break;
@@ -211,37 +211,37 @@ public final class TuiRunner {
                     case "who", "me" -> printWho(session);
 
                     // ---- Pre-lobby (multipartita) ----
-                    case "list" -> controller.listMatches();
+                    case "list" -> virtualServer.listMatches();
                     case "create" -> {
                         // create <expectedPlayers> <nickname>
                         // Un client può essere iscritto a una sola partita per volta:
                         // se ne ha già una bound (matchId non null), serve prima
                         // 'leave' / 'disconnect' — altrimenti finiremmo iscritti
                         // a due match contemporaneamente lato server.
-                        requireAlreadyOutOfMatch(controller, "create");
+                        requireAlreadyOutOfMatch(virtualServer, "create");
                         requireArgs(parts, 3, "create <expectedPlayers> <nickname>");
                         int expected = Integer.parseInt(parts[1]);
-                        controller.createMatch(parts[2], expected);
+                        virtualServer.createMatch(parts[2], expected);
                     }
                     case "join" -> {
                         // join <matchId> <nickname>
                         // Stesso vincolo di 'create': un solo match alla volta.
-                        requireAlreadyOutOfMatch(controller, "join");
+                        requireAlreadyOutOfMatch(virtualServer, "join");
                         requireArgs(parts, 3, "join <matchId> <nickname>");
-                        controller.addPlayerToLobby(parts[1], parts[2]);
+                        virtualServer.addPlayerToLobby(parts[1], parts[2]);
                     }
 
                     // ---- Comandi che richiedono di essere già in una partita ----
                     case "players" -> {
                         requireArgs(parts, 2, "players <N>");
-                        controller.setExpectedPlayers(Integer.parseInt(parts[1]));
+                        virtualServer.setExpectedPlayers(Integer.parseInt(parts[1]));
                     }
                     case "place" -> {
                         requireArgs(parts, 2, "place <letter>");
                         if (parts[1].length() != 1) {
                             throw new IllegalArgumentException("offer letter must be a single character");
                         }
-                        controller.placeTotem(parts[1].charAt(0));
+                        virtualServer.placeTotem(parts[1].charAt(0));
                     }
                     case "pick" -> {
                         // L'ordine in cui i cardId compaiono sulla riga di comando
@@ -261,11 +261,11 @@ public final class TuiRunner {
                         List<String> ids = new ArrayList<>(parts.length - 1);
                         for (int i = 1; i < parts.length; i++) ids.add(parts[i]);
                         view.echoPickOrder(ids);
-                        controller.pickCards(ids);
+                        virtualServer.pickCards(ids);
                     }
                     case "bonus" -> {
                         requireArgs(parts, 2, "bonus <cardId>");
-                        controller.pickBonusCard(parts[1]);
+                        virtualServer.pickBonusCard(parts[1]);
                     }
                     case "leave" -> {
                         // 'leave' funziona sia pre-game (uscita lobby) sia
@@ -274,15 +274,15 @@ public final class TuiRunner {
                         // connesso, azzera lo stato locale di match e il
                         // giocatore può subito riemettere list/create/join
                         // come dalla situazione iniziale.
-                        if (controller.getMatchId() == null) {
+                        if (virtualServer.getMatchId() == null) {
                             System.out.println("You are not in any lobby or match.");
                             break;
                         }
                         boolean midGame = session.isGameStarted();
                         if (midGame) {
-                            controller.disconnect();
+                            virtualServer.disconnect();
                         } else {
-                            controller.removePlayerFromLobby();
+                            virtualServer.removePlayerFromLobby();
                         }
                         session.clearLocalMatchState();
                         System.out.println(Ansi.yellow(midGame
@@ -411,8 +411,8 @@ public final class TuiRunner {
      * Without this guard a player could type {@code join} twice and end up
      * registered server-side in two lobbies at once.
      */
-    private static void requireAlreadyOutOfMatch(VirtualServer controller, String command) {
-        String currentMatch = controller.getMatchId();
+    private static void requireAlreadyOutOfMatch(VirtualServer virtualServer, String command) {
+        String currentMatch = virtualServer.getMatchId();
         if (currentMatch != null && !currentMatch.isBlank()) {
             throw new IllegalStateException("you are already in match '" + currentMatch
                     + "' — use 'leave' (pre-game) or 'disconnect' before '" + command + "'");
@@ -430,9 +430,9 @@ public final class TuiRunner {
     }
 
     private static void printWho(ClientSession session) {
-        VirtualServer controller = session.getClientController();
-        String nick = controller.getNickname();
-        String matchId = controller.getMatchId();
+        VirtualServer virtualServer = session.getVirtualServer();
+        String nick = virtualServer.getNickname();
+        String matchId = virtualServer.getMatchId();
         System.out.println("You: " + (nick == null ? "(not joined)" : Ansi.bold(nick))
                 + (matchId == null ? "" : "   match=" + Ansi.bold(matchId)));
         if (session.getLatestGameState() != null) {
