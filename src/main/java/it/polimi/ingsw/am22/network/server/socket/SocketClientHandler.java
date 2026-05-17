@@ -14,20 +14,20 @@ import java.net.Socket;
 /**
  * Both {@link ClientHandler} (synchronized send via ObjectOutputStream) and
  * {@link Runnable} (read loop for incoming ClientRequests). On EOF/IO error
- * notifies the service via {@link MatchManager#handleTransportDrop}.
+ * notifies the match manager via {@link MatchManager#handleTransportDrop}.
  */
 public class SocketClientHandler implements ClientHandler, Runnable {
     private final Socket socket;
-    private final MatchManager gameService;
+    private final MatchManager matchManager;
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
     private volatile String boundNickname;
     private volatile String boundMatchId;
     private volatile boolean closed;
 
-    public SocketClientHandler(Socket socket, MatchManager gameService) throws IOException {
+    public SocketClientHandler(Socket socket, MatchManager matchManager) throws IOException {
         this.socket = socket;
-        this.gameService = gameService;
+        this.matchManager = matchManager;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.outputStream.flush();
         this.inputStream = new ObjectInputStream(socket.getInputStream());
@@ -39,14 +39,14 @@ public class SocketClientHandler implements ClientHandler, Runnable {
             while (!closed) {
                 Object incoming = inputStream.readObject();
                 if (incoming instanceof ClientRequest request) {
-                    gameService.handleRequest(request, this);
+                    matchManager.handleRequest(request, this);
                 } else {
                     send(new ErrorMessage("Invalid payload received."));
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
             if (!closed) {
-                gameService.handleTransportDrop(this);
+                matchManager.handleTransportDrop(this);
             }
         } finally {
             close();

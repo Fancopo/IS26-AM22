@@ -21,17 +21,17 @@ public final class ServerMain {
         int rmiPort = ConnectionFactory.DEFAULT_RMI_PORT;
         String bindingName = ConnectionFactory.DEFAULT_RMI_BINDING;
 
-        MatchManager gameService = new MatchManager();
+        MatchManager matchManager = new MatchManager();
 
-        SocketServer socketServer = new SocketServer(socketPort, gameService);
+        SocketServer socketServer = new SocketServer(socketPort, matchManager);
         socketServer.start();
 
-        RmiServer.Handle rmiHandle = RmiServer.publish(rmiPort, bindingName, gameService);
+        RmiServer.Handle rmiHandle = RmiServer.publish(rmiPort, bindingName, matchManager);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             // Flush running matches to disk before tearing down the transports
             // so an orderly stop is just as recoverable as a crash.
-            gameService.shutdown();
+            matchManager.shutdown();
             rmiHandle.shutdown();
             socketServer.close();
         }, "server-shutdown"));

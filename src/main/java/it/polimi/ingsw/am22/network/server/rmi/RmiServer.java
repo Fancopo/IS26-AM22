@@ -11,19 +11,19 @@ import java.rmi.server.UnicastRemoteObject;
 
 /**
  * RMI implementation of {@link RmiServerInterface}. Each submitRequest wraps the
- * client callback in a {@link RmiClientHandler} and delegates to the service.
+ * client callback in a {@link RmiClientHandler} and delegates to the match manager.
  */
 public class RmiServer extends UnicastRemoteObject implements RmiServerInterface {
-    private final MatchManager gameService;
+    private final MatchManager matchManager;
 
-    public RmiServer(MatchManager gameService) throws RemoteException {
+    public RmiServer(MatchManager matchManager) throws RemoteException {
         super();
-        this.gameService = gameService;
+        this.matchManager = matchManager;
     }
 
     @Override
     public void submitRequest(ClientRequest request, RmiClientInterface clientView) throws RemoteException {
-        gameService.handleRequest(request, new RmiClientHandler(clientView));
+        matchManager.handleRequest(request, new RmiClientHandler(clientView));
     }
 
     @Override
@@ -37,10 +37,10 @@ public class RmiServer extends UnicastRemoteObject implements RmiServerInterface
      * endpoint references alive and exposes {@link Handle#shutdown()} for a
      * graceful tear-down (unbind + unexport, releasing the port).
      */
-    public static Handle publish(int port, String bindingName, MatchManager gameService)
+    public static Handle publish(int port, String bindingName, MatchManager matchManager)
             throws RemoteException, AlreadyBoundException {
         Registry registry = LocateRegistry.createRegistry(port);
-        RmiServer endpoint = new RmiServer(gameService);
+        RmiServer endpoint = new RmiServer(matchManager);
         registry.bind(bindingName, endpoint);
         return new Handle(registry, endpoint, bindingName);
     }

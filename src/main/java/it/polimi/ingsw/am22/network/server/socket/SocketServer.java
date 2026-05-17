@@ -11,15 +11,15 @@ import java.util.concurrent.Executors;
 /** ServerSocket + daemon accept thread + cached thread pool: one task per client. */
 public class SocketServer implements AutoCloseable {
     private final int port;
-    private final MatchManager gameService;
+    private final MatchManager matchManager;
     private final ExecutorService clientExecutor;
     private ServerSocket serverSocket;
     private Thread acceptThread;
     private volatile boolean running;
 
-    public SocketServer(int port, MatchManager gameService) {
+    public SocketServer(int port, MatchManager matchManager) {
         this.port = port;
-        this.gameService = gameService;
+        this.matchManager = matchManager;
         this.clientExecutor = Executors.newCachedThreadPool();
     }
 
@@ -50,7 +50,7 @@ public class SocketServer implements AutoCloseable {
                 return;
             }
             try {
-                clientExecutor.submit(new SocketClientHandler(clientSocket, gameService));
+                clientExecutor.submit(new SocketClientHandler(clientSocket, matchManager));
             } catch (IOException e) {
                 // Drive-by connection: peer disconnected before sending the ObjectStream header.
                 try {
