@@ -121,6 +121,11 @@ public class RmiServerConnection implements ServerConnection {
         }
 
         @Override
+        public void ping() {
+            // No-op: the server only needs the call to succeed to know we're alive.
+        }
+
+        @Override
         public void receive(ServerMessage message) throws RemoteException {
             ServerHandler handler = updateHandler;
             if (handler != null) {

@@ -25,6 +25,7 @@ import it.polimi.ingsw.am22.view.server.VirtualView;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -117,6 +118,9 @@ public final class MatchSession {
     // --- Read-only accessors used by MatchManager for listing/lookup --------
 
     public MatchController getMatchController() { return matchController; }
+
+    /** Snapshot of all currently bound client handlers — used by the RMI liveness probe. */
+    public Collection<ClientHandler> snapshotChannels() { return virtualView.snapshotChannels(); }
 
     public boolean isRecovering() { return recovering; }
 

@@ -21,6 +21,7 @@ import it.polimi.ingsw.am22.network.protocol.message.request.SetExpectedPlayersR
 import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 import it.polimi.ingsw.am22.network.server.ClientHandler;
+import it.polimi.ingsw.am22.network.server.rmi.RmiClientHandler;
 import it.polimi.ingsw.am22.view.server.VirtualView;
 
 import java.util.ArrayList;
@@ -154,6 +155,30 @@ public class MatchManager {
                     ? "Unexpected network-server error."
                     : e.getMessage();
             channel.send(new ErrorMessage(message));
+        }
+    }
+
+    /**
+     * Probes every currently-bound RMI client to detect drops the transport
+     * cannot signal on its own (no read loop server-side). Snapshots the
+     * handlers under each session lock, then pings outside the lock so a
+     * slow/dead client cannot freeze other operations on the match.
+     * Failures route through {@link RmiClientHandler#probe} →
+     * {@link #handleTransportDrop}, identical to a failed outbound send.
+     */
+    public void probeRmiClients() {
+        List<RmiClientHandler> rmiHandlers = new ArrayList<>();
+        for (MatchSession session : matchesById.values()) {
+            synchronized (session) {
+                for (ClientHandler ch : session.snapshotChannels()) {
+                    if (ch instanceof RmiClientHandler rmi) {
+                        rmiHandlers.add(rmi);
+                    }
+                }
+            }
+        }
+        for (RmiClientHandler h : rmiHandlers) {
+            h.probe();
         }
     }
 

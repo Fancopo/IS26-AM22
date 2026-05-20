@@ -12,4 +12,13 @@ import java.rmi.RemoteException;
  */
 public interface RmiClientInterface extends Remote {
     void receive(ServerMessage message) throws RemoteException;
+
+    /**
+     * No-op liveness probe. The server periodically invokes this to detect
+     * RMI clients that have died without a clean disconnect — the
+     * RemoteException thrown when the stub is unreachable is the signal.
+     * Socket transport gets the same detection for free from EOF on the
+     * read loop; RMI has no equivalent server-side reader.
+     */
+    void ping() throws RemoteException;
 }
