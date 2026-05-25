@@ -7,6 +7,7 @@ import it.polimi.ingsw.am22.network.client.connection.ConnectionFactory.Transpor
 import it.polimi.ingsw.am22.network.client.connection.ServerConnection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -259,7 +260,7 @@ public final class TuiRunner {
                         // dover aspettare la risposta del server per scoprire
                         // un food sbagliato.
                         List<String> ids = new ArrayList<>(parts.length - 1);
-                        for (int i = 1; i < parts.length; i++) ids.add(parts[i]);
+                        ids.addAll(Arrays.asList(parts).subList(1, parts.length));
                         view.echoPickOrder(ids);
                         virtualServer.pickCards(ids);
                     }
@@ -430,11 +431,13 @@ public final class TuiRunner {
 
     private static void printBanner() {
         System.out.println(Ansi.cyan(
-                "  __  __ _____ ____   ___  ____  \n" +
-                " |  \\/  | ____/ ___| / _ \\/ ___| \n" +
-                " | |\\/| |  _| \\___ \\| | | \\___ \\ \n" +
-                " | |  | | |___ ___) | |_| |___) |\n" +
-                " |_|  |_|_____|____/ \\___/|____/ "));
+                """
+                          __  __ _____ ____   ___  ____ \s
+                         |  \\/  | ____/ ___| / _ \\/ ___|\s
+                         | |\\/| |  _| \\___ \\| | | \\___ \\\s
+                         | |  | | |___ ___) | |_| |___) |
+                         |_|  |_|_____|____/ \\___/|____/ \
+                        """));
         System.out.println(Ansi.dim("                Mesolithic Tribes — TUI client (multipartita)\n"));
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Hunting extends Event implements EventEffect {
 
-    public Hunting(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+    public Hunting(String id, Era era, int minPlayers, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.HUNTING, eventEffect);
         setEffect(this);
     }

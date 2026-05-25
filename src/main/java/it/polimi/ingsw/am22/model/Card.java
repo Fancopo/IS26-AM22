@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Locale;
 
 public abstract class Card implements Serializable {
-    private String id;
-    private Era era;
-    private int minPlayers;
+    private final String id;
+    private final Era era;
+    private final int minPlayers;
 
     public Card(String id, Era era, int minPlayers) {
         this.id = id;

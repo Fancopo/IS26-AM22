@@ -7,9 +7,9 @@ import it.polimi.ingsw.am22.model.Tribe;
 import it.polimi.ingsw.am22.model.Card;
 
 public class Building extends Card {
-    private int foodPrice;
-    private int finalPP;
-    private BuildingEffect effect;
+    private final int foodPrice;
+    private final int finalPP;
+    private final BuildingEffect effect;
 
     public Building(String id, Era era, int minPlayers, int foodPrice, int finalPP, BuildingEffect effect) {
         super(id, era, minPlayers);

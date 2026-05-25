@@ -113,10 +113,10 @@ public class CardJsonLoader {
             EventType eventType = EventType.valueOf(node.get("eventType").asText());
 
             return switch (eventType) {
-                case HUNTING -> new Hunting(id, era, minPlayers, EventType.HUNTING, null);
-                case SUSTENANCE -> new Sustenance(id, era, minPlayers, EventType.SUSTENANCE, null);
-                case SHAMANIC_RITUAL -> new ShamanicRitual(id, era, minPlayers, EventType.SHAMANIC_RITUAL, null);
-                case CAVE_PAINTING -> new CavePaintings(id, era, minPlayers, EventType.CAVE_PAINTING, null);
+                case HUNTING -> new Hunting(id, era, minPlayers, null);
+                case SUSTENANCE -> new Sustenance(id, era, minPlayers, null);
+                case SHAMANIC_RITUAL -> new ShamanicRitual(id, era, minPlayers, null);
+                case CAVE_PAINTING -> new CavePaintings(id, era, minPlayers, null);
             };
 
         } catch (Exception e) {

@@ -16,7 +16,7 @@ class HuntingTest {
 
     @Test
     void testHuntingEra1_NoHunters_AndNullTribe() {
-        Hunting event = new Hunting("hunt_01", Era.I, 3, EventType.HUNTING, null);
+        Hunting event = new Hunting("hunt_01", Era.I, 3, null);
 
         Player normalPlayer = new Player("Christian");
         // Non aggiungiamo Cacciatori. Si aspetta 0 Cibo e 0 PP.
@@ -36,7 +36,7 @@ class HuntingTest {
 
     @Test
     void testHuntingEra2_WithHunters_AndBuildings() {
-        Hunting event = new Hunting("hunt_01", Era.II, 3, EventType.HUNTING, null);
+        Hunting event = new Hunting("hunt_01", Era.II, 3, null);
         Player player = new Player("Christian");
 
         // Aggiungiamo 2 Cacciatori
@@ -61,7 +61,7 @@ class HuntingTest {
 
     @Test
     void testHuntingEra3_CalculatesPPCorrectly() {
-        Hunting event = new Hunting("hunt_01", Era.III, 3, EventType.HUNTING, null);
+        Hunting event = new Hunting("hunt_01", Era.III, 3, null);
         Player player = new Player("Christian");
 
         // Aggiungiamo 3 Cacciatori

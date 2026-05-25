@@ -3,8 +3,8 @@ package it.polimi.ingsw.am22.model.building;
 import it.polimi.ingsw.am22.model.Player;
 
 public class TurnPhaseModifierEffect implements BuildingEffect {
-    private boolean extraFoodOnTurnOrderBonus;
-    private boolean extraBuyAtRoundEnd;
+    private final boolean extraFoodOnTurnOrderBonus;
+    private final boolean extraBuyAtRoundEnd;
 
     public TurnPhaseModifierEffect(boolean extraFoodOnTurnOrderBonus, boolean extraBuyAtRoundEnd) {
         this.extraFoodOnTurnOrderBonus = extraFoodOnTurnOrderBonus;

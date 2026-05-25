@@ -12,7 +12,7 @@ public class CavePaintings extends Event implements EventEffect {
 
     private static final int PENALTY_PP = -2;
 
-    public CavePaintings(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+    public CavePaintings(String id, Era era, int minPlayers, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.CAVE_PAINTING, eventEffect);
         setEffect(this);
     }

@@ -332,12 +332,12 @@ public final class TuiView implements ServerHandler {
                             ? Ansi.yellow("(reconnecting " + info.currentPlayers()
                                     + "/" + info.expectedPlayers() + ")")
                             : info.started() ? "(started)" : "(open)";
-                    System.out.println(String.format("  %s  host=%s  %d/%s  %s",
+                    System.out.printf("  %s  host=%s  %d/%s  %s%n",
                             info.matchId(),
                             info.hostNickname(),
                             info.currentPlayers(),
                             info.expectedPlayers() > 0 ? String.valueOf(info.expectedPlayers()) : "?",
-                            status));
+                            status);
                 }
                 System.out.println("Use 'join <matchId> <nickname>' to enter one.");
             }
@@ -435,12 +435,12 @@ public final class TuiView implements ServerHandler {
                 String status = t.occupiedBy() == null
                         ? Ansi.dim("(free)")
                         : "occupied by " + t.occupiedBy();
-                System.out.println(String.format("  %c  upper=%d lower=%d food=%d  %s",
+                System.out.printf("  %c  upper=%d lower=%d food=%d  %s%n",
                         t.letter(),
                         t.upperCardsToTake(),
                         t.lowerCardsToTake(),
                         t.foodReward(),
-                        status));
+                        status);
             }
             System.out.println(sectionHeader("Upper row"));
             System.out.println("  " + summarizeCards(state.upperRow()));
@@ -452,12 +452,12 @@ public final class TuiView implements ServerHandler {
                 // Negative foodBonus means the slot imposes the -2 PP penalty
                 // for the player who finishes there without food.
                 String penalty = slot.foodBonus() < 0 ? "/points=-2" : "";
-                System.out.println(String.format("  pos=%d food=%d%s%s %s",
+                System.out.printf("  pos=%d food=%d%s%s %s%n",
                         slot.positionIndex(),
                         slot.foodBonus(),
                         penalty,
                         lastSpace,
-                        slot.occupiedBy() == null ? "" : "-> " + slot.occupiedBy()));
+                        slot.occupiedBy() == null ? "" : "-> " + slot.occupiedBy());
             }
             System.out.println(Ansi.magenta(Ansi.BOLD + "=================="));
             // If it's my turn, contextual command hint.

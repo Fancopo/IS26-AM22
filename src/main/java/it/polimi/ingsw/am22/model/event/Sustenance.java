@@ -12,7 +12,7 @@ public class Sustenance extends Event implements EventEffect {
 
     private static final int FOOD_PER_COLLECTOR = 3;
 
-    public Sustenance(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+    public Sustenance(String id, Era era, int minPlayers, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.SUSTENANCE, eventEffect);
         setEffect(this);
     }

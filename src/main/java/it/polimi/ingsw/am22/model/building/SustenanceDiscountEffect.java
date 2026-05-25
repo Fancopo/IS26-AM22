@@ -3,7 +3,7 @@ import it.polimi.ingsw.am22.model.Tribe;
 import it.polimi.ingsw.am22.model.character.CharacterType;
 
 public class SustenanceDiscountEffect implements BuildingEffect {
-    private CharacterType targetCharacterType;
+    private final CharacterType targetCharacterType;
 
     public SustenanceDiscountEffect(CharacterType targetCharacterType) {
         this.targetCharacterType = targetCharacterType;

@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class ShamanicRitual extends Event implements EventEffect {
 
-    public ShamanicRitual(String id, Era era, int minPlayers, EventType eventType, EventEffect eventEffect) {
+    public ShamanicRitual(String id, Era era, int minPlayers, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.SHAMANIC_RITUAL, eventEffect);
         setEffect(this);
     }

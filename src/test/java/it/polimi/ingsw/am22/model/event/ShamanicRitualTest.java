@@ -25,7 +25,7 @@ class ShamanicRitualTest {
 
     @Test
     void testShamanicRitualEra1_NormalWinAndLoss_WithNullTribe() {
-        ShamanicRitual event = new ShamanicRitual("sha_01", Era.I, 3, EventType.SHAMANIC_RITUAL, null);
+        ShamanicRitual event = new ShamanicRitual("sha_01", Era.I, 3, null);
 
         Player winner = new Player("Vincitore");
         winner.getTribe().addCharacter(new Shaman("s1", Era.I, 3, 3)); // 3 icone
@@ -46,7 +46,7 @@ class ShamanicRitualTest {
 
     @Test
     void testShamanicRitualEra2_BuildingsModifiers_AndTie() {
-        ShamanicRitual event = new ShamanicRitual("sha_02", Era.II, 3, EventType.SHAMANIC_RITUAL, null);
+        ShamanicRitual event = new ShamanicRitual("sha_02", Era.II, 3, null);
 
         Player doubleWinner = new Player("Doppio Vincitore");
         doubleWinner.getTribe().addCharacter(new Shaman("s1", Era.I, 3, 2));
@@ -79,7 +79,7 @@ class ShamanicRitualTest {
 
     @Test
     void testShamanicRitualEra3_ExtraIconsBuilding_AndTotalTie() {
-        ShamanicRitual event = new ShamanicRitual("sha_03", Era.III, 3, EventType.SHAMANIC_RITUAL, null);
+        ShamanicRitual event = new ShamanicRitual("sha_03", Era.III, 3, null);
 
         Player p1 = new Player("P1"); // 0 icone base
         // Edificio: 3 icone extra
@@ -101,7 +101,7 @@ class ShamanicRitualTest {
     @Test
     void testShamanicRitual_EmptyList() {
         // Verifica la riga 76: if (totalIconsPerPlayer.isEmpty()) return;
-        ShamanicRitual event = new ShamanicRitual("sha_04", Era.I, 3, EventType.SHAMANIC_RITUAL, null);
+        ShamanicRitual event = new ShamanicRitual("sha_04", Era.I, 3, null);
         assertDoesNotThrow(() -> event.applyEvent(new ArrayList<>(), "sha_04"));
     }
 }

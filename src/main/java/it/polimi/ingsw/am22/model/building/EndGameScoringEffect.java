@@ -5,11 +5,11 @@ import it.polimi.ingsw.am22.model.character.CharacterType;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;
 
 public class EndGameScoringEffect implements BuildingEffect {
-    private int flatPP;
-    private int pointsPerSet;
-    private CharacterType targetCharacterType;
-    private int multiplierPP;
-    private boolean doubleBuilderPP;
+    private final int flatPP;
+    private final int pointsPerSet;
+    private final CharacterType targetCharacterType;
+    private final int multiplierPP;
+    private final boolean doubleBuilderPP;
 
     public EndGameScoringEffect(int flatPP, int pointsPerSet, CharacterType targetCharacterType, int multiplierPP, boolean doubleBuilderPP) {
         this.flatPP = flatPP;

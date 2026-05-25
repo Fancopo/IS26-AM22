@@ -8,8 +8,8 @@ import it.polimi.ingsw.am22.model.character.TribeCharacter;
 import it.polimi.ingsw.am22.model.character.CharacterType;
 
 public class CollectionRewardEffect implements BuildingEffect {
-    private CollectionCondition conditionType;
-    private int foodReward;
+    private final CollectionCondition conditionType;
+    private final int foodReward;
     private int previousMatches = 0;
 
     public CollectionRewardEffect(CollectionCondition conditionType, int foodReward) {

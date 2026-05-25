@@ -31,7 +31,7 @@ class SustenanceTest {
     @Test
     void testSustenance_NullTribe() {
         // Copertura: if (tribe == null) continue;
-        Sustenance event = new Sustenance("sust_00", Era.I, 3, EventType.SUSTENANCE, null);
+        Sustenance event = new Sustenance("sust_00", Era.I, 3, null);
 
         Player ghostPlayer = new Player("Fantasma") {
             @Override public Tribe getTribe() { return null; }
@@ -43,7 +43,7 @@ class SustenanceTest {
     @Test
     void testSustenanceEra1_EnoughFood_NoDiscounts() {
         // Copertura: Era.I (PPLose = -1), Nessuno sconto, Cibo sufficiente
-        Sustenance event = new Sustenance("sust_01", Era.I, 3, EventType.SUSTENANCE, null);
+        Sustenance event = new Sustenance("sust_01", Era.I, 3, null);
 
         Player p1 = new Player("Giocatore Cibo");
         // Supponiamo che il giocatore parta o venga settato con 5 cibo
@@ -65,7 +65,7 @@ class SustenanceTest {
     @Test
     void testSustenanceEra2_NotEnoughFood_WithCollectorDiscount() {
         // Copertura: Era.II (PPLose = -2), Sconto Raccoglitore, Cibo INSUFFICIENTE
-        Sustenance event = new Sustenance("sust_02", Era.II, 3, EventType.SUSTENANCE, null);
+        Sustenance event = new Sustenance("sust_02", Era.II, 3, null);
 
         Player p2 = new Player("Giocatore Povero");
         p2.addFood(1); // Ha solo 1 cibo
@@ -88,7 +88,7 @@ class SustenanceTest {
     @Test
     void testSustenanceEra3_NotEnoughFood_WithBuildingDiscount() {
         // Copertura: Era.III (PPLose = -3), Sconto Edificio, Cibo INSUFFICIENTE a 0
-        Sustenance event = new Sustenance("sust_03", Era.III, 3, EventType.SUSTENANCE, null);
+        Sustenance event = new Sustenance("sust_03", Era.III, 3, null);
 
         Player p3 = new Player("Senza Cibo");
         // Parte con 0 cibo di default (nessuna addFood chiamata)
@@ -117,7 +117,7 @@ class SustenanceTest {
     @Test
     void testSustenance_MaxZero_HugeDiscount() {
         // Copertura: Math.max(0, totalCharacters - totalDiscount)
-        Sustenance event = new Sustenance("sust_04", Era.I, 3, EventType.SUSTENANCE, null);
+        Sustenance event = new Sustenance("sust_04", Era.I, 3, null);
 
         Player p4 = new Player("Giocatore Scontato");
         p4.addFood(2);
@@ -135,7 +135,7 @@ class SustenanceTest {
     @Test
     void testSustenance_EmptyPlayersList() {
         // Copertura: Test robustezza con lista vuota (salta il for)
-        Sustenance event = new Sustenance("sust_05", Era.I, 3, EventType.SUSTENANCE, null);
+        Sustenance event = new Sustenance("sust_05", Era.I, 3, null);
         assertDoesNotThrow(() -> event.applyEvent(new ArrayList<>(), "sust_05"));
     }
 }

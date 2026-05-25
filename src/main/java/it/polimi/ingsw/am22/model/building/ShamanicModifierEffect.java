@@ -1,9 +1,9 @@
 package it.polimi.ingsw.am22.model.building;
 
 public class ShamanicModifierEffect implements BuildingEffect {
-    private int extraIcons;
-    private boolean preventPPLoss;
-    private boolean doubleWinPP;
+    private final int extraIcons;
+    private final boolean preventPPLoss;
+    private final boolean doubleWinPP;
 
     public ShamanicModifierEffect(int extraIcons, boolean preventPPLoss, boolean doubleWinPP) {
         this.extraIcons = extraIcons;

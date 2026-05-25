@@ -16,7 +16,7 @@ class CavePaintingsTest {
 
     @Test
     void testCavePaintingsEra1_NoArtists_AndNullTribe() {
-        CavePaintings event = new CavePaintings("cp_01", Era.I, 3, EventType.CAVE_PAINTING, null);
+        CavePaintings event = new CavePaintings("cp_01", Era.I, 3, null);
 
         Player normalPlayer = new Player("Christian");
         // Non aggiungiamo Artisti, quindi artistCount = 0
@@ -35,7 +35,7 @@ class CavePaintingsTest {
 
     @Test
     void testCavePaintingsEra2_NotEnoughArtists() {
-        CavePaintings event = new CavePaintings("cp_02", Era.II, 3, EventType.CAVE_PAINTING, null);
+        CavePaintings event = new CavePaintings("cp_02", Era.II, 3, null);
         Player player = new Player("Christian");
 
         // Aggiungiamo 1 Artista. (L'Era II ne richiede minimo 2!)
@@ -48,7 +48,7 @@ class CavePaintingsTest {
 
     @Test
     void testCavePaintingsEra3_NotEnoughArtists_WithBuildings() {
-        CavePaintings event = new CavePaintings("cp_03", Era.III, 3, EventType.CAVE_PAINTING, null);
+        CavePaintings event = new CavePaintings("cp_03", Era.III, 3, null);
         Player player = new Player("Christian");
 
         // Aggiungiamo 2 Artisti (L'Era III ne richiede minimo 3)
@@ -71,7 +71,7 @@ class CavePaintingsTest {
 
     @Test
     void testCavePaintingsEra3_EnoughArtists_WithBuildings() {
-        CavePaintings event = new CavePaintings("cp_03", Era.III, 3, EventType.CAVE_PAINTING, null);
+        CavePaintings event = new CavePaintings("cp_03", Era.III, 3, null);
         Player player = new Player("Christian");
 
         // Aggiungiamo 3 Artisti (L'Era III ne richiede minimo 3)

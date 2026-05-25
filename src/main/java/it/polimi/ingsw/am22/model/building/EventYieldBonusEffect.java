@@ -4,9 +4,9 @@ import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.model.event.EventType;
 
 public class EventYieldBonusEffect implements BuildingEffect {
-    private EventType targetEventType;
-    private int bonusFood;
-    private int bonusPP;
+    private final EventType targetEventType;
+    private final int bonusFood;
+    private final int bonusPP;
 
     public EventYieldBonusEffect(EventType targetEventType, int bonusFood, int bonusPP) {
         this.targetEventType = targetEventType;
