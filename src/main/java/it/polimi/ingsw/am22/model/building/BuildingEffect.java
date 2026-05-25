@@ -17,5 +17,11 @@ public interface BuildingEffect extends Serializable {
     default int getSustenanceDiscount(Tribe tribe) { return 0; }
     default void onCharacterAdded(Player player, TribeCharacter newChar) {}
     default void applyEventBonus(EventType eventType, Player player, int characterCount) {}
+
+    /**
+     * Human-readable effect text for the TUI {@code check} command. Default is
+     * empty so a Building with no effect shows only its base price/PP info.
+     */
+    default String describe() { return ""; }
 }
 

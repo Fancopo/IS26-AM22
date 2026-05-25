@@ -49,4 +49,15 @@ public class EndGameScoringEffect implements BuildingEffect {
         }
         return minCount;
     }
+
+    @Override
+    public String describe() {
+        StringBuilder sb = new StringBuilder("End-game scoring:");
+        if (flatPP != 0)                     sb.append(" +").append(flatPP).append(" PP flat;");
+        if (pointsPerSet > 0)                sb.append(" +").append(pointsPerSet).append(" PP per complete set of 6;");
+        if (targetCharacterType != null && multiplierPP > 0) sb.append(" +").append(multiplierPP)
+                                                              .append(" PP per ").append(targetCharacterType).append(";");
+        if (doubleBuilderPP)                 sb.append(" doubles your Builders' PP;");
+        return sb.toString();
+    }
 }

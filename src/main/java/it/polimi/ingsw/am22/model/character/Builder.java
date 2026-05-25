@@ -32,4 +32,10 @@ public class Builder extends TribeCharacter implements CharacterEffect {
     public void applyPickEffect(PickSimulation sim) {
         sim.addBuilderDiscount(discountFood);
     }
+
+    @Override
+    public String describe() {
+        return "Builder: gives -" + discountFood + " food discount on Buildings picked "
+                + "after it in the same turn, and contributes " + PP + " PP at end of game.";
+    }
 }

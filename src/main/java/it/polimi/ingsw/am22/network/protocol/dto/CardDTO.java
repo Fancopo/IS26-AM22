@@ -10,6 +10,7 @@ public record CardDTO(
         String era,
         int minPlayers,
         Integer foodCost,
-        int numStars
+        int numStars,
+        String description
 ) implements Serializable {
 }

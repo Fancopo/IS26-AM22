@@ -96,7 +96,8 @@ public class ModelDtoMapper {
                 String.valueOf(card.getEra()),
                 card.getMinPlayers(),
                 foodCost,
-                card.getNumStars()
+                card.getNumStars(),
+                card.describe()
         );
     }
 

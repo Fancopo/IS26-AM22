@@ -47,4 +47,14 @@ public class Sustenance extends Event implements EventEffect {
             }
         }
     }
+
+    @Override
+    public String describe() {
+        int penalty = switch (getEra()) { case I -> -1; case II -> -2; case III -> -3; };
+        return "Sustenance event (Era " + getEra() + "): each player must pay 1 food per "
+                + "character in the tribe (each Collector and Sustenance-discount Building "
+                + "feeds " + FOOD_PER_COLLECTOR + " / 1 characters for free). Unfed "
+                + "characters cost " + penalty + " PP each. Resolves after every other "
+                + "event of the round. Events cannot be picked into the tribe.";
+    }
 }

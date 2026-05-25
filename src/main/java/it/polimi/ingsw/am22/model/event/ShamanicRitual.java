@@ -74,4 +74,14 @@ public class ShamanicRitual extends Event implements EventEffect {
             }
         }
     }
+
+    @Override
+    public String describe() {
+        int win  = switch (getEra()) { case I -> 5;  case II -> 10; case III -> 15; };
+        int lose = switch (getEra()) { case I -> -3; case II -> -5; case III -> -7; };
+        return "Shamanic Ritual event (Era " + getEra() + "): player(s) with the most "
+                + "star icons gain " + win + " PP; player(s) with the fewest lose "
+                + lose + " PP. Buildings can grant extra stars, prevent the loss, "
+                + "or double the win. Events cannot be picked into the tribe.";
+    }
 }

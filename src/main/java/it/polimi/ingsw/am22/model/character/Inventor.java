@@ -27,4 +27,10 @@ public class Inventor extends TribeCharacter implements CharacterEffect {
     public String cardDetailType() {
         return "INVENTOR-" + iconPerInventor;
     }
+
+    @Override
+    public String describe() {
+        return "Inventor (icon " + iconPerInventor + "): pair two Inventors with the "
+                + "same icon to trigger Inventor-pair rewards from matching Buildings.";
+    }
 }

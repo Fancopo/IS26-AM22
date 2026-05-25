@@ -22,4 +22,12 @@ public class TurnPhaseModifierEffect implements BuildingEffect {
     public boolean hasExtraBuyAtRoundEnd() {
         return extraBuyAtRoundEnd;
     }
+
+    @Override
+    public String describe() {
+        StringBuilder sb = new StringBuilder("Turn-phase modifier:");
+        if (extraFoodOnTurnOrderBonus) sb.append(" +1 food whenever your totem lands on a food slot;");
+        if (extraBuyAtRoundEnd)        sb.append(" grants an extra Building purchase at round end;");
+        return sb.toString();
+    }
 }

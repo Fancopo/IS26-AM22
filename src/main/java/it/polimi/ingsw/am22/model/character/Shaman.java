@@ -16,4 +16,11 @@ public class Shaman extends TribeCharacter implements CharacterEffect {
     public int getNumStars() {
         return numStars;
     }
+
+    @Override
+    public String describe() {
+        return "Shaman: contributes " + numStars + " star icon"
+                + (numStars == 1 ? "" : "s") + " toward the Shamanic Ritual event "
+                + "(most stars wins PP, fewest stars loses PP).";
+    }
 }

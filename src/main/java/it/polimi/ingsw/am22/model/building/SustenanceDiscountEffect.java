@@ -13,4 +13,10 @@ public class SustenanceDiscountEffect implements BuildingEffect {
     public int getSustenanceDiscount(Tribe tribe) {
         return tribe.countCharacters(targetCharacterType);
     }
+
+    @Override
+    public String describe() {
+        return "Sustenance discount: during the Sustenance event you feed 1 extra "
+                + "character per " + targetCharacterType + " in your tribe.";
+    }
 }

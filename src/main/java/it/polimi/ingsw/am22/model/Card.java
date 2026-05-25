@@ -57,6 +57,13 @@ public abstract class Card implements Serializable {
     /** Specific type within the category (e.g. CharacterType, EventType). */
     public String cardDetailType() { return getClass().getSimpleName().toUpperCase(Locale.ROOT); }
 
+    /**
+     * Human-readable explanation of what this card does, shown by the TUI
+     * {@code check} command. Subclasses override to expose the strategic
+     * effect text without leaking model internals.
+     */
+    public String describe() { return cardDetailType(); }
+
     public String getId() {return id;}
     public Era getEra() {return era;}
     public int getMinPlayers() {return minPlayers;}

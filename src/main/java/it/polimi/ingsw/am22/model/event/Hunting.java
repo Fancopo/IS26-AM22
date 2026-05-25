@@ -38,4 +38,12 @@ public class Hunting extends Event implements EventEffect {
             player.addPP(huntersCount * ppPerHunter);
         }
     }
+
+    @Override
+    public String describe() {
+        int pp = switch (getEra()) { case I -> 1; case II -> 2; case III -> 3; };
+        return "Hunting event (Era " + getEra() + "): each player gains 1 food and "
+                + pp + " PP per Hunter in their tribe. "
+                + "Events cannot be picked into the tribe.";
+    }
 }

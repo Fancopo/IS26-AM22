@@ -83,4 +83,18 @@ public class Building extends Card {
             this.effect.onTotemPlaced(player);
         }
     }
+
+    @Override
+    public String describe() {
+        StringBuilder sb = new StringBuilder("Building: costs ")
+                .append(foodPrice).append(" food (before Builder discount), worth ")
+                .append(finalPP).append(" PP at end of game.");
+        if (effect != null) {
+            String effectText = effect.describe();
+            if (effectText != null && !effectText.isEmpty()) {
+                sb.append(' ').append(effectText);
+            }
+        }
+        return sb.toString();
+    }
 }

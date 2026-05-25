@@ -46,4 +46,14 @@ public class Hunter extends TribeCharacter implements CharacterEffect {
             sim.addFood(sim.getHunterCount());
         }
     }
+
+    @Override
+    public String describe() {
+        String base = "Hunter: scores PP and food during the Hunting event "
+                + "(more hunters in your tribe -> more reward).";
+        return hasFoodIcon
+                ? base + " Food-icon variant: when added to the tribe, immediately grants "
+                        + "food equal to the total number of Hunters you own."
+                : base;
+    }
 }

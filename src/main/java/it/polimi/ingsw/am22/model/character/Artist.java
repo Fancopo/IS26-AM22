@@ -8,4 +8,10 @@ public class Artist extends TribeCharacter implements CharacterEffect {
         super(id, era, minPlayers, CharacterType.ARTIST, null);
         setEffect(this);
     }
+
+    @Override
+    public String describe() {
+        return "Artist: scores prestige points during the Cave Paintings event "
+                + "(more artists in your tribe -> more PP; too few = -2 PP penalty).";
+    }
 }

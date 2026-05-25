@@ -267,6 +267,14 @@ public final class TuiRunner {
                         requireArgs(parts, 2, "bonus <cardId>");
                         virtualServer.pickBonusCard(parts[1]);
                     }
+                    case "check" -> {
+                        // Local lookup against the cached game state — no
+                        // network round-trip. Works for any visible card:
+                        // board (upper/lower row) plus every player's tribe
+                        // and buildings.
+                        requireArgs(parts, 2, "check <cardId>");
+                        view.renderCardCheck(parts[1]);
+                    }
                     case "leave" -> {
                         // 'leave' funziona sia pre-game (uscita lobby) sia
                         // mid-game (abort match). In entrambi i casi il
@@ -340,6 +348,7 @@ public final class TuiRunner {
         System.out.println("    place <letter>                  place totem on offer tile <letter>");
         System.out.println("    pick <id1> [id2 ...]            ");
         System.out.println("    bonus <cardId>                  select bonus card");
+        System.out.println("    check <cardId>                  show full info of a visible card (board or any tribe/buildings)");
         System.out.println("    leave                           leave the current lobby; mid-game aborts the match — returns to matches list");
         System.out.println("    quit                            quit the client");
         System.out.println();

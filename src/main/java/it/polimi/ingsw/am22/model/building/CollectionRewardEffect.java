@@ -54,4 +54,13 @@ public class CollectionRewardEffect implements BuildingEffect {
         }
         return minCount;
     }
+
+    @Override
+    public String describe() {
+        String trigger = switch (conditionType) {
+            case INVENTOR_PAIR -> "each new pair of Inventors with the same icon";
+            case SET_OF_6      -> "each new complete set of all 6 character types";
+        };
+        return "Collection reward: grants +" + foodReward + " food for " + trigger + ".";
+    }
 }

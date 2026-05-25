@@ -19,4 +19,13 @@ public class ShamanicModifierEffect implements BuildingEffect {
 
     @Override
     public boolean doublesShamanWinPP() { return doubleWinPP; }
+
+    @Override
+    public String describe() {
+        StringBuilder sb = new StringBuilder("Shamanic Ritual:");
+        if (extraIcons > 0) sb.append(" +").append(extraIcons).append(" star icon(s);");
+        if (preventPPLoss)  sb.append(" prevents PP loss when you have the fewest stars;");
+        if (doubleWinPP)    sb.append(" doubles the PP gained when you have the most stars;");
+        return sb.toString();
+    }
 }

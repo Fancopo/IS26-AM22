@@ -47,4 +47,14 @@ public class CavePaintings extends Event implements EventEffect {
             }
         }
     }
+
+    @Override
+    public String describe() {
+        int min = switch (getEra()) { case I -> 1; case II -> 2; case III -> 3; };
+        int pp  = switch (getEra()) { case I -> 1; case II -> 2; case III -> 3; };
+        return "Cave Paintings event (Era " + getEra() + "): each player with at "
+                + "least " + min + " Artist(s) gains " + pp + " PP per Artist; "
+                + "anyone below that threshold suffers a " + PENALTY_PP + " PP penalty. "
+                + "Events cannot be picked into the tribe.";
+    }
 }

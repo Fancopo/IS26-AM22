@@ -176,6 +176,76 @@ public final class TuiView implements ServerHandler {
         return null;
     }
 
+    /**
+     * 'check <cardId>': looks the card up across every visible source — the
+     * offer rows on the board and every player's tribe / buildings — and prints
+     * full info plus a human-readable effect description.
+     * <p>Searched in this order so a board card wins over a tribe card with the
+     * same id (shouldn't happen in practice, but keeps results predictable):
+     * upper row, lower row, then each player's tribe characters and buildings.
+     */
+    public void renderCardCheck(String cardId) {
+        if (cardId == null || cardId.isBlank()) {
+            println("usage: check <cardId>");
+            return;
+        }
+        GameStateDTO state = session.getLatestGameState();
+        if (state == null) {
+            println("(no game in progress — 'check' is only available during a match)");
+            return;
+        }
+
+        String location = null;
+        CardDTO card = findCardById(state.upperRow(), cardId);
+        if (card != null) location = "upper row (board)";
+        if (card == null) {
+            card = findCardById(state.lowerRow(), cardId);
+            if (card != null) location = "lower row (board)";
+        }
+        if (card == null) {
+            for (PlayerDTO p : state.players()) {
+                CardDTO hit = findCardById(p.tribeCharacters(), cardId);
+                if (hit != null) {
+                    card = hit;
+                    location = "tribe of " + p.nickname();
+                    break;
+                }
+                hit = findCardById(p.buildings(), cardId);
+                if (hit != null) {
+                    card = hit;
+                    location = "buildings of " + p.nickname();
+                    break;
+                }
+            }
+        }
+
+        if (card == null) {
+            println(Ansi.red("[ERROR] ") + "no visible card with id '" + cardId + "'.");
+            return;
+        }
+
+        synchronized (printLock) {
+            System.out.println();
+            System.out.println(Ansi.magenta(Ansi.BOLD + "-- Card "
+                    + colorizeCard(card, card.id()) + " --"));
+            System.out.println("  Location  : " + location);
+            System.out.println("  Category  : " + card.category());
+            System.out.println("  Detail    : " + colorizeCard(card, card.detailType()));
+            System.out.println("  Era       : " + card.era());
+            System.out.println("  Min players: " + card.minPlayers());
+            if (card.foodCost() != null) {
+                System.out.println("  Food cost : " + card.foodCost());
+            }
+            if (card.numStars() > 0) {
+                System.out.println("  Stars     : " + card.numStars());
+            }
+            String desc = card.description();
+            if (desc != null && !desc.isBlank()) {
+                System.out.println("  Effect    : " + desc);
+            }
+        }
+    }
+
     // -------------------- ServerHandler --------------------
 
     @Override
