@@ -14,6 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,13 @@ public class RmiServerConnection implements ServerConnection {
     private final RmiServerInterface remoteGameServer;
     private final RmiClientInterface callback;
     private final ScheduledExecutorService livenessProbe;
+    /**
+     * Non-blocking client-side send: every {@code submitRequest} is dispatched
+     * on this single-thread executor so the UI thread is never blocked on
+     * the remote call. Single-thread preserves FIFO order of requests from
+     * this client.
+     */
+    private final ExecutorService outbound;
     private volatile ServerHandler updateHandler;
     private volatile boolean closed;
 
@@ -61,6 +69,11 @@ public class RmiServerConnection implements ServerConnection {
         });
         livenessProbe.scheduleWithFixedDelay(this::probe,
                 PING_INTERVAL_MS, PING_INTERVAL_MS, TimeUnit.MILLISECONDS);
+        this.outbound = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "rmi-outbound");
+            t.setDaemon(true);
+            return t;
+        });
     }
 
     private void probe() {
@@ -92,23 +105,32 @@ public class RmiServerConnection implements ServerConnection {
         if (closed) return;
         closed = true;
         livenessProbe.shutdownNow();
+        outbound.shutdownNow();
         try {
             UnicastRemoteObject.unexportObject(callback, true);
         } catch (Exception ignored) {
         }
     }
 
+    /**
+     * Non-blocking send: the request is enqueued on {@code outbound} and the
+     * caller returns immediately. A {@link RemoteException} thrown by the
+     * remote call is converted into a synthetic disconnect via
+     * {@link #fireConnectionClosed}, exactly like a failed liveness probe.
+     */
     @Override
     public void send(ClientRequest request) {
         if (closed) {
             throw new IllegalStateException("The RMI connection is closed.");
         }
-        try {
-            remoteGameServer.submitRequest(request, callback);
-        } catch (RemoteException e) {
-            close();
-            throw new IllegalStateException("Unable to invoke the remote server.", e);
-        }
+        outbound.execute(() -> {
+            if (closed) return;
+            try {
+                remoteGameServer.submitRequest(request, callback);
+            } catch (RemoteException e) {
+                fireConnectionClosed(e);
+            }
+        });
     }
 
     /** RMI-exported callback the server invokes to deliver messages to this client. */

@@ -9,6 +9,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.PingMessage;
 
 /**
  * Visitor for server-to-client messages. Dispatch goes through {@link ServerMessage#accept}.
@@ -24,4 +25,6 @@ public interface ServerMessageVisitor {
     default void visit(MatchClosedMessage message) {}
     default void visit(MatchRecoveringMessage message) {}
     default void visit(ErrorMessage message) {}
+    /** Transport-only liveness probe. Filtered by the read loop, never reaches the view. */
+    default void visit(PingMessage message) {}
 }

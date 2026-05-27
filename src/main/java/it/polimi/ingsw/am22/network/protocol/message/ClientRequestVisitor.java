@@ -6,6 +6,7 @@ import it.polimi.ingsw.am22.network.protocol.message.request.DisconnectPlayerReq
 import it.polimi.ingsw.am22.network.protocol.message.request.ListMatchesRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PickBonusCardRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PickCardsRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.PingRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PlaceTotemRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.ReconnectRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.RemovePlayerFromLobbyRequest;
@@ -27,4 +28,13 @@ public interface ClientRequestVisitor {
     void visit(PickBonusCardRequest request);
     void visit(DisconnectPlayerRequest request);
     void visit(ReconnectRequest request);
+
+    /**
+     * Transport-only liveness probe. Default no-op: visitor implementations
+     * (controllers) should not care about pings — the transport read loop
+     * is expected to drop the message before dispatch. Defaulted to avoid
+     * forcing every implementor to add an empty method for a message that
+     * is never meant to reach them.
+     */
+    default void visit(PingRequest request) {}
 }

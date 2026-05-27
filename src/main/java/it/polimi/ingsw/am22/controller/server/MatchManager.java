@@ -20,6 +20,7 @@ import it.polimi.ingsw.am22.network.protocol.message.request.RemovePlayerFromLob
 import it.polimi.ingsw.am22.network.protocol.message.request.SetExpectedPlayersRequest;
 import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
+import it.polimi.ingsw.am22.network.server.AsyncClientHandler;
 import it.polimi.ingsw.am22.network.server.ClientHandler;
 import it.polimi.ingsw.am22.network.server.rmi.RmiClientHandler;
 import it.polimi.ingsw.am22.view.server.VirtualView;
@@ -171,7 +172,10 @@ public class MatchManager {
         for (MatchSession session : matchesById.values()) {
             synchronized (session) {
                 for (ClientHandler ch : session.snapshotChannels()) {
-                    if (ch instanceof RmiClientHandler rmi) {
+                    // Channels are wrapped in AsyncClientHandler since the move
+                    // to non-blocking sends; unwrap to reach the actual RMI handler.
+                    ClientHandler raw = (ch instanceof AsyncClientHandler a) ? a.unwrap() : ch;
+                    if (raw instanceof RmiClientHandler rmi) {
                         rmiHandlers.add(rmi);
                     }
                 }

@@ -1,27 +1,41 @@
 package it.polimi.ingsw.am22.network.server.rmi;
 
-import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.controller.server.MatchManager;
+import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
+import it.polimi.ingsw.am22.network.server.AsyncClientHandler;
+import it.polimi.ingsw.am22.network.server.ClientHandler;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * RMI implementation of {@link RmiServerInterface}. Each submitRequest wraps the
- * client callback in a {@link RmiClientHandler} and delegates to the match manager.
+ * RMI implementation of {@link RmiServerInterface}. Each submitRequest is
+ * dispatched on a server-side executor so the remote call returns immediately
+ * — the client's {@code send()} stops being a synchronous round-trip and the
+ * UI thread is never blocked on remote processing.
+ *
+ * <p>The {@link ClientHandler} used to deliver replies is wrapped in an
+ * {@link AsyncClientHandler}, so a slow/unreachable RMI client never blocks
+ * the broadcast loop. The wrapper is cached per remote callback stub: the
+ * same client across multiple {@code submitRequest} calls keeps the same
+ * handler instance, preserving {@code boundNickname} / {@code boundMatchId}.
  *
  * <p>Also drives a server-side liveness probe that periodically pings every
  * bound RMI client. RMI gives the server no notification when a client dies
  * (no read loop, no socket EOF), so without this a dead client would only be
  * discovered the next time the server happened to send to it — leaving the
  * match in a zombie state until then. Socket clients get this for free from
- * EOFException on their reader thread.
+ * EOFException on their reader thread (with the application-level ping on
+ * top, see {@code SocketClientHandler}).
  */
 public class RmiServer extends UnicastRemoteObject implements RmiServerInterface {
 
@@ -30,14 +44,42 @@ public class RmiServer extends UnicastRemoteObject implements RmiServerInterface
 
     private final MatchManager matchManager;
 
+    private final ExecutorService inbound;
+    private final Map<RmiClientInterface, ClientHandler> handlerByCallback;
+
     public RmiServer(MatchManager matchManager) throws RemoteException {
         super();
         this.matchManager = matchManager;
+        this.inbound = Executors.newCachedThreadPool(r -> {
+            Thread t = new Thread(r, "rmi-inbound-dispatch");
+            t.setDaemon(true);
+            return t;
+        });
+        this.handlerByCallback = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void submitRequest(ClientRequest request, RmiClientInterface clientView) throws RemoteException {
-        matchManager.handleRequest(request, new RmiClientHandler(clientView, matchManager));
+    public void submitRequest(ClientRequest request, RmiClientInterface clientView) {
+        // The RMI call returns as soon as the request is enqueued; handling
+        // and any resulting broadcast happen on the inbound executor.
+        ClientHandler handler = handlerFor(clientView);
+        inbound.execute(() -> matchManager.handleRequest(request, handler));
+    }
+
+    /**
+     * Cached lookup of the handler bound to an RMI client. The first call for
+     * a given callback stub creates the handler; subsequent calls return the
+     * same instance, so {@code boundNickname} / {@code boundMatchId} survive
+     * across requests from that client.
+     */
+    private ClientHandler handlerFor(RmiClientInterface clientView) {
+        return handlerByCallback.computeIfAbsent(clientView, this::createHandlerFor);
+    }
+
+    private ClientHandler createHandlerFor(RmiClientInterface callback) {
+        return new AsyncClientHandler(
+                new RmiClientHandler(callback, matchManager),
+                "rmi-" + System.identityHashCode(callback));
     }
 
     @Override
@@ -89,6 +131,7 @@ public class RmiServer extends UnicastRemoteObject implements RmiServerInterface
         /** Best-effort release: unbind + unexport endpoint + unexport registry. Idempotent. */
         public void shutdown() {
             try { livenessProbe.shutdownNow(); } catch (Exception ignored) {}
+            try { endpoint.inbound.shutdownNow(); } catch (Exception ignored) {}
             try { registry.unbind(bindingName); } catch (Exception ignored) {}
             try { UnicastRemoteObject.unexportObject(endpoint, true); } catch (Exception ignored) {}
             try { UnicastRemoteObject.unexportObject(registry, true); } catch (Exception ignored) {}
