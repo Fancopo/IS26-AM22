@@ -158,6 +158,13 @@ public final class MatchSession {
                     + "' does not match any player of the suspended match "
                     + matchController.getMatchId() + ".");
         }
+        // Reject a second client trying to take over a nickname that another
+        // client has already reconnected with: one live channel per player.
+        if (virtualView.isBound(player.getNickname())) {
+            throw new IllegalStateException("Nickname '" + request.nickname()
+                    + "' is already connected to match "
+                    + matchController.getMatchId() + ".");
+        }
         attachObserverIfNeeded();
         bind(player.getNickname(), channel);
         // No MatchJoinedMessage here: the client already knows matchId and
