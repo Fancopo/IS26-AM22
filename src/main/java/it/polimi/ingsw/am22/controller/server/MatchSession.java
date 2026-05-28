@@ -148,6 +148,19 @@ public final class MatchSession {
      * — this is the "nickname does not match" error the client surfaces.
      */
     public void handleReconnect(ReconnectRequest request, ClientHandler channel) {
+        // Direct reconnect (transport drop): the client kept matchId/nickname
+        // across the drop, so no MatchJoinedMessage is needed.
+        handleReconnect(request, channel, false);
+    }
+
+    /**
+     * @param announceJoin when true, send a {@link MatchJoinedMessage} so the
+     *        client binds its local matchId. Needed when reached via the
+     *        {@code join <matchId>} command (the client did NOT retain match
+     *        state); a true transport-drop reconnect passes false.
+     */
+    private void handleReconnect(ReconnectRequest request, ClientHandler channel, boolean announceJoin) {
+        requireNotInOtherMatch(channel);
         if (!matchController.hasStarted()) {
             throw new IllegalStateException(
                     "Match " + matchController.getMatchId() + " cannot be resumed.");
@@ -167,9 +180,12 @@ public final class MatchSession {
         }
         attachObserverIfNeeded();
         bind(player.getNickname(), channel);
-        // No MatchJoinedMessage here: the client already knows matchId and
-        // nickname (it kept them across the drop), and sending one would
-        // make pre-lobby screens navigate to the lobby by mistake.
+        if (announceJoin) {
+            // Sent BEFORE the state broadcast below so the client sets its
+            // matchId first and can then act on the resumed match.
+            channel.send(new MatchJoinedMessage(
+                    matchController.getMatchId(), player.getNickname()));
+        }
         reconnectedNicknames.add(player.getNickname().toLowerCase(Locale.ROOT));
 
         GameStateDTO state = mapper.toGameState(matchController.getGame());
@@ -192,6 +208,17 @@ public final class MatchSession {
     }
 
     public void handleAddPlayer(AddPlayerToLobbyRequest request, ClientHandler channel) {
+        requireNotInOtherMatch(channel);
+        // A crash-recovered match is listed as joinable so its players can come
+        // back, but it has already started: a `join` on it is a reconnect, not a
+        // fresh lobby join. Route it accordingly so the client isn't rejected
+        // with "the match has already started" (handleReconnect surfaces a
+        // clearer error if the nickname is not one of the match's players).
+        if (recovering) {
+            handleReconnect(new ReconnectRequest(matchController.getMatchId(),
+                    request.nickname()), channel, true);
+            return;
+        }
         boolean wasStarted = matchController.hasStarted();
         matchController.addPlayerToLobby(request.nickname());
         bind(request.nickname(), channel);
@@ -205,6 +232,7 @@ public final class MatchSession {
      * (expected=0 then the requested value) and render the lobby twice.
      */
     public void handleHostCreateAndSetup(String hostNickname, int expectedPlayers, ClientHandler channel) {
+        requireNotInOtherMatch(channel);
         boolean wasStarted = matchController.hasStarted();
         matchController.addPlayerToLobby(hostNickname);
         bind(hostNickname, channel);
@@ -218,6 +246,20 @@ public final class MatchSession {
         publishStateChange(wasStarted);
         if (pendingError != null) {
             throw pendingError;
+        }
+    }
+
+    /**
+     * Rejects entering this match from a channel already bound to a different
+     * one: a client can be in at most one match at a time. Without this, a
+     * player resumed into match A could {@code join}/reconnect to match B on the
+     * same connection and end up in two matches at once.
+     */
+    private void requireNotInOtherMatch(ClientHandler channel) {
+        String bound = channel.getBoundMatchId();
+        if (bound != null && !bound.equals(matchController.getMatchId())) {
+            throw new IllegalStateException("You are already in match " + bound
+                    + ". Leave it before joining another match.");
         }
     }
 
