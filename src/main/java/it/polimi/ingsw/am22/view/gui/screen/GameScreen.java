@@ -259,12 +259,22 @@ public final class GameScreen implements GuiScreen {
         actionBox.setSpacing(4);
         actionBox.getChildren().addAll(actionsLbl, actionHint, confirmPickButton, leaveMatchButton);
 
-        VBox right = new VBox(6, playersBox, actionBox);
+        // Con molti giocatori / dopo molti round i pannelli crescono oltre
+        // l'altezza della finestra: li mettiamo in uno ScrollPane verticale.
+        // L'actionBox (Confirm / Leave) resta fisso in basso, sempre visibile.
+        ScrollPane playersScroll = new ScrollPane(playersBox);
+        playersScroll.setFitToWidth(true);
+        playersScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        playersScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        playersScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        VBox.setVgrow(playersScroll, Priority.ALWAYS);
+
+        VBox right = new VBox(6, playersScroll, actionBox);
         right.setPadding(new Insets(6));
         right.setPrefWidth(rightColW);
 
         this.rightColumnBox = right;
-        this.rightColumnScroll = null;
+        this.rightColumnScroll = playersScroll;
         return right;
     }
 
@@ -438,6 +448,11 @@ public final class GameScreen implements GuiScreen {
         StackPane wrapper = new StackPane(tb, badge);
         wrapper.setPickOnBounds(false);
 
+        // Inventori: al passaggio del mouse mostra il "tipo" (iconPerInventor),
+        // con la relativa icona InventorIcon_X, esattamente come accade per le
+        // icone risorsa nei pannelli giocatore.
+        installInventorTooltip(wrapper, c, clickable);
+
         tb.selectedProperty().addListener((obs, was, isNow) -> {
             if (isNow) {
                 if (canSelectCard(fallbackLabel)) {
@@ -460,6 +475,53 @@ public final class GameScreen implements GuiScreen {
             refreshBadges();
         }
         return wrapper;
+    }
+
+    /**
+     * Estrae la lettera icona dell'Inventore dal detailType del DTO
+     * ({@code "INVENTOR-A"} → {@code 'A'}), o {@code '\0'} se la carta non è un
+     * Inventore.
+     */
+    private char inventorIconOf(CardDTO c) {
+        String d = c == null ? null : c.detailType();
+        if (d == null) return '\0';
+        String up = d.toUpperCase();
+        String prefix = "INVENTOR-";
+        if (up.startsWith(prefix) && up.length() > prefix.length()) {
+            return Character.toUpperCase(up.charAt(prefix.length()));
+        }
+        return '\0';
+    }
+
+    /**
+     * Se la carta è un Inventore, installa un tooltip che ne mostra il tipo
+     * (lettera icona) con la corrispondente immagine {@code InventorIcon_X}.
+     *
+     * <p>Quando la carta non è cliccabile (es. fase Totem Placement) il
+     * {@link ToggleButton} sottostante è {@code disabled}, e in JavaFX un nodo
+     * disabilitato NON genera eventi del mouse: il tooltip non comparirebbe.
+     * Per questo aggiungiamo un overlay trasparente che cattura l'hover —
+     * reso {@code mouseTransparent} quando la carta È cliccabile, così i click
+     * raggiungono comunque il bottone.
+     */
+    private void installInventorTooltip(StackPane wrapper, CardDTO c, boolean clickable) {
+        char icon = inventorIconOf(c);
+        if (icon == '\0') return;
+
+        javafx.scene.layout.Region hoverCatcher = new javafx.scene.layout.Region();
+        hoverCatcher.setPickOnBounds(true);
+        hoverCatcher.setMouseTransparent(clickable);
+        wrapper.getChildren().add(hoverCatcher);
+
+        javafx.scene.control.Tooltip tip =
+                new javafx.scene.control.Tooltip("Inventor icon: " + icon);
+        Node iconNode = ImageCache.node(
+                ImageCache.inventorIconPath(icon), 40, 40,
+                String.valueOf(icon), Color.web("#46a3a3"));
+        tip.setGraphic(iconNode);
+        tip.setContentDisplay(ContentDisplay.TOP);
+        tip.setShowDelay(javafx.util.Duration.millis(150));
+        javafx.scene.control.Tooltip.install(wrapper, tip);
     }
 
     private void refreshBadges() {

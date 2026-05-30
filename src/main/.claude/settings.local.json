@@ -43,7 +43,18 @@
       "Bash(unzip -p target/client.jar META-INF/MANIFEST.MF)",
       "Bash(unzip -p target/server.jar META-INF/MANIFEST.MF)",
       "Bash(cp -f target/client.jar jar/client.jar)",
-      "Bash(cp -f target/server.jar jar/server.jar)"
+      "Bash(cp -f target/server.jar jar/server.jar)",
+      "PowerShell(Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -ne '127.0.0.1' -and $_.PrefixOrigin -ne 'WellKnown' } | Select-Object IPAddress, InterfaceAlias | Format-Table -AutoSize)",
+      "Bash(git -C \"C:/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22\" ls-files)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(git -C \"C:/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22\" ls-files > /tmp/allfiles.txt; grep -iE \"gui|fxml|\\\\.css\" /tmp/allfiles.txt | head -120)",
+      "Bash(git -C \"C:/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22\" ls-files > \"C:/Users/Fang2/allfiles.txt\" 2>\"C:/Users/Fang2/err.txt\"; echo \"wrote files\")",
+      "PowerShell(\\(Get-Location\\).Path; \"----\"; Get-ChildItem -Name)",
+      "Bash(git -C \"C:/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22\" rev-parse HEAD)",
+      "Bash(git -C \"C:/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22\" ls-files -- \"src/main/java/it/polimi/ingsw/am22/gui\")",
+      "Bash(echo \"marker2-cd-exit=$?\")",
+      "Bash(git -C \"C:/Users/Fang2/Desktop/polimi/III anno/software/progetto/Event-Character/am22\" ls-files \"*.java\")",
+      "Bash(echo \"exit=$? size=$\\(wc -c < C:/Users/Fang2/j.txt\\)\")"
     ]
   }
 }

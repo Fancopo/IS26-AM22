@@ -145,6 +145,15 @@ public final class ImageCache {
     }
 
     /**
+     * Path dell'icona specifica di un Inventore: {@code /images/icons/InventorIcon_X.png}.
+     * Il nome del file usa la lettera MAIUSCOLA (A, B, C, ...), quindi NON si può
+     * passare per {@link #iconPath(String)} che invece forza il lowercase.
+     */
+    public static String inventorIconPath(char icon) {
+        return "/images/icons/InventorIcon_" + Character.toUpperCase(icon) + ".png";
+    }
+
+    /**
      * Path of the player's totem image. Files live in {@code /images/totem/}
      * named after the lowercase English color (e.g. {@code red.jpg}).
      */
