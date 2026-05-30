@@ -12,18 +12,53 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.12.1</junit.version>
+        <javafx.version>21.0.6</javafx.version>
     </properties>
 
     <dependencies>
+        <!-- JavaFX modules: the classifier-less artifact is empty; classes and
+             native libraries live in the platform-classified jars. Maven
+             auto-resolves the host (build machine) classifier, and the extra
+             mac-aarch64 dependencies below bundle the macOS native libraries
+             too, so the resulting client.jar runs on both Windows and macOS
+             Apple Silicon. (Intel and Apple-Silicon dylibs share the same file
+             names, so a single flat fat-jar can only carry one of the two; we
+             target Apple Silicon, the modern default.) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>21.0.6</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>21.0.6</version>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- macOS native libraries (Apple Silicon) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>mac-aarch64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>mac-aarch64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>mac-aarch64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>mac-aarch64</classifier>
         </dependency>
 
         <dependency>
