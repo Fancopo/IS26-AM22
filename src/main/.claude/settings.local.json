@@ -25,7 +25,25 @@
       "Bash(mvn -q -o compile)",
       "Bash(./mvnw -q -o compile)",
       "PowerShell($env:JAVA_HOME)",
-      "PowerShell(@\\(\"C:\\\\Program Files\\\\Java\",\"C:\\\\Program Files \\(x86\\)\\\\Java\",\"C:\\\\Program Files\\\\Eclipse Adoptium\",\"C:\\\\Program Files\\\\OpenJDK\",\"C:\\\\Program Files\\\\Microsoft\\\\jdk-21\",\"C:\\\\Program Files\\\\Microsoft\"\\) | ForEach-Object { if \\(Test-Path $_\\) { Write-Output \"EXIST: $_\"; Get-ChildItem $_ -ErrorAction SilentlyContinue | ForEach-Object { Write-Output \"  $\\($_.Name\\)\" } } })"
+      "PowerShell(@\\(\"C:\\\\Program Files\\\\Java\",\"C:\\\\Program Files \\(x86\\)\\\\Java\",\"C:\\\\Program Files\\\\Eclipse Adoptium\",\"C:\\\\Program Files\\\\OpenJDK\",\"C:\\\\Program Files\\\\Microsoft\\\\jdk-21\",\"C:\\\\Program Files\\\\Microsoft\"\\) | ForEach-Object { if \\(Test-Path $_\\) { Write-Output \"EXIST: $_\"; Get-ChildItem $_ -ErrorAction SilentlyContinue | ForEach-Object { Write-Output \"  $\\($_.Name\\)\" } } })",
+      "Bash(./mvnw -o compile)",
+      "Bash(./mvnw.cmd -version)",
+      "Bash(cd __TRACKED_VAR__/.m2/repository/org/openjfx)",
+      "Bash(ls javafx-graphics/21.0.6/)",
+      "Bash(ls javafx-base/21.0.6/)",
+      "Bash(unzip -l javafx-graphics-21.0.6.jar)",
+      "Bash(grep -iE \"\\\\.\\(dll|dylib|so\\)$\")",
+      "Bash(unzip -l javafx-graphics-21.0.6-win.jar)",
+      "Bash(./mvnw.cmd -q clean package -DskipTests)",
+      "Bash(unzip -l target/client.jar)",
+      "Bash(grep -iE \"\\\\.dylib$\")",
+      "Bash(grep -iE \"\\(^|/\\)\\(lib\\)?glass\\(_[a-z0-9]+\\)?\\\\.\\(dll|dylib\\)$\")",
+      "Bash(unzip -l javafx-graphics-21.0.6-mac.jar)",
+      "Bash(unzip -l javafx-graphics-21.0.6-mac-aarch64.jar)",
+      "Bash(unzip -p target/client.jar META-INF/MANIFEST.MF)",
+      "Bash(unzip -p target/server.jar META-INF/MANIFEST.MF)",
+      "Bash(cp -f target/client.jar jar/client.jar)",
+      "Bash(cp -f target/server.jar jar/server.jar)"
     ]
   }
 }

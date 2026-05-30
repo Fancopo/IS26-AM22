@@ -124,7 +124,11 @@ public final class TuiRunner {
         System.out.println(Ansi.yellow(
                 "    The server went down while your match was still in progress."));
         if (!askYesNo(in, "Do you want to continue the previous match? [yes/no]: ")) {
-            return null;
+            // Declining is the TUI's "Leave this match": tell the server to
+            // delete the suspended match and notify any player that already
+            // reconnected, then keep this connection so the player can
+            // list/create/join right away (mirrors the GUI's leave flow).
+            return leaveSuspendedMatch(transport, host, port, matchId);
         }
 
         while (true) {
@@ -154,14 +158,52 @@ public final class TuiRunner {
                 return view;
             }
 
+            session.close(false);
+            // The match no longer exists (a player left it or it timed out):
+            // there is nothing left to resume, so stop the recovery loop.
+            if (view.isRecoveredMatchGone()) {
+                return null;
+            }
             // Reconnection refused (the [ERROR] line is printed by the view):
             // ask the player whether to retry by typing the nickname again.
-            session.close(false);
             if (!askYesNo(in, "Reconnection failed. "
                     + "Do you want to try again by typing your nickname? [yes/no]: ")) {
                 return null;
             }
         }
+    }
+
+    /**
+     * Sends the "abandon suspended match" request on a fresh connection and
+     * keeps it open so the returned view runs straight into the command loop —
+     * the player can list/create/join again without reconnecting. Returns null
+     * if the server is unreachable, in which case the caller opens a brand-new
+     * session.
+     */
+    private static TuiView leaveSuspendedMatch(Transport transport, String host,
+                                               int port, String matchId) {
+        ServerConnection connection;
+        try {
+            connection = ConnectionFactory.open(transport, host, port);
+        } catch (Exception e) {
+            System.err.println("Unable to reach the server to leave the match: "
+                    + ConnectionFactory.describeConnectionError(e));
+            return null;
+        }
+        ClientSession session = new ClientSession(connection);
+        TuiView view = new TuiView(session);
+        session.setHandler(view);
+        try {
+            // Do NOT close the connection here: on RMI the request is delivered
+            // asynchronously by the outbound worker; the kept-open session runs
+            // into the command loop where it will eventually be closed.
+            session.getVirtualServer().abandonRecoveredMatch(matchId);
+        } catch (RuntimeException ignored) {
+        }
+        System.out.println(Ansi.yellow(
+                "(left the suspended match " + matchId + " — back to matches selection)"));
+        System.out.println(Ansi.dim("(type 'list' to see open matches)"));
+        return view;
     }
 
     /**

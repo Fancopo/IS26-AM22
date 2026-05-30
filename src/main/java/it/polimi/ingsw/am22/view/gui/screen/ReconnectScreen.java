@@ -101,8 +101,11 @@ public final class ReconnectScreen implements GuiScreen {
             }
         });
 
-        Button backButton = new Button("Back to start");
-        backButton.setOnAction(e -> app.showConnectionScreen());
+        Button backButton = new Button("Leave this match");
+        // Leaving deletes the suspended match server-side and notifies the other
+        // players that it is over. The leaving player keeps the connection they
+        // first chose and lands back on the nickname scene, ready to play again.
+        backButton.setOnAction(e -> app.leavePreviousMatchAndShowNickname(matchId));
 
         VBox box = new VBox(16, title, info, startButton, nicknameBox, backButton, statusLabel);
         box.setAlignment(Pos.CENTER);

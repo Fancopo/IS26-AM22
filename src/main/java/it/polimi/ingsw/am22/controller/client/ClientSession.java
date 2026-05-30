@@ -11,6 +11,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchAbandonedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
@@ -113,6 +114,11 @@ public final class ClientSession {
                 @Override public void visit(MatchClosedMessage m) {
                     // Match aborted remotely: clean up local state so the view can
                     // bounce the user back to the initial scene. Channel stays open.
+                    clearLocalMatchState();
+                }
+                @Override public void visit(MatchAbandonedMessage m) {
+                    // A player left a suspended match: drop local state; the view
+                    // tears the whole session down and returns to the start scene.
                     clearLocalMatchState();
                 }
                 @Override public void visit(ErrorMessage m) {}

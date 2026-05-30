@@ -20,6 +20,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchAbandonedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
@@ -86,6 +87,13 @@ public final class TuiView implements ServerHandler {
     private volatile boolean reconnectAccepted;
     private volatile boolean reconnectRejected;
 
+    /**
+     * Set when a reconnection is refused because the suspended match no longer
+     * exists (another player left it, or it timed out). Lets the recovery loop
+     * stop retrying — there is nothing left to resume.
+     */
+    private volatile boolean recoveredMatchGone;
+
     public TuiView(ClientSession session) {
         this.session = Objects.requireNonNull(session, "session cannot be null");
     }
@@ -104,10 +112,12 @@ public final class TuiView implements ServerHandler {
         awaitingReconnect = true;
         reconnectAccepted = false;
         reconnectRejected = false;
+        recoveredMatchGone = false;
     }
 
     public boolean isReconnectAccepted() { return reconnectAccepted; }
     public boolean isReconnectRejected() { return reconnectRejected; }
+    public boolean isRecoveredMatchGone() { return recoveredMatchGone; }
 
     public void requestStop() {
         this.stopRequested = true;
@@ -271,6 +281,19 @@ public final class TuiView implements ServerHandler {
             // Aborted remotely; connection stays alive, session has cleared
             // its local binding — player can list/create/join again.
             println(Ansi.red(Ansi.BOLD + "[MATCH CLOSED] " + Ansi.RESET) + m.reason());
+            println(Ansi.dim("(back to matches selection — type 'list' to see open matches)"));
+        }
+        @Override public void visit(MatchAbandonedMessage m) {
+            // A suspended match was torn down: a player chose to leave it, or
+            // the recovery window timed out. If we were mid-reconnection, the
+            // match is gone for good — stop retrying. The connection stays alive,
+            // so the player can list/create/join again.
+            if (awaitingReconnect) {
+                reconnectRejected = true;
+                recoveredMatchGone = true;
+                awaitingReconnect = false;
+            }
+            println(Ansi.red(Ansi.BOLD + "[MATCH OVER] " + Ansi.RESET) + m.reason());
             println(Ansi.dim("(back to matches selection — type 'list' to see open matches)"));
         }
         @Override public void visit(MatchRecoveringMessage m) {

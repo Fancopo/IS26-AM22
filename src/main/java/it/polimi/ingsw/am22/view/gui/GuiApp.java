@@ -12,6 +12,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStateMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchAbandonedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
@@ -66,6 +67,13 @@ public final class GuiApp extends Application implements ServerHandler {
     public boolean connect(Transport transport, String host, int port) {
         try {
             ServerConnection conn = ConnectionFactory.open(transport, host, port);
+            // Tear down any leftover session before adopting the new connection —
+            // e.g. the throwaway one used to abandon a suspended match, kept open
+            // just long enough for its (async, on RMI) request to be delivered.
+            if (session != null) {
+                expectingDisconnect = true;
+                session.close(false);
+            }
             this.session = new ClientSession(conn);
             session.setHandler(this);
             this.lastTransport = transport;
@@ -194,6 +202,32 @@ public final class GuiApp extends Application implements ServerHandler {
         }
     }
 
+    /**
+     * Invoked by the reconnect screen's "Leave this match" button. Reopens a
+     * connection on the transport the player first chose to tell the server to
+     * delete the suspended match (and notify any player that already reconnected
+     * that the match is over), then keeps that connection and drops the player on
+     * the nickname scene so they can start a new match right away. Best-effort:
+     * if the server is unreachable there is no connection to keep, so we fall
+     * back to the initial transport-choice scene.
+     */
+    public void leavePreviousMatchAndShowNickname(String matchId) {
+        if (lastTransport != null && connect(lastTransport, lastHost, lastPort)) {
+            try {
+                session.getVirtualServer().abandonRecoveredMatch(matchId);
+            } catch (RuntimeException ignored) {
+                // Server already gone: nothing else we can do, fall through.
+            }
+            // Keep the freshly opened connection. NB: we do NOT close it — on RMI
+            // the request is delivered asynchronously by the outbound worker and
+            // closing now would cancel it before it leaves.
+            showNicknameScreen();
+            return;
+        }
+        // Server unreachable: nothing to reuse, return to the start scene.
+        showConnectionScreen();
+    }
+
     public void showGameScreen() {
         setScreen(new GameScreen(this));
     }
@@ -305,6 +339,18 @@ public final class GuiApp extends Application implements ServerHandler {
                 showError("Match closed: " + m.reason());
                 if (session != null) {
                     showMatchesScreen(lastNickname);
+                } else {
+                    showConnectionScreen();
+                }
+            }
+            @Override public void visit(MatchAbandonedMessage m) {
+                // A player left (or the recovery timed out): the suspended match
+                // is over for everyone. The connection stays alive — the player
+                // only needs to pick a nickname again to start a new match on the
+                // same connection, so route them back to the nickname scene.
+                showError(m.reason());
+                if (session != null) {
+                    showNicknameScreen();
                 } else {
                     showConnectionScreen();
                 }

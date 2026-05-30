@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am22.network.protocol.message;
 
+import it.polimi.ingsw.am22.network.protocol.message.request.AbandonRecoveredMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.CreateMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.DisconnectPlayerRequest;
@@ -28,6 +29,7 @@ public interface ClientRequestVisitor {
     void visit(PickBonusCardRequest request);
     void visit(DisconnectPlayerRequest request);
     void visit(ReconnectRequest request);
+    void visit(AbandonRecoveredMatchRequest request);
 
     /**
      * Transport-only liveness probe. Default no-op: visitor implementations

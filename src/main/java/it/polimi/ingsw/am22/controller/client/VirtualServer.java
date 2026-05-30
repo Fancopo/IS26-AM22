@@ -115,6 +115,17 @@ public class VirtualServer {
         this.matchId = null;
     }
 
+    /**
+     * Tells the server to tear down a suspended match the player chose not to
+     * resume. No local binding is required (the client never reconnected): the
+     * matchId is the one kept across the crash and is passed in explicitly.
+     */
+    public void abandonRecoveredMatch(String matchId) {
+        serverConnection.abandonRecoveredMatch(requireText(matchId, "matchId"));
+        this.nickname = null;
+        this.matchId = null;
+    }
+
     private void requireJoined() {
         if (!hasJoinedLobby()) {
             throw new IllegalStateException("You must join a match before sending actions.");

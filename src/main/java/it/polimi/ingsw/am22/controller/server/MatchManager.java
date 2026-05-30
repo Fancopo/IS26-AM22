@@ -8,6 +8,7 @@ import it.polimi.ingsw.am22.network.protocol.ModelDtoMapper;
 import it.polimi.ingsw.am22.network.protocol.dto.MatchInfoDTO;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequestVisitor;
+import it.polimi.ingsw.am22.network.protocol.message.request.AbandonRecoveredMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.CreateMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.DisconnectPlayerRequest;
@@ -19,6 +20,7 @@ import it.polimi.ingsw.am22.network.protocol.message.request.ReconnectRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.RemovePlayerFromLobbyRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.SetExpectedPlayersRequest;
 import it.polimi.ingsw.am22.network.protocol.message.response.ErrorMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchAbandonedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 import it.polimi.ingsw.am22.network.server.AsyncClientHandler;
 import it.polimi.ingsw.am22.network.server.ClientHandler;
@@ -74,6 +76,21 @@ public class MatchManager {
     /** How often started matches are flushed to disk by the periodic saver. */
     private static final long PERSIST_INTERVAL_SECONDS = 15;
 
+    /**
+     * How long a crash-recovered match may stay in the "reconnecting" state
+     * before it is discarded automatically. If the players have not all come
+     * back (and the game resumed) within this window, the match is deleted and
+     * everyone still connected is notified.
+     */
+    private static final long RECOVERY_TIMEOUT_MINUTES = 30;
+
+    /** Fires the per-match recovery timeouts scheduled at restore time. */
+    private final ScheduledExecutorService recoveryTimeoutExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "recovery-timeout");
+        t.setDaemon(true);
+        return t;
+    });
+
     /** Disk store of in-progress matches, used to survive a server crash. */
     private final MatchPersistence persistence;
 
@@ -113,10 +130,30 @@ public class MatchManager {
                     snapshot.matchId(), game, snapshot.hostNickname(), snapshot.expectedPlayers());
             matchesById.put(snapshot.matchId(), newSession(restoredController));
             maxId = Math.max(maxId, parseMatchIdSeq(snapshot.matchId()));
+            scheduleRecoveryTimeout(snapshot.matchId());
             System.out.println("[persistence] Restored suspended match " + snapshot.matchId()
-                    + " — awaiting player reconnection.");
+                    + " — awaiting player reconnection (auto-removed after "
+                    + RECOVERY_TIMEOUT_MINUTES + " min).");
         }
         matchIdSeq.set(maxId);
+    }
+
+    /**
+     * Schedules the automatic removal of a still-recovering match after
+     * {@link #RECOVERY_TIMEOUT_MINUTES}. If the match has meanwhile resumed
+     * (no longer recovering) or already been removed, the task is a no-op, so
+     * no explicit cancellation is needed.
+     */
+    private void scheduleRecoveryTimeout(String matchId) {
+        recoveryTimeoutExecutor.schedule(() -> {
+            MatchSession session = matchesById.get(matchId);
+            if (session == null) return;
+            synchronized (session) {
+                if (session.isRecovering()) {
+                    session.handleRecoveryTimeout();
+                }
+            }
+        }, RECOVERY_TIMEOUT_MINUTES, TimeUnit.MINUTES);
     }
 
     /** Extracts the numeric counter from a {@code "M-<n>"} match id; 0 if unparseable. */
@@ -142,6 +179,7 @@ public class MatchManager {
         persistenceSaver.shutdown();
         persistAllMatches();
         endGameCloser.shutdown();
+        recoveryTimeoutExecutor.shutdown();
     }
 
     public void handleRequest(ClientRequest request, ClientHandler channel) {
@@ -247,8 +285,32 @@ public class MatchManager {
             synchronized (s) { s.handleDisconnect(request.nickname(), channel, false); }
         }
         @Override public void visit(ReconnectRequest request) {
-            MatchSession s = requireSession(request.matchId());
+            MatchSession s = matchesById.get(request.matchId());
+            if (s == null) {
+                // The suspended match is gone: another player abandoned it while
+                // this one was still on the reconnect screen. Tell them the match
+                // is over instead of the generic "unknown match" error so the
+                // client routes back to the start scene with a clear reason.
+                channel.send(new MatchAbandonedMessage(
+                        "Match " + request.matchId() + " is no longer available — "
+                        + "another player left it. The match is over."));
+                return;
+            }
             synchronized (s) { s.handleReconnect(request, channel); }
+        }
+        @Override public void visit(AbandonRecoveredMatchRequest request) {
+            MatchSession s = matchesById.get(request.matchId());
+            if (s == null) {
+                // Already torn down (e.g. two players hit "Back" together): nothing to do.
+                return;
+            }
+            synchronized (s) {
+                // Only a suspended match can be abandoned this way; ignore the
+                // request for a normally-running match as a safety guard.
+                if (s.isRecovering()) {
+                    s.handleAbandonRecovered(channel);
+                }
+            }
         }
     }
 

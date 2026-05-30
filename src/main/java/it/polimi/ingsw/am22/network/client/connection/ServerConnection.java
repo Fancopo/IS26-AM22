@@ -2,6 +2,7 @@ package it.polimi.ingsw.am22.network.client.connection;
 
 import it.polimi.ingsw.am22.network.client.ServerHandler;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.AbandonRecoveredMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.CreateMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.DisconnectPlayerRequest;
@@ -79,5 +80,9 @@ public interface ServerConnection extends AutoCloseable {
 
     default void reconnect(String matchId, String nickname) {
         send(new ReconnectRequest(matchId, nickname));
+    }
+
+    default void abandonRecoveredMatch(String matchId) {
+        send(new AbandonRecoveredMatchRequest(matchId));
     }
 }

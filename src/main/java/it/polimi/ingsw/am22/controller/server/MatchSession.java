@@ -17,6 +17,7 @@ import it.polimi.ingsw.am22.network.protocol.message.request.SetExpectedPlayersR
 import it.polimi.ingsw.am22.network.protocol.message.response.EndGameMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.GameStartedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.LobbyStateMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.MatchAbandonedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
@@ -205,6 +206,47 @@ public final class MatchSession {
             // Match already running normally (defensive): just resync this client.
             channel.send(new GameStartedMessage(state));
         }
+    }
+
+    /**
+     * Tears down a suspended match because a reconnecting player chose "Leave
+     * this match" instead of resuming it. The abandoning channel is not bound
+     * here (it reconnected only to send this request), so detaching it is a
+     * harmless no-op.
+     */
+    public void handleAbandonRecovered(ClientHandler channel) {
+        unbindMatch(channel);
+        tearDownRecovered("A player chose to leave the suspended match "
+                + matchController.getMatchId() + ". The match is over.");
+    }
+
+    /**
+     * Tears down a suspended match that nobody finished resuming within the
+     * allowed window. Called by the manager's recovery-timeout scheduler while
+     * the match is still {@link #recovering}.
+     */
+    public void handleRecoveryTimeout() {
+        tearDownRecovered("The suspended match " + matchController.getMatchId()
+                + " was not resumed in time and has been removed.");
+    }
+
+    /**
+     * Discards a suspended match for good: the snapshot is deleted so it is
+     * never resurrected again, and every player that had already reconnected is
+     * told the match is over — their channels stay open so each client can pick
+     * a new nickname and play again on the same connection.
+     */
+    private void tearDownRecovered(String reason) {
+        persistence.delete(matchController.getMatchId());
+        virtualView.broadcast(new MatchAbandonedMessage(reason));
+        // Detach every reconnected player from the match WITHOUT closing the
+        // channel, mirroring a mid-game abort: they stay connected only long
+        // enough to receive the notice and reset themselves.
+        for (ClientHandler other : virtualView.snapshotChannels()) {
+            unbindMatch(other);
+        }
+        virtualView.unbindAllKeepingChannels();
+        removeFromRegistry.run();
     }
 
     public void handleAddPlayer(AddPlayerToLobbyRequest request, ClientHandler channel) {
