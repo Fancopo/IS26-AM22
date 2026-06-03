@@ -11,6 +11,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMes
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.PingMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.TotemSelectionMessage;
 
 /**
  * Visitor for server-to-client messages. Dispatch goes through {@link ServerMessage#accept}.
@@ -20,6 +21,7 @@ public interface ServerMessageVisitor {
     default void visit(MatchesListMessage message) {}
     default void visit(MatchJoinedMessage message) {}
     default void visit(LobbyStateMessage message) {}
+    default void visit(TotemSelectionMessage message) {}
     default void visit(GameStartedMessage message) {}
     default void visit(GameStateMessage message) {}
     default void visit(EndGameMessage message) {}

@@ -17,9 +17,10 @@ import java.util.Set;
 public class MatchController {
 
     /**
-     * Colori assegnati automaticamente ai totem in ordine di ingresso nella lobby.
+     * Palette dei colori di totem selezionabili dai giocatori nella fase di
+     * scelta che precede l'inizio della partita.
      */
-    private static final List<String> DEFAULT_TOTEM_COLORS =
+    private static final List<String> TOTEM_PALETTE =
             List.of("Red", "Blue", "White", "Yellow", "Black");
 
     /** Identificativo univoco della partita gestita da questo controller. */
@@ -38,6 +39,18 @@ public class MatchController {
     private int expectedPlayers;
 
     /**
+     * True quando la lobby è piena e i giocatori stanno scegliendo il totem,
+     * a turno, prima che la partita inizi davvero.
+     */
+    private boolean selectingTotem;
+
+    /**
+     * Indice (nell'ordine di ingresso, {@link #lobbyPlayers}) del giocatore a
+     * cui tocca scegliere il totem durante la fase di selezione.
+     */
+    private int totemPickIndex;
+
+    /**
      * Costruisce un controller inizialmente vuoto.
      * La lobby è aperta e nessuna partita è ancora iniziata.
      *
@@ -52,6 +65,8 @@ public class MatchController {
         this.game = null;
         this.hostNickname = null;
         this.expectedPlayers = 0;
+        this.selectingTotem = false;
+        this.totemPickIndex = 0;
     }
 
     /**
@@ -147,6 +162,7 @@ public class MatchController {
      */
     public void addPlayerToLobby(String nickname) {
         requireLobbyOpen();
+        requireNotSelectingTotem();
         String cleanNickname = requireText(nickname, "nickname");
 
         if (lobbyPlayers.size() >= 5) {
@@ -157,16 +173,17 @@ public class MatchController {
             throw new IllegalArgumentException("Nickname already in use: " + cleanNickname);
         }
 
+        // Il totem NON viene assegnato all'ingresso: i giocatori lo scelgono
+        // a turno nella fase di selezione che precede l'inizio della partita.
         Player player = new Player(cleanNickname);
-        player.setTotem(new Totem(DEFAULT_TOTEM_COLORS.get(lobbyPlayers.size()), player));
         lobbyPlayers.add(player);
 
         if (hostNickname == null) {
             hostNickname = cleanNickname;
         }
 
-        // Dopo ogni ingresso si verifica se la partita può partire.
-        tryStartGame();
+        // Dopo ogni ingresso si verifica se si può avviare la selezione totem.
+        tryBeginTotemSelection();
     }
 
     /**
@@ -180,6 +197,7 @@ public class MatchController {
      */
     public void setExpectedPlayers(String requesterNickname, int expectedPlayers) {
         requireLobbyOpen();
+        requireNotSelectingTotem();
         String cleanNickname = requireText(requesterNickname, "requesterNickname");
 
         if (!cleanNickname.equals(hostNickname)) {
@@ -195,7 +213,7 @@ public class MatchController {
         }
 
         this.expectedPlayers = expectedPlayers;
-        tryStartGame();
+        tryBeginTotemSelection();
     }
 
     /**
@@ -218,6 +236,89 @@ public class MatchController {
 
         if (expectedPlayers > 0 && lobbyPlayers.size() > expectedPlayers) {
             expectedPlayers = 0;
+        }
+
+        // Se qualcuno esce durante la scelta dei totem, la fase di selezione si
+        // annulla: i totem già scelti vengono liberati e i giocatori rimasti
+        // tornano in lobby (la selezione ripartirà quando la lobby si riempie).
+        if (selectingTotem) {
+            resetTotemSelection();
+        }
+    }
+
+    // --- Fase di selezione del totem ----------------------------------------
+
+    /**
+     * Indica se la lobby è nella fase di scelta dei totem (lobby piena, partita
+     * non ancora avviata, giocatori che scelgono il colore a turno).
+     *
+     * @return true se la selezione dei totem è in corso
+     */
+    public boolean isSelectingTotem() {
+        return selectingTotem;
+    }
+
+    /**
+     * Restituisce la palette dei colori di totem selezionabili.
+     *
+     * @return lista (immutabile) dei colori disponibili nel gioco
+     */
+    public List<String> getTotemPalette() {
+        return TOTEM_PALETTE;
+    }
+
+    /**
+     * Restituisce il nickname del giocatore a cui tocca scegliere il totem,
+     * oppure null se non si è in fase di selezione.
+     *
+     * @return nickname del chooser corrente, o null
+     */
+    public String getCurrentTotemChooser() {
+        if (!selectingTotem || totemPickIndex >= lobbyPlayers.size()) {
+            return null;
+        }
+        return lobbyPlayers.get(totemPickIndex).getNickname();
+    }
+
+    /**
+     * Assegna il colore di totem scelto dal giocatore di turno e avanza la
+     * selezione. Quando l'ultimo giocatore ha scelto, la partita parte.
+     *
+     * Controlla che:
+     * - la fase di selezione sia in corso;
+     * - sia effettivamente il turno del giocatore indicato (ordine d'ingresso);
+     * - il colore appartenga alla palette;
+     * - il colore non sia già stato scelto da un altro giocatore.
+     *
+     * @param nickname nickname del giocatore che sta scegliendo
+     * @param color    colore di totem desiderato
+     */
+    public void chooseTotem(String nickname, String color) {
+        if (!selectingTotem) {
+            throw new IllegalStateException("Totem selection is not in progress.");
+        }
+        String cleanNickname = requireText(nickname, "nickname");
+        String cleanColor = requireText(color, "color");
+
+        Player chooser = lobbyPlayers.get(totemPickIndex);
+        if (!normalize(chooser.getNickname()).equals(normalize(cleanNickname))) {
+            throw new IllegalStateException("It is not this player's turn to choose a totem.");
+        }
+
+        String canonicalColor = TOTEM_PALETTE.stream()
+                .filter(c -> c.equalsIgnoreCase(cleanColor.strip()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown totem color: " + color));
+
+        if (isColorTaken(canonicalColor)) {
+            throw new IllegalArgumentException("Totem color already chosen: " + canonicalColor);
+        }
+
+        chooser.setTotem(new Totem(canonicalColor, chooser));
+        totemPickIndex++;
+
+        if (totemPickIndex >= lobbyPlayers.size()) {
+            startGameNow();
         }
     }
 
@@ -277,15 +378,19 @@ public class MatchController {
     }
 
     /**
-     * Prova ad avviare la partita se tutte le condizioni sono soddisfatte.
+     * Avvia la fase di selezione dei totem quando la lobby si riempie.
      *
-     * La partita parte solo se:
-     * - non è già iniziata
+     * La selezione comincia solo se:
+     * - la partita non è già iniziata
+     * - non si è già in selezione
      * - l'host ha scelto il numero atteso di giocatori
      * - il numero di giocatori in lobby coincide con quello atteso
+     *
+     * Durante la selezione i giocatori scelgono il totem a turno; la partita
+     * vera e propria parte da {@link #chooseTotem} quando tutti hanno scelto.
      */
-    private void tryStartGame() {
-        if (game != null) {
+    private void tryBeginTotemSelection() {
+        if (game != null || selectingTotem) {
             return;
         }
 
@@ -297,9 +402,43 @@ public class MatchController {
             return;
         }
 
+        selectingTotem = true;
+        totemPickIndex = 0;
+    }
+
+    /**
+     * Crea e avvia il {@link Game} a fine selezione: a questo punto ogni
+     * giocatore ha già scelto il proprio totem.
+     */
+    private void startGameNow() {
         ensureUniqueNicknames();
         this.game = new Game(new ArrayList<>(lobbyPlayers));
         game.startMatch();
+        selectingTotem = false;
+    }
+
+    /** Verifica che un colore della palette non sia già stato scelto. */
+    private boolean isColorTaken(String canonicalColor) {
+        return lobbyPlayers.stream()
+                .map(Player::getTotem)
+                .filter(t -> t != null)
+                .anyMatch(t -> t.getColor().equalsIgnoreCase(canonicalColor));
+    }
+
+    /** Annulla la fase di selezione liberando i totem già scelti. */
+    private void resetTotemSelection() {
+        selectingTotem = false;
+        totemPickIndex = 0;
+        for (Player p : lobbyPlayers) {
+            p.setTotem(null);
+        }
+    }
+
+    /** Vieta operazioni di lobby mentre è in corso la scelta dei totem. */
+    private void requireNotSelectingTotem() {
+        if (selectingTotem) {
+            throw new IllegalStateException("Totem selection is in progress.");
+        }
     }
 
     /**

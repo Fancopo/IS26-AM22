@@ -4,6 +4,7 @@ import it.polimi.ingsw.am22.network.client.ServerHandler;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.AbandonRecoveredMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.ChooseTotemRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.CreateMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.DisconnectPlayerRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.ListMatchesRequest;
@@ -60,6 +61,10 @@ public interface ServerConnection extends AutoCloseable {
 
     default void removePlayerFromLobby(String matchId, String nickname) {
         send(new RemovePlayerFromLobbyRequest(matchId, nickname));
+    }
+
+    default void chooseTotem(String matchId, String nickname, String color) {
+        send(new ChooseTotemRequest(matchId, nickname, color));
     }
 
     default void placeTotem(String matchId, String playerNickname, char offerLetter) {

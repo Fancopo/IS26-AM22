@@ -11,6 +11,8 @@ import it.polimi.ingsw.am22.network.protocol.dto.LobbyStateDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.MatchInfoDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.OfferTileDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.PlayerDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.TotemOptionDTO;
+import it.polimi.ingsw.am22.network.protocol.dto.TotemSelectionStateDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.TurnSlotDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.WinnerDTO;
 import it.polimi.ingsw.am22.network.protocol.message.ServerMessage;
@@ -25,6 +27,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.TotemSelectionMessage;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -268,6 +271,7 @@ public final class TuiView implements ServerHandler {
         @Override public void visit(MatchesListMessage m)  { renderMatchesList(m.matches()); }
         @Override public void visit(MatchJoinedMessage m)  { renderMatchJoined(m); }
         @Override public void visit(LobbyStateMessage m)   { renderLobby(m.lobbyState()); }
+        @Override public void visit(TotemSelectionMessage m) { renderTotemSelection(m.selectionState()); }
         @Override public void visit(GameStartedMessage m)  {
             if (awaitingReconnect) {
                 reconnectAccepted = true;
@@ -397,6 +401,33 @@ public final class TuiView implements ServerHandler {
                 System.out.println("(You are the host: use 'players <N>' to set the expected number.)");
             }
             System.out.println("===================");
+        }
+    }
+
+    private void renderTotemSelection(TotemSelectionStateDTO state) {
+        synchronized (printLock) {
+            String me = session.getLocalNickname();
+            String chooser = state.currentChooser();
+            boolean myTurn = me != null && me.equalsIgnoreCase(chooser);
+
+            System.out.println();
+            System.out.println("=== TOTEM SELECTION ===");
+            for (TotemOptionDTO option : state.options()) {
+                if (option.ownerNickname() != null) {
+                    System.out.println("  " + Ansi.dim(option.color()
+                            + " — taken by " + option.ownerNickname()));
+                } else {
+                    System.out.println("  " + Ansi.green(option.color()) + " — free");
+                }
+            }
+            if (myTurn) {
+                System.out.println(Ansi.yellow(Ansi.BOLD
+                        + "It's your turn! Type 'totem <color>' to choose."));
+            } else {
+                System.out.println(Ansi.dim("Waiting for other players — "
+                        + (chooser == null ? "…" : chooser) + " is choosing…"));
+            }
+            System.out.println("=======================");
         }
     }
 

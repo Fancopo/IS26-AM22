@@ -68,6 +68,11 @@ public class VirtualServer {
         this.matchId = null;
     }
 
+    public void chooseTotem(String color) {
+        requireJoined();
+        serverConnection.chooseTotem(matchId, nickname, requireText(color, "color"));
+    }
+
     public void placeTotem(char offerLetter) {
         requireJoined();
         serverConnection.placeTotem(matchId, nickname, offerLetter);

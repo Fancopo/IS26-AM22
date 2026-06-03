@@ -16,6 +16,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.MatchAbandonedMess
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.TotemSelectionMessage;
 
 import it.polimi.ingsw.am22.view.gui.screen.*;
 import javafx.application.Application;
@@ -228,6 +229,11 @@ public final class GuiApp extends Application implements ServerHandler {
         showConnectionScreen();
     }
 
+    /** Pre-game totem selection scene, shown once the lobby is full. */
+    public void showTotemSelectionScreen() {
+        setScreen(new TotemSelectionScreen(this));
+    }
+
     public void showGameScreen() {
         setScreen(new GameScreen(this));
     }
@@ -324,6 +330,14 @@ public final class GuiApp extends Application implements ServerHandler {
     private void dispatchOnFxThread(ServerMessage message) {
         // Auto-navigation driven by key messages.
         message.accept(new ServerMessageVisitor() {
+            @Override public void visit(TotemSelectionMessage m) {
+                // Lobby filled: move to the totem-selection scene (from any
+                // pre-game screen). Navigate before forwarding so the new
+                // screen renders from the cached selection state.
+                if (currentScreen == null || !currentScreen.isTotemSelectionScreen()) {
+                    showTotemSelectionScreen();
+                }
+            }
             @Override public void visit(GameStartedMessage m) {
                 if (currentScreen == null || !currentScreen.isGameScreen()) showGameScreen();
             }

@@ -8,6 +8,7 @@ import it.polimi.ingsw.am22.network.protocol.ModelDtoMapper;
 import it.polimi.ingsw.am22.network.protocol.dto.GameStateDTO;
 import it.polimi.ingsw.am22.network.protocol.dto.LeaderboardEntryDTO;
 import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.ChooseTotemRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PickBonusCardRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PickCardsRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.PlaceTotemRequest;
@@ -21,6 +22,7 @@ import it.polimi.ingsw.am22.network.protocol.message.response.MatchAbandonedMess
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.TotemSelectionMessage;
 import it.polimi.ingsw.am22.network.server.ClientHandler;
 import it.polimi.ingsw.am22.view.server.VirtualView;
 
@@ -324,6 +326,19 @@ public final class MatchSession {
     }
 
     /**
+     * Pre-game totem pick. Not a game move (no Game exists yet): it either
+     * advances the selection — broadcasting an updated {@link TotemSelectionMessage}
+     * — or, when the last player chooses, starts the game inside the controller,
+     * which {@link #publishStateChange} then surfaces as a GameStartedMessage.
+     */
+    public void handleChooseTotem(ChooseTotemRequest request, ClientHandler channel) {
+        bindIfKnown(request.playerNickname(), channel);
+        boolean wasStarted = matchController.hasStarted();
+        matchController.chooseTotem(request.playerNickname(), request.color());
+        publishStateChange(wasStarted);
+    }
+
+    /**
      * All three move handlers wrap the controller call in a VirtualView batch:
      * a single move typically triggers 5-6 model notifications (state, active
      * player, era, scoring...) and we want to coalesce them into one broadcast.
@@ -422,6 +437,10 @@ public final class MatchSession {
             persistIfRunning();
         } else if (matchController.hasStarted()) {
             broadcastGameStateAndMaybeEnd();
+        } else if (matchController.isSelectingTotem()) {
+            // Lobby just filled (or a pick advanced the queue): players are now
+            // choosing totems. The game has NOT started yet.
+            broadcastTotemSelection();
         } else {
             broadcastLobbyState();
         }
@@ -429,6 +448,10 @@ public final class MatchSession {
 
     private void broadcastLobbyState() {
         virtualView.broadcast(new LobbyStateMessage(mapper.toLobbyState(matchController)));
+    }
+
+    private void broadcastTotemSelection() {
+        virtualView.broadcast(new TotemSelectionMessage(mapper.toTotemSelectionState(matchController)));
     }
 
     /**

@@ -16,6 +16,8 @@ import it.polimi.ingsw.am22.network.protocol.message.response.MatchClosedMessage
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchRecoveringMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchJoinedMessage;
 import it.polimi.ingsw.am22.network.protocol.message.response.MatchesListMessage;
+import it.polimi.ingsw.am22.network.protocol.message.response.TotemSelectionMessage;
+import it.polimi.ingsw.am22.network.protocol.dto.TotemSelectionStateDTO;
 
 import java.util.Objects;
 
@@ -38,6 +40,7 @@ public final class ClientSession {
     private volatile ServerHandler currentHandler;
 
     private volatile LobbyStateDTO latestLobbyState;
+    private volatile TotemSelectionStateDTO latestTotemSelectionState;
     private volatile GameStateDTO latestGameState;
     private volatile boolean gameStarted;
 
@@ -50,6 +53,7 @@ public final class ClientSession {
     public VirtualServer getVirtualServer() { return virtualServer; }
     public String getLocalNickname() { return virtualServer.getNickname(); }
     public LobbyStateDTO getLatestLobbyState() { return latestLobbyState; }
+    public TotemSelectionStateDTO getLatestTotemSelectionState() { return latestTotemSelectionState; }
     public GameStateDTO getLatestGameState() { return latestGameState; }
     public boolean isGameStarted() { return gameStarted; }
 
@@ -62,6 +66,8 @@ public final class ClientSession {
         if (handler == null) return;
         if (gameStarted && latestGameState != null) {
             handler.onServerMessage(new GameStateMessage(latestGameState));
+        } else if (latestTotemSelectionState != null) {
+            handler.onServerMessage(new TotemSelectionMessage(latestTotemSelectionState));
         } else if (latestLobbyState != null) {
             handler.onServerMessage(new LobbyStateMessage(latestLobbyState));
         }
@@ -75,6 +81,7 @@ public final class ClientSession {
     public void clearLocalMatchState() {
         latestGameState = null;
         latestLobbyState = null;
+        latestTotemSelectionState = null;
         gameStarted = false;
         virtualServer.clearMatchBinding();
     }
@@ -101,7 +108,8 @@ public final class ClientSession {
                     virtualServer.bindMatch(m.matchId(), m.nickname());
                 }
                 @Override public void visit(LobbyStateMessage m)  { latestLobbyState = m.lobbyState(); }
-                @Override public void visit(GameStartedMessage m) { gameStarted = true; latestGameState = m.initialGameState(); }
+                @Override public void visit(TotemSelectionMessage m) { latestTotemSelectionState = m.selectionState(); }
+                @Override public void visit(GameStartedMessage m) { gameStarted = true; latestTotemSelectionState = null; latestGameState = m.initialGameState(); }
                 @Override public void visit(GameStateMessage m)   { latestGameState = m.gameState(); }
                 @Override public void visit(MatchRecoveringMessage m) {
                     // The match is in progress (just paused for reconnection):

@@ -279,6 +279,10 @@ public final class TuiRunner {
                         requireArgs(parts, 2, "players <N>");
                         virtualServer.setExpectedPlayers(Integer.parseInt(parts[1]));
                     }
+                    case "totem" -> {
+                        requireArgs(parts, 2, "totem <color>");
+                        virtualServer.chooseTotem(parts[1]);
+                    }
                     case "place" -> {
                         requireArgs(parts, 2, "place <letter>");
                         if (parts[1].length() != 1) {
@@ -388,6 +392,7 @@ public final class TuiRunner {
         System.out.println();
         System.out.println("  In a match:");
         System.out.println("    players <N>                     (host only) update expected players");
+        System.out.println("    totem <color>                   (pre-game) choose your totem color when it's your turn");
         System.out.println("    place <letter>                  place totem on offer tile <letter>");
         System.out.println("    pick <id1> [id2 ...]            ");
         System.out.println("    bonus <cardId>                  select bonus card");

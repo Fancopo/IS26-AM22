@@ -10,6 +10,7 @@ import it.polimi.ingsw.am22.network.protocol.message.ClientRequest;
 import it.polimi.ingsw.am22.network.protocol.message.ClientRequestVisitor;
 import it.polimi.ingsw.am22.network.protocol.message.request.AbandonRecoveredMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.ChooseTotemRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.CreateMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.DisconnectPlayerRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.ListMatchesRequest;
@@ -267,6 +268,10 @@ public class MatchManager {
         @Override public void visit(RemovePlayerFromLobbyRequest request) {
             MatchSession s = requireSession(request.matchId());
             synchronized (s) { s.handleRemoveFromLobby(request, channel); }
+        }
+        @Override public void visit(ChooseTotemRequest request) {
+            MatchSession s = requireSession(request.matchId());
+            synchronized (s) { s.handleChooseTotem(request, channel); }
         }
         @Override public void visit(PlaceTotemRequest request) {
             MatchSession s = requireSession(request.matchId());

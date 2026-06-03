@@ -33,6 +33,23 @@ public class ModelDtoMapper {
         );
     }
 
+    public TotemSelectionStateDTO toTotemSelectionState(MatchController matchController) {
+        List<Player> lobby = matchController.getLobbyPlayers();
+        List<TotemOptionDTO> options = matchController.getTotemPalette().stream()
+                .map(color -> new TotemOptionDTO(color, ownerOf(color, lobby)))
+                .toList();
+        return new TotemSelectionStateDTO(options, matchController.getCurrentTotemChooser());
+    }
+
+    /** Nickname of the player whose totem has this color, or null if free. */
+    private String ownerOf(String color, List<Player> lobby) {
+        return lobby.stream()
+                .filter(p -> p.getTotem() != null && p.getTotem().getColor().equalsIgnoreCase(color))
+                .map(Player::getNickname)
+                .findFirst()
+                .orElse(null);
+    }
+
     public GameStateDTO toGameState(Game game) {
         Board board = game.getBoard();
         Player activePlayer = game.getActivePlayer();

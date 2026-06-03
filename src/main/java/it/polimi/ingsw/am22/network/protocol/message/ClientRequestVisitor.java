@@ -2,6 +2,7 @@ package it.polimi.ingsw.am22.network.protocol.message;
 
 import it.polimi.ingsw.am22.network.protocol.message.request.AbandonRecoveredMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.AddPlayerToLobbyRequest;
+import it.polimi.ingsw.am22.network.protocol.message.request.ChooseTotemRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.CreateMatchRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.DisconnectPlayerRequest;
 import it.polimi.ingsw.am22.network.protocol.message.request.ListMatchesRequest;
@@ -24,6 +25,7 @@ public interface ClientRequestVisitor {
     void visit(AddPlayerToLobbyRequest request);
     void visit(SetExpectedPlayersRequest request);
     void visit(RemovePlayerFromLobbyRequest request);
+    void visit(ChooseTotemRequest request);
     void visit(PlaceTotemRequest request);
     void visit(PickCardsRequest request);
     void visit(PickBonusCardRequest request);

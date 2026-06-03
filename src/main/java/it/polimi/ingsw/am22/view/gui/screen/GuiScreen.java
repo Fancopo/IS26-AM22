@@ -35,4 +35,10 @@ public interface GuiScreen {
      * avoid rebuilding the screen on every reconnection update.
      */
     default boolean isRecoveryScreen() { return false; }
+
+    /**
+     * True for the pre-game totem selection screen. {@link GuiApp} uses it to
+     * avoid rebuilding the screen on every totem-selection update.
+     */
+    default boolean isTotemSelectionScreen() { return false; }
 }
