@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="fixed some bug of GUI">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="regenerated file jar for windows and Macos">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/javadoc/it.polimi.ingsw.am/it/polimi/ingsw/am22/controller/server/MatchSession.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/javadoc/it.polimi.ingsw.am/it/polimi/ingsw/am22/controller/server/MatchSession.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/javadoc/it.polimi.ingsw.am/it/polimi/ingsw/am22/model/Card.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/javadoc/it.polimi.ingsw.am/it/polimi/ingsw/am22/model/Card.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jar/client.jar" beforeDir="false" afterPath="$PROJECT_DIR$/jar/client.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jar/server.jar" beforeDir="false" afterPath="$PROJECT_DIR$/jar/server.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/MatchSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/controller/server/MatchSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Card.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/Building.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/Building.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/GameScreen.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +114,7 @@
       <recent name="it.polimi.ingsw.am22" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.ClientB">
+  <component name="RunManager" selected="Application.ClientA">
     <configuration name="ClientA" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.ClientMain" />
       <module name="am22" />
@@ -531,15 +533,7 @@
       <option name="project" value="LOCAL" />
       <updated>1782125757220</updated>
     </task>
-    <task id="LOCAL-00036" summary="fixed some bug of GUI">
-      <option name="closed" value="true" />
-      <created>1782131918544</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1782131918544</updated>
-    </task>
-    <option name="localTasksCounter" value="37" />
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -589,6 +583,7 @@
     <MESSAGE value="con la parte di multipartita (incompleta)" />
     <MESSAGE value="still fixed GUI" />
     <MESSAGE value="added some fuction for GUI and added database(SQL)" />
+    <MESSAGE value="fixed some bug of GUI" />
     <MESSAGE value="Fixing bug: gatherer and builder discount always 0, no cost to purchase a building with bonuscard." />
     <MESSAGE value="Fixing bug: resized the gamescreen avoiding the scrolling." />
     <MESSAGE value="Optimized MVC design, reduced javadoc. Gamescreen adjusted." />
@@ -603,8 +598,7 @@
     <MESSAGE value="Adding Javadoc" />
     <MESSAGE value="regenerated file jar" />
     <MESSAGE value="regenerated file jar for windows and Macos" />
-    <MESSAGE value="fixed some bug of GUI" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed some bug of GUI" />
+    <option name="LAST_COMMIT_MESSAGE" value="regenerated file jar for windows and Macos" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
