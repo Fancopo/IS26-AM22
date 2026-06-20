@@ -35,6 +35,10 @@ public class CollectionRewardEffect implements BuildingEffect {
      */
     @Override
     public void onCharacterAdded(Player player, TribeCharacter newChar) {
+        // A missing condition matches nothing, so the effect never grants a reward.
+        if (conditionType == null) {
+            return;
+        }
         int currentMatches = switch (conditionType) {
             case INVENTOR_PAIR -> countInventorPairs(player);
             case SET_OF_6 -> countSetsOfSix(player);

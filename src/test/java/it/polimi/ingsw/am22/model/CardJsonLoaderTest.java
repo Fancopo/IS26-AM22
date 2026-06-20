@@ -98,7 +98,7 @@ public class CardJsonLoaderTest {
         assertNotNull(card);
         assertEquals(CharacterType.INVENTOR, card.getCharacterType());
         assertInstanceOf(Inventor.class, card);
-        assertEquals(0, card.getIconPerInventor());
+        assertEquals('A', card.getIconPerInventor());
     }
 
     @Test
