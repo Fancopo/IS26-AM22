@@ -68,8 +68,17 @@ public class Totem implements Serializable {
      * location first.
      *
      * @param slot the destination slot
+     * @throws IllegalArgumentException if {@code slot} is null
+     * @throws IllegalStateException    if the slot is already occupied
      */
     public void moveToTurnOrder(Slot slot) {
+        if (slot == null) {
+            throw new IllegalArgumentException("Slot cannot be null.");
+        }
+        if (!slot.isEmpty()) {
+            throw new IllegalStateException("Slot is already occupied. Choose another slot.");
+        }
+
         detachFromCurrent();
         this.currentSlot = slot;
         slot.placeTotem(this);

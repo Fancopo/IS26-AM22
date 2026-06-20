@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Model tests added">
-      <change afterPath="$PROJECT_DIR$/uml/mesos_model.jpg" afterDir="false" />
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Uml added. Adjusted CollectionRewardEffect and CardJsonLoaderTest.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/CollectionRewardEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/CollectionRewardEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/model/CardJsonLoaderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/it/polimi/ingsw/am22/model/CardJsonLoaderTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Totem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Totem.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +140,7 @@
       <recent name="it.polimi.ingsw.am22" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.PlayerTest">
+  <component name="RunManager" selected="JUnit.TotemTest">
     <configuration name="ClientA" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.ClientMain" />
       <module name="am22" />
@@ -207,21 +206,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CollectionRewardEffectTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="am22" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="it.polimi.ingsw.am22.model.building.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.model.building" />
-      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.model.building.CollectionRewardEffectTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="EndGameScoringEffectTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="am22" />
       <extension name="coverage">
@@ -282,25 +266,40 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="TotemTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="am22" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="it.polimi.ingsw.am22.model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="it.polimi.ingsw.am22.model" />
+      <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.am22.model.TotemTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Application.ClientA" />
       <item itemvalue="Application.ClientB" />
       <item itemvalue="Application.ClientC" />
       <item itemvalue="Application.ClientD" />
       <item itemvalue="Application.ClientE" />
-      <item itemvalue="JUnit.CollectionRewardEffectTest" />
       <item itemvalue="JUnit.EndGameScoringEffectTest" />
       <item itemvalue="JUnit.EventYieldBonusEffectTest" />
       <item itemvalue="JUnit.PlayerTest" />
       <item itemvalue="JUnit.SlotTest" />
+      <item itemvalue="JUnit.TotemTest" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.TotemTest" />
         <item itemvalue="JUnit.PlayerTest" />
         <item itemvalue="JUnit.SlotTest" />
         <item itemvalue="JUnit.EventYieldBonusEffectTest" />
         <item itemvalue="JUnit.EndGameScoringEffectTest" />
-        <item itemvalue="JUnit.CollectionRewardEffectTest" />
       </list>
     </recent_temporary>
   </component>
@@ -580,7 +579,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781872929304</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Uml added. Adjusted CollectionRewardEffect and CardJsonLoaderTest.">
+      <option name="closed" value="true" />
+      <created>1781968869091</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1781968869091</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -633,7 +640,8 @@
     <MESSAGE value="gameserver and matchecontroller name modified and matchmanager and matchsession separation" />
     <MESSAGE value="TUI: added command &quot;check&quot; for each visible card on the board and each player's tribe." />
     <MESSAGE value="Model tests added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Model tests added" />
+    <MESSAGE value="Uml added. Adjusted CollectionRewardEffect and CardJsonLoaderTest." />
+    <option name="LAST_COMMIT_MESSAGE" value="Uml added. Adjusted CollectionRewardEffect and CardJsonLoaderTest." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
