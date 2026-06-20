@@ -4,6 +4,18 @@
 Implementazione del gioco da tavolo **MESOS**, con server multipartita e client
 disponibile in due interfacce: testuale (TUI) e grafica (GUI, JavaFX).
 
+### Funzionalità implementate
+
+- Regole complete
+- TUI(Interfaccia Testuale)
+- GUI(Interfaccia Grafica)
+- RMI
+- SOCKET
+- 3 Funzionalità avanzate**:
+   - Classifica partite su DB
+   - Partite multiple
+   - Persistenza
+
 ## Istruzioni di Avvio
 
 ### Prerequisiti
