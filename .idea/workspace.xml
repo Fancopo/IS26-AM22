@@ -59,44 +59,44 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Client TUI A.executor": "Run",
-    "Application.Client TUI B.executor": "Run",
-    "Application.ClientA.executor": "Run",
-    "Application.ClientApp.executor": "Run",
-    "Application.ClientB.executor": "Run",
-    "Application.ClientC.executor": "Run",
-    "Application.ClientD.executor": "Run",
-    "Application.ClientE.executor": "Run",
-    "Application.DbTestMain.executor": "Run",
-    "Application.GuiApp.executor": "Run",
-    "Application.NetworkServerLauncher.executor": "Run",
-    "Application.ServerMain.executor": "Run",
-    "JUnit.ArtistTest.executor": "Coverage",
-    "JUnit.CardJsonLoaderTest.executor": "Coverage",
-    "JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor": "Coverage",
-    "JUnit.OfferTileTest.executor": "Coverage",
-    "JUnit.PlayerTest.executor": "Coverage",
-    "JUnit.SlotTest.executor": "Coverage",
-    "JUnit.TotemTest.executor": "Coverage",
-    "JUnit.TribeTest.executor": "Coverage",
-    "JUnit.java in am22.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "docs/english-comments-javadoc",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Client TUI A.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client TUI B.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientA.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientApp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientB.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientC.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientD.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientE.executor&quot;: &quot;Run&quot;,
+    &quot;Application.DbTestMain.executor&quot;: &quot;Run&quot;,
+    &quot;Application.GuiApp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.NetworkServerLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ServerMain.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ArtistTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CardJsonLoaderTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.CardJsonLoaderTest.shouldLoadBuilderCorrectly.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.OfferTileTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.PlayerTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.SlotTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TotemTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.TribeTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.java in am22.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/jacop/IdeaProjects/am22/src/main/java/it/polimi/ingsw/am22&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\jacop\IdeaProjects\am22\src\main\java\it\polimi\ingsw\am22" />
@@ -502,7 +502,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781948986348</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Adding Javadoc">
+      <option name="closed" value="true" />
+      <created>1781950640720</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1781950640720</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
