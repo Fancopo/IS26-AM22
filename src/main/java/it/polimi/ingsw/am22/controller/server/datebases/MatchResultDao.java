@@ -11,11 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DAO per la tabella {@code match_results}: persiste i risultati di ogni
- * partita finita e fornisce le query usate dal {@link MatchManager}
- * per costruire la classifica storica e calcolare la posizione di un
- * giocatore. Tutte le operazioni aprono una connessione, eseguono e la
- * chiudono in try-with-resources (nessun pool).
+ * DAO for the {@code match_results} table: persists the result of every finished
+ * match and provides the queries used by the server to build the historical
+ * leaderboard and compute a player's position. Every operation opens a
+ * connection, runs, and closes it in a try-with-resources (no pool).
  */
 public class MatchResultDao {
 
@@ -24,15 +23,15 @@ public class MatchResultDao {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(
-                    "Driver MySQL non trovato. Controlla la dipendenza " +
-                    "mysql-connector-j nel pom.xml.", e);
+                    "MySQL driver not found. Check the mysql-connector-j " +
+                    "dependency in pom.xml.", e);
         }
     }
 
     /**
-     * Apre una connessione JDBC al database usando le credenziali
-     * caricate da {@link DatabaseConfig}. Il chiamante e' responsabile
-     * di chiuderla (tipicamente con try-with-resources).
+     * Opens a JDBC connection to the database using the credentials loaded from
+     * {@link DatabaseConfig}. The caller is responsible for closing it
+     * (typically with try-with-resources).
      */
     private Connection connect() throws SQLException {
         return DriverManager.getConnection(
@@ -42,18 +41,18 @@ public class MatchResultDao {
     }
 
     /**
-     * Salva i risultati di una partita appena terminata. Inserisce una
-     * riga per ogni giocatore con nickname, punteggio finale, timestamp
-     * corrente e numero di partecipanti — quest'ultimo permette di
-     * filtrare la classifica per dimensione di partita.
+     * Saves the results of a just-finished match. Inserts one row per player
+     * with nickname, final score, the current timestamp and the number of
+     * participants — the latter allows filtering the leaderboard by match size.
      *
-     * @param players  risultati per ciascun giocatore (nickname + score)
-     * @param numPlayers numero totale di giocatori della partita
+     * @param players    per-player results (nickname + score)
+     * @param numPlayers total number of players in the match
+     * @throws SQLException if the insert fails
      */
     public void saveMatch(List<PlayerResult> players, int numPlayers)
             throws SQLException {
         if (players == null || players.isEmpty()) {
-            throw new IllegalArgumentException("Lista giocatori vuota");
+            throw new IllegalArgumentException("Empty player list");
         }
         String sql = "INSERT INTO match_results " +
                      "(nickname, final_score, end_date, num_players) " +
@@ -73,10 +72,13 @@ public class MatchResultDao {
     }
 
     /**
-     * Restituisce la classifica storica di tutte le partite con il numero
-     * di giocatori indicato, ordinata per punteggio decrescente
-     * (tie-break per data crescente, prima vince chi ha raggiunto il
-     * punteggio per primo).
+     * Returns the historical leaderboard of all matches with the given player
+     * count, ordered by descending score (tie-break by ascending date: whoever
+     * reached the score first ranks higher).
+     *
+     * @param numPlayers the match size to filter by
+     * @return the leaderboard rows
+     * @throws SQLException if the query fails
      */
     public List<RankRow> getLeaderboard(int numPlayers) throws SQLException {
         String sql = "SELECT nickname, final_score, end_date " +
@@ -99,10 +101,14 @@ public class MatchResultDao {
     }
 
     /**
-     * Calcola la posizione che un dato punteggio occuperebbe nella
-     * classifica storica per partite con quel numero di giocatori
-     * (1-based: posizione 1 = miglior punteggio). Conta quante righe
-     * hanno un punteggio strettamente superiore e somma 1.
+     * Computes the position a given score would occupy in the historical
+     * leaderboard for matches with that player count (1-based: position 1 = best
+     * score). Counts how many rows have a strictly higher score and adds 1.
+     *
+     * @param numPlayers  the match size to filter by
+     * @param playerScore the score whose position is wanted
+     * @return the 1-based leaderboard position
+     * @throws SQLException if the query fails
      */
     public int getPosition(int numPlayers, int playerScore) throws SQLException {
         String sql = "SELECT 1 + COUNT(*) AS pos FROM match_results " +
@@ -118,9 +124,20 @@ public class MatchResultDao {
         }
     }
 
-    /** Coppia nickname + punteggio finale, usata in input a {@link #saveMatch}. */
+    /**
+     * Nickname + final score pair, used as input to {@link #saveMatch}.
+     *
+     * @param nickname the player's nickname
+     * @param score    the player's final score
+     */
     public record PlayerResult(String nickname, int score) {}
 
-    /** Riga di classifica letta dal DB: nickname, punteggio finale, data di fine partita. */
+    /**
+     * A leaderboard row read from the DB.
+     *
+     * @param nickname the player's nickname
+     * @param score    the final score
+     * @param endDate  the match end date
+     */
     public record RankRow(String nickname, int score, LocalDateTime endDate) {}
 }

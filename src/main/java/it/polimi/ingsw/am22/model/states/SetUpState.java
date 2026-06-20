@@ -7,14 +7,25 @@ import it.polimi.ingsw.am22.model.Slot;
 
 import java.util.Collections;
 
+/**
+ * Initial phase of the game. {@link #startMatch(Game)} prepares the turn-order
+ * tile and offer track, builds and deals the decks, randomises the player order,
+ * seats every totem and hands out the starting food, then advances to
+ * {@link TotemPlacementState}.
+ */
 public class SetUpState implements GameState {
 
+    /**
+     * Sets up the match and transitions to the totem-placement phase.
+     *
+     * @param game the game being set up
+     */
     @Override
     public void startMatch(Game game) {
         game.getBoard().getTurnOrderTile().setup(game.getPlayers().size());
         game.getBoard().initTrack(game.getPlayers().size());
 
-        // Calls Game's package-private method
+        // Builds and shuffles the decks, revealing the Era I buildings.
         game.setupDecks();
 
         game.getBoard().dealInitialCards(game.getTribeDeck(), game.getPlayers().size());

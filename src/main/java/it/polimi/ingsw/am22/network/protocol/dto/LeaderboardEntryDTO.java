@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Riga della classifica storica delle partite.
+ * A row of the historical match leaderboard.
  *
- * @param nickname     nickname del giocatore
- * @param score        punteggio finale di quella partita
- * @param endDate      data/ora in cui la partita si e' conclusa
- * @param numPlayers   numero di giocatori della partita
+ * @param nickname   the player's nickname
+ * @param score      the final score of that match
+ * @param endDate    when the match ended
+ * @param numPlayers the number of players in the match
  */
 public record LeaderboardEntryDTO(
         String nickname,

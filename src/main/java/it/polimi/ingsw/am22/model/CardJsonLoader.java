@@ -21,6 +21,14 @@ public class CardJsonLoader {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Reads the tribe-character and event cards from a JSON resource. Events
+     * with the two reserved IDs are kept apart as final events.
+     *
+     * @param resourcePath the classpath resource to read (e.g. {@code "/TribeCharacter-Event.json"})
+     * @return the loaded characters and events (the buildings list is empty)
+     * @throws RuntimeException if the resource is missing or malformed
+     */
     public LoadedCards loadTribeCharactersAndEvents(String resourcePath) {
         List<TribeCharacter> tribeCharacters = new ArrayList<>();
         List<Event> events = new ArrayList<>();
@@ -124,6 +132,13 @@ public class CardJsonLoader {
         }
     }
 
+    /**
+     * Reads the building cards from a JSON resource.
+     *
+     * @param resourcePath the classpath resource to read (e.g. {@code "/Building.json"})
+     * @return the loaded buildings
+     * @throws RuntimeException if the resource is missing or malformed
+     */
     public List<Building> loadBuildings(String resourcePath) {
         List<Building> buildings = new ArrayList<>();
 
@@ -204,6 +219,14 @@ public class CardJsonLoader {
         return CharacterType.valueOf(node.asText());
     }
 
+    /**
+     * Loads every card kind in one call.
+     *
+     * @param tribeEventPath the tribe-character/event JSON resource path
+     * @param buildingPath   the building JSON resource path
+     * @return the fully populated {@link LoadedCards}
+     * @throws RuntimeException if a resource is missing or malformed
+     */
     public LoadedCards loadAllCards(String tribeEventPath, String buildingPath) {
         LoadedCards partial = loadTribeCharactersAndEvents(tribeEventPath);
         List<Building> buildings = loadBuildings(buildingPath);

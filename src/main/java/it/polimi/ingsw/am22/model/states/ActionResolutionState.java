@@ -6,9 +6,28 @@ import it.polimi.ingsw.am22.model.character.CharacterType;
 
 import java.util.List;
 
+/**
+ * Phase in which each player, in offer-track order, resolves the action of the
+ * tile their totem sits on: gain food and/or take cards. Card picks use a
+ * transactional "validate-then-commit" approach so an invalid selection never
+ * leaves the game half-mutated. After acting the totem returns to the turn-order
+ * tile; when the last player has acted the phase either grants an end-of-round
+ * bonus pick ({@link BonusCardSelectionState}) or proceeds to
+ * {@link EventResolutionState}.
+ */
 public class ActionResolutionState implements GameState {
-    // The only method the Controller will invoke.
-    // If the player is on tile A (food only), selectedCards will be an empty list.
+    /**
+     * Resolves the active player's action for the tile their totem occupies.
+     * If the player is on a food-only tile, {@code selectedCards} is empty.
+     *
+     * @param game          the game being driven
+     * @param player        the player acting
+     * @param selectedCards the cards the player chose (empty for a food-only tile)
+     * @throws IllegalStateException    if the player is not on the offer track,
+     *                                  or cannot afford the selected buildings
+     * @throws IllegalArgumentException if the selection violates the tile's
+     *                                  constraints or includes an unpickable card
+     */
     @Override
     public void pickCards(Game game, Player player, List<Card> selectedCards) {
         OfferTile currentTile = game.getBoard().getOfferTrack().stream()
@@ -66,22 +85,21 @@ public class ActionResolutionState implements GameState {
                                         : ""));
             }
 
-            // 1c. Verifica del food simulando la pick NELL'ORDINE in cui il
-            //     giocatore l'ha specificata. L'ordine è semanticamente
-            //     significativo perché:
-            //       - un Builder pescato prima di un Building applica il suo
-            //         sconto a quel Building (e a quelli successivi);
-            //       - un Hunter* pescato prima di un Building dà food al
-            //         giocatore prima che debba pagare il Building;
-            //       - il bonus food di un Hunter* dipende dal numero di
-            //         Hunter già nella tribù AL MOMENTO in cui viene aggiunto
-            //         (cfr. Hunter.onAddedToTribe), quindi pescare HUNTER ->
-            //         HUNTER* dà più food di HUNTER* -> HUNTER.
-            //     Ogni carta dichiara il proprio effetto via Card.applyPickEffect:
-            //     così Building/Builder/Hunter sono dispatch polimorfici, niente
-            //     instanceof, e Artist/Inventor/Collector/Shaman ereditano il
-            //     no-op di default (il loro contributo è in EndGame o in eventi
-            //     specifici, quindi qui non va simulato).
+            // 1c. Validate food by simulating the pick IN THE ORDER the player
+            //     specified. The order is semantically meaningful because:
+            //       - a Builder picked before a Building applies its discount to
+            //         that Building (and the following ones);
+            //       - a Hunter* picked before a Building feeds the player before
+            //         they must pay for the Building;
+            //       - a Hunter*'s food bonus depends on the number of Hunters
+            //         already in the tribe AT THE MOMENT it is added
+            //         (see Hunter.onAddedToTribe), so picking HUNTER -> HUNTER*
+            //         yields more food than HUNTER* -> HUNTER.
+            //     Each card declares its own effect via Card.applyPickEffect, so
+            //     Building/Builder/Hunter are polymorphic dispatches (no instanceof)
+            //     and Artist/Inventor/Collector/Shaman inherit the default no-op
+            //     (their contribution is at end-game or in specific events, so it
+            //     must not be simulated here).
             PickSimulation sim = new PickSimulation(
                     player.getFood(),
                     player.getTribe().getBuilderDiscount(),
@@ -90,13 +108,13 @@ public class ActionResolutionState implements GameState {
                 card.applyPickEffect(sim);
             }
 
-            // --- PHASE 2: COMMIT (validazioni passate: ora si muta) ---
-            // Stesso ordine della simulazione: ogni Building paga lo sconto
-            // *attuale* della tribù (che cresce man mano che si aggiungono
-            // Builder), e ogni addCard scatena onAddedToTribe (Hunter* food).
-            // Niente payFood "totale" upfront: con un upfront totale, picking
-            // [Hunter*, Building] potrebbe far fallire payFood per food
-            // temporaneamente insufficiente, anche se la sequenza è valida.
+            // --- PHASE 2: COMMIT (validations passed: now we mutate) ---
+            // Same order as the simulation: each Building pays the tribe's
+            // *current* discount (which grows as Builders are added), and each
+            // addCard triggers onAddedToTribe (Hunter* food). No total upfront
+            // payFood: with a total upfront, picking [Hunter*, Building] could make
+            // payFood fail for temporarily insufficient food, even though the
+            // sequence is valid.
             for (Card card : selectedCards) {
                 card.payPickCost(player);
                 player.getTribe().addCard(player, card);
@@ -175,6 +193,7 @@ public class ActionResolutionState implements GameState {
         return new int[] { min, max };
     }
 
+    // Renders a [min, max] range as "n" when min == max, otherwise "min-max".
     private String describeRange(int[] range) {
         return range[0] == range[1] ? Integer.toString(range[0]) : range[0] + "-" + range[1];
     }

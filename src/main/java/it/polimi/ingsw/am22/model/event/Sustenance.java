@@ -8,15 +8,33 @@ import it.polimi.ingsw.am22.model.character.CharacterType;
 
 import java.util.List;
 
+/**
+ * Sustenance event. Each player must pay one food per character in their tribe;
+ * Collectors and sustenance-discount Buildings feed some characters for free.
+ * Unfed characters cost PP. Resolves after every other event of the round.
+ */
 public class Sustenance extends Event implements EventEffect {
 
     private static final int FOOD_PER_COLLECTOR = 3;
 
+    /**
+     * @param id          the card id
+     * @param era         the Era the card belongs to
+     * @param minPlayers  the minimum player count for this card to be in play
+     * @param eventEffect ignored; the card registers itself as its own effect
+     */
     public Sustenance(String id, Era era, int minPlayers, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.SUSTENANCE, eventEffect);
         setEffect(this);
     }
 
+    /**
+     * Charges each player food to feed their tribe (after discounts), converting
+     * any shortfall into an Era-scaled PP penalty.
+     *
+     * @param players the players in the game
+     * @param id      the id of the resolving event
+     */
     @Override
     public void applyEvent(List<Player> players, String id) {
         int ppPenaltyPerUnfed = switch (getEra()) {

@@ -178,6 +178,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Generates the HTML API documentation from the Javadoc comments in
+                 the source code: `mvn javadoc:javadoc` writes it under target
+                 (target/site/apidocs by default; the goal prints the exact path).
+                 doclint is relaxed (`-missing`) and failures are non-fatal so the
+                 documentation always generates even while comments are a work in
+                 progress. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <configuration>
+                    <source>25</source>
+                    <encoding>UTF-8</encoding>
+                    <docencoding>UTF-8</docencoding>
+                    <charset>UTF-8</charset>
+                    <doctitle>Mesos - API documentation</doctitle>
+                    <windowtitle>Mesos API</windowtitle>
+                    <doclint>all,-missing</doclint>
+                    <failOnError>false</failOnError>
+                    <failOnWarnings>false</failOnWarnings>
+                    <quiet>true</quiet>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

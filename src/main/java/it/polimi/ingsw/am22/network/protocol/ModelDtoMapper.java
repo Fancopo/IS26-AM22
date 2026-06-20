@@ -15,6 +15,12 @@ import java.util.Optional;
  */
 public class ModelDtoMapper {
 
+    /**
+     * Builds the lobby-state DTO from a controller.
+     *
+     * @param matchController the controller to read
+     * @return the lobby snapshot
+     */
     public LobbyStateDTO toLobbyState(MatchController matchController) {
         List<LobbyPlayerDTO> players = matchController.getLobbyPlayers().stream()
                 .map(player -> new LobbyPlayerDTO(
@@ -33,6 +39,12 @@ public class ModelDtoMapper {
         );
     }
 
+    /**
+     * Builds the totem-selection-state DTO from a controller.
+     *
+     * @param matchController the controller to read
+     * @return the totem-selection snapshot
+     */
     public TotemSelectionStateDTO toTotemSelectionState(MatchController matchController) {
         List<Player> lobby = matchController.getLobbyPlayers();
         List<TotemOptionDTO> options = matchController.getTotemPalette().stream()
@@ -50,6 +62,12 @@ public class ModelDtoMapper {
                 .orElse(null);
     }
 
+    /**
+     * Builds the full game-state DTO from a game.
+     *
+     * @param game the game to read
+     * @return the game snapshot
+     */
     public GameStateDTO toGameState(Game game) {
         Board board = game.getBoard();
         Player activePlayer = game.getActivePlayer();
@@ -79,6 +97,12 @@ public class ModelDtoMapper {
         );
     }
 
+    /**
+     * Builds the winner DTO from the winning player.
+     *
+     * @param winner the winning player
+     * @return the winner snapshot
+     */
     public WinnerDTO toWinnerDTO(Player winner) {
         return new WinnerDTO(
                 winner.getNickname(),

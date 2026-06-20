@@ -4,9 +4,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The turn-order tile: the ordered row of {@link Slot}s that totems return to
+ * after acting during a round. The slot a totem lands on determines both the
+ * next round's turn order and a food bonus (or, on the last space, a penalty).
+ */
 public class TurnOrderTile implements Serializable {
     private List<Slot> slots;
 
+    /** Creates an empty turn-order tile; call {@link #setup(int)} before use. */
     public TurnOrderTile() {
         this.slots = new ArrayList<>();
     }
@@ -29,6 +35,13 @@ public class TurnOrderTile implements Serializable {
         };
     }
 
+    /**
+     * (Re)builds the slots for the given number of players, applying the printed
+     * food bonuses and marking the last space as the penalty space.
+     *
+     * @param playerCount the number of players (2-5)
+     * @throws IllegalArgumentException if {@code playerCount} is unsupported
+     */
     public void setup(int playerCount) {
         slots.clear();
         int[] bonuses = foodBonusesFor(playerCount);
@@ -38,6 +51,7 @@ public class TurnOrderTile implements Serializable {
         }
     }
 
+    /** @return the first empty slot in order, or {@code null} if all are occupied */
     public Slot getFirstAvailableSlot() {
         for (Slot slot : slots) {
             if (slot.isEmpty()) return slot;
@@ -45,6 +59,7 @@ public class TurnOrderTile implements Serializable {
         return null;
     }
 
+    /** @return the totems currently on the tile, in slot order (i.e. the new turn order) */
     public List<Totem> getTurnOrder() {
         List<Totem> turnOrder = new ArrayList<>();
         for (Slot slot : slots) {
@@ -53,6 +68,7 @@ public class TurnOrderTile implements Serializable {
         return turnOrder;
     }
 
+    /** @return how many slots are currently occupied */
     public int getOccupiedSlotsCount() {
         int count = 0;
         for (Slot slot : slots) {
@@ -61,5 +77,6 @@ public class TurnOrderTile implements Serializable {
         return count;
     }
 
+    /** @return the slots of this tile, in order */
     public List<Slot> getSlots() { return slots; }
 }

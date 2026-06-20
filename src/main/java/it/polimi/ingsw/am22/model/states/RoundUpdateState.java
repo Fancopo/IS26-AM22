@@ -5,8 +5,21 @@ import it.polimi.ingsw.am22.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * End-of-round cleanup phase: discards spent cards, shifts the rows, refills the
+ * upper row (advancing the Era if a higher-Era card surfaces), and recomputes
+ * the turn order from the turn-order tile. It then either ends the game after
+ * round 10 ({@link EndGameState}) or starts the next round
+ * ({@link TotemPlacementState}).
+ */
 public class RoundUpdateState implements GameState {
 
+    /**
+     * Performs the cleanup, refill, Era handling and turn-order update, then
+     * transitions to the next phase.
+     *
+     * @param game the game being driven
+     */
     @Override
     public void updateRound(Game game) {
         game.getBoard().clearLowerRow();

@@ -20,17 +20,40 @@ import it.polimi.ingsw.am22.network.protocol.message.request.SetExpectedPlayersR
  * compile-time obligation on every implementor.
  */
 public interface ClientRequestVisitor {
+    /** @param request the create-match request */
     void visit(CreateMatchRequest request);
+
+    /** @param request the list-matches request */
     void visit(ListMatchesRequest request);
+
+    /** @param request the add-player-to-lobby request */
     void visit(AddPlayerToLobbyRequest request);
+
+    /** @param request the set-expected-players request */
     void visit(SetExpectedPlayersRequest request);
+
+    /** @param request the remove-player-from-lobby request */
     void visit(RemovePlayerFromLobbyRequest request);
+
+    /** @param request the choose-totem request */
     void visit(ChooseTotemRequest request);
+
+    /** @param request the place-totem request */
     void visit(PlaceTotemRequest request);
+
+    /** @param request the pick-cards request */
     void visit(PickCardsRequest request);
+
+    /** @param request the pick-bonus-card request */
     void visit(PickBonusCardRequest request);
+
+    /** @param request the disconnect-player request */
     void visit(DisconnectPlayerRequest request);
+
+    /** @param request the reconnect request */
     void visit(ReconnectRequest request);
+
+    /** @param request the abandon-recovered-match request */
     void visit(AbandonRecoveredMatchRequest request);
 
     /**
@@ -39,6 +62,8 @@ public interface ClientRequestVisitor {
      * is expected to drop the message before dispatch. Defaulted to avoid
      * forcing every implementor to add an empty method for a message that
      * is never meant to reach them.
+     *
+     * @param request the ping request
      */
     default void visit(PingRequest request) {}
 }

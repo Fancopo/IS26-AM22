@@ -1,10 +1,20 @@
 package it.polimi.ingsw.am22.model.building;
 
+/**
+ * {@link BuildingEffect} that modifies how the Shaman scoring treats the owner:
+ * it can add star icons, shield them from the PP loss when they hold the fewest
+ * stars, and/or double the PP they gain when they hold the most.
+ */
 public class ShamanicModifierEffect implements BuildingEffect {
     private final int extraIcons;
     private final boolean preventPPLoss;
     private final boolean doubleWinPP;
 
+    /**
+     * @param extraIcons    extra star icons granted to the owner
+     * @param preventPPLoss whether to shield the owner from the "fewest stars" PP loss
+     * @param doubleWinPP   whether to double the PP gained for holding the most stars
+     */
     public ShamanicModifierEffect(int extraIcons, boolean preventPPLoss, boolean doubleWinPP) {
         this.extraIcons = extraIcons;
         this.preventPPLoss = preventPPLoss;

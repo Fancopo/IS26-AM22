@@ -8,8 +8,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Phase that triggers the end-of-round Events. All lower-row cards fire (in
+ * trigger-priority order); on the final round the Events still visible in the
+ * upper row fire too. Then the game advances to {@link RoundUpdateState}.
+ */
 public class EventResolutionState implements GameState {
 
+    /**
+     * Triggers the round's events in priority order and hands off to the round
+     * update.
+     *
+     * @param game the game being driven
+     */
     @Override
     public void resolveEvents(Game game) {
         List<Card> cardsToTrigger = new ArrayList<>(game.getBoard().getLowerRow());

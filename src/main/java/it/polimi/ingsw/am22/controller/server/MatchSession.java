@@ -72,6 +72,17 @@ public final class MatchSession {
     private final long endGameCloseDelayMs;
     private final Runnable removeFromRegistry;
 
+    /**
+     * Builds a session for a brand-new (lobby-phase) match.
+     *
+     * @param matchId             id of the new match
+     * @param mapper              model-to-DTO mapper shared by the manager
+     * @param persistence         disk store used for crash recovery
+     * @param matchResultDao      DAO for the historical leaderboard
+     * @param endGameCloser       scheduler used to defer the post-game channel close
+     * @param endGameCloseDelayMs delay before closing channels after the end-game broadcast
+     * @param removeFromRegistry  callback that removes this session from the manager
+     */
     public MatchSession(String matchId,
                         ModelDtoMapper mapper,
                         MatchPersistence persistence,
@@ -120,13 +131,16 @@ public final class MatchSession {
 
     // --- Read-only accessors used by MatchManager for listing/lookup --------
 
+    /** @return the controller backing this match */
     public MatchController getMatchController() { return matchController; }
 
     /** Snapshot of all currently bound client handlers — used by the RMI liveness probe. */
     public Collection<ClientHandler> snapshotChannels() { return virtualView.snapshotChannels(); }
 
+    /** @return whether the match is paused waiting for players to reconnect after a crash */
     public boolean isRecovering() { return recovering; }
 
+    /** @return how many players have reconnected so far during recovery */
     public int reconnectedCount() { return reconnectedNicknames.size(); }
 
     // --- Persistence (called by MatchManager's periodic saver) --------------
@@ -251,6 +265,13 @@ public final class MatchSession {
         removeFromRegistry.run();
     }
 
+    /**
+     * Handles a lobby-join request (routed to a reconnect if the match is
+     * crash-recovered).
+     *
+     * @param request the join request
+     * @param channel the requesting channel
+     */
     public void handleAddPlayer(AddPlayerToLobbyRequest request, ClientHandler channel) {
         requireNotInOtherMatch(channel);
         // A crash-recovered match is listed as joinable so its players can come
@@ -307,6 +328,12 @@ public final class MatchSession {
         }
     }
 
+    /**
+     * Handles the host's request to change the expected player count.
+     *
+     * @param request the request
+     * @param channel the requesting channel
+     */
     public void handleSetExpectedPlayers(SetExpectedPlayersRequest request, ClientHandler channel) {
         bindIfKnown(request.requesterNickname(), channel);
         boolean wasStarted = matchController.hasStarted();
@@ -314,6 +341,12 @@ public final class MatchSession {
         publishStateChange(wasStarted);
     }
 
+    /**
+     * Handles a player voluntarily leaving the lobby.
+     *
+     * @param request the request
+     * @param channel the requesting channel
+     */
     public void handleRemoveFromLobby(RemovePlayerFromLobbyRequest request, ClientHandler channel) {
         bindIfKnown(request.nickname(), channel);
         matchController.removePlayerFromLobby(request.nickname());
@@ -349,11 +382,23 @@ public final class MatchSession {
                 () -> matchController.placeTotem(request.playerNickname(), request.offerLetter()));
     }
 
+    /**
+     * Handles a card-pick move.
+     *
+     * @param request the request
+     * @param channel the requesting channel
+     */
     public void handlePickCards(PickCardsRequest request, ClientHandler channel) {
         runMove(request.playerNickname(), channel,
                 () -> matchController.pickCards(request.playerNickname(), request.selectedCardIds()));
     }
 
+    /**
+     * Handles an end-of-round bonus-card pick.
+     *
+     * @param request the request
+     * @param channel the requesting channel
+     */
     public void handlePickBonusCard(PickBonusCardRequest request, ClientHandler channel) {
         runMove(request.playerNickname(), channel,
                 () -> matchController.pickBonusCard(request.playerNickname(), request.bonusCardId()));

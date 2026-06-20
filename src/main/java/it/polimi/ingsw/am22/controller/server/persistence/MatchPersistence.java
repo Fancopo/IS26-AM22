@@ -30,10 +30,15 @@ public final class MatchPersistence {
 
     private final Path directory;
 
+    /** Uses the default store directory ({@value #DEFAULT_DIR}). */
     public MatchPersistence() {
         this(Paths.get(DEFAULT_DIR));
     }
 
+    /**
+     * @param directory the directory in which match snapshots are stored
+     *                  (created if it does not exist)
+     */
     public MatchPersistence(Path directory) {
         this.directory = directory;
         try {

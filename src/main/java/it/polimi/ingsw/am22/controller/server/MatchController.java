@@ -8,53 +8,53 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * Controller server unico.
- * Gestisce lobby (addPlayerToLobby, setExpectedPlayers, removePlayerFromLobby),
- * avvia il Game quando la lobby è completa,
- * espone azioni di partita (placeTotem, pickCards, pickBonusCard, determineWinner).
- * Risolve id stringa → oggetti del model e valida il giocatore attivo.
+ * Single server-side controller for one match. Manages the lobby
+ * (addPlayerToLobby, setExpectedPlayers, removePlayerFromLobby), starts the
+ * {@link Game} when the lobby is full, and exposes the in-match actions
+ * (placeTotem, pickCards, pickBonusCard, determineWinner). It resolves string
+ * ids to model objects and validates that the acting player is the active one.
  */
 public class MatchController {
 
     /**
-     * Palette dei colori di totem selezionabili dai giocatori nella fase di
-     * scelta che precede l'inizio della partita.
+     * Palette of totem colours players can choose from during the selection
+     * phase that precedes the start of the match.
      */
     private static final List<String> TOTEM_PALETTE =
             List.of("Red", "Blue", "White", "Yellow", "Black");
 
-    /** Identificativo univoco della partita gestita da questo controller. */
+    /** Unique id of the match handled by this controller. */
     private final String matchId;
 
-    /** Lista dei giocatori attualmente presenti nella lobby. */
+    /** Players currently in the lobby. */
     private final List<Player> lobbyPlayers;
 
-    /** Riferimento alla partita vera e propria; rimane null finché il match non parte. */
+    /** The actual game; stays null until the match starts. */
     private Game game;
 
-    /** Nickname del giocatore host, cioè il primo entrato in lobby. */
+    /** Nickname of the host player, i.e. the first to join the lobby. */
     private String hostNickname;
 
-    /** Numero di giocatori scelto dall'host per avviare la partita. */
+    /** Number of players the host chose in order to start the match. */
     private int expectedPlayers;
 
     /**
-     * True quando la lobby è piena e i giocatori stanno scegliendo il totem,
-     * a turno, prima che la partita inizi davvero.
+     * True when the lobby is full and players are choosing their totems, in
+     * turn, before the match actually begins.
      */
     private boolean selectingTotem;
 
     /**
-     * Indice (nell'ordine di ingresso, {@link #lobbyPlayers}) del giocatore a
-     * cui tocca scegliere il totem durante la fase di selezione.
+     * Index (in join order, {@link #lobbyPlayers}) of the player whose turn it
+     * is to choose a totem during the selection phase.
      */
     private int totemPickIndex;
 
     /**
-     * Costruisce un controller inizialmente vuoto.
-     * La lobby è aperta e nessuna partita è ancora iniziata.
+     * Builds an initially empty controller: the lobby is open and no match has
+     * started yet.
      *
-     * @param matchId identificativo del match gestito da questo controller
+     * @param matchId id of the match handled by this controller
      */
     public MatchController(String matchId) {
         if (matchId == null || matchId.isBlank()) {
@@ -92,73 +92,58 @@ public class MatchController {
     }
 
     /**
-     * Restituisce l'identificativo del match gestito da questo controller.
-     *
-     * @return matchId univoco
+     * @return the unique id of the match handled by this controller
      */
     public String getMatchId() {
         return matchId;
     }
 
     /**
-     * Indica se la partita è già stata avviata.
-     *
-     * @return true se il model Game è stato creato, false altrimenti
+     * @return whether the match has already started (the {@link Game} model exists)
      */
     public boolean hasStarted() {
         return game != null;
     }
 
     /**
-     * Restituisce la partita corrente.
-     *
-     * @return l'istanza del model Game, oppure null se il match non è partito
+     * @return the current game, or null if the match has not started
      */
     public Game getGame() {
         return game;
     }
 
     /**
-     * Restituisce il nickname dell'host attuale della lobby.
-     *
-     * @return nickname host, oppure null se la lobby è vuota
+     * @return the current lobby host's nickname, or null if the lobby is empty
      */
     public String getHostNickname() {
         return hostNickname;
     }
 
     /**
-     * Restituisce il numero di giocatori scelto per avviare la partita.
-     *
-     * @return numero atteso di partecipanti
+     * @return the number of players chosen to start the match
      */
     public int getExpectedPlayers() {
         return expectedPlayers;
     }
 
     /**
-     * Restituisce una copia dei giocatori attualmente presenti in lobby.
-     *
-     * @return nuova lista contenente i giocatori della lobby
+     * @return a copy of the players currently in the lobby
      */
     public List<Player> getLobbyPlayers() {
         return new ArrayList<>(lobbyPlayers);
     }
 
     /**
-     * Aggiunge un nuovo giocatore alla lobby.
+     * Adds a new player to the lobby.
      *
-     * Il metodo controlla che:
-     * - la lobby sia ancora aperta
-     * - non si superi il massimo di 5 giocatori
-     * - il nickname non sia già presente (confronto case-insensitive,
-     *   {@link Locale#ROOT}: "Alice" e "alice" sono considerati lo stesso
-     *   nickname, ma la casing originale viene conservata per la visualizzazione)
+     * <p>Checks that the lobby is still open, that the 5-player maximum is not
+     * exceeded, and that the nickname is not already taken (case-insensitive,
+     * {@link Locale#ROOT}: "Alice" and "alice" are the same nickname, but the
+     * original casing is kept for display). The first player to join becomes the
+     * host. The totem is not assigned here: players choose it in turn during the
+     * selection phase.
      *
-     * Inoltre assegna automaticamente un totem e, se necessario,
-     * imposta il primo giocatore come host.
-     *
-     * @param nickname nickname del giocatore da aggiungere
+     * @param nickname nickname of the player to add
      */
     public void addPlayerToLobby(String nickname) {
         requireLobbyOpen();
@@ -173,8 +158,8 @@ public class MatchController {
             throw new IllegalArgumentException("Nickname already in use: " + cleanNickname);
         }
 
-        // Il totem NON viene assegnato all'ingresso: i giocatori lo scelgono
-        // a turno nella fase di selezione che precede l'inizio della partita.
+        // The totem is NOT assigned on entry: players choose it in turn during
+        // the selection phase that precedes the start of the match.
         Player player = new Player(cleanNickname);
         lobbyPlayers.add(player);
 
@@ -182,18 +167,18 @@ public class MatchController {
             hostNickname = cleanNickname;
         }
 
-        // Dopo ogni ingresso si verifica se si può avviare la selezione totem.
+        // After each join, check whether totem selection can begin.
         tryBeginTotemSelection();
     }
 
     /**
-     * Permette all'host di scegliere il numero totale di giocatori attesi.
+     * Lets the host choose the total number of expected players.
      *
-     * Il numero deve essere compreso tra 2 e 5 e non può essere inferiore
-     * al numero di giocatori già connessi in lobby.
+     * <p>The number must be between 2 and 5 and not less than the number of
+     * players already connected to the lobby.
      *
-     * @param requesterNickname nickname di chi sta facendo la richiesta
-     * @param expectedPlayers numero di giocatori desiderato per la partita
+     * @param requesterNickname nickname of the requester
+     * @param expectedPlayers   desired number of players for the match
      */
     public void setExpectedPlayers(String requesterNickname, int expectedPlayers) {
         requireLobbyOpen();
@@ -217,13 +202,13 @@ public class MatchController {
     }
 
     /**
-     * Rimuove un giocatore dalla lobby.
+     * Removes a player from the lobby.
      *
-     * Se esce l'host, il nuovo host diventa il primo giocatore rimasto.
-     * Se il numero atteso non è più coerente con i giocatori presenti,
-     * viene azzerato e dovrà essere scelto nuovamente.
+     * <p>If the host leaves, the new host is the first remaining player. If the
+     * expected number is no longer consistent with the players present, it is
+     * reset and must be chosen again.
      *
-     * @param nickname nickname del giocatore da rimuovere
+     * @param nickname nickname of the player to remove
      */
     public void removePlayerFromLobby(String nickname) {
         requireLobbyOpen();
@@ -238,40 +223,34 @@ public class MatchController {
             expectedPlayers = 0;
         }
 
-        // Se qualcuno esce durante la scelta dei totem, la fase di selezione si
-        // annulla: i totem già scelti vengono liberati e i giocatori rimasti
-        // tornano in lobby (la selezione ripartirà quando la lobby si riempie).
+        // If someone leaves during totem selection, the phase is cancelled: the
+        // totems already chosen are freed and the remaining players go back to
+        // the lobby (selection restarts when the lobby fills again).
         if (selectingTotem) {
             resetTotemSelection();
         }
     }
 
-    // --- Fase di selezione del totem ----------------------------------------
+    // --- Totem selection phase ----------------------------------------------
 
     /**
-     * Indica se la lobby è nella fase di scelta dei totem (lobby piena, partita
-     * non ancora avviata, giocatori che scelgono il colore a turno).
-     *
-     * @return true se la selezione dei totem è in corso
+     * @return true if the lobby is in the totem-selection phase (lobby full,
+     *         match not started yet, players choosing their colour in turn)
      */
     public boolean isSelectingTotem() {
         return selectingTotem;
     }
 
     /**
-     * Restituisce la palette dei colori di totem selezionabili.
-     *
-     * @return lista (immutabile) dei colori disponibili nel gioco
+     * @return the immutable list of selectable totem colours
      */
     public List<String> getTotemPalette() {
         return TOTEM_PALETTE;
     }
 
     /**
-     * Restituisce il nickname del giocatore a cui tocca scegliere il totem,
-     * oppure null se non si è in fase di selezione.
-     *
-     * @return nickname del chooser corrente, o null
+     * @return the nickname of the player whose turn it is to choose a totem, or
+     *         null if not in the selection phase
      */
     public String getCurrentTotemChooser() {
         if (!selectingTotem || totemPickIndex >= lobbyPlayers.size()) {
@@ -281,17 +260,15 @@ public class MatchController {
     }
 
     /**
-     * Assegna il colore di totem scelto dal giocatore di turno e avanza la
-     * selezione. Quando l'ultimo giocatore ha scelto, la partita parte.
+     * Assigns the totem colour chosen by the current player and advances the
+     * selection. When the last player has chosen, the match starts.
      *
-     * Controlla che:
-     * - la fase di selezione sia in corso;
-     * - sia effettivamente il turno del giocatore indicato (ordine d'ingresso);
-     * - il colore appartenga alla palette;
-     * - il colore non sia già stato scelto da un altro giocatore.
+     * <p>Checks that the selection phase is in progress, that it is really the
+     * indicated player's turn (join order), that the colour is in the palette,
+     * and that the colour has not already been taken by another player.
      *
-     * @param nickname nickname del giocatore che sta scegliendo
-     * @param color    colore di totem desiderato
+     * @param nickname nickname of the player choosing
+     * @param color    desired totem colour
      */
     public void chooseTotem(String nickname, String color) {
         if (!selectingTotem) {
@@ -323,10 +300,10 @@ public class MatchController {
     }
 
     /**
-     * Esegue l'azione di piazzamento del totem su una tessera offerta.
+     * Performs the totem-placement action on an offer tile.
      *
-     * @param playerNickname nickname del giocatore attivo
-     * @param offerLetter lettera della tessera scelta
+     * @param playerNickname nickname of the active player
+     * @param offerLetter    letter of the chosen tile
      */
     public void placeTotem(String playerNickname, char offerLetter) {
         Game currentGame = requireGame();
@@ -341,10 +318,10 @@ public class MatchController {
     }
 
     /**
-     * Esegue l'azione di scelta delle carte da parte del giocatore attivo.
+     * Performs the card-selection action for the active player.
      *
-     * @param playerNickname nickname del giocatore attivo
-     * @param selectedCardIds lista degli id delle carte selezionate
+     * @param playerNickname  nickname of the active player
+     * @param selectedCardIds ids of the selected cards
      */
     public void pickCards(String playerNickname, List<String> selectedCardIds) {
         Game currentGame = requireGame();
@@ -355,10 +332,10 @@ public class MatchController {
     }
 
     /**
-     * Esegue la scelta della carta bonus di fine round.
+     * Performs the end-of-round bonus card selection.
      *
-     * @param playerNickname nickname del giocatore attivo
-     * @param bonusCardId id della carta bonus selezionata
+     * @param playerNickname nickname of the active player
+     * @param bonusCardId    id of the selected bonus card
      */
     public void pickBonusCard(String playerNickname, String bonusCardId) {
         Game currentGame = requireGame();
@@ -369,25 +346,22 @@ public class MatchController {
     }
 
     /**
-     * Chiede al model di determinare il vincitore finale.
+     * Asks the model to determine the final winner.
      *
-     * @return giocatore vincitore
+     * @return the winning player
      */
     public Player determineWinner() {
         return requireGame().determineWinner();
     }
 
     /**
-     * Avvia la fase di selezione dei totem quando la lobby si riempie.
+     * Begins the totem-selection phase once the lobby fills up.
      *
-     * La selezione comincia solo se:
-     * - la partita non è già iniziata
-     * - non si è già in selezione
-     * - l'host ha scelto il numero atteso di giocatori
-     * - il numero di giocatori in lobby coincide con quello atteso
-     *
-     * Durante la selezione i giocatori scelgono il totem a turno; la partita
-     * vera e propria parte da {@link #chooseTotem} quando tutti hanno scelto.
+     * <p>Selection starts only if the match has not started, selection is not
+     * already in progress, the host has chosen the expected number of players,
+     * and the lobby size matches that number. During selection players choose
+     * their totem in turn; the actual match starts from {@link #chooseTotem}
+     * once everyone has chosen.
      */
     private void tryBeginTotemSelection() {
         if (game != null || selectingTotem) {
@@ -407,8 +381,8 @@ public class MatchController {
     }
 
     /**
-     * Crea e avvia il {@link Game} a fine selezione: a questo punto ogni
-     * giocatore ha già scelto il proprio totem.
+     * Creates and starts the {@link Game} at the end of selection: by this point
+     * every player has already chosen their totem.
      */
     private void startGameNow() {
         ensureUniqueNicknames();
@@ -417,7 +391,7 @@ public class MatchController {
         selectingTotem = false;
     }
 
-    /** Verifica che un colore della palette non sia già stato scelto. */
+    /** Checks whether a palette colour has already been chosen. */
     private boolean isColorTaken(String canonicalColor) {
         return lobbyPlayers.stream()
                 .map(Player::getTotem)
@@ -425,7 +399,7 @@ public class MatchController {
                 .anyMatch(t -> t.getColor().equalsIgnoreCase(canonicalColor));
     }
 
-    /** Annulla la fase di selezione liberando i totem già scelti. */
+    /** Cancels the selection phase, freeing the totems already chosen. */
     private void resetTotemSelection() {
         selectingTotem = false;
         totemPickIndex = 0;
@@ -434,16 +408,14 @@ public class MatchController {
         }
     }
 
-    /** Vieta operazioni di lobby mentre è in corso la scelta dei totem. */
+    /** Forbids lobby operations while totem selection is in progress. */
     private void requireNotSelectingTotem() {
         if (selectingTotem) {
             throw new IllegalStateException("Totem selection is in progress.");
         }
     }
 
-    /**
-     * Controlla che tutti i nickname in lobby siano univoci.
-     */
+    /** Checks that all lobby nicknames are unique. */
     private void ensureUniqueNicknames() {
         Set<String> nicknames = new LinkedHashSet<>();
         for (Player player : lobbyPlayers) {
@@ -455,8 +427,8 @@ public class MatchController {
     }
 
     /**
-     * Verifica che la lobby sia ancora aperta.
-     * Se la partita è già iniziata, non sono più consentite operazioni di lobby.
+     * Checks that the lobby is still open. Once the match has started, lobby
+     * operations are no longer allowed.
      */
     private void requireLobbyOpen() {
         if (game != null) {
@@ -465,9 +437,9 @@ public class MatchController {
     }
 
     /**
-     * Restituisce la partita corrente, sollevando eccezione se non è ancora iniziata.
+     * Returns the current game, throwing if it has not started yet.
      *
-     * @return partita corrente
+     * @return the current game
      */
     private Game requireGame() {
         if (game == null) {
@@ -477,10 +449,10 @@ public class MatchController {
     }
 
     /**
-     * Verifica che il giocatore indicato esista nella partita e sia il giocatore attivo.
+     * Checks that the given player exists in the match and is the active player.
      *
-     * @param nickname nickname del giocatore da controllare
-     * @return il Player corrispondente se il controllo va a buon fine
+     * @param nickname nickname of the player to check
+     * @return the matching player if the check passes
      */
     private Player requireActivePlayer(String nickname) {
         Player player = findMatchPlayer(nickname);
@@ -494,10 +466,10 @@ public class MatchController {
     }
 
     /**
-     * Cerca un giocatore nella lobby a partire dal nickname.
+     * Looks up a lobby player by nickname.
      *
-     * @param nickname nickname del giocatore cercato
-     * @return giocatore trovato nella lobby
+     * @param nickname nickname of the player to find
+     * @return the matching lobby player
      */
     private Player findLobbyPlayer(String nickname) {
         String normalized = normalize(requireText(nickname, "nickname"));
@@ -509,10 +481,10 @@ public class MatchController {
     }
 
     /**
-     * Cerca un giocatore nella partita a partire dal nickname.
+     * Looks up a player of the match by nickname.
      *
-     * @param nickname nickname del giocatore cercato
-     * @return giocatore trovato nella partita
+     * @param nickname nickname of the player to find
+     * @return the matching match player
      */
     private Player findMatchPlayer(String nickname) {
         String normalized = normalize(requireText(nickname, "nickname"));
@@ -524,10 +496,10 @@ public class MatchController {
     }
 
     /**
-     * Controlla se un nickname è già presente nella lobby.
+     * Checks whether a nickname is already present in the lobby.
      *
-     * @param nickname nickname da verificare
-     * @return true se il nickname esiste già, false altrimenti
+     * @param nickname nickname to check
+     * @return true if the nickname already exists, false otherwise
      */
     private boolean containsNickname(String nickname) {
         String normalized = normalize(nickname);
@@ -536,10 +508,10 @@ public class MatchController {
     }
 
     /**
-     * Cerca una tessera offerta tramite la sua lettera identificativa.
+     * Looks up an offer tile by its identifying letter.
      *
-     * @param offerLetter lettera della tessera
-     * @return tessera trovata sul tracciato delle offerte
+     * @param offerLetter the tile's letter
+     * @return the matching tile on the offer track
      */
     private OfferTile findOfferTile(char offerLetter) {
         return requireGame().getBoard().getOfferTrack().stream()
@@ -549,14 +521,13 @@ public class MatchController {
     }
 
     /**
-     * Converte una lista di id nelle corrispondenti carte presenti sul tabellone.
+     * Converts a list of ids into the corresponding cards on the board.
      *
-     * Il metodo controlla che:
-     * - la lista non contenga duplicati
-     * - ogni carta selezionata sia effettivamente presente sul board
+     * <p>Checks that the list contains no duplicates and that every selected
+     * card is actually present on the board.
      *
-     * @param selectedCardIds lista di id ricevuti dal client
-     * @return lista delle carte reali del model
+     * @param selectedCardIds ids received from the client
+     * @return the matching model cards
      */
     private List<Card> resolveCardsFromBoard(List<String> selectedCardIds) {
         if (selectedCardIds == null || selectedCardIds.isEmpty()) {
@@ -589,10 +560,10 @@ public class MatchController {
     }
 
     /**
-     * Cerca una carta bonus nella riga superiore del tabellone.
+     * Looks up a bonus card in the upper row of the board.
      *
-     * @param bonusCardId id della carta bonus
-     * @return carta trovata
+     * @param bonusCardId id of the bonus card
+     * @return the matching card
      */
     private Card findUpperRowCard(String bonusCardId) {
         return requireGame().getBoard().getUpperRow().stream()
@@ -602,11 +573,11 @@ public class MatchController {
     }
 
     /**
-     * Controlla che una stringa non sia null o vuota.
+     * Checks that a string is neither null nor blank.
      *
-     * @param value valore da controllare
-     * @param fieldName nome logico del campo, usato nei messaggi di errore
-     * @return la stringa stessa se valida
+     * @param value     the value to check
+     * @param fieldName logical field name, used in error messages
+     * @return the string itself if valid
      */
     private String requireText(String value, String fieldName) {
         if (value == null || value.isBlank()) {
@@ -616,10 +587,10 @@ public class MatchController {
     }
 
     /**
-     * Normalizza una stringa per confronti case-insensitive e senza spazi esterni.
+     * Normalizes a string for case-insensitive comparison, trimming outer spaces.
      *
-     * @param value stringa da normalizzare
-     * @return stringa normalizzata
+     * @param value the string to normalize
+     * @return the normalized string
      */
     private String normalize(String value) {
         return value.strip().toLowerCase(Locale.ROOT);

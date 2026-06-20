@@ -7,16 +7,32 @@ import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.model.character.TribeCharacter;
 import it.polimi.ingsw.am22.model.character.CharacterType;
 
+/**
+ * {@link BuildingEffect} that grants food whenever the owner completes a new
+ * "collection" — either a pair of same-icon Inventors or a full set of the six
+ * character types. It remembers how many collections were already rewarded so
+ * the same one is never paid for twice.
+ */
 public class CollectionRewardEffect implements BuildingEffect {
     private final CollectionCondition conditionType;
     private final int foodReward;
     private int previousMatches = 0;
 
+    /**
+     * @param conditionType the collection that triggers the reward
+     * @param foodReward    the food granted for each newly completed collection
+     */
     public CollectionRewardEffect(CollectionCondition conditionType, int foodReward) {
         this.conditionType = conditionType;
         this.foodReward = foodReward;
     }
 
+    /**
+     * Pays the reward for any collection newly completed by the added character.
+     *
+     * @param player  the building's owner
+     * @param newChar the character just added to the tribe
+     */
     @Override
     public void onCharacterAdded(Player player, TribeCharacter newChar) {
         int currentMatches = switch (conditionType) {
@@ -30,6 +46,7 @@ public class CollectionRewardEffect implements BuildingEffect {
         }
     }
 
+    // Counts how many same-icon Inventor pairs the player currently holds.
     private int countInventorPairs(Player player) {
         Map<Character, Integer> iconCounts = new HashMap<>();
         for (TribeCharacter character : player.getTribe().getMembers()) {

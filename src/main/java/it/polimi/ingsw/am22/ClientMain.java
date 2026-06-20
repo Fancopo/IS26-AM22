@@ -16,6 +16,12 @@ public final class ClientMain {
 
     private ClientMain() {}
 
+    /**
+     * Launches the client.
+     *
+     * @param args command-line arguments; {@code --tui}/{@code --gui} (or
+     *             {@code -t}/{@code -g}) select the interface non-interactively
+     */
     public static void main(String[] args) {
         Mode mode = resolveMode(args);
         switch (mode) {

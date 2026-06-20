@@ -5,11 +5,11 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Lettore delle credenziali del database (URL, utente, password).
+ * Reads the database credentials (URL, user, password).
  *
- * <p>Carica una sola volta {@code db.properties} dal classpath al primo
- * accesso ed espone i singoli campi tramite metodi statici. Va tenuto
- * fuori dal codice sorgente per evitare di committare credenziali.
+ * <p>Loads {@code db.properties} from the classpath once, on first access, and
+ * exposes the individual fields through static methods. The file is kept out of
+ * source control to avoid committing credentials.
  */
 public final class DatabaseConfig {
 
@@ -18,9 +18,9 @@ public final class DatabaseConfig {
     private DatabaseConfig() {}
 
     /**
-     * Carica il file {@code db.properties} dal classpath. Solleva
-     * {@link IllegalStateException} se il file e' mancante o non leggibile:
-     * la classe non puo' funzionare senza configurazione.
+     * Loads {@code db.properties} from the classpath. Throws
+     * {@link IllegalStateException} if the file is missing or unreadable: the
+     * class cannot work without configuration.
      */
     private static Properties load() {
         Properties p = new Properties();
@@ -28,20 +28,22 @@ public final class DatabaseConfig {
                 .getResourceAsStream("/db.properties")) {
             if (in == null) {
                 throw new IllegalStateException(
-                        "db.properties non trovato nel classpath " +
-                        "(deve stare in src/main/resources)");
+                        "db.properties not found on the classpath " +
+                        "(it must live in src/main/resources)");
             }
             p.load(in);
         } catch (IOException e) {
-            throw new IllegalStateException("Errore lettura db.properties", e);
+            throw new IllegalStateException("Error reading db.properties", e);
         }
         return p;
     }
 
-    /** URL JDBC del database (es. {@code jdbc:mysql://host:3306/dbname}). */
+    /** @return the JDBC URL of the database (e.g. {@code jdbc:mysql://host:3306/dbname}) */
     public static String url()      { return PROPS.getProperty("db.url"); }
-    /** Username per la connessione al database. */
+
+    /** @return the username for the database connection */
     public static String user()     { return PROPS.getProperty("db.user"); }
-    /** Password per la connessione al database. */
+
+    /** @return the password for the database connection */
     public static String password() { return PROPS.getProperty("db.password"); }
 }

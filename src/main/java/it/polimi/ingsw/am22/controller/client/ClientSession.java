@@ -44,22 +44,39 @@ public final class ClientSession {
     private volatile GameStateDTO latestGameState;
     private volatile boolean gameStarted;
 
+    /**
+     * @param connection the open connection to wrap; its message dispatcher is
+     *                   set to this session's internal dispatcher
+     */
     public ClientSession(ServerConnection connection) {
         this.connection = Objects.requireNonNull(connection, "connection cannot be null");
         this.virtualServer = new VirtualServer(connection);
         this.connection.setMessageDispatcher(new InternalDispatcher());
     }
 
+    /** @return the local proxy used to send requests to the server */
     public VirtualServer getVirtualServer() { return virtualServer; }
+
+    /** @return the local player's nickname, or null if not joined yet */
     public String getLocalNickname() { return virtualServer.getNickname(); }
+
+    /** @return the latest cached lobby state, or null if none received yet */
     public LobbyStateDTO getLatestLobbyState() { return latestLobbyState; }
+
+    /** @return the latest cached totem-selection state, or null if none received yet */
     public TotemSelectionStateDTO getLatestTotemSelectionState() { return latestTotemSelectionState; }
+
+    /** @return the latest cached game state, or null if none received yet */
     public GameStateDTO getLatestGameState() { return latestGameState; }
+
+    /** @return whether the match has started */
     public boolean isGameStarted() { return gameStarted; }
 
     /**
      * Registers the active view handler. If a lobby/game snapshot is already
      * available, replays it to the new handler so the screen starts in sync.
+     *
+     * @param handler the new view handler, or null to detach
      */
     public void setHandler(ServerHandler handler) {
         this.currentHandler = handler;
@@ -86,6 +103,12 @@ public final class ClientSession {
         virtualServer.clearMatchBinding();
     }
 
+    /**
+     * Closes the session.
+     *
+     * @param notifyServer when true and a lobby was joined, tells the server we
+     *                     are leaving before closing the channel
+     */
     public void close(boolean notifyServer) {
         try {
             if (notifyServer && virtualServer.hasJoinedLobby()) {

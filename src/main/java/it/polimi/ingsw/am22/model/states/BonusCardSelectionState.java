@@ -8,11 +8,23 @@ import it.polimi.ingsw.am22.model.Player;
 import it.polimi.ingsw.am22.model.character.CharacterType;
 
 /**
- * Temporary state activated ONLY if a player owns
- * the bonus-draw building at the end of the action phase.
+ * Temporary phase, activated only when a player owns the bonus-draw building at
+ * the end of the action phase. That player takes one extra card from the upper
+ * row (still paying its food cost if it is a Building), after which the round
+ * proceeds to {@link EventResolutionState}.
  */
 public class BonusCardSelectionState implements GameState {
 
+    /**
+     * Resolves the bonus pick: validate the chosen card, charge its cost and add
+     * it to the player's tribe, then continue with event resolution.
+     *
+     * @param game      the game being driven
+     * @param player    the player taking the bonus card
+     * @param bonusCard the card chosen from the upper row
+     * @throws IllegalArgumentException if the card is not in the upper row or is unpickable
+     * @throws IllegalStateException    if the player cannot afford the card
+     */
     @Override
     public void pickBonusCard(Game game, Player player, Card bonusCard) {
         // 1. Validation: the card MUST be in the upper row and pickable

@@ -5,19 +5,36 @@ import it.polimi.ingsw.am22.model.PickSimulation;
 import it.polimi.ingsw.am22.model.Player;
 
 
+/**
+ * Hunter character. Scores food and PP during the Hunting event. The food-icon
+ * variant ({@code HUNTER*}) additionally feeds the tribe the moment it is added.
+ */
 public class Hunter extends TribeCharacter implements CharacterEffect {
     private final boolean hasFoodIcon;
 
+    /**
+     * @param id          the card id
+     * @param era         the Era the card belongs to
+     * @param minPlayers  the minimum player count for this card to be in play
+     * @param hasFoodIcon whether this is the food-icon variant ({@code HUNTER*})
+     */
     public Hunter(String id, Era era, int minPlayers, boolean hasFoodIcon) {
         super(id, era, minPlayers, CharacterType.HUNTER, null);
         this.hasFoodIcon = hasFoodIcon;
         setEffect(this);
     }
 
+    /** @return whether this Hunter carries the food icon */
     public boolean hasFoodIcon() {
         return hasFoodIcon;
     }
 
+    /**
+     * For the food-icon variant, grants food equal to the number of Hunters now
+     * in the tribe (this one included).
+     *
+     * @param player the owner of the tribe
+     */
     @Override
     protected void onAddedToTribe(Player player) {
         if (hasFoodIcon) {
@@ -37,8 +54,12 @@ public class Hunter extends TribeCharacter implements CharacterEffect {
         return hasFoodIcon ? "HUNTER*" : "HUNTER";
     }
 
-    /** Validation: mirror {@link #onAddedToTribe} on the simulation — bump the
-     *  hunter count first, then (for Hunter*) feed the player by that count. */
+    /**
+     * Validation: mirror {@link #onAddedToTribe} on the simulation — bump the
+     * hunter count first, then (for {@code HUNTER*}) feed the player by that count.
+     *
+     * @param sim the running pick simulation
+     */
     @Override
     public void applyPickEffect(PickSimulation sim) {
         sim.incrementHunterCount();

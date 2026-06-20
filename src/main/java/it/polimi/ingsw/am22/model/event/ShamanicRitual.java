@@ -12,13 +12,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Shamanic Ritual event. Sums each player's star icons (from Shamans and
+ * star-granting Buildings); the player(s) with the most stars gain PP and the
+ * one(s) with the fewest lose PP, both Era-scaled. Buildings may prevent the
+ * loss or double the win.
+ */
 public class ShamanicRitual extends Event implements EventEffect {
 
+    /**
+     * @param id          the card id
+     * @param era         the Era the card belongs to
+     * @param minPlayers  the minimum player count for this card to be in play
+     * @param eventEffect ignored; the card registers itself as its own effect
+     */
     public ShamanicRitual(String id, Era era, int minPlayers, EventEffect eventEffect) {
         super(id, era, minPlayers, EventType.SHAMANIC_RITUAL, eventEffect);
         setEffect(this);
     }
 
+    /**
+     * Tallies every player's stars and applies the win/loss PP at the extremes.
+     *
+     * @param players the players in the game
+     * @param id      the id of the resolving event
+     */
     @Override
     public void applyEvent(List<Player> players, String id) {
         int ppToAdd = switch (getEra()) {

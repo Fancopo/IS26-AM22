@@ -7,5 +7,10 @@ package it.polimi.ingsw.am22.network.protocol.message;
  * polymorphic dispatch without instanceof.
  */
 public interface ClientRequest extends NetworkMessage {
+    /**
+     * Dispatches this request to the visitor's matching {@code visit} method.
+     *
+     * @param visitor the visitor to dispatch to
+     */
     void accept(ClientRequestVisitor visitor);
 }

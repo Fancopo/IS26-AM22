@@ -102,6 +102,10 @@ public class MatchManager {
         return t;
     });
 
+    /**
+     * Builds the manager, wiring its dependencies, restoring any matches
+     * persisted from a previous run and starting the periodic disk saver.
+     */
     public MatchManager() {
         this.mapper = new ModelDtoMapper();
         this.matchesById = new ConcurrentHashMap<>();
@@ -183,6 +187,13 @@ public class MatchManager {
         recoveryTimeoutExecutor.shutdown();
     }
 
+    /**
+     * Entry point for every incoming client request: dispatches it through the
+     * visitor, turning any failure into an {@link ErrorMessage} for the caller.
+     *
+     * @param request the request to handle (a null request yields an error reply)
+     * @param channel the channel the request arrived on / replies are sent to
+     */
     public void handleRequest(ClientRequest request, ClientHandler channel) {
         if (request == null) {
             channel.send(new ErrorMessage("Null request."));

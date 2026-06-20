@@ -16,6 +16,12 @@ public final class ServerMain {
 
     private ServerMain() {}
 
+    /**
+     * Starts the server: the socket listener, the RMI stub and the shutdown hook.
+     *
+     * @param args ignored
+     * @throws Exception if a transport fails to start
+     */
     public static void main(String[] args) throws Exception {
         int socketPort = ConnectionFactory.DEFAULT_SOCKET_PORT;
         int rmiPort = ConnectionFactory.DEFAULT_RMI_PORT;
