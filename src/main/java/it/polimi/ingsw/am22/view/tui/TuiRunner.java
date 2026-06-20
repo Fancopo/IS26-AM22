@@ -257,10 +257,10 @@ public final class TuiRunner {
                     case "list" -> virtualServer.listMatches();
                     case "create" -> {
                         // create <expectedPlayers> <nickname>
-                        // Un client può essere iscritto a una sola partita per volta:
-                        // se ne ha già una bound (matchId non null), serve prima
-                        // 'leave' / 'disconnect' — altrimenti finiremmo iscritti
-                        // a due match contemporaneamente lato server.
+                        // A client can be registered in only one match at a time:
+                        // if it already has one bound (matchId not null), it must
+                        // 'leave' / 'disconnect' first — otherwise we would end up
+                        // registered in two matches at once on the server side.
                         requireAlreadyOutOfMatch(virtualServer, "create");
                         requireArgs(parts, 3, "create <expectedPlayers> <nickname>");
                         int expected = Integer.parseInt(parts[1]);
@@ -268,13 +268,13 @@ public final class TuiRunner {
                     }
                     case "join" -> {
                         // join <matchId> <nickname>
-                        // Stesso vincolo di 'create': un solo match alla volta.
+                        // Same constraint as 'create': one match at a time.
                         requireAlreadyOutOfMatch(virtualServer, "join");
                         requireArgs(parts, 3, "join <matchId> <nickname>");
                         virtualServer.addPlayerToLobby(parts[1], parts[2]);
                     }
 
-                    // ---- Comandi che richiedono di essere già in una partita ----
+                    // ---- Commands that require already being in a match ----
                     case "players" -> {
                         requireArgs(parts, 2, "players <N>");
                         virtualServer.setExpectedPlayers(Integer.parseInt(parts[1]));
@@ -291,20 +291,19 @@ public final class TuiRunner {
                         virtualServer.placeTotem(parts[1].charAt(0));
                     }
                     case "pick" -> {
-                        // L'ordine in cui i cardId compaiono sulla riga di comando
-                        // viene preservato dalla List e quindi spedito così com'è
-                        // al server: rilevante perché Builder->Building applica lo
-                        // sconto, Building->Builder no, e analogamente per gli
-                        // Hunter con/senza simbolo.
+                        // The order in which the cardIds appear on the command
+                        // line is preserved by the List and therefore sent to the
+                        // server as-is: this matters because Builder->Building
+                        // applies the discount, Building->Builder does not, and
+                        // likewise for Hunters with/without the symbol.
                         //
-                        // Prima di spedire, la TuiView stampa un echo della
-                        // sequenza con detailType colorato (BUILDER/BUILDING,
-                        // HUNTER*/HUNTER, ...): così il giocatore *vede subito*
-                        // l'ordine che sta inviando e può cogliere un eventuale
-                        // refuso ("ho scritto 98 9 invece di 9 98") confrontando
-                        // la riga di echo con l'intenzione strategica, senza
-                        // dover aspettare la risposta del server per scoprire
-                        // un food sbagliato.
+                        // Before sending, the TuiView prints an echo of the
+                        // sequence with a colored detailType (BUILDER/BUILDING,
+                        // HUNTER*/HUNTER, ...): this way the player *sees right
+                        // away* the order being sent and can catch a possible typo
+                        // ("I typed 98 9 instead of 9 98") by comparing the echo
+                        // line with the strategic intent, without having to wait
+                        // for the server's reply to discover a wrong food outcome.
                         List<String> ids = new ArrayList<>(parts.length - 1);
                         ids.addAll(Arrays.asList(parts).subList(1, parts.length));
                         view.echoPickOrder(ids);
@@ -323,12 +322,12 @@ public final class TuiRunner {
                         view.renderCardCheck(parts[1]);
                     }
                     case "leave" -> {
-                        // 'leave' funziona sia pre-game (uscita lobby) sia
-                        // mid-game (abort match). In entrambi i casi il
-                        // server NON chiude il canale: il client resta
-                        // connesso, azzera lo stato locale di match e il
-                        // giocatore può subito riemettere list/create/join
-                        // come dalla situazione iniziale.
+                        // 'leave' works both pre-game (leaving the lobby) and
+                        // mid-game (aborting the match). In both cases the
+                        // server does NOT close the channel: the client stays
+                        // connected, clears its local match state, and the
+                        // player can immediately reissue list/create/join
+                        // as from the initial situation.
                         if (virtualServer.getMatchId() == null) {
                             System.out.println("You are not in any lobby or match.");
                             break;

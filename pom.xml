@@ -195,7 +195,7 @@
                     <charset>UTF-8</charset>
                     <doctitle>Mesos - API documentation</doctitle>
                     <windowtitle>Mesos API</windowtitle>
-                    <doclint>all,-missing</doclint>
+                    <doclint>none</doclint>
                     <failOnError>false</failOnError>
                     <failOnWarnings>false</failOnWarnings>
                     <quiet>true</quiet>

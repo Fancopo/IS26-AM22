@@ -73,17 +73,17 @@ public final class GameScreen implements GuiScreen {
     private final Label eraLabel = new Label();
     private final Label phaseLabel = new Label();
 
-    // Board centrale: HBox (NON FlowPane) → niente wrap su 2 righe.
+    // Central board: HBox (NOT FlowPane) → no wrap onto 2 rows.
     private final HBox upperRowBox = new HBox(14);
     private final HBox lowerRowBox = new HBox(14);
     private final HBox offerTilesBox = new HBox(8);
     /**
-     * Sezione tessere offerta: immagine numplayer_N a sinistra + tessere a destra.
-     * Ricostruita ad ogni render perché l'immagine cambia col numero di giocatori.
+     * Offer-tiles section: numplayer_N image on the left + tiles on the right.
+     * Rebuilt on every render because the image changes with the player count.
      */
     private final HBox offerSectionBox = new HBox(12);
 
-    // Right column: TUTTI i giocatori (incluso il locale, evidenziato).
+    // Right column: ALL players (including the local one, highlighted).
     private final VBox playersBox = new VBox(10);
     private javafx.scene.layout.Region rightColumnBox;
     private ScrollPane rightColumnScroll;
@@ -94,14 +94,14 @@ public final class GameScreen implements GuiScreen {
     private final Button confirmPickButton = new Button("Confirm");
     private final Label statusLabel = new Label();
 
-    /** Id delle carte attualmente selezionate per la pickCards.
-     *  LinkedHashSet: preserva l'ordine in cui sono state selezionate, cosi'
-     *  ogni carta riceve un badge "1, 2, 3..." in alto a destra. */
+    /** Ids of the cards currently selected for pickCards.
+     *  LinkedHashSet: preserves the order in which they were selected, so
+     *  each card gets a "1, 2, 3..." badge in its top-right corner. */
     private final LinkedHashSet<String> pickedCardIds = new LinkedHashSet<>();
 
-    /** Badge numerato sovrapposto a ciascuna carta cliccabile della board.
-     *  Ricostruito ad ogni render(): la mappa lega l'id della carta al
-     *  Label del badge cosi' refreshBadges() puo' aggiornare il numero. */
+    /** Numbered badge overlaid on each clickable board card.
+     *  Rebuilt on every render(): the map binds the card id to the badge
+     *  Label so refreshBadges() can update the number. */
     private final Map<String, Label> badgeByCardId = new HashMap<>();
 
     public GameScreen(GuiApp app) {
@@ -259,9 +259,9 @@ public final class GameScreen implements GuiScreen {
         actionBox.setSpacing(4);
         actionBox.getChildren().addAll(actionsLbl, actionHint, confirmPickButton, leaveMatchButton);
 
-        // Con molti giocatori / dopo molti round i pannelli crescono oltre
-        // l'altezza della finestra: li mettiamo in uno ScrollPane verticale.
-        // L'actionBox (Confirm / Leave) resta fisso in basso, sempre visibile.
+        // With many players / after many rounds the panels grow beyond the
+        // window height: we put them in a vertical ScrollPane. The actionBox
+        // (Confirm / Leave) stays fixed at the bottom, always visible.
         ScrollPane playersScroll = new ScrollPane(playersBox);
         playersScroll.setFitToWidth(true);
         playersScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -336,14 +336,14 @@ public final class GameScreen implements GuiScreen {
         totemS = Math.max(20, Math.min(32, rightColW / 11.0));
         iconS  = Math.max(14, Math.min(22, rightColW / 16.0));
 
-        // Mini-carte nel pannello del giocatore: appena piu' grandi delle icone
-        // (iconS), molto piu' piccole delle carte della board.
+        // Mini-cards in the player panel: just slightly larger than the icons
+        // (iconS), much smaller than the board cards.
         miniCardW = Math.max(22, Math.min(36, iconS * 1.4));
         miniCardH = miniCardW / CARD_RATIO_W_OVER_H;
 
-        // Dimensiona sempre per la configurazione massima (5 giocatori):
-        // riga superiore = numPlayers + 4 = 9 carte. Cosi' la board resta
-        // dello stesso size in ogni partita e non serve mai trascinare.
+        // Always size for the maximum configuration (5 players):
+        // upper row = numPlayers + 4 = 9 cards. This way the board stays the
+        // same size in every match and never needs scrolling.
         int slots = 9;
 
         // Center area sizing.
@@ -448,9 +448,9 @@ public final class GameScreen implements GuiScreen {
         StackPane wrapper = new StackPane(tb, badge);
         wrapper.setPickOnBounds(false);
 
-        // Inventori: al passaggio del mouse mostra il "tipo" (iconPerInventor),
-        // con la relativa icona InventorIcon_X, esattamente come accade per le
-        // icone risorsa nei pannelli giocatore.
+        // Inventors: on mouse hover show the "type" (iconPerInventor), with the
+        // matching InventorIcon_X icon, exactly as happens for the resource
+        // icons in the player panels.
         installInventorTooltip(wrapper, c, clickable);
 
         tb.selectedProperty().addListener((obs, was, isNow) -> {
@@ -478,9 +478,9 @@ public final class GameScreen implements GuiScreen {
     }
 
     /**
-     * Estrae la lettera icona dell'Inventore dal detailType del DTO
-     * ({@code "INVENTOR-A"} → {@code 'A'}), o {@code '\0'} se la carta non è un
-     * Inventore.
+     * Extracts the Inventor icon letter from the DTO's detailType
+     * ({@code "INVENTOR-A"} → {@code 'A'}), or {@code '\0'} if the card is not
+     * an Inventor.
      */
     private char inventorIconOf(CardDTO c) {
         String d = c == null ? null : c.detailType();
@@ -494,15 +494,15 @@ public final class GameScreen implements GuiScreen {
     }
 
     /**
-     * Se la carta è un Inventore, installa un tooltip che ne mostra il tipo
-     * (lettera icona) con la corrispondente immagine {@code InventorIcon_X}.
+     * If the card is an Inventor, installs a tooltip showing its type
+     * (icon letter) with the matching {@code InventorIcon_X} image.
      *
-     * <p>Quando la carta non è cliccabile (es. fase Totem Placement) il
-     * {@link ToggleButton} sottostante è {@code disabled}, e in JavaFX un nodo
-     * disabilitato NON genera eventi del mouse: il tooltip non comparirebbe.
-     * Per questo aggiungiamo un overlay trasparente che cattura l'hover —
-     * reso {@code mouseTransparent} quando la carta È cliccabile, così i click
-     * raggiungono comunque il bottone.
+     * <p>When the card is not clickable (e.g. during the Totem Placement
+     * phase), the underlying {@link ToggleButton} is {@code disabled}, and in
+     * JavaFX a disabled node does NOT generate mouse events: the tooltip would
+     * never appear. That is why we add a transparent overlay that captures the
+     * hover — made {@code mouseTransparent} when the card IS clickable, so that
+     * clicks still reach the button.
      */
     private void installInventorTooltip(StackPane wrapper, CardDTO c, boolean clickable) {
         char icon = inventorIconOf(c);

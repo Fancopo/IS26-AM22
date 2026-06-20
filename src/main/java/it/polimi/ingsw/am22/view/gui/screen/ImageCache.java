@@ -21,23 +21,23 @@ import javafx.scene.text.TextAlignment;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Cache di immagini con fallback automatico a placeholder colorati.
+ * Image cache with automatic fallback to colored placeholders.
  *
- * <p>Filosofia: il codice della UI chiede sempre un'immagine per un dato
- * resource path. Se il PNG esiste nei resources, viene caricato e cachato.
- * Se non esiste (o non è ancora stato fornito), viene generato un nodo
- * placeholder colorato con etichetta. Questo permette di sviluppare la UI
- * prima di avere le risorse grafiche definitive: appena il file viene
- * droppato in {@code src/main/resources/...}, al riavvio appare al posto del
- * placeholder, senza modifiche al codice.
+ * <p>Philosophy: UI code always asks for an image given a resource path. If
+ * the PNG exists in the resources, it is loaded and cached. If it does not
+ * exist (or has not been provided yet), a colored placeholder node with a
+ * label is generated. This allows the UI to be developed before the final
+ * graphic assets are available: as soon as the file is dropped into
+ * {@code src/main/resources/...}, it appears in place of the placeholder on
+ * the next start, with no code changes.
  *
- * <p>Convenzioni di path (vedi {@code resources/images/}):
+ * <p>Path conventions (see {@code resources/images/}):
  * <ul>
- *   <li>{@code /images/cards/{id}.png}      — fronte di una carta</li>
- *   <li>{@code /images/cards/back_*.png}    — retri dei mazzi</li>
- *   <li>{@code /images/tiles/tile_X.png}    — tessera offerta letter X</li>
- *   <li>{@code /images/icons/{name}.png}    — icone risorsa/totem</li>
- *   <li>{@code /images/board/{name}.{png|jpg}} — sfondi e tracciato turni</li>
+ *   <li>{@code /images/cards/{id}.png}      — front of a card</li>
+ *   <li>{@code /images/cards/back_*.png}    — deck backs</li>
+ *   <li>{@code /images/tiles/tile_X.png}    — offer tile with letter X</li>
+ *   <li>{@code /images/icons/{name}.png}    — resource/totem icons</li>
+ *   <li>{@code /images/board/{name}.{png|jpg}} — backgrounds and turn-order track</li>
  * </ul>
  */
 public final class ImageCache {
@@ -45,13 +45,13 @@ public final class ImageCache {
     private ImageCache() {}
 
     private static final java.util.Map<String, Image> CACHE = new ConcurrentHashMap<>();
-    /** Sentinella: immagine richiesta ma non trovata — evita di rifare lookup. */
+    /** Sentinel: image requested but not found — avoids repeating the lookup. */
     private static final Image MISSING = new Image(
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgAAIAAAUAAeImBZsAAAAASUVORK5CYII=");
 
     /**
-     * Carica un'immagine dal classpath. Restituisce {@code null} se il file
-     * non esiste — il chiamante deve allora creare un placeholder.
+     * Loads an image from the classpath. Returns {@code null} if the file
+     * does not exist — the caller must then create a placeholder.
      */
     public static Image load(String resourcePath) {
         Image cached = CACHE.get(resourcePath);
@@ -77,9 +77,9 @@ public final class ImageCache {
     }
 
     /**
-     * Restituisce un nodo che mostra l'immagine alla dimensione richiesta.
-     * Se il PNG non esiste, viene restituito un placeholder colorato con
-     * l'etichetta passata: drop-in dei file PNG → la UI si aggiorna da sola.
+     * Returns a node showing the image at the requested size. If the PNG does
+     * not exist, a colored placeholder with the given label is returned:
+     * dropping in the PNG files makes the UI update by itself.
      */
     public static Node node(String resourcePath, double w, double h, String fallbackLabel, Color fallbackColor) {
         Image img = load(resourcePath);
@@ -94,12 +94,12 @@ public final class ImageCache {
         return placeholder(w, h, fallbackLabel, fallbackColor);
     }
 
-    /** Variante per icone quadrate piccole con etichetta = primo carattere. */
+    /** Variant for small square icons with label = first character. */
     public static Node icon(String resourcePath, double size, String fallbackLabel, Color fallbackColor) {
         return node(resourcePath, size, size, fallbackLabel, fallbackColor);
     }
 
-    /** Crea un rettangolo colorato con etichetta centrata; usato come fallback. */
+    /** Creates a colored rectangle with a centered label; used as a fallback. */
     public static Node placeholder(double w, double h, String label, Color color) {
         StackPane sp = new StackPane();
         sp.setPrefSize(w, h);
@@ -127,27 +127,27 @@ public final class ImageCache {
         return l > 0.55 ? Color.web("#1a1a1a") : Color.WHITE;
     }
 
-    // -------------------- helper di alto livello --------------------
+    // -------------------- high-level helpers --------------------
 
-    /** Path della carta: {@code /images/cards/card_{id}.png}. */
+    /** Card path: {@code /images/cards/card_{id}.png}. */
     public static String cardPath(String cardId) {
         return "/images/cards/card_" + cardId + ".png";
     }
 
-    /** Path della tessera offerta: {@code /images/tiles/tile_X.png}. */
+    /** Offer tile path: {@code /images/tiles/tile_X.png}. */
     public static String tilePath(char letter) {
         return "/images/tiles/tile_" + Character.toUpperCase(letter) + ".png";
     }
 
-    /** Path icona generica: {@code /images/icons/icon_{name}.png}. */
+    /** Generic icon path: {@code /images/icons/icon_{name}.png}. */
     public static String iconPath(String name) {
         return "/images/icons/icon_" + name.toLowerCase() + ".png";
     }
 
     /**
-     * Path dell'icona specifica di un Inventore: {@code /images/icons/InventorIcon_X.png}.
-     * Il nome del file usa la lettera MAIUSCOLA (A, B, C, ...), quindi NON si può
-     * passare per {@link #iconPath(String)} che invece forza il lowercase.
+     * Path of a specific Inventor icon: {@code /images/icons/InventorIcon_X.png}.
+     * The file name uses the UPPERCASE letter (A, B, C, ...), so it CANNOT go
+     * through {@link #iconPath(String)}, which instead forces lowercase.
      */
     public static String inventorIconPath(char icon) {
         return "/images/icons/InventorIcon_" + Character.toUpperCase(icon) + ".png";
@@ -163,9 +163,9 @@ public final class ImageCache {
     }
 
     /**
-     * Restituisce un nodo totem alla dimensione richiesta, provando in ordine
-     * {@code .png} e {@code .jpg} così che basta droppare il file nella
-     * cartella {@code /images/totem/} indipendentemente dall'estensione.
+     * Returns a totem node at the requested size, trying {@code .png} then
+     * {@code .jpg} in order, so it is enough to drop the file into the
+     * {@code /images/totem/} folder regardless of the extension.
      */
     public static Node totemNode(String color, double size, String fallbackLabel) {
         if (color == null) {
@@ -177,9 +177,9 @@ public final class ImageCache {
     }
 
     /**
-     * Variante di {@link #node} che prova più path in ordine: il primo che
-     * carica vince. Utile per asset che possono essere {@code .png} o
-     * {@code .jpg} (es. {@code numplayer_4.jpg}).
+     * Variant of {@link #node} that tries multiple paths in order: the first
+     * one that loads wins. Useful for assets that may be {@code .png} or
+     * {@code .jpg} (e.g. {@code numplayer_4.jpg}).
      */
     public static Node nodeFirst(double w, double h, String fallbackLabel,
                                  Color fallbackColor, String... resourcePaths) {
@@ -197,7 +197,7 @@ public final class ImageCache {
         return placeholder(w, h, fallbackLabel, fallbackColor);
     }
 
-    /** Colore di placeholder a partire da una stringa colore (es. "yellow"). */
+    /** Placeholder color from a color string (e.g. "yellow"). */
     public static Color colorFromName(String name) {
         if (name == null) return Color.GRAY;
         try {
