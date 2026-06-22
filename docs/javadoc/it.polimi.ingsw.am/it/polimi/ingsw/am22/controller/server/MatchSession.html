@@ -456,7 +456,9 @@ Without this, the client would receive two LobbyStateMessages back-to-back
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">handleRemoveFromLobby</span><wbr><span class="parameters">(<a href="../../network/protocol/message/request/RemovePlayerFromLobbyRequest.html" title="class in it.polimi.ingsw.am22.network.protocol.message.request">RemovePlayerFromLobbyRequest</a>&nbsp;request,
  <a href="../../network/server/ClientHandler.html" title="interface in it.polimi.ingsw.am22.network.server">ClientHandler</a>&nbsp;channel)</span></div>
-<div class="block">Handles a player voluntarily leaving the lobby.</div>
+<div class="block">Handles a player voluntarily leaving the lobby. If it happens during
+ totem selection the whole lobby is closed and every remaining player is
+ routed back to the matches list (the phase cannot resume for them).</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>request</code> - the request</dd>
@@ -529,9 +531,11 @@ The try/finally keeps the batch from staying open on exception.</div>
  <a href="../../network/server/ClientHandler.html" title="interface in it.polimi.ingsw.am22.network.server">ClientHandler</a>&nbsp;channel,
  boolean&nbsp;transportDrop)</span></div>
 <div class="block">Handles both a voluntary leave (transportDrop=false) and a transport
-drop (transportDrop=true). Pre-game: the player just leaves the lobby.
-Mid-game: the match is aborted for everyone; surviving channels stay
-connected to the server (unbound) so they can list/create/join again.</div>
+drop (transportDrop=true). Pre-game: the player just leaves the lobby,
+except during totem selection, when the whole lobby is closed and every
+player is routed back to the matches list. Mid-game: the match is aborted
+for everyone; surviving channels stay connected to the server (unbound)
+so they can list/create/join again.</div>
 </div>
 </section>
 </li>

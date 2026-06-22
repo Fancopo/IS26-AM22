@@ -342,16 +342,28 @@ public final class MatchSession {
     }
 
     /**
-     * Handles a player voluntarily leaving the lobby.
+     * Handles a player voluntarily leaving the lobby. If it happens during
+     * totem selection the whole lobby is closed and every remaining player is
+     * routed back to the matches list (the phase cannot resume for them).
      *
      * @param request the request
      * @param channel the requesting channel
      */
     public void handleRemoveFromLobby(RemovePlayerFromLobbyRequest request, ClientHandler channel) {
         bindIfKnown(request.nickname(), channel);
+        // Captured BEFORE removePlayerFromLobby, which clears the flag internally.
+        boolean wasSelectingTotem = matchController.isSelectingTotem();
         matchController.removePlayerFromLobby(request.nickname());
         virtualView.unbind(request.nickname());
         unbindMatch(channel);
+        if (wasSelectingTotem) {
+            // Someone left mid totem-selection: the others are sitting on the
+            // totem screen and cannot simply resume the phase. Close the whole
+            // lobby and send everyone back to the matches list with a reason.
+            closeLobby("Player " + request.nickname()
+                    + " left the lobby during totem selection. The lobby has been closed.");
+            return;
+        }
         // Voluntary leave: channel stays open so the client can return to the
         // "matches list" scene and list/create/join again on the same connection.
         broadcastLobbyState();
@@ -406,12 +418,15 @@ public final class MatchSession {
 
     /**
      * Handles both a voluntary leave (transportDrop=false) and a transport
-     * drop (transportDrop=true). Pre-game: the player just leaves the lobby.
-     * Mid-game: the match is aborted for everyone; surviving channels stay
-     * connected to the server (unbound) so they can list/create/join again.
+     * drop (transportDrop=true). Pre-game: the player just leaves the lobby,
+     * except during totem selection, when the whole lobby is closed and every
+     * player is routed back to the matches list. Mid-game: the match is aborted
+     * for everyone; surviving channels stay connected to the server (unbound)
+     * so they can list/create/join again.
      */
     public void handleDisconnect(String nickname, ClientHandler channel, boolean transportDrop) {
         if (!matchController.hasStarted()) {
+            boolean wasSelectingTotem = matchController.isSelectingTotem();
             try {
                 matchController.removePlayerFromLobby(nickname);
             } catch (Exception ignored) {
@@ -419,6 +434,14 @@ public final class MatchSession {
             virtualView.unbind(nickname);
             unbindMatch(channel);
             if (transportDrop) channel.close();
+            if (wasSelectingTotem) {
+                // A drop during totem selection is treated like a voluntary
+                // leave: the phase cannot resume for the others, so close the
+                // lobby and route everyone back to the matches list.
+                closeLobby("Player " + nickname
+                        + " left the lobby during totem selection. The lobby has been closed.");
+                return;
+            }
             broadcastLobbyState();
             cleanupIfEmpty();
             return;
@@ -493,6 +516,24 @@ public final class MatchSession {
 
     private void broadcastLobbyState() {
         virtualView.broadcast(new LobbyStateMessage(mapper.toLobbyState(matchController)));
+    }
+
+    /**
+     * Closes a still-in-lobby match and routes every remaining player back to
+     * the matches list with the given reason (used when a player leaves during
+     * totem selection). The leaving channel has already been unbound, so the
+     * broadcast reaches only the others; surviving channels stay connected for
+     * future list/create/join. Mirrors the mid-game abort in
+     * {@link #handleDisconnect}, minus the persistence delete (a lobby has no
+     * saved snapshot yet).
+     */
+    private void closeLobby(String reason) {
+        virtualView.broadcast(new MatchClosedMessage(reason));
+        for (ClientHandler other : virtualView.snapshotChannels()) {
+            unbindMatch(other);
+        }
+        virtualView.unbindAllKeepingChannels();
+        removeFromRegistry.run();
     }
 
     private void broadcastTotemSelection() {
