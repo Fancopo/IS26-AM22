@@ -58,6 +58,16 @@ public class Building extends Card {
     @Override
     public int getFoodCost() { return foodPrice; }
 
+    /**
+     * A Building "carries" the extra Shaman stars its effect grants (e.g. the
+     * Shamanic Ritual building). Surfacing them here lets the per-card star
+     * count flow into the DTO/views the same way a Shaman character's stars do;
+     * the Shamanic Ritual scoring still reads the effect directly, so this does
+     * not double-count there.
+     */
+    @Override
+    public int getNumStars() { return effect == null ? 0 : effect.getExtraShamanIcons(); }
+
     /** Validation: deduct the discounted cost from the simulated food (throws if insufficient). */
     @Override
     public void applyPickEffect(PickSimulation sim) {

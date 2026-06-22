@@ -87,7 +87,7 @@ public abstract class Card implements Serializable {
     /** @return whether this card is an Event */
     public boolean isEvent() { return false; }
 
-    /** @return the number of Shaman stars on this card; only Shaman overrides, everything else is 0 */
+    /** @return the number of Shaman stars on this card; Shaman characters and star-granting Buildings override, everything else is 0 */
     public int getNumStars() { return 0; }
 
     /** @return the card macro-category for the network DTO ("CHARACTER", "BUILDING", "EVENT") */

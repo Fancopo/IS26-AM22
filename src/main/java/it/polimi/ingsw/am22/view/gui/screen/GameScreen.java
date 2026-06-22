@@ -868,7 +868,7 @@ public final class GameScreen implements GuiScreen {
     private Node buildResourceGrid(PlayerDTO p) {
         ResourceSpec[] specs = new ResourceSpec[] {
                 new ResourceSpec("food",                p.food(),                         "Food"),
-                new ResourceSpec("star",                totalStars(p),                    "Stars (from Shamans)"),
+                new ResourceSpec("star",                totalStars(p),                    "Stars (from Shamans and Buildings)"),
                 new ResourceSpec("setof_characters",    p.tribeCharacters().size(),       "Total characters"),
 
                 new ResourceSpec("building_discount",   p.builderDiscount(),              "Building discount (Builder)"),
@@ -914,10 +914,18 @@ public final class GameScreen implements GuiScreen {
     }
 
     private int totalStars(PlayerDTO p) {
-        if (p.tribeCharacters() == null) return 0;
         int sum = 0;
-        for (CardDTO c : p.tribeCharacters()) {
-            sum += c.numStars();
+        if (p.tribeCharacters() != null) {
+            for (CardDTO c : p.tribeCharacters()) {
+                sum += c.numStars();
+            }
+        }
+        // Buildings can also grant Shaman stars (e.g. the Shamanic Ritual
+        // building); include them so the panel matches the Shamanic scoring.
+        if (p.buildings() != null) {
+            for (CardDTO c : p.buildings()) {
+                sum += c.numStars();
+            }
         }
         return sum;
     }

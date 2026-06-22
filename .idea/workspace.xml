@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="regenerated file jar">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="regenerated file jar for windows and Macos">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dependency-reduced-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dependency-reduced-pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/javadoc/it.polimi.ingsw.am/it/polimi/ingsw/am22/model/Card.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/javadoc/it.polimi.ingsw.am/it/polimi/ingsw/am22/model/Card.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jar/client.jar" beforeDir="false" afterPath="$PROJECT_DIR$/jar/client.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jar/server.jar" beforeDir="false" afterPath="$PROJECT_DIR$/jar/server.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/Card.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/Building.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/model/building/Building.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/screen/GameScreen.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -523,7 +525,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782118651168</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="regenerated file jar for windows and Macos">
+      <option name="closed" value="true" />
+      <created>1782125757220</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1782125757220</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -563,7 +573,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Initial version" />
     <MESSAGE value="Second version" />
     <MESSAGE value="Second version of Building" />
     <MESSAGE value="last commit" />
@@ -588,7 +597,8 @@
     <MESSAGE value="fixed bug for GUI" />
     <MESSAGE value="Adding Javadoc" />
     <MESSAGE value="regenerated file jar" />
-    <option name="LAST_COMMIT_MESSAGE" value="regenerated file jar" />
+    <MESSAGE value="regenerated file jar for windows and Macos" />
+    <option name="LAST_COMMIT_MESSAGE" value="regenerated file jar for windows and Macos" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
