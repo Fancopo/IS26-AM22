@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="Adding Javadoc">
+    <list default="true" id="d4eadf74-407e-49cc-9299-af7b87a1c856" name="Changes" comment="regenerated file jar">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dependency-reduced-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dependency-reduced-pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jar/client.jar" beforeDir="false" afterPath="$PROJECT_DIR$/jar/client.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jar/server.jar" beforeDir="false" afterPath="$PROJECT_DIR$/jar/server.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/polimi/ingsw/am22/view/gui/GuiApp.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -514,7 +515,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781950640720</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="regenerated file jar">
+      <option name="closed" value="true" />
+      <created>1782118651168</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1782118651168</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -578,7 +587,8 @@
     <MESSAGE value="fixed bugs for database and persistence" />
     <MESSAGE value="fixed bug for GUI" />
     <MESSAGE value="Adding Javadoc" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding Javadoc" />
+    <MESSAGE value="regenerated file jar" />
+    <option name="LAST_COMMIT_MESSAGE" value="regenerated file jar" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

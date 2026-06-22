@@ -186,10 +186,13 @@ public final class GuiApp extends Application implements ServerHandler {
         if (lastTransport == null) {
             return false;
         }
-        if (session != null) {
-            session.close(false);
-            session = null;
-        }
+        // Don't close the previous session here: a retry after a rejected
+        // nickname still has the prior attempt's session open. Closing it
+        // ourselves (without arming expectingDisconnect) lets its reader thread
+        // fire a stale onConnectionClosed that pops "Connection closed" and
+        // bounces the player back to the connection screen, killing the retry.
+        // connect() already tears down any existing session under the
+        // expectingDisconnect guard, so let it handle the teardown.
         if (!connect(lastTransport, lastHost, lastPort)) {
             return false;
         }

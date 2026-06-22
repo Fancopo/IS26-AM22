@@ -125,26 +125,30 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-base</artifactId>
-          <version>${javafx.version}</version>
+          <version>21.0.6</version>
           <classifier>mac-aarch64</classifier>
+          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-graphics</artifactId>
-          <version>${javafx.version}</version>
+          <version>21.0.6</version>
           <classifier>mac-aarch64</classifier>
+          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-controls</artifactId>
-          <version>${javafx.version}</version>
+          <version>21.0.6</version>
           <classifier>mac-aarch64</classifier>
+          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-fxml</artifactId>
-          <version>${javafx.version}</version>
+          <version>21.0.6</version>
           <classifier>mac-aarch64</classifier>
+          <scope>compile</scope>
         </dependency>
       </dependencies>
     </profile>
